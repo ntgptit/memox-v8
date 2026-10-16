@@ -1,0 +1,2219 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": 1,
+  "testId": "topik2-96-listening",
+  "level": "topik2",
+  "round": 96,
+  "section": "listening",
+  "format": "pbt",
+  "form": "B-홀수형",
+  "titleKo": "제96회 한국어능력시험",
+  "officialTimeLimitSec": 3600,
+  "source": {
+    "publishedBy": "NIIED",
+    "url": "https://www.topik.go.kr/fixture",
+    "publishedAt": "2025-01-01"
+  },
+  "assets": {
+    "audio": "assets/topik/fixture/listening.mp3"
+  },
+  "groups": [
+    {
+      "groupId": "g1",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        1
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 0,
+        "endMs": 30000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g2",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        2
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 30000,
+        "endMs": 60000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g3",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        3
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 60000,
+        "endMs": 90000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g4",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        4
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 90000,
+        "endMs": 120000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g5",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        5
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 120000,
+        "endMs": 150000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g6",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        6
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 150000,
+        "endMs": 180000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g7",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        7
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 180000,
+        "endMs": 210000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g8",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        8
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 210000,
+        "endMs": 240000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g9",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        9
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 240000,
+        "endMs": 270000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g10",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        10
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 270000,
+        "endMs": 300000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g11",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        11
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 300000,
+        "endMs": 330000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g12",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        12
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 330000,
+        "endMs": 360000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g13",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        13
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 360000,
+        "endMs": 390000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g14",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        14
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 390000,
+        "endMs": 420000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g15",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        15
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 420000,
+        "endMs": 450000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g16",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        16
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 450000,
+        "endMs": 480000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g17",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        17
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 480000,
+        "endMs": 510000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g18",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        18
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 510000,
+        "endMs": 540000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g19",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        19
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 540000,
+        "endMs": 570000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g20",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        20
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 570000,
+        "endMs": 600000,
+        "playCount": 1
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g21",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        21
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 600000,
+        "endMs": 630000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g22",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        22
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 630000,
+        "endMs": 660000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g23",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        23
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 660000,
+        "endMs": 690000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g24",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        24
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 690000,
+        "endMs": 720000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g25",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        25
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 720000,
+        "endMs": 750000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g26",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        26
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 750000,
+        "endMs": 780000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g27",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        27
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 780000,
+        "endMs": 810000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g28",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        28
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 810000,
+        "endMs": 840000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g29",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        29
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 840000,
+        "endMs": 870000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g30",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        30
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 870000,
+        "endMs": 900000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g31",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        31
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 900000,
+        "endMs": 930000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g32",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        32
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 930000,
+        "endMs": 960000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g33",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        33
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 960000,
+        "endMs": 990000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g34",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        34
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 990000,
+        "endMs": 1020000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g35",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        35
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1020000,
+        "endMs": 1050000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g36",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        36
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1050000,
+        "endMs": 1080000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g37",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        37
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1080000,
+        "endMs": 1110000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g38",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        38
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1110000,
+        "endMs": 1140000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g39",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        39
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1140000,
+        "endMs": 1170000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g40",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        40
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1170000,
+        "endMs": 1200000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g41",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        41
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1200000,
+        "endMs": 1230000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g42",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        42
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1230000,
+        "endMs": 1260000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g43",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        43
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1260000,
+        "endMs": 1290000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g44",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        44
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1290000,
+        "endMs": 1320000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g45",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        45
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1320000,
+        "endMs": 1350000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g46",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        46
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1350000,
+        "endMs": 1380000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g47",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        47
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1380000,
+        "endMs": 1410000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g48",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        48
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1410000,
+        "endMs": 1440000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    },
+    {
+      "groupId": "g49-50",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        49,
+        50
+      ],
+      "passage": null,
+      "audio": {
+        "startMs": 1440000,
+        "endMs": 1470000,
+        "playCount": 2
+      },
+      "script": "남자: 안녕하세요. 여자: 네.",
+      "scriptTranslation": {
+        "vi": "Xin chào.",
+        "en": "Hello."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "no": 1,
+      "groupId": "g1",
+      "questionType": "L2_picture_graph",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (1)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1,
+      "explanation": {
+        "vi": "Giải thích.",
+        "en": "Explanation."
+      },
+      "words": [
+        {
+          "ko": "기획",
+          "vi": "kế hoạch",
+          "en": "planning",
+          "pos": "n"
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "groupId": "g2",
+      "questionType": "L2_picture_graph",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (2)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 3,
+      "groupId": "g3",
+      "questionType": "L2_picture_graph",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (3)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 4,
+      "groupId": "g4",
+      "questionType": "L2_next_utterance",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (4)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 5,
+      "groupId": "g5",
+      "questionType": "L2_next_utterance",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (5)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 6,
+      "groupId": "g6",
+      "questionType": "L2_next_utterance",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (6)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 7,
+      "groupId": "g7",
+      "questionType": "L2_next_utterance",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (7)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 8,
+      "groupId": "g8",
+      "questionType": "L2_next_utterance",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (8)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 9,
+      "groupId": "g9",
+      "questionType": "L2_next_action",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (9)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 10,
+      "groupId": "g10",
+      "questionType": "L2_next_action",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (10)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 11,
+      "groupId": "g11",
+      "questionType": "L2_next_action",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (11)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 12,
+      "groupId": "g12",
+      "questionType": "L2_next_action",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (12)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 13,
+      "groupId": "g13",
+      "questionType": "L2_match_content",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (13)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 14,
+      "groupId": "g14",
+      "questionType": "L2_match_content",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (14)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 15,
+      "groupId": "g15",
+      "questionType": "L2_match_content",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (15)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 16,
+      "groupId": "g16",
+      "questionType": "L2_match_content",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (16)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 17,
+      "groupId": "g17",
+      "questionType": "L2_main_idea",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (17)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 18,
+      "groupId": "g18",
+      "questionType": "L2_main_idea",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (18)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 19,
+      "groupId": "g19",
+      "questionType": "L2_main_idea",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (19)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 20,
+      "groupId": "g20",
+      "questionType": "L2_main_idea",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (20)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 21,
+      "groupId": "g21",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (21)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 22,
+      "groupId": "g22",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (22)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 23,
+      "groupId": "g23",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (23)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 24,
+      "groupId": "g24",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (24)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 25,
+      "groupId": "g25",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (25)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 26,
+      "groupId": "g26",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (26)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 27,
+      "groupId": "g27",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (27)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 28,
+      "groupId": "g28",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (28)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 29,
+      "groupId": "g29",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (29)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 30,
+      "groupId": "g30",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (30)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 31,
+      "groupId": "g31",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (31)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 32,
+      "groupId": "g32",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (32)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 33,
+      "groupId": "g33",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (33)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 34,
+      "groupId": "g34",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (34)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 35,
+      "groupId": "g35",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (35)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 36,
+      "groupId": "g36",
+      "questionType": "L2_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (36)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 37,
+      "groupId": "g37",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (37)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 38,
+      "groupId": "g38",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (38)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 39,
+      "groupId": "g39",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (39)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 40,
+      "groupId": "g40",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (40)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 41,
+      "groupId": "g41",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (41)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 42,
+      "groupId": "g42",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (42)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 43,
+      "groupId": "g43",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (43)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 44,
+      "groupId": "g44",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (44)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 45,
+      "groupId": "g45",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (45)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 46,
+      "groupId": "g46",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (46)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 47,
+      "groupId": "g47",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (47)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 48,
+      "groupId": "g48",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (48)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 49,
+      "groupId": "g49-50",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (49)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 50,
+      "groupId": "g49-50",
+      "questionType": "L2_paired_advanced",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (50)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    }
+  ]
+}

@@ -1,0 +1,1464 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": 1,
+  "testId": "topik1-96-reading",
+  "level": "topik1",
+  "round": 96,
+  "section": "reading",
+  "format": "pbt",
+  "form": "B-홀수형",
+  "titleKo": "제96회 한국어능력시험",
+  "officialTimeLimitSec": 3600,
+  "source": {
+    "publishedBy": "NIIED",
+    "url": "https://www.topik.go.kr/fixture",
+    "publishedAt": "2025-01-01"
+  },
+  "groups": [
+    {
+      "groupId": "g31",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        31
+      ],
+      "passage": {
+        "textKo": "지문 g31"
+      }
+    },
+    {
+      "groupId": "g32",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        32
+      ],
+      "passage": {
+        "textKo": "지문 g32"
+      }
+    },
+    {
+      "groupId": "g33",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        33
+      ],
+      "passage": {
+        "textKo": "지문 g33"
+      }
+    },
+    {
+      "groupId": "g34",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        34
+      ],
+      "passage": {
+        "textKo": "지문 g34"
+      }
+    },
+    {
+      "groupId": "g35",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        35
+      ],
+      "passage": {
+        "textKo": "지문 g35"
+      }
+    },
+    {
+      "groupId": "g36",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        36
+      ],
+      "passage": {
+        "textKo": "지문 g36"
+      }
+    },
+    {
+      "groupId": "g37",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        37
+      ],
+      "passage": {
+        "textKo": "지문 g37"
+      }
+    },
+    {
+      "groupId": "g38",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        38
+      ],
+      "passage": {
+        "textKo": "지문 g38"
+      }
+    },
+    {
+      "groupId": "g39",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        39
+      ],
+      "passage": {
+        "textKo": "지문 g39"
+      }
+    },
+    {
+      "groupId": "g40",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        40
+      ],
+      "passage": {
+        "textKo": "지문 g40"
+      }
+    },
+    {
+      "groupId": "g41",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        41
+      ],
+      "passage": {
+        "textKo": "지문 g41"
+      }
+    },
+    {
+      "groupId": "g42",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        42
+      ],
+      "passage": {
+        "textKo": "지문 g42"
+      }
+    },
+    {
+      "groupId": "g43",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        43
+      ],
+      "passage": {
+        "textKo": "지문 g43"
+      }
+    },
+    {
+      "groupId": "g44",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        44
+      ],
+      "passage": {
+        "textKo": "지문 g44"
+      }
+    },
+    {
+      "groupId": "g45",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        45
+      ],
+      "passage": {
+        "textKo": "지문 g45"
+      }
+    },
+    {
+      "groupId": "g46",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        46
+      ],
+      "passage": {
+        "textKo": "지문 g46"
+      }
+    },
+    {
+      "groupId": "g47",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        47
+      ],
+      "passage": {
+        "textKo": "지문 g47"
+      }
+    },
+    {
+      "groupId": "g48",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        48
+      ],
+      "passage": {
+        "textKo": "지문 g48"
+      }
+    },
+    {
+      "groupId": "g49",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        49
+      ],
+      "passage": {
+        "textKo": "지문 g49"
+      }
+    },
+    {
+      "groupId": "g50",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        50
+      ],
+      "passage": {
+        "textKo": "지문 g50"
+      }
+    },
+    {
+      "groupId": "g51",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        51
+      ],
+      "passage": {
+        "textKo": "지문 g51"
+      }
+    },
+    {
+      "groupId": "g52",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        52
+      ],
+      "passage": {
+        "textKo": "지문 g52"
+      }
+    },
+    {
+      "groupId": "g53",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        53
+      ],
+      "passage": {
+        "textKo": "지문 g53"
+      }
+    },
+    {
+      "groupId": "g54",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        54
+      ],
+      "passage": {
+        "textKo": "지문 g54"
+      }
+    },
+    {
+      "groupId": "g55",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        55
+      ],
+      "passage": {
+        "textKo": "지문 g55"
+      }
+    },
+    {
+      "groupId": "g56",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        56
+      ],
+      "passage": {
+        "textKo": "지문 g56"
+      }
+    },
+    {
+      "groupId": "g57",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        57
+      ],
+      "passage": {
+        "textKo": "지문 g57"
+      }
+    },
+    {
+      "groupId": "g58",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        58
+      ],
+      "passage": {
+        "textKo": "지문 g58"
+      }
+    },
+    {
+      "groupId": "g59",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        59
+      ],
+      "passage": {
+        "textKo": "지문 g59"
+      }
+    },
+    {
+      "groupId": "g60",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        60
+      ],
+      "passage": {
+        "textKo": "지문 g60"
+      }
+    },
+    {
+      "groupId": "g61",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        61
+      ],
+      "passage": {
+        "textKo": "지문 g61"
+      }
+    },
+    {
+      "groupId": "g62",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        62
+      ],
+      "passage": {
+        "textKo": "지문 g62"
+      }
+    },
+    {
+      "groupId": "g63",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        63
+      ],
+      "passage": {
+        "textKo": "지문 g63"
+      }
+    },
+    {
+      "groupId": "g64",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        64
+      ],
+      "passage": {
+        "textKo": "지문 g64"
+      }
+    },
+    {
+      "groupId": "g65",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        65
+      ],
+      "passage": {
+        "textKo": "지문 g65"
+      }
+    },
+    {
+      "groupId": "g66",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        66
+      ],
+      "passage": {
+        "textKo": "지문 g66"
+      }
+    },
+    {
+      "groupId": "g67",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        67
+      ],
+      "passage": {
+        "textKo": "지문 g67"
+      }
+    },
+    {
+      "groupId": "g68",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        68
+      ],
+      "passage": {
+        "textKo": "지문 g68"
+      }
+    },
+    {
+      "groupId": "g69-70",
+      "instructionKo": "※ 다음을 읽고 물음에 답하십시오.",
+      "questionNos": [
+        69,
+        70
+      ],
+      "passage": {
+        "textKo": "지문 g69-70"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "no": 31,
+      "groupId": "g31",
+      "questionType": "R1_topic",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (31)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3,
+      "explanation": {
+        "vi": "Giải thích.",
+        "en": "Explanation."
+      },
+      "words": [
+        {
+          "ko": "기획",
+          "vi": "kế hoạch",
+          "en": "planning",
+          "pos": "n"
+        }
+      ]
+    },
+    {
+      "no": 32,
+      "groupId": "g32",
+      "questionType": "R1_topic",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (32)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 33,
+      "groupId": "g33",
+      "questionType": "R1_topic",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (33)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 34,
+      "groupId": "g34",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (34)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 35,
+      "groupId": "g35",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (35)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 36,
+      "groupId": "g36",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (36)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 37,
+      "groupId": "g37",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (37)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 38,
+      "groupId": "g38",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (38)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 39,
+      "groupId": "g39",
+      "questionType": "R1_fill_blank",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (39)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 40,
+      "groupId": "g40",
+      "questionType": "R1_not_match",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (40)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 41,
+      "groupId": "g41",
+      "questionType": "R1_not_match",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (41)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 42,
+      "groupId": "g42",
+      "questionType": "R1_not_match",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (42)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 43,
+      "groupId": "g43",
+      "questionType": "R1_match_content",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (43)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 44,
+      "groupId": "g44",
+      "questionType": "R1_match_content",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (44)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 45,
+      "groupId": "g45",
+      "questionType": "R1_match_content",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (45)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 46,
+      "groupId": "g46",
+      "questionType": "R1_main_idea",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (46)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 47,
+      "groupId": "g47",
+      "questionType": "R1_main_idea",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (47)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 48,
+      "groupId": "g48",
+      "questionType": "R1_main_idea",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (48)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 49,
+      "groupId": "g49",
+      "questionType": "R1_paired",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (49)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 50,
+      "groupId": "g50",
+      "questionType": "R1_paired",
+      "points": 3,
+      "stemKo": "알맞은 것을 고르십시오. (50)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 51,
+      "groupId": "g51",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (51)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 52,
+      "groupId": "g52",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (52)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 53,
+      "groupId": "g53",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (53)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 54,
+      "groupId": "g54",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (54)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 55,
+      "groupId": "g55",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (55)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 56,
+      "groupId": "g56",
+      "questionType": "R1_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (56)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 57,
+      "groupId": "g57",
+      "questionType": "R1_ordering",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (57)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 58,
+      "groupId": "g58",
+      "questionType": "R1_ordering",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (58)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 59,
+      "groupId": "g59",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (59)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 60,
+      "groupId": "g60",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (60)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 61,
+      "groupId": "g61",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (61)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 62,
+      "groupId": "g62",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (62)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 63,
+      "groupId": "g63",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (63)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 64,
+      "groupId": "g64",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (64)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 65,
+      "groupId": "g65",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (65)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 66,
+      "groupId": "g66",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (66)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    },
+    {
+      "no": 67,
+      "groupId": "g67",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (67)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 3
+    },
+    {
+      "no": 68,
+      "groupId": "g68",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (68)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 4
+    },
+    {
+      "no": 69,
+      "groupId": "g69-70",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (69)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 1
+    },
+    {
+      "no": 70,
+      "groupId": "g69-70",
+      "questionType": "R1_long_paired",
+      "points": 2,
+      "stemKo": "알맞은 것을 고르십시오. (70)",
+      "options": [
+        {
+          "idx": 1,
+          "textKo": "보기 1"
+        },
+        {
+          "idx": 2,
+          "textKo": "보기 2"
+        },
+        {
+          "idx": 3,
+          "textKo": "보기 3"
+        },
+        {
+          "idx": 4,
+          "textKo": "보기 4"
+        }
+      ],
+      "answerIdx": 2
+    }
+  ]
+}
