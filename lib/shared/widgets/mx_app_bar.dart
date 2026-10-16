@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 
 /// The top chrome: leading control, flexible title (with an optional
 /// subtitle line under it), trailing actions. The title is the only slot
@@ -24,6 +25,7 @@ class MxAppBar extends StatelessWidget {
     this.actions = const [],
     this.isLastActionText = false,
     this.isTitleField = false,
+    this.isTitleWidgetRouteName = false,
   }) : assert(
          (title == null) != (titleWidget == null),
          'MxAppBar takes a title or a titleWidget, not both',
@@ -31,6 +33,10 @@ class MxAppBar extends StatelessWidget {
        assert(
          subtitle == null || title != null,
          'A subtitle goes under a title, not under a titleWidget',
+       ),
+       assert(
+         !isTitleWidgetRouteName || titleWidget != null,
+         'Only a titleWidget is asked to name the route; a title always does',
        );
 
   final String? title;
@@ -64,6 +70,12 @@ class MxAppBar extends StatelessWidget {
   /// up with the content below.
   final bool isTitleField;
 
+  /// The [titleWidget] names the route, as a [title] always does (DEV-393),
+  /// such as the deck's name on screen 14 or the search field on screen 04.
+  /// Off for a bar that is not the top of its route, such as a selection
+  /// bar, and where the screen names the route itself.
+  final bool isTitleWidgetRouteName;
+
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
@@ -90,13 +102,13 @@ class MxAppBar extends StatelessWidget {
             children: [
               ?leading,
               Expanded(
-                child:
-                    titleWidget ??
-                    Semantics(
-                      namesRoute: _namesRoute(context),
-                      header: true,
-                      child: _title(context),
-                    ),
+                child: switch (titleWidget) {
+                  final widget? when isTitleWidgetRouteName => MxRouteName(
+                    child: widget,
+                  ),
+                  final widget? => widget,
+                  null => MxRouteName(isHeader: true, child: _title(context)),
+                },
               ),
               if (actions.isNotEmpty)
                 IconButtonTheme(
@@ -140,18 +152,6 @@ class MxAppBar extends StatelessWidget {
       ],
     );
   }
-
-  /// The framework `AppBar` title names the route everywhere but on Apple
-  /// platforms (read from the theme's platform, as it does), so a screen
-  /// reader announces the new screen on each push.
-  bool? _namesRoute(BuildContext context) =>
-      switch (Theme.of(context).platform) {
-        TargetPlatform.android ||
-        TargetPlatform.fuchsia ||
-        TargetPlatform.linux ||
-        TargetPlatform.windows => true,
-        TargetPlatform.iOS || TargetPlatform.macOS => null,
-      };
 
   /// The ambient icon button, with the trailing icons in `onSurfaceVariant`.
   IconButtonThemeData _actionsTheme(BuildContext context) {

@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
@@ -101,12 +102,19 @@ class MxStudyTopBar extends StatelessWidget {
                           horizontal: context.dimens.space8,
                           vertical: context.dimens.space4,
                         ),
-                        child: Text(
-                          modeLabel.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.texts.labelSmall?.copyWith(
-                            color: accentInk,
+                        // The session route is pushed full screen under this
+                        // bar: its mode names the route (DEV-393).
+                        child: MxRouteName(
+                          child: Text(
+                            modeLabel.toUpperCase(),
+                            // Read as written, not as capitals a speech
+                            // engine may spell out.
+                            semanticsLabel: modeLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.texts.labelSmall?.copyWith(
+                              color: accentInk,
+                            ),
                           ),
                         ),
                       ),

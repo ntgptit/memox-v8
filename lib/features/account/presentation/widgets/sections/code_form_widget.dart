@@ -9,6 +9,7 @@ import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -99,9 +100,8 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          header: true,
-          namesRoute: true,
+        MxRouteName(
+          isHeader: true,
           child: Text(l10n.accountCodeTitle, style: context.texts.titleLarge),
         ),
         SizedBox(height: context.dimens.space8),
