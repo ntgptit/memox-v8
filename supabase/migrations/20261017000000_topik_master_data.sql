@@ -417,6 +417,12 @@ begin
     union all select o->>'image' from jsonb_array_elements(v_questions) q,
       jsonb_array_elements(case when jsonb_typeof(q->'options') = 'array' then q->'options' else '[]'::jsonb end) o) x
   where x.path is not null and x.path <> '';
+  -- The path contract {test_id}/{version}/{file}: what the read policy matches. The
+  -- version segment is not compared with v_next: a rollback carries an old one.
+  if exists (select 1 from jsonb_array_elements_text(v_media) m
+      where split_part(m, '/', 1) <> p_test_id or split_part(m, '/', 2) !~ '^[1-9][0-9]*$' or split_part(m, '/', 3) = '') then
+    raise exception 'VALIDATION_FAILED' using detail = 'media';
+  end if;
   if exists (select 1 from jsonb_array_elements_text(v_media) m where not private.topik_media_exists(m)) then
     raise exception 'MEDIA_MISSING';
   end if;
@@ -673,7 +679,7 @@ grant execute on function public.topik_catalog(bigint), public.topik_test_conten
 -- policies call two security-definer helpers so they can read our tables.
 insert into storage.buckets (id, name, public)
 values ('topik-media', 'topik-media', false)
-on conflict (id) do nothing;
+on conflict (id) do update set public = false;
 
 -- Writing media is the admin's.
 create function public.topik_media_can_write(p_name text) returns boolean
@@ -681,16 +687,21 @@ language sql stable security definer set search_path = '' as $$
   select private.is_admin()
 $$;
 
--- Reading: an admin reads anything; a user reads an object whose first two path
--- segments, {test_id}/{content_version}, name a published test's current version.
--- Any object under such a prefix reads (deliberate); the version must match as written.
+-- Reading: a caller with a profile (a deleted user's live JWT has none), and an
+-- admin reads anything; a user reads an object whose first two path segments,
+-- {test_id}/{content_version}, name an existing version of a published test. Any
+-- version, not only the current one: a rollback republishes old content whose media
+-- paths carry the old version. Any object under such a prefix reads (deliberate); the
+-- version must match as written. No casts on the name, so a malformed one denies.
 create function public.topik_media_can_read(p_name text) returns boolean
 language sql stable security definer set search_path = '' as $$
-  select auth.uid() is not null and (private.is_admin() or exists (
-    select 1 from public.topik_publication p
-    where p.status = 'published'
-      and p.test_id = split_part(p_name, '/', 1)
-      and p.current_version::text = split_part(p_name, '/', 2)))
+  select exists (select 1 from public.profiles pr where pr.id = auth.uid())
+    and (private.is_admin() or exists (
+      select 1 from public.topik_publication p
+      join public.topik_test_version v on v.test_id = p.test_id
+      where p.status = 'published'
+        and p.test_id = split_part(p_name, '/', 1)
+        and v.content_version::text = split_part(p_name, '/', 2)))
 $$;
 revoke all on function public.topik_media_can_write(text), public.topik_media_can_read(text)
   from public, anon, authenticated;
