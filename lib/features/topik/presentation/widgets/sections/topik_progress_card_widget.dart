@@ -26,6 +26,8 @@ class TopikProgressCardWidget extends StatelessWidget {
     final dimens = context.dimens;
     String figure(int? value, String Function(int) format) =>
         value == null ? '–' : format(value);
+    // TalkBack reads a bare dash as "en dash" (Q-P6-5).
+    String? spoken(int? value) => value == null ? l10n.topikNoFigure : null;
     final lastActivity = progress.lastActivityAt;
     return MxCard(
       child: Column(
@@ -39,6 +41,7 @@ class TopikProgressCardWidget extends StatelessWidget {
                 child: MxStatTile(
                   value: figure(progress.accuracyPercent, l10n.topikPercent),
                   label: l10n.topikAccuracy,
+                  semanticValue: spoken(progress.accuracyPercent),
                   layout: MxStatTileLayout.boxed,
                 ),
               ),
@@ -46,6 +49,7 @@ class TopikProgressCardWidget extends StatelessWidget {
                 child: MxStatTile(
                   value: figure(progress.bestScore, (v) => '$v'),
                   label: l10n.topikBest,
+                  semanticValue: spoken(progress.bestScore),
                   layout: MxStatTileLayout.boxed,
                 ),
               ),
@@ -58,6 +62,7 @@ class TopikProgressCardWidget extends StatelessWidget {
                 child: MxStatTile(
                   value: figure(progress.averageScore, (v) => '$v'),
                   label: l10n.topikAverage,
+                  semanticValue: spoken(progress.averageScore),
                   layout: MxStatTileLayout.boxed,
                 ),
               ),

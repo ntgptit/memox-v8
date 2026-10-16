@@ -49,7 +49,8 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 - **Brief 2026-10-15:** the Korean exam name is a subtitle line of the app bar, so the title stays on one line (The One Line Rule).
 - **Plan 6a (2026-10-15):** the meta line is terms joined so it breaks only between them (The Wrap Rule): grades ("Levels 3–6") and sections ("Reading, Listening") are separate keys.
 - **Plan 6a:** a level without tests is information, not a disabled control: no chevron, no tap, not dimmed (critique F5).
-- **Plan 6a:** the Korean subtitle is a TOPIK title widget passed as `MxAppBar`'s `titleWidget` until `MxAppBar` has a subtitle (owner question Q-P6-2); the level glyph is `AppIcons.fileText` (Q-P6-3).
+- **Plan 6a:** the level glyph is `AppIcons.fileText` (Q-P6-3).
+- **Owner 2026-10-16 (Q-P6-2):** the Korean subtitle is `MxAppBar.subtitle`, read with the title in one heading node that names the route; the TOPIK-local title widget is gone.
 
 ## Copy
 

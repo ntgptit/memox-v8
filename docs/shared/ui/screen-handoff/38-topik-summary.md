@@ -79,12 +79,13 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 - **S9 (plan 6c):** the eye's label carries its state; Back is in the leading slot.
 - **S10 (plan 6c):** an error state with Retry; no contentMissing.
 - **S11 (plan 6c):** 38 replaces 37, so Done and Back land on 36; a deep link builds Study → TOPIK → 38.
+- **Owner 2026-10-16 (Q-P6-5):** Longest with no time is a dash on screen and reads "None" to TalkBack (`MxStatTile.semanticValue`): a submitted attempt is final, so not "None yet".
 
 ## Copy
 
 - App bar: "Summary" · "Hide answers" · "Show answers".
 - Hero: "#{round} · {level} · {section}" · "{date time} · {duration}" · "{score} / {max}" · "{correct} / {count}" · TalkBack "Score {score} of {max}, {correct} of {count} correct".
-- Figures: "Accuracy" · "Answered" · "Unanswered" · "Longest · Q{no}".
+- Figures: "Accuracy" · "Answered" · "Unanswered" · "Longest · Q{no}"; TalkBack "None" when Longest has no time.
 - Filters: "Answers" · "All" · "Wrong" · "Unanswered" · "Correct" (each with its count in the chip's count slot).
 - Chart: "Time per question" · "Question {no}, {status}, {duration}".
 - Rows: "Question {no}" · "Your answer {option}" · "Right answer {option}" · "Not answered" · badges "Correct" · "Wrong" · "Unanswered".

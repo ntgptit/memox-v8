@@ -14,6 +14,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_summary
 import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_screen_fixtures.dart';
@@ -94,6 +95,22 @@ void main() {
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2m 05s'), findsOneWidget);
     expect(find.text('LONGEST · Q32'), findsOneWidget);
+  });
+
+  libraryTest('no time on any question: Longest shows a dash and reads '
+      '"None" (Q-P6-5)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final blank = _summary([_answer(31, ms: 0), _answer(32, ms: 0)]);
+    await host(tester, env, TopikSummaryFiguresWidget(summary: blank));
+
+    expect(find.text('–'), findsOneWidget);
+    expect(
+      tester.getSemantics(
+        find.byWidgetPredicate((w) => w is MxStatTile && w.label == 'Longest'),
+      ),
+      matchesSemantics(label: 'Longest', value: 'None'),
+    );
+    handle.dispose();
   });
 
   libraryTest('the chips carry their counts; an empty one can be off', (

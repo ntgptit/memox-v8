@@ -20,13 +20,15 @@ class TopikSummaryFiguresWidget extends StatelessWidget {
     final dimens = context.dimens;
     final longest = summary.longest;
     final hasLongest = longest != null && longest.timeSpentMs > 0;
-    Widget tile(String value, String label) => Expanded(
-      child: MxStatTile(
-        value: value,
-        label: label,
-        layout: MxStatTileLayout.boxed,
-      ),
-    );
+    Widget tile(String value, String label, {String? semanticValue}) =>
+        Expanded(
+          child: MxStatTile(
+            value: value,
+            label: label,
+            semanticValue: semanticValue,
+            layout: MxStatTileLayout.boxed,
+          ),
+        );
     return MxCard(
       child: Column(
         spacing: dimens.space16,
@@ -50,6 +52,8 @@ class TopikSummaryFiguresWidget extends StatelessWidget {
                 hasLongest
                     ? l10n.topikLongestOf(longest.questionNo)
                     : l10n.topikLongest,
+                // TalkBack reads a bare dash as "en dash" (Q-P6-5).
+                semanticValue: hasLongest ? null : l10n.topikNone,
               ),
             ],
           ),

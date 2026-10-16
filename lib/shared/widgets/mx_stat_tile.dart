@@ -20,6 +20,7 @@ class MxStatTile extends StatelessWidget {
     super.key,
     required this.value,
     required this.label,
+    this.semanticValue,
     this.emphasis = MxStatTileEmphasis.plain,
     this.layout = MxStatTileLayout.inline,
   });
@@ -27,6 +28,11 @@ class MxStatTile extends StatelessWidget {
   /// Already formatted by the caller: "12", "3 / 23".
   final String value;
   final String label;
+
+  /// What a screen reader says for [value] when the shown figure reads
+  /// wrongly aloud, such as "–" for a figure with no value yet (TalkBack
+  /// says "en dash"). Null reads [value] (Q-P6-5).
+  final String? semanticValue;
   final MxStatTileEmphasis emphasis;
   final MxStatTileLayout layout;
 
@@ -82,7 +88,7 @@ class MxStatTile extends StatelessWidget {
     return Semantics(
       container: true,
       label: label,
-      value: value,
+      value: semanticValue ?? value,
       excludeSemantics: true,
       child: body,
     );
