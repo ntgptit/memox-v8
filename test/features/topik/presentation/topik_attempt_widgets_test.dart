@@ -1,6 +1,7 @@
 import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/domain/models/topik_audio_model.dart';
@@ -141,11 +142,14 @@ void main() {
 
     expect(find.text(group.instructionKo), findsOneWidget);
     expect(find.text(group.passage!.textKo!), findsOneWidget);
-    await tester.tap(find.text('Hide passage'));
+    // Q-P6b-4 (owner, 2026-10-16): a chevron, named for TalkBack (F5).
+    expect(find.byIcon(AppIcons.chevronUp), findsOneWidget);
+    await tester.tap(find.byTooltip('Hide passage'));
     await tester.pumpAndSettle();
     expect(find.text(group.passage!.textKo!), findsNothing);
     expect(tester.widget<Text>(find.text(group.instructionKo)).maxLines, 1);
-    expect(find.text('Show passage'), findsOneWidget);
+    expect(find.byTooltip('Show passage'), findsOneWidget);
+    expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
   });
 
   libraryTest('a listening group: the audio stays when collapsed; the script '
@@ -279,6 +283,6 @@ void main() {
       tester.widget<Text>(find.text(group.instructionKo)).maxLines,
       isNull,
     );
-    expect(find.text('Show passage'), findsNothing);
+    expect(find.byTooltip('Show passage'), findsNothing);
   });
 }

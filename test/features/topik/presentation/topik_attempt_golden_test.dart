@@ -147,7 +147,7 @@ void main() {
         env,
         'collapsed',
         attempt.id,
-        before: () => tester.tap(find.text('Hide passage')),
+        before: () => tester.tap(find.byTooltip('Hide passage')),
       );
     });
 

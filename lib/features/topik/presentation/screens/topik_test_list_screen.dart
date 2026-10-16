@@ -116,8 +116,8 @@ class TopikTestListScreen extends ConsumerWidget {
       return [
         MxEmptyState(
           icon: choice.section == TopikSection.reading
-              ? AppIcons.fileText
-              : AppIcons.speak,
+              ? AppIcons.book
+              : AppIcons.headphones,
           title: l10n.topikSectionEmpty,
           tone: MxEmptyStateTone.neutral,
         ),
