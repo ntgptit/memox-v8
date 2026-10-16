@@ -49,6 +49,8 @@
   "topikNoFigure": "Chưa có",
   "topikAverage": "Trung bình",
   "topikCompleted": "Đã nộp",
+  "topikSessions": "Số lượt",
+  "topikCompletion": "Tỷ lệ nộp",
   "topikPercent": "{value}%",
   "topikCorrectOfTotal": "đúng {correct} / {count}",
   "topikOfTotal": "{part} / {total}",

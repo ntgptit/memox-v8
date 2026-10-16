@@ -4,6 +4,7 @@ import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
 
 import '../../support/widget_harness.dart';

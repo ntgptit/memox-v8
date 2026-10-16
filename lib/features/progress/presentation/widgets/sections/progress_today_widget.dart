@@ -7,6 +7,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
 

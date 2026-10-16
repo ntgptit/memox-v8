@@ -16,10 +16,10 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | Back in the leading slot; "Summary"; trailing an `MxIconButton` (`AppIcons.preview`) labelled "Hide answers" or "Show answers" (S9: `AppIcons` has no eye-off glyph, so the label carries the state). The eye shows only when a result is loaded. |
-| Hero | `TopikSummaryHeroWidget` in an `MxCard` (hero) | "#96 · TOPIK II · Reading", from the attempt's own fields so it holds when the test is gone (S2), glued terms (The Wrap Rule); meta "{date time} · {duration}"; the score "96 / 100" (fits 100 / 100 at 360 dp, BR-TOPIK-025); beside it `TopikScoreDonutWidget`: correct / count, `success` arc on the `surfaceContainerHighest` track (S3, Contrast Floor). The row is one TalkBack node "Score 96 of 100, 48 of 50 correct". |
+| Hero | `TopikSummaryHeroWidget` in an `MxCard` (hero) | "#96 · TOPIK II · Reading", from the attempt's own fields so it holds when the test is gone (S2), glued terms (The Wrap Rule); meta "{date time} · {duration}"; the score "96 / 100" (fits 100 / 100 at 360 dp, BR-TOPIK-025); beside it `TopikScoreDonutWidget`: correct / count with the caption "Correct" under it, `success` arc on the `surfaceContainerHighest` track (S3, Contrast Floor). The row is one TalkBack node "Score 96 of 100, 48 of 50 correct". |
 | Figures | `TopikSummaryFiguresWidget`: 2×2 boxed `MxStatTile`s in an `MxCard` | Accuracy · Answered · Unanswered · "Longest · Q{no}" with the duration as its value (S1, One Line Rule). |
 | Filters | "Answers" header + `TopikAnswerFilterChipsWidget` (`MxChipRow` of `MxFilterChip`s) | All · Wrong · Unanswered · Correct, the count in the chip's count slot; scrolls sideways at 360 dp. |
-| Time per question | "Time per question" header + `TopikQuestionBarChartWidget` | Scrolls sideways; one bar per question, height by time, colour by status (`success`, `error`, `outline` for unanswered, S4); a zero time keeps a `space4` stub; the real number under each; each bar is an `MxRowInk` `sizeControl` wide; a tap opens 39 at that question (S4); one TalkBack node per bar "Question {no}, {status}, {duration}". |
+| Time per question | "Time per question" header + `TopikQuestionBarChartWidget` | Scrolls sideways; one bar per question, height by time, colour by status (`success`, `error`, `outline` for unanswered, S4); a zero time keeps a `space4` stub; the real number under each; each bar is an `MxRowInk` `sizeControl` wide; a tap opens 39 at that question (S4); one TalkBack node per bar "Question {no}, {status}, {duration}". Under it an `MxChartLegend` in the filter chips' order: Wrong, Unanswered, Correct, each with a dot of its bar colour, silent to TalkBack. |
 | Answers | `MxCard` of `TopikAnswerRowWidget`s (`MxListRow`) | Title "Question {no}"; meta "Your answer ② · Right answer ③ · 1m 05s" (the eye drops "Right answer"); trailing a status `MxBadge` (success, danger, neutral) and no chevron (`MxListRow` takes one or the other); a row opens 39 at that question (S5). |
 | Empty filter | `MxEmptyState` (compact, neutral) | Replaces the chart and the rows (S6). |
 | By question type | `TopikTypeStatsWidget` in an `MxSection` | One row per type: localized name (`titleSmall`), "{correct} / {total}", an `MxLinearProgress` under it; the weakest marked by an `MxBadge` (warning) "Weakest" (BR-TOPIK-024); a perfect result has none (S7). |
@@ -30,6 +30,7 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `topik_summary_loaded_light.png` | `topik_summary_loaded_dark.png` | A mixed result. |
+| loaded, chart in view | `topik_summary_chart_light.png` | `topik_summary_chart_dark.png` | The loaded result scrolled to Time per question: the bars, their numbers and the legend. |
 | perfect | `topik_summary_perfect_light.png` | `topik_summary_perfect_dark.png` | 100 / 100: no layout break; no weakest type. |
 | zero | `topik_summary_zero_light.png` | `topik_summary_zero_dark.png` | 0 / 100, every question unanswered. |
 | topik1Reading | `topik_summary_t1_reading_light.png` | `topik_summary_t1_reading_dark.png` | Numbers 31–70 in the figures, the chart and the rows. |
@@ -80,14 +81,15 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 - **S10 (plan 6c):** an error state with Retry; no contentMissing.
 - **S11 (plan 6c):** 38 replaces 37, so Done and Back land on 36; a deep link builds Study → TOPIK → 38.
 - **Owner 2026-10-16 (Q-P6-5):** Longest with no time is a dash on screen and reads "None" to TalkBack (`MxStatTile.semanticValue`): a submitted attempt is final, so not "None yet".
+- **Wireframe pass (owner, 2026-10-16):** the time chart gets a legend (shared `MxChartLegend`, owner's choice), so colour is not the only cue on screen; the donut's figure says what it counts ("Correct"), since "27 / 50" sits beside "54 / 100". The wireframe's section description line and the bottom ad stay out (no BR; ads are out of scope).
 
 ## Copy
 
 - App bar: "Summary" · "Hide answers" · "Show answers".
-- Hero: "#{round} · {level} · {section}" · "{date time} · {duration}" · "{score} / {max}" · "{correct} / {count}" · TalkBack "Score {score} of {max}, {correct} of {count} correct".
+- Hero: "#{round} · {level} · {section}" · "{date time} · {duration}" · "{score} / {max}" · "{correct} / {count}" · "Correct" (under the donut figure) · TalkBack "Score {score} of {max}, {correct} of {count} correct".
 - Figures: "Accuracy" · "Answered" · "Unanswered" · "Longest · Q{no}"; TalkBack "None" when Longest has no time.
 - Filters: "Answers" · "All" · "Wrong" · "Unanswered" · "Correct" (each with its count in the chip's count slot).
-- Chart: "Time per question" · "Question {no}, {status}, {duration}".
+- Chart: "Time per question" · legend "Wrong" · "Unanswered" · "Correct" · "Question {no}, {status}, {duration}".
 - Rows: "Question {no}" · "Your answer {option}" · "Right answer {option}" · "Not answered" · badges "Correct" · "Wrong" · "Unanswered".
 - Types: "By question type" · "{correct} / {total}" · "Weakest".
 - Footer: "Done" · "Review answers".

@@ -51,6 +51,7 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 - **Plan 6a:** a level without tests is information, not a disabled control: no chevron, no tap, not dimmed (critique F5).
 - **Plan 6a:** the level glyph is `AppIcons.fileText`, a paper: a level holds both sections, so it takes neither section's glyph (owner 2026-10-16, Q-P6-3, gave the sections `book` and `headphones` on 35).
 - **Owner 2026-10-16 (Q-P6-2):** the Korean subtitle is `MxAppBar.subtitle`, read with the title in one heading node that names the route; the TOPIK-local title widget is gone.
+- **Wireframe pass (owner, 2026-10-16):** nothing missing in scope. The section description line has no slot in `MxSection` and adds no fact; the level cards keep their rows; Beginner/Intermediate/Advanced (level drills) and Simulated Exams are Phase C and B and stay absent, per the index rule.
 
 ## Copy
 
