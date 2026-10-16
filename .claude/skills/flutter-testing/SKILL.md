@@ -47,7 +47,20 @@ widget tests. A device end-to-end suite does not exist yet.
 - Run once. The summary lists every failing file with the command that
   re-runs it alone; running the same tests again only to filter the output
   another way pays the whole run twice.
-- Goldens: `run_goldens.sh` (`--update` to rewrite), in the Linux container.
+- Goldens: `run_goldens.sh` (`--update` to rewrite), in the Linux container;
+  `--changed` compares only the golden files the diff reaches.
+
+`dod_check.sh --changed` and `run_goldens.sh --changed` pick tests by imports
+(`build_verification_plan.py`): a changed Dart file selects every test that
+imports it, directly or through a helper. So a test imports only the harness
+it uses, and a shared helper never imports what most of its users do not need:
+`library_harness.dart` is the backend, `deck_screen_harness.dart` the Library's
+screens and `app_harness.dart` the whole app (`pumpMemoxApp`). One import of
+`lib/app/app.dart` in a shared helper ties every screen to every test that
+uses it; a real-tree test in `test_ci_tooling.py` fails when a screen selects
+a quarter of the suite. A test that reads a repository file from disk instead
+of importing it is declared in `verification_impact_map.json` `file_readers`,
+which another test enforces.
 
 Fakes of the domain contracts, not mocks: `test/support/` holds the shared ones
 (`fake_day_clock.dart`, `fake_reminder_platform.dart`, …), so a changed
