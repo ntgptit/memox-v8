@@ -294,7 +294,8 @@ declare
   v_issues text[];
   v_at timestamptz := now();
 begin
-  if jsonb_typeof(p_json) is distinct from 'object' or p_json->>'testId' is distinct from p_test_id then
+  if p_test_id is null or jsonb_typeof(p_json) is distinct from 'object'
+     or p_json->>'testId' is distinct from p_test_id then
     raise exception 'VALIDATION_FAILED';
   end if;
   v_issues := private.topik_master_shape_issues(p_json);
@@ -353,6 +354,193 @@ revoke all on function public.topik_admin_list(), public.topik_admin_draft_get(t
 grant execute on function public.topik_admin_list(), public.topik_admin_draft_get(text),
   public.topik_admin_draft_save(text, jsonb, jsonb, boolean), public.topik_admin_draft_delete(text),
   public.topik_admin_audit(text, integer, timestamptz) to authenticated;
+
+-- ============================================================================
+-- Admin RPCs: publish, retire, unretire, rollback, versions (§5)
+-- ============================================================================
+
+-- True when Storage holds the object; the bucket itself is created by a later
+-- migration, this only reads the table every Supabase database has.
+create function private.topik_media_exists(p_path text) returns boolean
+language sql stable set search_path = '' as $$
+  select exists (select 1 from storage.objects o where o.bucket_id = 'topik-media' and o.name = p_path)
+$$;
+
+-- The content_version the next publication of a test takes. The advisory lock
+-- (held to the end of the transaction) serialises publishers of one test, so
+-- the number checked is the number inserted.
+create function private.topik_next_version(p_test_id text) returns integer
+language plpgsql set search_path = '' as $$
+begin
+  perform pg_advisory_xact_lock(hashtext('public.topik_test_version:' || p_test_id));
+  return (select coalesce(max(v.content_version), 0) + 1 from public.topik_test_version v where v.test_id = p_test_id);
+end
+$$;
+
+-- The one body of publish and rollback: the content stored at the next
+-- content_version (its own contentVersion overwritten, so the version table's
+-- CHECK cannot fail), the publication moved to it, the audit written. Raises
+-- MEDIA_MISSING before it writes anything.
+create function private.topik_publish_version(p_user uuid, p_test_id text, p_json jsonb, p_note text,
+  p_action text, p_detail jsonb) returns integer
+language plpgsql set search_path = '' as $$
+declare
+  v_next integer := private.topik_next_version(p_test_id);
+  v_json jsonb := jsonb_set(p_json, '{contentVersion}', to_jsonb(v_next));
+  v_groups jsonb := case when jsonb_typeof(v_json->'groups') = 'array' then v_json->'groups' else '[]'::jsonb end;
+  v_questions jsonb := case when jsonb_typeof(v_json->'questions') = 'array' then v_json->'questions' else '[]'::jsonb end;
+  v_media jsonb;
+  v_catalog bigint;
+begin
+  -- The media the content names: the section audio and every image.
+  select coalesce(jsonb_agg(distinct x.path), '[]'::jsonb) into v_media from (
+    select v_json->'assets'->>'audio' as path
+    union all select g->'passage'->>'image' from jsonb_array_elements(v_groups) g
+    union all select o->>'image' from jsonb_array_elements(v_questions) q,
+      jsonb_array_elements(case when jsonb_typeof(q->'options') = 'array' then q->'options' else '[]'::jsonb end) o) x
+  where x.path is not null;
+  if exists (select 1 from jsonb_array_elements_text(v_media) m where not private.topik_media_exists(m)) then
+    raise exception 'MEDIA_MISSING';
+  end if;
+  insert into public.topik_test_version (test_id, content_version, json, media, checksum, published_at, published_by, note)
+  values (p_test_id, v_next, v_json, v_media, md5(v_json::text), now(), p_user, p_note);
+  v_catalog := nextval('public.topik_catalog_version_seq');
+  insert into public.topik_publication (test_id, status, current_version, catalog_version, updated_at, updated_by)
+  values (p_test_id, 'published', v_next, v_catalog, now(), p_user)
+  on conflict (test_id) do update
+    set status = 'published', current_version = excluded.current_version, catalog_version = excluded.catalog_version,
+        updated_at = excluded.updated_at, updated_by = excluded.updated_by;
+  perform private.topik_audit(p_action, p_test_id, v_next,
+    coalesce(p_detail, '{}'::jsonb) || jsonb_build_object('note', p_note, 'catalogVersion', v_catalog));
+  return v_next;
+end
+$$;
+
+-- Publishes the draft as max + 1; the draft must already say so in its own
+-- contentVersion (compared as text: a missing or non-numeric one is a mismatch,
+-- not a cast error).
+create function public.topik_admin_publish(p_test_id text, p_expected_content_version integer, p_note text)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_topik_admin();
+  v_draft public.topik_test_draft;
+  v_issues text[];
+  v_version integer;
+begin
+  select * into v_draft from public.topik_test_draft where test_id = p_test_id for update;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  if p_expected_content_version is distinct from private.topik_next_version(p_test_id)
+     or v_draft.json->>'contentVersion' is distinct from p_expected_content_version::text then
+    raise exception 'VERSION_MISMATCH';
+  end if;
+  v_issues := private.topik_master_shape_issues(v_draft.json);
+  if cardinality(v_issues) > 0 then
+    raise exception 'VALIDATION_FAILED' using detail = array_to_string(v_issues, ',');
+  end if;
+  v_version := private.topik_publish_version(v_user, p_test_id, v_draft.json, p_note, 'publish', '{}'::jsonb);
+  return jsonb_build_object('testId', p_test_id, 'contentVersion', v_version,
+    'catalogVersion', (select p.catalog_version from public.topik_publication p where p.test_id = p_test_id));
+end
+$$;
+
+-- Retire and unretire: the status moves, the version does not; both take the next
+-- catalog_version and are audited.
+create function private.topik_set_status(p_user uuid, p_test_id text, p_status text, p_action text, p_note text)
+returns jsonb language plpgsql set search_path = '' as $$
+declare
+  v_pub public.topik_publication;
+  v_catalog bigint;
+begin
+  select * into v_pub from public.topik_publication where test_id = p_test_id for update;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  if v_pub.status = p_status then
+    raise exception 'INVALID_STATE';
+  end if;
+  v_catalog := nextval('public.topik_catalog_version_seq');
+  update public.topik_publication
+  set status = p_status, catalog_version = v_catalog, updated_at = now(), updated_by = p_user
+  where test_id = p_test_id;
+  perform private.topik_audit(p_action, p_test_id, v_pub.current_version,
+    jsonb_build_object('note', p_note, 'catalogVersion', v_catalog));
+  return jsonb_build_object('testId', p_test_id, 'status', p_status, 'catalogVersion', v_catalog);
+end
+$$;
+
+create function public.topik_admin_retire(p_test_id text, p_note text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  return private.topik_set_status(private.require_topik_admin(), p_test_id, 'retired', 'retire', p_note);
+end
+$$;
+
+create function public.topik_admin_unretire(p_test_id text, p_note text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  return private.topik_set_status(private.require_topik_admin(), p_test_id, 'published', 'unretire', p_note);
+end
+$$;
+
+-- Republishes an earlier version's content as a new version (max + 1); the
+-- pointer never moves backwards.
+create function public.topik_admin_rollback(p_test_id text, p_to_version integer, p_note text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_topik_admin();
+  v_old public.topik_test_version;
+  v_version integer;
+begin
+  select * into v_old from public.topik_test_version v
+  where v.test_id = p_test_id and v.content_version = p_to_version;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  v_version := private.topik_publish_version(v_user, p_test_id, v_old.json, p_note, 'rollback',
+    jsonb_build_object('rolledBackFrom', p_to_version));
+  return jsonb_build_object('testId', p_test_id, 'contentVersion', v_version, 'rolledBackFrom', p_to_version,
+    'catalogVersion', (select p.catalog_version from public.topik_publication p where p.test_id = p_test_id));
+end
+$$;
+
+-- Newest first.
+create function public.topik_admin_versions(p_test_id text) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+begin
+  perform private.require_topik_admin();
+  return jsonb_build_object('items', coalesce((
+    select jsonb_agg(jsonb_build_object('contentVersion', v.content_version,
+      'publishedAt', private.wire_time(v.published_at), 'publishedBy', v.published_by, 'note', v.note,
+      'checksum', v.checksum, 'media', v.media) order by v.content_version desc)
+    from public.topik_test_version v where v.test_id = p_test_id), '[]'::jsonb));
+end
+$$;
+
+create function public.topik_admin_version_get(p_test_id text, p_content_version integer) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_row public.topik_test_version;
+begin
+  perform private.require_topik_admin();
+  select * into v_row from public.topik_test_version v
+  where v.test_id = p_test_id and v.content_version = p_content_version;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  return jsonb_build_object('contentVersion', v_row.content_version, 'json', v_row.json, 'media', v_row.media,
+    'checksum', v_row.checksum, 'publishedAt', private.wire_time(v_row.published_at), 'note', v_row.note);
+end
+$$;
+
+revoke all on function public.topik_admin_publish(text, integer, text), public.topik_admin_retire(text, text),
+  public.topik_admin_unretire(text, text), public.topik_admin_rollback(text, integer, text),
+  public.topik_admin_versions(text), public.topik_admin_version_get(text, integer)
+  from public, anon, authenticated;
+grant execute on function public.topik_admin_publish(text, integer, text), public.topik_admin_retire(text, text),
+  public.topik_admin_unretire(text, text), public.topik_admin_rollback(text, integer, text),
+  public.topik_admin_versions(text), public.topik_admin_version_get(text, integer) to authenticated;
 
 -- ============================================================================
 -- Function privileges (keep last)
