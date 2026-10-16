@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
-/// The top chrome: leading control, flexible title, trailing actions. The
-/// title is the only slot that gives up width; it ellipsises on one line.
+/// The top chrome: leading control, flexible title (with an optional
+/// subtitle line under it), trailing actions. The title is the only slot
+/// that gives up width; it ellipsises on one line.
 ///
 /// Placed in-flow by MxAppShell, which paints its ground (`surface`, or
 /// `surfaceContainer` once content scrolls under it) full-bleed behind it. It

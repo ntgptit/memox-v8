@@ -95,6 +95,13 @@ void main() {
     handle.dispose();
   });
 
+  test('a subtitle needs a title: under a titleWidget it is an error', () {
+    expect(
+      () => MxAppBar(titleWidget: const SizedBox(), subtitle: 'x'),
+      throwsAssertionError,
+    );
+  });
+
   testWidgets('M3F-08: the theme platform decides, as in the SDK AppBar', (
     tester,
   ) async {

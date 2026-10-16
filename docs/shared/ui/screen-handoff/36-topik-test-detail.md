@@ -69,11 +69,13 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - **Plan 6a:** on an empty Overview the empty state's Start is the one action; the FAB is absent there and present on History, empty or not (critique F2).
 - **Plan 6a:** Best and Average are the score alone; Accuracy is a percent; a figure with nothing to show is a dash (critique F8). A completed recent attempt opens its Summary; one in progress continues.
 - **Plan 6a:** `testMissing` hides History, as above (owner question Q-P4-4 asks whether a removed test keeps it).
+- **Owner 2026-10-16 (Q-P6-2):** the level and section line is `MxAppBar.subtitle`, read with the title in one heading node that names the route.
+- **Owner 2026-10-16 (Q-P6-5):** a figure with nothing to show is a dash on screen and reads "None yet" to TalkBack (`MxStatTile.semanticValue`); a bare dash reads "en dash".
 
 ## Copy
 
 - Tray: "Overview" · "History".
-- Overall Progress: "Accuracy" · "Best" · "Average" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only".
+- Overall Progress: "Accuracy" · "Best" · "Average" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only"; TalkBack "None yet" for a dash.
 - Empty: "No attempts yet" · "Start" · "Each attempt is saved as you answer."
 - Recent: "Recent attempts" · "#{n}" · "In progress" · "{score} / {max}" · "{correct} / {count} correct".
 - History: "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt".
