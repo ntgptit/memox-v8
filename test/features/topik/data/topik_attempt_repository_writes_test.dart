@@ -212,10 +212,13 @@ void main() {
         TopikRejection.notFound,
       );
     });
+  });
 
+  group('elapsed time', () {
     test('negative elapsed time is a programming error on every timed '
         'write, which then writes nothing', () async {
       final attempt = topikOk(await repository.start(_test));
+      final before = await totalChanges(db);
       final writes = <String, Future<Object?> Function()>{
         'answer': () => repository.answer(
           attemptId: attempt.id,
@@ -239,10 +242,7 @@ void main() {
       for (final MapEntry(key: name, value: write) in writes.entries) {
         await expectLater(write(), throwsArgumentError, reason: name);
       }
-      final row = (await topikAttemptRow(db, attempt.id))!;
-      expect(row.totalTimeMs, 0);
-      expect(row.currentQuestionNo, 1);
-      expect(row.status, 'in_progress');
+      expect(await totalChanges(db), before);
     });
   });
 

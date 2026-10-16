@@ -194,18 +194,21 @@ def good(con):
     answer(con, "h1")
     queue(con, "browse", "c1", 0)
     queue(con, "match", "c1", 0, answers_in_session=2)
-    # A guess question on `c1`: two options, exactly one of them `c1` itself.
+    # A guess question on `c1` (its queue row, then two options, exactly one
+    # of them `c1` itself; the other is a real card, `c2`).
+    card(con, "c2", "b")
+    queue(con, "guess", "c1", 0)
     guess_option(con, 0, "c1")
-    guess_option(con, 1, "cz")
+    guess_option(con, 1, "c2")
     # TOPIK: `ta` submitted (question 31 right for 4 points, 32 blank worth 3),
     # `tb` in progress with one answer and no snapshot (BR-TOPIK-013, -015).
     topik_attempt(con, "ta", "completed", completed_at="t", total_time_ms=3000,
                   current_question_no=32, question_count=2, max_score=7,
                   score=4, correct_count=1, answered_count=1)
     topik_answer(con, "ta", 31, 1000, selected_idx=1, answered_at="t",
-                 correct_idx=1, points=4, points_earned=4, question_type="r1_topic")
+                 correct_idx=1, points=4, points_earned=4, question_type="R1_topic")
     topik_answer(con, "ta", 32, 2000, correct_idx=2, points=3, points_earned=0,
-                 question_type="r1_topic")
+                 question_type="R1_topic")
     topik_attempt(con, "tb", "in_progress", total_time_ms=500,
                   current_question_no=31, question_count=1, max_score=4)
     topik_answer(con, "tb", 31, 500, selected_idx=2, answered_at="t")
@@ -278,19 +281,20 @@ BAD = {
     37: lambda c: batch(c, "bt6", "deck", "nosuchdeck", "t2"),
     # ---- Study modes ----------------------------------------------------
     # A hint shown on a `match` question: only `fill` has a hint (BR-STUDY-028).
-    38: lambda c: queue(c, "match", "c1", 7, status="pending", hint_shown=1),
+    38: lambda c: queue(c, "match", "c1", 7, hint_shown=1),
     # A meaning slot on a `browse` row: only `match` has one (BR-STUDY-049).
-    39: lambda c: queue(c, "browse", "c1", 8, status="pending", meaning_slot=0),
+    39: lambda c: queue(c, "browse", "c1", 8, meaning_slot=0),
     # A guess question with no correct option (BR-STUDY-037).
-    40: lambda c: c.execute("UPDATE study_guess_options SET option_card_id = 'cy' "
-                            "WHERE option_card_id = 'c1'"),
+    40: lambda c: c.execute("DELETE FROM study_guess_options WHERE option_card_id = 'c1'"),
     # ---- TOPIK -------------------------------------------------------------
     # The total no longer the sum of the questions' times (BR-TOPIK-015).
     41: lambda c: c.execute("UPDATE topik_attempt SET total_time_ms = 1 WHERE id = 'tb'"),
     # A snapshot score that is not the sum of the points earned (BR-TOPIK-013).
     42: lambda c: c.execute("UPDATE topik_attempt SET score = 0 WHERE id = 'ta'"),
-    # A snapshot on an answer of an attempt still in progress (BR-TOPIK-013).
-    43: lambda c: c.execute("UPDATE topik_attempt_answer SET correct_idx = 2 "
+    # A whole snapshot on an answer of an attempt still in progress: each row's
+    # own CHECKs hold, only the attempt's status says it is wrong (BR-TOPIK-013).
+    43: lambda c: c.execute("UPDATE topik_attempt_answer SET correct_idx = 2, "
+                            "points = 4, points_earned = 4, question_type = 'R1_topic' "
                             "WHERE attempt_id = 'tb'"),
 }
 
@@ -339,6 +343,11 @@ fails = 0
 # 1) all queries must parse and return nothing on valid data
 c = fresh()
 good(c)
+# The app opens its database with foreign keys on; Python's sqlite3 leaves them
+# off, so a fixture row pointing nowhere would otherwise pass in silence.
+for table, rowid, parent, _ in c.execute("PRAGMA foreign_key_check"):
+    print(f"  ✗ fixture: {table} row {rowid} points at a missing {parent}")
+    fails += 1
 for n, (label, sql) in sorted(queries.items()):
     try:
         rows = c.execute(sql).fetchall()
