@@ -20,6 +20,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 // The import screen over the real backend and a fake picker (UC-TRANSFER-001,
 // IT-NAV-012, IT-CARD-014).
@@ -81,6 +82,10 @@ void main() {
     await _tap(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
     expect(find.text(metaLine(_en.importFileReady('CSV'))), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileReady('CSV'))),
+    );
 
     await _tap(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
@@ -399,11 +404,19 @@ void main() {
       find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
+    );
 
     await _tap(tester, _en.importHeaderToggle);
     expect(
       find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
     );
   });
 }

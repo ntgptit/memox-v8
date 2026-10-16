@@ -22,6 +22,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -309,6 +310,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
+        ),
+      ),
+    );
     // The summary card states the count; the header names the list
     // (critique 2026-09-30 part 3b).
     expect(find.text(_en.deckSubDecksHeader.toUpperCase()), findsOneWidget);
@@ -431,6 +440,14 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
+        ),
+      ),
     );
     expect(find.text(_en.libraryDueDecksHeader.toUpperCase()), findsOneWidget);
     expect(find.text('Grammar'), findsNothing);

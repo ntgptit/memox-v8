@@ -105,7 +105,9 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               label: l10n.studyOptionsUseAppDefaults,
               icon: AppIcons.studyOptions,
               subtitle: form.isUsingAppDefaults
-                  ? metaLine(
+                  // "{n} cards, {order}" is a phrase: it wraps as words,
+                  // its dot kept on the phrase before it (The Wrap Rule).
+                  ? metaDots(
                       l10n.studyOptionsFollowing(
                         options.cardLimit,
                         studyOptionsOrderName(l10n, options.newCardOrder),

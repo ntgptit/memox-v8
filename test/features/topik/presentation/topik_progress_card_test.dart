@@ -10,6 +10,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/relative_time.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 36's Overall Progress (BR-TOPIK-020): a figure with no value shows a
 // dash and says what it means to TalkBack (owner, Q-P6-5).
@@ -97,6 +98,17 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          en.topikLastActivity(
+            en.ago(DateTime.utc(2026, 10, 15), DateTime.utc(2026, 10, 16)),
+            en.duration(60000),
+          ),
+        ),
+      ),
     );
     handle.dispose();
   });

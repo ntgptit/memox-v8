@@ -30,6 +30,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/sync_fakes.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -71,6 +72,10 @@ void main() {
       find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
+    );
     expect(
       find.text(
         metaLine(
@@ -78,6 +83,14 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+        ),
+      ),
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
     expect(find.text(_en.settingsReminderOff), findsOneWidget);
@@ -122,6 +135,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
+        ),
+      ),
+    );
     await tester.tap(find.text(_en.settingsStudyDefaults));
     expect(opened, 1);
   });
@@ -143,6 +164,10 @@ void main() {
     expect(
       find.text(metaLine(_en.settingsReminderOn('21:00'))),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.settingsReminderOn('21:00'))),
     );
     await tester.tap(find.text(_en.settingsReminder));
     expect(opened, 1);
@@ -434,6 +459,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
+        ),
+      ),
+    );
     // \s also matches the no-break spaces of a glued line.
     expect(find.textContaining(RegExp(r'\b1\scards')), findsNothing);
     expect(find.textContaining(RegExp(r'Read\saloud\son')), findsOneWidget);
@@ -450,6 +483,7 @@ void main() {
       ),
     );
     expect(summary, findsOneWidget);
+    expectBreaksOnlyBetweenWords(tester, summary);
     // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
     expect(tester.getSize(summary).height, lessThanOrEqualTo(43));
     expect(

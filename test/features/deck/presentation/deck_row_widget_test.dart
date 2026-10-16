@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _today = DateTime(2026, 9, 24);
@@ -71,6 +72,14 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        ),
+      ),
     );
   });
 

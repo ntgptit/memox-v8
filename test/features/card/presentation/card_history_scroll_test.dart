@@ -24,6 +24,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _addedAt = DateTime(2026, 8, 1);
@@ -98,6 +99,12 @@ Future<void> _scrollToEnd(WidgetTester tester) async {
     scrollable: _scrollable,
   );
   await tester.pumpAndSettle();
+  expectBreaksOnlyBetweenWords(
+    tester,
+    find.text(
+      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    ),
+  );
 }
 
 Future<void> _tapLoadMore(WidgetTester tester, String label) async {
@@ -220,6 +227,7 @@ void main() {
       metaLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2)),
     );
     expect(current, findsOneWidget);
+    expectBreaksOnlyBetweenWords(tester, current);
     expect(earlier, findsOneWidget);
     expect(
       tester.getTopLeft(current).dy,

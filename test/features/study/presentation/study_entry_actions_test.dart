@@ -17,6 +17,7 @@ import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 14's actions and the direction sheet: UC-STUDY-001 steps 3–5, A3b;
 // UC-STUDY-003; BR-STUDY-004, BR-STUDY-018, BR-STUDY-020.
@@ -79,6 +80,10 @@ void main() {
     expect(
       find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
     );
 
     await tester.tap(_button(_en.studyEntryReviewCta(3)));
@@ -224,6 +229,19 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.studyEntryResumeLine(
+            _en.studyKindLearning,
+            _en.cardModeBrowse,
+            0,
+            2,
+          ),
+        ),
+      ),
+    );
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
     // The session's progress as a track too (FE-A8 H2).
     expect(
@@ -301,6 +319,10 @@ void main() {
       find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
+    );
     // The start button states the count (R5, critique 2026-09-30 part 3b).
     // \s also matches the no-break spaces of a glued line.
     expect(find.textContaining(RegExp(r'5\sdue\scards\s·')), findsNothing);
@@ -313,6 +335,10 @@ void main() {
     expect(
       find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
     );
 
     await tester.tap(_button(_en.studyEntryReviewCta(5)));

@@ -19,6 +19,7 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/starter_screen_fixtures.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 03 (FE-B4, UC-STARTER-001): the ten kit states.
 
@@ -76,6 +77,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
+        ),
+      ),
+    );
     expect(
       find.text(
         metaLine(
@@ -84,6 +93,15 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          'English · Vietnamese · 120 cards · 4 sub-decks · '
+          'Development fixture',
+        ),
+      ),
     );
     expect(_cardButton(_en.starterAddToLibrary), findsNWidgets(2));
     expect(find.text(_en.starterSuggests('SM-2')), findsOneWidget);
@@ -109,6 +127,12 @@ void main() {
         metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
+      ),
     );
     expect(find.textContaining('Development fixture'), findsNothing);
   });

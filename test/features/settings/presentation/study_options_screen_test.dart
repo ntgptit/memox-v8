@@ -30,6 +30,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -75,14 +76,15 @@ void main() {
           tester.getBottomLeft(find.byType(MxNote).first).dy,
       const AppDimens().space16,
     );
-    expect(
-      find.text(
-        metaLine(
-          _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
-        ),
+    // "{n} cards, {order}" is a phrase, not a short term: gluing it broke
+    // "order" inside the word beside the toggle at 360 dp (Q-C-1).
+    final following = find.text(
+      metaDots(
+        _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
       ),
-      findsOneWidget,
     );
+    expect(following, findsOneWidget);
+    expectBreaksOnlyBetweenWords(tester, following);
     expect(
       find.text(_en.studyOptionsAppDefaultsHeader.toUpperCase()),
       findsOneWidget,

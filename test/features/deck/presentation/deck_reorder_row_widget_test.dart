@@ -8,6 +8,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _today = DateTime(2026, 9, 24);
@@ -67,6 +68,14 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        ),
+      ),
     );
   });
 

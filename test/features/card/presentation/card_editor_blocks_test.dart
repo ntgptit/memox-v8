@@ -28,6 +28,7 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -155,6 +156,10 @@ void main() {
       await add('verb');
       expect(find.bySemanticsLabel(_en.cardTagRemove('Verb')), findsOneWidget);
       expect(find.text(metaLine(_en.cardTagsMeta(1, 10))), findsOneWidget);
+      expectBreaksOnlyBetweenWords(
+        tester,
+        find.text(metaLine(_en.cardTagsMeta(1, 10))),
+      );
 
       for (var i = 0; i < 9; i++) {
         await add('tag $i');

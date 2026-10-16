@@ -27,6 +27,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/progress_fixtures.dart';
 import '../../../support/progress_screen_fixtures.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 22 at the library level: UC-PROGRESS-001 (main, A1, A2, A3, E1,
 // E2) and UC-PROGRESS-002 (main, A2, A3); FE-A9 D1, D2, D4, D8, D10, D11.
@@ -109,6 +110,10 @@ void main() {
       ),
       findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.progressRowCardsDays(26, 6))),
+    );
     // The total opens nothing, so it has no chevron (D3).
     expect(
       find.descendant(of: total, matching: find.byIcon(AppIcons.chevronRight)),
@@ -121,6 +126,10 @@ void main() {
         matching: find.text(metaLine(_en.progressRowCardsDays(13, 6))),
       ),
       findsOneWidget,
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.progressRowCardsDays(13, 6))),
     );
     expect(
       find.descendant(
