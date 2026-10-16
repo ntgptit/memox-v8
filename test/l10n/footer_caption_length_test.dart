@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 // Every MxFooterBar caption stays on one line at a 360dp phone, in English
-// and Vietnamese (owner 2026-10-05, DESIGN.md MxFooterBar).
+// and Vietnamese (owner 2026-10-05, DESIGN.md MxFooterBar). A caption the
+// footer glues (The Wrap Rule) is measured as the footer shows it, through
+// the same function.
 
 const double _phone = 360;
 
@@ -23,7 +27,11 @@ Map<String, String> _captions(AppLocalizations l10n) => {
   'studyRecallCaptionTimedOut': l10n.studyRecallCaptionTimedOut,
   'studyRecallCaptionRevealed': l10n.studyRecallCaptionRevealed,
   'studyRecallCaptionCounting': l10n.studyRecallCaptionCounting,
-  'studyEntryReviewCaption': l10n.studyEntryReviewCaption(999, 999),
+  'studyEntryReviewCaptionLine': l10n.studyEntryReviewCaptionLine(999, 999),
+  for (final mode in StudyMode.values)
+    'studyEntryModeCaptionLine(${mode.name})': l10n.studyEntryModeCaptionLine(
+      mode,
+    ),
   'studyEntryNothingDueCaption': l10n.studyEntryNothingDueCaption,
   'studyEntryStart': l10n.studyEntryStart,
   'summaryDoneCaption': l10n.summaryDoneCaption,
