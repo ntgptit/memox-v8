@@ -7,9 +7,9 @@
 library;
 
 const String _space = ' ';
-const String _nonBreakingSpace = ' ';
-const String _wordJoiner = '⁠';
-const String _rangeDash = '–';
+const String _nonBreakingSpace = '\u00A0';
+const String _wordJoiner = '\u2060';
+const String _rangeDash = '\u2013';
 
 /// What a line of terms is split at, as the ARB messages write it.
 const String _termSeparator = ' · ';
