@@ -28,6 +28,12 @@ prefixing each command that may pull an image:
     SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io npx supabase db reset
     SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io bash tools/supabase/run_auth_it.sh
 
+When Docker runs but the CLI cannot pull its service images (Docker Hub answers
+`429 Too Many Requests`), `bash tools/supabase/image_pgtap.sh` runs the migrations
+and the pgTAP suite on the `supabase/postgres` image alone, with a stub of the
+Storage tables and GoTrue's `auth.*` additions (its header lists what the stub
+does not prove). `supabase test db` on the full stack stays the reference.
+
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
