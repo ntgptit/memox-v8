@@ -230,6 +230,7 @@ void main() {
         const [],
         root: _root,
         allowlist: [entry],
+        today: DateTime(2026, 10, 15),
         partial: true,
       );
       expect(result, isEmpty);

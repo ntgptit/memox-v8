@@ -28,8 +28,11 @@
 # **`--changed` checks what the diff can reach.** On a plan that is not the
 # full suite (no tooling, theme, core or app-shell path changed), `m3_lint`
 # lints the changed `lib/` files only, and the guard's and the hooks' own tests
-# are left out: every path they read promotes the plan to the full suite. The
-# full gate, with no flag, runs every step over the whole tree.
+# are left out: every path they read promotes the plan to the full suite. A
+# changed file can still give an unchanged one an M3 violation (the rules
+# resolve types), and a plan with no lib/ Dart change runs no m3_lint, so no
+# allowlist expiry either: the full gate, with no flag, runs every step over
+# the whole tree and is the one that counts before the PR.
 #
 # **The pass stamp, and why it exists.** Running this twice on an unchanged tree
 # is not caution, it is the same answer bought twice — and it happens on every
@@ -495,7 +498,7 @@ for i in "${!NAMES[@]}"; do
   cp "$WORK/$name.log" "$LOG_DIR/$name.log" 2>/dev/null
   secs="$(cat "$WORK/$name.secs" 2>/dev/null || echo "?")"
   if [[ "$(cat "$WORK/$name.rc" 2>/dev/null || echo 1)" == "0" ]]; then
-    if [[ ${MEMOX_GATE_VERBOSE:-0} -eq 1 ]]; then
+    if [[ "${MEMOX_GATE_VERBOSE:-0}" == "1" ]]; then
       step "${LABELS[$i]}"
       cat "$WORK/$name.log"
     fi

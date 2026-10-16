@@ -89,6 +89,8 @@
     "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [
+    ".claude/hooks/",
+    "code-verification-guard-v2/",
     ".github/",
     ".claude/skills/flutter-workflow/scripts/",
     "lib/app/",

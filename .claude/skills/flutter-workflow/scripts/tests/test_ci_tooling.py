@@ -1129,6 +1129,9 @@ class ScopedOutChecksAreFullScopeTest(unittest.TestCase):
                 ".claude/settings.json",
                 "code-verification-guard-v2/code_verification_guard/reporters/console_reporter.py",
                 "code-verification-guard-v2/registries/projects/memox-v8/rules/memox-design-token-rules.yaml",
+                # Markdown too: the ruleset contract test reads every file there.
+                "code-verification-guard-v2/registries/projects/memox-v8/rules/README.md",
+                ".claude/hooks/check_test_command.py",
                 "tools/m3_lint/m3_rules.dart",
                 "tools/m3_lint/allowlist.json",
                 "tools/design/removed_symbols.json",
