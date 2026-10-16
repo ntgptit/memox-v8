@@ -6,6 +6,7 @@ import 'package:memox/features/reminders/di/reminder_plugins_data_source_provide
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 /// The plugins as the app sees them: taps it can send, and the payload that
 /// launched the app.

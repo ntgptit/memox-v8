@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));

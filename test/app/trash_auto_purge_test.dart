@@ -6,6 +6,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 

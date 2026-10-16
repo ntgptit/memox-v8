@@ -17,7 +17,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../support/account_harness.dart';
 import '../support/fake_auth_server.dart';
-import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 // Where the sign-in flows begin and end (login navigation review,
 // owner 2026-10-08): Welcome's email ends where Welcome was headed, as its

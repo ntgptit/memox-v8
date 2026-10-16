@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import '../support/approved_palette.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 // The one approved scrim (tokens.json `scrim` at `opacityScrim`) on the
 // route barriers of the overlays the production helpers push (ledger DSD-28,

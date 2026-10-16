@@ -29,6 +29,7 @@ import 'package:memox/shared/widgets/mx_status_badge.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 import '../../../support/paint_clip.dart';
 import '../../../support/widget_harness.dart';
 

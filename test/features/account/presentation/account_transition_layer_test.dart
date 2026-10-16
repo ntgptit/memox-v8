@@ -19,6 +19,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/app_harness.dart';
 import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));

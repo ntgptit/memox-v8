@@ -4,6 +4,7 @@ import 'package:memox/features/reminders/di/reminder_platform_repository_provide
 
 import '../support/fake_reminder_platform.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 void main() {
   libraryTest('the app reconciles the reminder at start and on every resume '

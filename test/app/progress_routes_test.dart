@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 import '../support/progress_screen_fixtures.dart';
 
 // Screen 22's levels in the app (FE-A9 D1, D4, D5; UC-PROGRESS-002 step 5).

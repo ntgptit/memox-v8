@@ -30,6 +30,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 

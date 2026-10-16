@@ -8,6 +8,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/app_harness.dart';
 
 // System Back at the transition layer's root (DEV-167): Cancel while it
 // shows, swallowed otherwise.

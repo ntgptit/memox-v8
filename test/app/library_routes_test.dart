@@ -13,6 +13,7 @@ import 'package:memox/features/search/presentation/controllers/search_screen_con
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 import '../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));

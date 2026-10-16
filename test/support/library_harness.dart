@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/app/app.dart';
 import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
-import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
@@ -14,23 +12,14 @@ import 'package:memox/features/study/di/study_session_repository_provider.dart'
     show studySessionRepositoryProvider;
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
-import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
-import 'package:memox/features/deck/domain/models/deck_view_model.dart';
-import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
 import 'golden_harness.dart';
@@ -87,7 +76,9 @@ void libraryTest(
   });
 }
 
-List<Override> _backend(LibraryEnv env) => [
+/// The overrides that put a widget tree on [env]'s backend: the in-memory
+/// database, the fake day and the inline transfer codecs.
+List<Override> libraryBackend(LibraryEnv env) => [
   databaseProvider.overrideWithValue(env.db),
   dayClockProvider.overrideWithValue(env.clock),
   // The app's session repository reads the wall clock; the harness runs it
@@ -105,7 +96,7 @@ ProviderContainer libraryContainer(
   List<Override> overrides = const [],
 }) {
   final container = ProviderContainer(
-    overrides: [..._backend(env), ...overrides],
+    overrides: [...libraryBackend(env), ...overrides],
   );
   addTearDown(container.dispose);
   return container;
@@ -119,8 +110,8 @@ Widget _app(
   required Locale locale,
   required List<Override> overrides,
 }) => ProviderScope(
-  overrides: [..._backend(env), ...overrides],
-  retry: _noRetry,
+  overrides: [...libraryBackend(env), ...overrides],
+  retry: noProviderRetry,
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
     themeAnimationDuration: Duration.zero,
@@ -198,112 +189,8 @@ Future<void> pumpLibraryGolden(
   await tester.pump(const Duration(milliseconds: 300));
 }
 
-/// A deck level whose navigation goes nowhere, for screen tests: the Library
-/// root when [deckId] is null.
-DeckLevelScreen deckScreen({
-  String? deckId,
-  ValueChanged<String>? onOpenDeck,
-  ValueChanged<String?>? onOpenAncestor,
-  ValueChanged<String>? onAddCard,
-  Widget Function(DeckView view)? cardContent,
-  Widget Function(DeckView view, Widget back, Widget deckActions)? cardAppBar,
-  Widget Function(String deckId, Widget breadcrumb)? cardBreadcrumb,
-  Widget Function(String deckId)? cardFab,
-  VoidCallback? onSearch,
-  ValueChanged<String>? onOpenAlgorithm,
-  ValueChanged<String>? onImportCards,
-  ValueChanged<DeckEntity>? onExportCards,
-  ValueChanged<String>? onSelectCards,
-  ValueChanged<String>? onOpenStudy,
-  ValueChanged<String>? onOpenStudyOptions,
-  VoidCallback? onOpenTrash,
-  VoidCallback? onOpenStarterDecks,
-  VoidCallback? onOpenTags,
-  VoidCallback? onOpenStudyHome,
-}) => DeckLevelScreen(
-  deckId: deckId,
-  onOpenDeck: onOpenDeck ?? (_) {},
-  onOpenAncestor: onOpenAncestor ?? (_) {},
-  onSearch: onSearch ?? () {},
-  onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
-  onOpenStudy: onOpenStudy ?? (_) {},
-  onOpenStudyOptions: onOpenStudyOptions ?? (_) {},
-  onAddCard: onAddCard ?? (_) {},
-  onImportCards: onImportCards ?? (_) {},
-  onExportCards: onExportCards ?? (_) {},
-  onSelectCards: onSelectCards ?? (_) {},
-  onOpenTrash: onOpenTrash ?? () {},
-  onOpenStarterDecks: onOpenStarterDecks ?? () {},
-  onOpenTags: onOpenTags ?? () {},
-  onOpenStudyHome: onOpenStudyHome,
-  cardContent: cardContent ?? (_) => const SizedBox.shrink(),
-  cardAppBar:
-      cardAppBar ??
-      (view, back, actions) =>
-          MxAppBar(title: view.deck.name, leading: back, actions: [actions]),
-  cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,
-  cardFab: cardFab ?? (_) => const SizedBox.shrink(),
-);
-
-/// Screen 07: the open deck as `app/` composes it (A14). [onSelectCards]
-/// is the router's: the test reaches the scope's container (DEV-307).
-DeckLevelScreen cardDeckScreen(
-  String deckId, {
-  ValueChanged<String>? onSelectCards,
-}) => deckScreen(
-  deckId: deckId,
-  onSelectCards: onSelectCards,
-  cardContent: (view) => CardListSectionWidget(
-    deckId: view.deck.id,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-    onExport: (_) {},
-    onStudy: () {},
-    onOpenTrash: () {},
-  ),
-  cardAppBar: (view, back, actions) =>
-      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
-  cardBreadcrumb: (id, child) =>
-      CardDeckBreadcrumbWidget(deckId: id, child: child),
-  cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
-);
-
-/// Screen 02 for [deckId], with its breadcrumb callback.
-DeckAlgorithmScreen deckAlgorithmScreen({
-  required String deckId,
-  ValueChanged<String?>? onOpenAncestor,
-}) => DeckAlgorithmScreen(
-  deckId: deckId,
-  onOpenAncestor: onOpenAncestor ?? (_) {},
-);
-
-/// The whole app over [env] on a 1080×2400 (3x) phone, or at
-/// [physicalSize], settled on the Library root.
-Future<void> pumpMemoxApp(
-  WidgetTester tester,
-  LibraryEnv env, {
-  AppSettingsEntity? initialSettings,
-  bool isSettled = true,
-  List<Override> overrides = const [],
-  Size physicalSize = const Size(1080, 2400),
-  double devicePixelRatio = 3,
-}) async {
-  tester.view.physicalSize = physicalSize;
-  tester.view.devicePixelRatio = devicePixelRatio;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [..._backend(env), ...overrides],
-      retry: _noRetry,
-      child: MemoxApp(initialSettings: initialSettings),
-    ),
-  );
-  if (isSettled) await tester.pumpAndSettle();
-}
-
 /// As `main.dart`: no hidden retry loop, so a failure shows as a failure.
-Duration? _noRetry(int retryCount, Object error) => null;
+Duration? noProviderRetry(int retryCount, Object error) => null;
 
 /// Card transfer's file codecs without a background isolate, which a widget
 /// test's fake clock never lets finish.

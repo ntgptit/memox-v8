@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 // IT-NAV-005 (HOST-WIDGET): an unknown route shows a not-found screen in the
 // person's language, with no exception text, and a way back to the Library

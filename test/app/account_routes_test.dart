@@ -28,6 +28,7 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 import '../support/account_harness.dart';
 import '../support/fake_auth_server.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 import '../support/users_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
