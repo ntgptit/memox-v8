@@ -1,7 +1,7 @@
 ---
 id: ADR-024
 title: Master Data TOPIK trên Supabase và Admin Web
-status: draft
+status: active
 superseded_by:
 ---
 ## Bối cảnh
@@ -16,8 +16,8 @@ dùng dữ liệu đã publish, cache offline bằng Drift/SQLite, và giữ d�
 người dùng riêng như hiện nay. Thiết kế ở
 [`superpowers/specs/2026-10-16-topik-master-data-admin-web-design.md`](../../superpowers/specs/2026-10-16-topik-master-data-admin-web-design.md).
 
-ADR này ở trạng thái `draft` cho tới khi chủ dự án duyệt spec; khi đó nó chuyển
-`active` và các dòng ADR-023 #3, #5 được ghi là đã thay bởi ADR này.
+Chủ dự án duyệt spec ngày 2026-10-16 (các câu hỏi O1–O9 của spec §11 chốt theo đề
+xuất); ADR này `active` và thay các dòng ADR-023 #3, #5.
 
 ## Quyết định
 

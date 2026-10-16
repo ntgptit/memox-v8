@@ -21,9 +21,9 @@ là thứ app chưa có. Chủ dự án chốt các điểm dưới đây ngày 
 |---|---|---|
 | 1 | Phạm vi | Thêm feature `topik`: luyện đề PBT công khai của NIIED, phần 듣기 và 읽기. Audio và hình ảnh được phép **trong feature này**; thẻ vẫn chỉ có văn bản |
 | 2 | Lối vào | Một thẻ lối vào trên màn Study home (màn 13). Bốn destination giữ nguyên; các màn TOPIK nằm dưới `/study/topik` |
-| 3 | Nội dung | Đề là dữ liệu: JSON, audio và ảnh đóng gói trong `assets/topik/`, kiểm bằng một bộ kiểm tra duy nhất ở app và ở gate, không nạp vào Drift. MVP đóng gói một kỳ; gói tải về là Phase B với spec riêng |
+| 3 | Nội dung | ~~Đề là dữ liệu: JSON, audio và ảnh đóng gói trong `assets/topik/`, kiểm bằng một bộ kiểm tra duy nhất ở app và ở gate, không nạp vào Drift. MVP đóng gói một kỳ; gói tải về là Phase B với spec riêng~~ Thay bởi [ADR-024](ADR-024-master-data-topik-tren-supabase-va-admin-web.md) (2026-10-16): Master Data trong Supabase, publish qua Admin Web, app cache document trong Drift |
 | 4 | Nguồn | Chỉ đề NIIED đã công bố (`topik.go.kr`), ghi nguồn trên từng đề. Đề thuộc bản quyền NIIED, công bố cho mục đích học; MemoX là app cá nhân ([`PRODUCT.md`](../../../PRODUCT.md)). Không đề không rõ nguồn |
-| 5 | Công cụ nội dung | Repo này giữ schema, bộ kiểm tra, lint và gói đã kiểm. Pipeline dựng nội dung từ PDF/MP3 nằm ở repo riêng `memox-topik-content` |
+| 5 | Công cụ nội dung | Repo này giữ schema, bộ kiểm tra (Dart, bản tham chiếu), lint cho fixture và SQL của kho Master Data; ~~gói đã kiểm~~ gói nằm trong database ([ADR-024](ADR-024-master-data-topik-tren-supabase-va-admin-web.md)). Pipeline dựng nội dung từ PDF/MP3 nằm ở repo riêng `memox-topik-content`, kết quả nhập qua Admin Web |
 | 6 | Dữ liệu người dùng | Bảng riêng của feature; lượt đã nộp đồng bộ như bản ghi bất biến, lượt đang dở gắn với máy (giống [ADR-013](ADR-013-dong-bo-voi-server-offline-first.md) #7, #10); dữ liệu theo tài khoản và bị xoá khi đổi tài khoản |
 | 7 | Không quảng cáo | Không bao giờ có quảng cáo |
 

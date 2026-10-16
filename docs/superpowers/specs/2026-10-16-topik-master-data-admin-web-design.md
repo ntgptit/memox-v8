@@ -1,6 +1,6 @@
 # TOPIK Master Data on Supabase and the Admin Web
 
-Date: 2026-10-16 · Owner decision of 2026-10-16 (during the DEV-394 audit) · Status: draft for owner review. Nothing here is built; no migration runs until the owner approves this spec and its plan.
+Date: 2026-10-16 · Owner decision of 2026-10-16 (during the DEV-394 audit) · Status: approved by the owner 2026-10-16, with O1–O9 of §11 resolved as recommended. Nothing here is built; no migration runs until each plan is approved and merged.
 
 ## 1. Goal
 
@@ -219,9 +219,9 @@ The cache is not user data: `LocalDataReset` leaves it in place (BR-TOPIK-027 co
 
 Plan 2 can ship before any test is published: the catalog is simply empty ("No tests yet") until plan 4.
 
-## 11. Open decisions for the owner
+## 11. Decisions put to the owner (resolved 2026-10-16: every recommendation accepted)
 
-| # | Question | Recommendation |
+| # | Question | Decision (the recommendation) |
 |---|---|---|
 | O1 | Storage authorisation uses policies on `storage.objects` (§6.4), the only mechanism Supabase Storage offers, while ADR-015 #5 says "no policy". Accept as a documented exception limited to bucket `topik-media`? | Yes; ADR-024 records it |
 | O2 | Admin Web in its own repository `memox-topik-admin` (M2, §9) or a folder of this repository? | Own repository; the contract (SQL, types, fixtures) stays here |
