@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
@@ -284,5 +285,41 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
     expect(find.text("This attempt isn't here any more"), findsOneWidget);
+  });
+
+  libraryTest('in Vietnamese, the explanation and the words read in '
+      'Vietnamese; the Korean stays (BR-TOPIK-006, UC-TOPIK-005)', (
+    tester,
+    env,
+  ) async {
+    final attempt = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikReviewScreen(
+        attemptId: attempt.id,
+        initialQuestionNo: reading.questions.first.no,
+        onBack: () {},
+        onBackToSummary: () {},
+      ),
+      locale: const Locale('vi'),
+      overrides: [
+        ...topikContentOverrides([reading]),
+        topikAudioRepositoryProvider.overrideWithValue(
+          FakeTopikAudioRepository(),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Giải thích.'), findsOneWidget);
+    expect(find.text('Explanation.'), findsNothing);
+    expect(findPlainTextContaining('kế hoạch'), findsOneWidget);
+    expect(find.textContaining('보기 1'), findsWidgets);
+    expect(find.text('Xem lại · 1 / 50'), findsOneWidget);
   });
 }

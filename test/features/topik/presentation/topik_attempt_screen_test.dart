@@ -17,6 +17,7 @@ import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.d
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
@@ -85,6 +86,23 @@ void main() {
     expect(find.text('3 / 50'), findsOneWidget);
     // The study bar paints its mode upper-case.
     expect(find.text('PRACTICE'), findsOneWidget);
+  });
+
+  libraryTest('TOPIK I reading: the counter reads 31 / 70 and the grid runs '
+      '31 to 70 (BR-TOPIK-001, UC-TOPIK-003)', (tester, env) async {
+    final topik1 = topikTestFixture(level: TopikLevel.topik1);
+    final attempt = await topikSeedAttempt(env, topik1);
+    final handle = tester.ensureSemantics();
+    await pumpTopikAttempt(tester, env, attempt.id, catalog: [topik1]);
+
+    expect(find.text('31 / 70'), findsOneWidget);
+    expect(find.textContaining('31. '), findsOneWidget);
+    await tester.tap(find.text('Questions'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Question 31, not answered'), findsOneWidget);
+    expect(find.bySemanticsLabel('Question 70, not answered'), findsOneWidget);
+    expect(find.bySemanticsLabel('Question 1, not answered'), findsNothing);
+    handle.dispose();
   });
 
   libraryTest('a pick is saved at once and shows only as chosen '

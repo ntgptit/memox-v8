@@ -152,6 +152,42 @@ void main() {
     );
   });
 
+  test('accuracy is a whole percent, rounded half up (BR-TOPIK-023)', () {
+    expect(
+      topikAttemptSummaryOf(
+        _detail([
+          _answer(1, selected: 1),
+          _answer(2, selected: 1),
+          _answer(3, selected: 2),
+        ]),
+      ).accuracyPercent,
+      67, // 66.67
+    );
+    expect(
+      topikAttemptSummaryOf(
+        _detail([
+          _answer(1, selected: 1),
+          _answer(2, selected: 2),
+          _answer(3, selected: 2),
+        ]),
+      ).accuracyPercent,
+      33, // 33.33
+    );
+  });
+
+  test('a tie in accuracy and in size goes to the type first in the enum '
+      '(BR-TOPIK-024, UC-TOPIK-004)', () {
+    final summary = topikAttemptSummaryOf(
+      _detail([
+        _answer(1, selected: 1, type: _topic),
+        _answer(2, selected: 2, type: _topic),
+        _answer(3, selected: 1),
+        _answer(4, selected: 2),
+      ]),
+    );
+    expect(summary.weakestType, _fill); // both 1 / 2; grammar blank first
+  });
+
   test('an unknown type is left out of the table', () {
     final summary = topikAttemptSummaryOf(
       _detail([_answer(1, selected: 1, type: null), _answer(2, selected: 1)]),

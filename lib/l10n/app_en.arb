@@ -322,6 +322,42 @@
   "@topikDeleteAttempt": {
     "description": "Screen 36: the delete button's label."
   },
+  "topikSummaryOfAttempt": "Summary of attempt {number}",
+  "@topikSummaryOfAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Summary button, so rows with the same visible label stay apart."
+  },
+  "topikReviewOfAttempt": "Review of attempt {number}",
+  "@topikReviewOfAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Review button."
+  },
+  "topikContinueAttempt": "Continue attempt {number}",
+  "@topikContinueAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Continue button."
+  },
+  "topikDeleteAttemptNumber": "Delete attempt {number}",
+  "@topikDeleteAttemptNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: the row's delete button, named with its attempt number for TalkBack and the tooltip."
+  },
   "topikDeleteTitle": "Delete this attempt?",
   "@topikDeleteTitle": {
     "description": "Screen 36 delete confirm."

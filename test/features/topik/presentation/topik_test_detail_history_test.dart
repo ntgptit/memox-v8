@@ -52,13 +52,13 @@ void main() {
     expect(find.text('3 ATTEMPTS'), findsOneWidget);
 
     // Newest first: #3, #2, #1. Cancel leaves #2 in place.
-    await tester.tap(find.byTooltip('Delete attempt').at(1));
+    await tester.tap(find.byTooltip('Delete attempt 2'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(find.text('#3'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Delete attempt').at(1));
+    await tester.tap(find.byTooltip('Delete attempt 2'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
@@ -133,13 +133,43 @@ void main() {
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Delete attempt'));
+    await tester.tap(find.byTooltip('Delete attempt 1'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
 
     expect(find.text('#1'), findsOneWidget);
     expect(find.byType(SnackBar), findsOneWidget);
+  });
+
+  libraryTest('every History action is named with its attempt number for '
+      'TalkBack (PRODUCT.md, accessibility)', (tester, env) async {
+    await topikSeedCompleted(env, test, startedAt: libraryToday);
+    await topikSeedCompleted(
+      env,
+      test,
+      startedAt: libraryToday.add(const Duration(days: 1)),
+    );
+    await topikSeedInProgress(
+      env,
+      test,
+      startedAt: libraryToday.add(const Duration(days: 2)),
+    );
+    final handle = tester.ensureSemantics();
+    final taps = TopikDetailTaps();
+    await pumpTopikTestDetail(tester, env, test, taps);
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Continue attempt 3'), findsOneWidget);
+    expect(find.bySemanticsLabel('Summary of attempt 2'), findsOneWidget);
+    expect(find.bySemanticsLabel('Review of attempt 1'), findsOneWidget);
+    // An icon button's name is its tooltip.
+    expect(find.byTooltip('Delete attempt 3'), findsOneWidget);
+    expect(find.byTooltip('Delete attempt 1'), findsOneWidget);
+    // The visible labels stay short: one row of many.
+    expect(find.text('Summary'), findsNWidgets(2));
+    handle.dispose();
   });
 
   libraryTest('a completed row shows the score and the correct answers, '

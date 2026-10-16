@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_catalog_provider.dart';
@@ -91,6 +92,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MxErrorState), findsNothing);
     expect(reads, 2);
+  });
+
+  libraryTest('a read that fails with a Failure speaks in its own words, '
+      'never a technical cause (UC-TOPIK-001 E1, BR-CORE-005)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikHomeScreen(onOpenLevel: (_) {}),
+      overrides: [
+        topikCatalogProvider.overrideWith(
+          (ref) => Stream<List<TopikCatalogEntry>>.error(
+            const DatabaseLockedFailure(cause: 'database is locked'),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(
+      find.text('Nothing was lost. The data is busy, so try again.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('database is locked'), findsNothing);
   });
 
   libraryTest('loading shows the skeleton, named once', (tester, env) async {

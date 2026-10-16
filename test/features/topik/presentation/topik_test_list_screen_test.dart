@@ -4,6 +4,7 @@ import 'package:memox/features/topik/presentation/providers/topik_catalog_provid
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
@@ -19,6 +20,34 @@ Finder _rowTitles() => find.textContaining('한국어능력시험');
 // Screen 35 (UC-TOPIK-001, BR-TOPIK-009, BR-TOPIK-022).
 void main() {
   final tests = topikScreenTests();
+
+  libraryTest('a read that fails with a Failure speaks in its own words, and '
+      'the section tray stays (UC-TOPIK-001 E1, BR-CORE-005)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikTestListScreen(level: TopikLevel.topik2, onOpenTest: (_) {}),
+      overrides: [
+        topikCatalogProvider.overrideWith(
+          (ref) => Stream<List<TopikCatalogEntry>>.error(
+            const DatabaseLockedFailure(cause: 'database is locked'),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(
+      find.text('Nothing was lost. The data is busy, so try again.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('database is locked'), findsNothing);
+    expect(find.text('Listening'), findsOneWidget);
+  });
 
   libraryTest('reading first, newest round first, with tags and status', (
     tester,

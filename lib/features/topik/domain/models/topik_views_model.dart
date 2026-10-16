@@ -47,17 +47,13 @@ final class TopikAttemptView {
   }
 }
 
-/// Summary (screen 38): from the snapshot alone; [test] only names it.
+/// Summary (screen 38): from the snapshot alone (BR-TOPIK-019). The hero
+/// names the test from the attempt's own fields, so no content is read.
 final class TopikSummaryView {
-  const TopikSummaryView({
-    required this.attempt,
-    required this.summary,
-    required this.test,
-  });
+  const TopikSummaryView({required this.attempt, required this.summary});
 
   final TopikAttempt attempt;
   final TopikAttemptSummary summary;
-  final TopikTest? test;
 }
 
 /// Review (screen 39): the attempt over the current content
