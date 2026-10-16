@@ -86,10 +86,10 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 ## Copy
 
 - App bar: "Summary" · "Hide answers" · "Show answers".
-- Hero: "#{round} · {level} · {section}" · "{date time} · {duration}" · "{score} / {max}" · "{correct} / {count}" · TalkBack "Score {score} of {max}, {correct} of {count} correct".
+- Hero: "#{round} · {level} · {section}" · "{date time} · {duration}" · "{score} / {max}" · "{correct} / {count}" · "Correct" (under the donut figure) · TalkBack "Score {score} of {max}, {correct} of {count} correct".
 - Figures: "Accuracy" · "Answered" · "Unanswered" · "Longest · Q{no}"; TalkBack "None" when Longest has no time.
 - Filters: "Answers" · "All" · "Wrong" · "Unanswered" · "Correct" (each with its count in the chip's count slot).
-- Chart: "Time per question" · "Question {no}, {status}, {duration}".
+- Chart: "Time per question" · legend "Wrong" · "Unanswered" · "Correct" · "Question {no}, {status}, {duration}".
 - Rows: "Question {no}" · "Your answer {option}" · "Right answer {option}" · "Not answered" · badges "Correct" · "Wrong" · "Unanswered".
 - Types: "By question type" · "{correct} / {total}" · "Weakest".
 - Footer: "Done" · "Review answers".

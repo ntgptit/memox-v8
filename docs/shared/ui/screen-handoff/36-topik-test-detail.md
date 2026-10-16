@@ -48,7 +48,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | continueOrNew | Continue | 37 at its current question | BR-TOPIK-011. VERIFIED same test |
 | continueOrNew | dismissed | no change | BR-TOPIK-011. VERIFIED `::the dialog dismissed changes nothing` |
 | continueOrNew | Start new, confirmed | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
-| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Completed goes 3 / 3 → 2 / 2) |
+| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
 | deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
 | history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
 | any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3. VERIFIED at the stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); the screen re-renders from it (the delete test above) |
@@ -72,15 +72,15 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - **Owner 2026-10-16 (Q-P6-2):** the level and section line is `MxAppBar.subtitle`, read with the title in one heading node that names the route.
 - **Owner 2026-10-16 (Q-P6-5):** a figure with nothing to show is a dash on screen and reads "None yet" to TalkBack (`MxStatTile.semanticValue`); a bare dash reads "en dash".
 - **Q-C-1 (owner, 2026-10-16):** Overall Progress' last activity line ("Last activity 2 days ago · 1h 20m") wraps only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
-- **Wireframe pass (owner, 2026-10-16):** Overall Progress shows Completion and Sessions as figures of their own, as BR-TOPIK-020 lists them (it had folded them into "{completed} / {sessions}"); History is headed by its count, as Overview's lists are. The wireframe's accuracy ring, Score Trend, Needs Review, Bookmarks, Notes and the Words tab are Phase B (ADR-023) and stay absent; its bottom tabs stay the segmented switch.
+- **Wireframe pass (owner, 2026-10-16):** Overall Progress shows Completion and Sessions as figures of their own, as BR-TOPIK-020 lists them (it had folded them into "{completed} / {sessions}"); History is headed by its count, as Overview's lists are headed by a list header. The wireframe's accuracy ring repeats the Accuracy figure (one number per element), so it is not added; Score Trend, Needs Review, Bookmarks, Notes and the Words tab are Phase B (spec §10) and stay absent; its bottom tabs stay the segmented switch.
 
 ## Copy
 
 - Tray: "Overview" · "History".
-- Overall Progress: "Accuracy" · "Best" · "Average" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only"; TalkBack "None yet" for a dash.
+- Overall Progress: "Accuracy" · "Completion" · "Best" · "Average" · "Sessions" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only"; TalkBack "None yet" for a dash.
 - Empty: "No attempts yet" · "Start" · "Each attempt is saved as you answer."
 - Recent: "Recent attempts" · "#{n}" · "In progress" · "{score} / {max}" · "{correct} / {count} correct".
-- History: "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt".
+- History: "{n} attempts" · "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt".
 - Delete confirm: "Delete this attempt?" · "Its answers are deleted too. This can't be undone." · "Delete" · "Cancel".
 - Continue dialog: "You have an attempt in progress" · "Continue where you left off, or start again." · "Continue" · "Start new"; then "Start a new attempt?" · "The attempt in progress and its answers are deleted." · "Start new" · "Cancel".
 - Missing: "This test isn't available" · "Back to tests".

@@ -210,6 +210,7 @@ void main() {
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
     expect(find.text('#3'), findsOneWidget);
+    expect(find.text('3 ATTEMPTS'), findsOneWidget);
 
     // Newest first: #3, #2, #1. Cancel leaves #2 in place.
     await tester.tap(find.byTooltip('Delete attempt').at(1));
@@ -225,6 +226,8 @@ void main() {
     // The attempt with 22 right was #3; it is #2 now, and #3 is gone.
     expect(find.text('#3'), findsNothing);
     expect(find.text('#2'), findsOneWidget);
+    // The header counts what is left.
+    expect(find.text('2 ATTEMPTS'), findsOneWidget);
     expect(
       findPlainTextContaining('22 / ${test.questions.length} correct'),
       findsOneWidget,

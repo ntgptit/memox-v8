@@ -74,7 +74,7 @@ class TopikProgressCardWidget extends StatelessWidget {
           ])
             Row(
               spacing: dimens.space16,
-              children: [for (final figure in pair) Expanded(child: figure)],
+              children: [for (final cell in pair) Expanded(child: cell)],
             ),
           if (lastActivity != null)
             Text(

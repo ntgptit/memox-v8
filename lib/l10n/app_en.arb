@@ -174,7 +174,7 @@
         "type": "int"
       }
     },
-    "description": "Screen 35: how many completed attempts."
+    "description": "Screen 35: how many completed attempts. Screen 36: the History header, every attempt in any state."
   },
   "topikSectionEmpty": "No tests yet for this section",
   "@topikSectionEmpty": {
@@ -685,7 +685,7 @@
   },
   "topikCorrect": "Correct",
   "@topikCorrect": {
-    "description": "Screens 38, 39: a filter and a status."
+    "description": "Screens 38, 39: a filter, a status, a legend entry, and the caption under the donut's correct-of-total figure."
   },
   "topikTimePerQuestion": "Time per question",
   "@topikTimePerQuestion": {
