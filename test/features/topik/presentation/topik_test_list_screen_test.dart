@@ -131,6 +131,14 @@ void main() {
 
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text('No tests yet for this section'), findsOneWidget);
+    // The empty state takes its section's glyph (Q-P6-3).
+    expect(
+      find.descendant(
+        of: find.byType(MxEmptyState),
+        matching: find.byIcon(AppIcons.book),
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(MxChipTrigger), findsNothing);
     expect(find.text('Listening'), findsOneWidget);
   });

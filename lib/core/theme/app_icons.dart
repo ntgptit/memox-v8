@@ -103,7 +103,7 @@ abstract final class AppIcons {
   static const IconData clipboard = Icons.content_paste; // clipboard
   static const IconData fileText = Icons.description_outlined; // file-text
   // TOPIK's sections (owner, Q-P6-3).
-  static const IconData book = Icons.menu_book_outlined; // book-open
+  static const IconData book = Icons.auto_stories_outlined; // book-open
   static const IconData headphones = Icons.headphones_outlined; // headphones
   static const IconData folderOpen = Icons.folder_open_outlined; // folder-open
   static const IconData arrowRight = Icons.arrow_forward; // arrow-right
