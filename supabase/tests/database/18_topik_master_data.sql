@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(139);
+select plan(194);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -391,6 +391,150 @@ select is((select i->'publication'->>'catalogVersion' from jsonb_array_elements(
     where i->>'testId' = 'topik1-96-reading'),
   (select i->'detail'->>'catalogVersion' from jsonb_array_elements(public.topik_admin_audit('topik1-96-reading', 50, null)->'items') i
     where i->>'action' = 'rollback' limit 1), 'the publication carries the last change''s catalog version');
+reset role;
+
+-- ============================================================================
+-- Client RPCs (Task 5)
+-- ============================================================================
+-- State here: published are topik2-96-listening (v1), topik1-96-listening (v1) and
+-- topik1-96-reading (v5, after two rollbacks), in that catalog order; topik2-96-reading
+-- has only a draft and an orphan version row, so it is not in the catalog.
+set local role authenticated;
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 3,
+  'the plain user reads the catalog: one entry per publication, none for a draft');
+select is((select array_agg(e->>'testId' order by n) from jsonb_array_elements(public.topik_catalog(0)->'entries') with ordinality t(e, n)),
+  '{topik2-96-listening,topik1-96-listening,topik1-96-reading}'::text[], 'in catalog_version order');
+select ok((select bool_and(c > p) from (select (e->>'catalogVersion')::bigint c,
+      coalesce(lag((e->>'catalogVersion')::bigint) over (order by n), 0) p
+    from jsonb_array_elements(public.topik_catalog(0)->'entries') with ordinality t(e, n)) s),
+  'catalog versions strictly increase');
+select is((public.topik_catalog(0)->'entries'->0) - 'catalogVersion' - 'checksum',
+  '{"testId": "topik2-96-listening", "status": "published", "contentVersion": 1, "media": ["a.mp3"], "level": "topik2",
+    "round": 96, "section": "listening", "titleKo": "제96회", "tags": []}'::jsonb,
+  'an entry carries its identity fields, its media and no tags without supporting content');
+select is(public.topik_catalog(0)->'entries'->0->>'checksum',
+  md5(public.topik_test_content('topik2-96-listening', 1)::text), 'and the checksum of the stored json');
+select is(public.topik_catalog(0)->'entries'->2->>'contentVersion', '5', 'a test is listed at its current version');
+select is(public.topik_catalog(0)->>'more', 'false', 'one page');
+select is(public.topik_catalog(0)->>'next', public.topik_catalog(0)->'entries'->2->>'catalogVersion',
+  'next is the last catalog_version of the page');
+select is(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->'entries', '[]'::jsonb, 'nothing after the cursor');
+select is(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->>'next', public.topik_catalog(0)->>'next',
+  'an empty page keeps the cursor');
+select is(public.topik_catalog((public.topik_catalog(0)->'entries'->0->>'catalogVersion')::bigint)->'entries'->0->>'testId',
+  'topik1-96-listening', 'since is exclusive');
+select is(jsonb_array_length(public.topik_catalog(null)->'entries'), 3, 'a null since is a full pull');
+
+select is(public.topik_test_content('topik1-96-reading', 5)->>'contentVersion', '5', 'the current content is served');
+select is(public.topik_test_content('topik1-96-reading', 5)->>'testId', 'topik1-96-reading', 'for that test');
+select throws_like($$select public.topik_test_content('topik1-96-reading', 4)$$, 'NOT_FOUND', 'a superseded version is not served');
+select throws_like($$select public.topik_test_content('topik1-96-reading', 6)$$, 'NOT_FOUND', 'nor one that does not exist yet');
+select throws_like($$select public.topik_test_content('topik1-96-reading', null)$$, 'NOT_FOUND', 'nor no version');
+select throws_like($$select public.topik_test_content('nope', 1)$$, 'NOT_FOUND', 'an unknown test');
+select throws_like($$select public.topik_test_content('topik2-96-reading', 1)$$, 'NOT_FOUND',
+  'a version that was never published is not served');
+
+-- A retirement is a tombstone in the catalog, after every earlier entry.
+select set_config('t.cursor', public.topik_catalog(0)->>'next', true);
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select is(public.topik_admin_retire('topik2-96-listening', 'gone')->>'status', 'retired', 'the first test is retired');
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select is(jsonb_array_length(public.topik_catalog(current_setting('t.cursor')::bigint)->'entries'), 1,
+  'a client that had everything gets exactly the change');
+select is(public.topik_catalog(current_setting('t.cursor')::bigint)->'entries'->0->>'testId', 'topik2-96-listening',
+  'the retired test');
+select is(public.topik_catalog(current_setting('t.cursor')::bigint)->'entries'->0->>'status', 'retired', 'with status retired');
+select is((select array_agg(k order by k) from jsonb_object_keys(public.topik_catalog(0)->'entries'->2) k),
+  '{catalogVersion,status,testId}'::text[], 'a retired entry carries nothing else');
+select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 3, 'a retired test stays in the catalog');
+select is(public.topik_catalog(0)->'entries'->2->>'testId', 'topik2-96-listening', 'at its new place, last');
+select is(public.topik_catalog(0)->'entries'->0->>'testId', 'topik1-96-listening', 'the others keep their order');
+select throws_like($$select public.topik_test_content('topik2-96-listening', 1)$$, 'NOT_FOUND', 'a retired test is not served');
+
+-- anon can read neither.
+reset role;
+set local role anon;
+select throws_like($$select public.topik_catalog(0)$$, '%permission denied%', 'anon cannot read the catalog');
+select throws_like($$select public.topik_test_content('topik1-96-reading', 5)$$, '%permission denied%',
+  'anon cannot read a test');
+reset role;
+
+-- A signed-in user without a profile (a deleted account) is UNAUTHORIZED.
+set local role authenticated;
+select public.t_as('cccccccc-0000-0000-0000-000000000003');
+select throws_like($$select public.topik_catalog(0)$$, 'UNAUTHORIZED', 'a deleted user''s live token cannot read the catalog');
+select throws_like($$select public.topik_test_content('topik1-96-reading', 5)$$, 'UNAUTHORIZED',
+  'nor a test');
+reset role;
+
+-- BR-TOPIK-009: the five tags, derived from the stored json (the names and the
+-- rules of TopikTestModel.contentTags; sorted by name).
+select is(private.topik_tags('{}'::jsonb), '[]'::jsonb, 'no questions and no groups: no tags');
+select is(private.topik_tags('{"questions": [{"explanation": {"vi": "a", "en": "b"}}]}'), '["explanation"]'::jsonb, 'explanation');
+select is(private.topik_tags('{"questions": [{"explanation": null, "translation": null}], "groups": [{"scriptTranslation": null}]}'),
+  '[]'::jsonb, 'a json null is not content');
+select is(private.topik_tags('{"questions": [{"translation": {"vi": "a", "en": "b"}}]}'), '["translation"]'::jsonb,
+  'translation: a question''s');
+select is(private.topik_tags('{"groups": [{"scriptTranslation": {"vi": "a", "en": "b"}}]}'), '["translation"]'::jsonb,
+  'translation: a group''s script translation');
+select is(private.topik_tags('{"questions": [{"words": []}, {"words": [{"ko": "x"}]}]}'), '["words"]'::jsonb, 'words, only when not empty');
+select is(private.topik_tags('{"questions": [{"words": []}, {"grammars": []}]}'), '[]'::jsonb, 'empty lists are not content');
+select is(private.topik_tags('{"questions": [{"grammars": [{"pattern": "x"}]}]}'), '["grammars"]'::jsonb, 'grammars');
+select is(private.topik_tags('{"groups": [{"script": "대본"}]}'), '["script"]'::jsonb, 'script');
+select is(private.topik_tags('{"groups": [{"script": ""}, {"script": "  "}, {}]}'), '[]'::jsonb, 'a blank script is not content');
+select is(private.topik_tags('{"questions": [{"explanation": {"vi": "a", "en": "b"}, "translation": {"vi": "a", "en": "b"},
+    "words": [{"ko": "x"}], "grammars": [{"pattern": "x"}]}], "groups": [{"script": "s"}]}'),
+  '["explanation", "grammars", "script", "translation", "words"]'::jsonb, 'all five, once each, sorted');
+
+-- Paging (500 a page). Seeded as postgres with direct inserts (the shape check
+-- would make 500 publishes slow), inside a savepoint: the version table forbids
+-- DELETE, so the seed is rolled back instead.
+savepoint paging;
+insert into public.topik_test_version (test_id, content_version, json, checksum)
+values ('topik2-2000-reading', 1,
+  '{"testId": "topik2-2000-reading", "contentVersion": 1, "level": "topik2", "round": 2000, "section": "reading", "titleKo": "t",
+    "groups": [{"script": "s"}], "questions": [{"explanation": {"vi": "a", "en": "b"}, "words": [{"ko": "x"}]}]}'::jsonb, 'x');
+insert into public.topik_test_version (test_id, content_version, json, checksum)
+select 'topik2-' || n || '-reading', 1,
+  jsonb_build_object('testId', 'topik2-' || n || '-reading', 'contentVersion', 1, 'level', 'topik2', 'round', n,
+    'section', 'reading', 'titleKo', 't'), 'x'
+from generate_series(1001, 1500) n;
+insert into public.topik_publication (test_id, status, current_version, catalog_version)
+select s.test_id, 'published', 1, nextval('public.topik_catalog_version_seq')
+from (select 'topik2-2000-reading' as test_id, 0 as n
+      union all select 'topik2-' || n || '-reading', n from generate_series(1001, 1500) n order by n) s;
+set local role authenticated;
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 500, 'a page holds 500');
+select is(public.topik_catalog(0)->>'more', 'true', 'and says there is more');
+select is(public.topik_catalog(0)->>'next', public.topik_catalog(0)->'entries'->499->>'catalogVersion',
+  'next is the 500th entry''s catalog_version');
+select is(jsonb_array_length(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->'entries'), 4,
+  'the second page holds the rest (3 + 501 in all)');
+select is(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->>'more', 'false', 'and is the last');
+select is((select count(distinct e->>'testId') from (
+    select jsonb_array_elements(public.topik_catalog(0)->'entries') e
+    union all select jsonb_array_elements(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->'entries')) s),
+  504::bigint, 'the two pages together list every test once');
+select is((select e->'tags' from jsonb_array_elements(public.topik_catalog(0)->'entries') e where e->>'testId' = 'topik2-2000-reading'),
+  '["explanation", "script", "words"]'::jsonb, 'a catalog entry carries the tags of its stored json');
+select is((select e->>'round' from jsonb_array_elements(public.topik_catalog(0)->'entries') e where e->>'testId' = 'topik2-2000-reading'),
+  '2000', 'and its round as a number');
+-- Exactly one full page is not "more".
+reset role;
+delete from public.topik_publication where test_id in (
+  select test_id from public.topik_publication order by catalog_version desc limit 4);
+set local role authenticated;
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 500, 'exactly 500 left: one page');
+select is(public.topik_catalog(0)->>'more', 'false', 'which is not "more"');
+select is(public.topik_catalog((public.topik_catalog(0)->>'next')::bigint)->'entries', '[]'::jsonb, 'and nothing follows it');
+reset role;
+rollback to savepoint paging;
+set local role authenticated;
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 3, 'the seed is gone again');
 reset role;
 
 select * from finish();

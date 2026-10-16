@@ -566,6 +566,104 @@ grant execute on function public.topik_admin_publish(text, integer, text), publi
   public.topik_admin_versions(text), public.topik_admin_version_get(text, integer) to authenticated;
 
 -- ============================================================================
+-- Client RPCs: the catalog and a test's content (§6.2)
+-- ============================================================================
+
+-- BR-TOPIK-009: the content tags of a stored test, the five names and the rules
+-- of TopikTestModel.contentTags (a JSON null is no content; an empty list is no
+-- content; a blank script is no content), sorted by name.
+create function private.topik_tags(p_json jsonb) returns jsonb
+language sql immutable set search_path = '' as $$
+  select coalesce(jsonb_agg(t order by t), '[]'::jsonb) from (
+    select 'explanation' as t
+    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+      where jsonb_typeof(q->'explanation') in ('object', 'string'))
+    union all
+    select 'translation'
+    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+        where jsonb_typeof(q->'translation') in ('object', 'string'))
+      or exists (select 1 from jsonb_array_elements(coalesce(p_json->'groups', '[]'::jsonb)) g
+        where jsonb_typeof(g->'scriptTranslation') in ('object', 'string'))
+    union all
+    select 'words'
+    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+      where jsonb_typeof(q->'words') = 'array' and jsonb_array_length(q->'words') > 0)
+    union all
+    select 'grammars'
+    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+      where jsonb_typeof(q->'grammars') = 'array' and jsonb_array_length(q->'grammars') > 0)
+    union all
+    select 'script'
+    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'groups', '[]'::jsonb)) g
+      where jsonb_typeof(g->'script') = 'string' and btrim(g->>'script') <> '')
+  ) x
+$$;
+
+-- What a client changed since `since`: every publication whose catalog_version is
+-- greater, oldest first, 500 to a page. `next` is the last catalog_version of the
+-- page (`since` itself when the page is empty) and `more` says a further page
+-- exists (exactly 500 left is not "more"). The cursor is safe because
+-- topik_next_catalog_version() takes a global lock held to the end of the
+-- transaction: allocation order is commit order, so no smaller catalog_version
+-- can commit after a client has seen a larger one. A retired test is a tombstone
+-- (no content fields). Master Data is not personal, so nothing filters by user;
+-- the grant keeps anon out and the profile check keeps a deleted user's live JWT out.
+create function public.topik_catalog(since bigint) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_since bigint := coalesce(since, 0);
+  v_limit constant integer := 500;
+  v_entries jsonb;
+  v_next bigint;
+  v_more boolean;
+begin
+  perform private.require_current_profile();
+  with page as (
+    select p.test_id, p.status, p.current_version, p.catalog_version, v.json, v.checksum, v.media,
+      row_number() over (order by p.catalog_version) as n
+    from public.topik_publication p
+    join public.topik_test_version v on v.test_id = p.test_id and v.content_version = p.current_version
+    where p.catalog_version > v_since
+    order by p.catalog_version
+    limit v_limit + 1)
+  select coalesce(jsonb_agg(case when page.status = 'retired'
+      then jsonb_build_object('testId', page.test_id, 'status', page.status, 'catalogVersion', page.catalog_version)
+      else jsonb_build_object('testId', page.test_id, 'status', page.status, 'catalogVersion', page.catalog_version,
+        'contentVersion', page.current_version, 'checksum', page.checksum, 'media', page.media,
+        'level', page.json->>'level', 'round', (page.json->>'round')::integer, 'section', page.json->>'section',
+        'titleKo', page.json->>'titleKo', 'tags', private.topik_tags(page.json)) end
+      order by page.catalog_version) filter (where page.n <= v_limit), '[]'::jsonb),
+    max(page.catalog_version) filter (where page.n <= v_limit),
+    count(*) > v_limit
+  into v_entries, v_next, v_more from page;
+  return jsonb_build_object('entries', v_entries, 'next', coalesce(v_next, v_since), 'more', v_more);
+end
+$$;
+
+-- The published json of a test, only at the version the publication points at
+-- now: a superseded, unpublished or retired version is NOT_FOUND.
+create function public.topik_test_content(p_test_id text, p_content_version integer) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_json jsonb;
+begin
+  perform private.require_current_profile();
+  select v.json into v_json
+  from public.topik_publication p
+  join public.topik_test_version v on v.test_id = p.test_id and v.content_version = p.current_version
+  where p.test_id = p_test_id and p.status = 'published' and p.current_version = p_content_version;
+  if v_json is null then
+    raise exception 'NOT_FOUND';
+  end if;
+  return v_json;
+end
+$$;
+
+revoke all on function public.topik_catalog(bigint), public.topik_test_content(text, integer)
+  from public, anon, authenticated;
+grant execute on function public.topik_catalog(bigint), public.topik_test_content(text, integer) to authenticated;
+
+-- ============================================================================
 -- Function privileges (keep last)
 -- ============================================================================
 
