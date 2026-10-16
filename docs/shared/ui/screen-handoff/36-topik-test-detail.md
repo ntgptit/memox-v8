@@ -36,24 +36,24 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | loading | `topik_detail_loading_light.png` | `topik_detail_loading_dark.png` | Skeletons; no FAB. |
 | error | `topik_detail_error_light.png` | `topik_detail_error_dark.png` | `MxErrorState` with Retry; no FAB and the generic title, also when the error follows loaded data. |
 
-**Built (plan 6a, 2026-10-15).** Every state has its light and dark golden under `test/features/topik/presentation/goldens/`. A transition is VERIFIED by the executed test it names (`topik_test_detail_screen_test.dart`, `test/app/topik_routes_test.dart`); a row no test executes says UNVERIFIED and why.
+**Built (plan 6a, 2026-10-15).** Every state has its light and dark golden under `test/features/topik/presentation/goldens/`. A transition is VERIFIED by the executed test it names (`topik_test_detail_screen_test.dart`; History's in `topik_test_detail_history_test.dart`; `test/app/topik_routes_test.dart`). A `::name` with no file is in `topik_test_detail_screen_test.dart`; a row no test executes says UNVERIFIED and why.
 
 ## Transitions
 
 | From | Event | To | Evidence |
 |---|---|---|---|
-| overview | tap History | history | UC-TOPIK-002 step 2. VERIFIED `topik_test_detail_screen_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` |
+| overview | tap History | history | UC-TOPIK-002 step 2. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` |
 | overviewEmpty / overview | FAB or Start, no attempt in progress | 37 (new attempt) | UC-TOPIK-003 step 1. VERIFIED `::no attempt: the empty card starts one, and there is no FAB (BR-TOPIK-020, critique F2)`, `::a second tap while starting opens one attempt` |
 | overview / history | FAB, an attempt in progress | continueOrNew | BR-TOPIK-011. VERIFIED `::the FAB with an attempt in progress asks; Continue opens it (BR-TOPIK-011)` |
 | continueOrNew | Continue | 37 at its current question | BR-TOPIK-011. VERIFIED same test |
 | continueOrNew | dismissed | no change | BR-TOPIK-011. VERIFIED `::the dialog dismissed changes nothing` |
 | continueOrNew | Start new, confirmed | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
-| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
+| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
 | deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
-| history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
+| history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `topik_test_detail_history_test.dart::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
 | any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3. VERIFIED at the stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); the screen re-renders from it (the delete test above) |
 | any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`, plan 2) and the stream re-emits empty; no screen test drives an account switch |
-| history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3. VERIFIED `::History: Summary, Review and Continue open their screens` (the routes of 37–39 come with plans 6b, 6c) |
+| history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3. VERIFIED `topik_test_detail_history_test.dart::History: Summary, Review and Continue open their screens` (the routes of 37–39 come with plans 6b, 6c) |
 | overview | a recent row | 38 when completed, 37 when in progress | BR-TOPIK-021. VERIFIED `::a recent row opens Summary when completed and the attempt when in progress (BR-TOPIK-021)` |
 | overview / history | FAB, the start refused (the test left, or an attempt in progress appeared) | same state + snackbar naming why | BR-TOPIK-011, BR-TOPIK-019. VERIFIED `::a start refused because the test left says so (BR-TOPIK-019)` |
 | loading / any loaded | the read fails | error: no FAB, the generic title | The Content Gate Rule. VERIFIED `::an error after the test loaded drops the FAB and the title (States: error, The Content Gate Rule)` |
