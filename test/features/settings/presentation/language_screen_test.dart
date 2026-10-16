@@ -6,6 +6,7 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
@@ -56,7 +57,10 @@ void main() {
       ..localeTestValue = const Locale('fr')
       ..localesTestValue = const [Locale('fr')];
     await pumpLibraryScreen(tester, env, const LanguageScreen());
-    expect(find.text(_en.settingsLanguageUnavailable), findsOneWidget);
+    expect(
+      find.text(metaDots(_en.settingsLanguageUnavailable)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('a language named the same in the UI language has no second '

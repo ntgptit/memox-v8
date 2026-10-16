@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 
 /// One source row in the preview (kit 11 preview table): its number, the
 /// term and the meaning on up to two lines each, why it will not be written,
@@ -20,7 +21,8 @@ class ImportPreviewRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final draft = row.draft;
-    final note = l10n.importRowNote(row);
+    final reason = l10n.importRowNote(row);
+    final note = reason == null ? null : metaDots(reason);
     final back = draft?.back.trim() ?? '';
     return MergeSemantics(
       child: Padding(

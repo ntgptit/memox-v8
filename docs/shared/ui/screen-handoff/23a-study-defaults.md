@@ -57,6 +57,7 @@ Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loa
 - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the label and the stepper, and the sub-line stays.
 - **Owner 2026-10-07, compaction:** the page is "Study options"; the Session card is two rows of the hub's height: the stepper sits beside a short label ("Cards" / "Per session"), whose full name the stepper still speaks, and the new-card order is a value row with its sheet, as the speech language is. The range line "1 to 200 · default 20" is gone; the E1 message still names the range. Screen 15 keeps its form.
 - **Study speech spec §6, critique 2026-10-07:** the speech language row carries the value first and a chevron; the sheet is resolved before it opens.
+- **Q-C-1 (owner, 2026-10-16):** the speech language value and the voice-missing description keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

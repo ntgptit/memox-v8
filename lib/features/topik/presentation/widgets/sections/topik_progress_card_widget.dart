@@ -3,6 +3,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
 import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
@@ -80,9 +81,11 @@ class TopikProgressCardWidget extends StatelessWidget {
           ),
           if (lastActivity != null)
             Text(
-              l10n.topikLastActivity(
-                l10n.ago(lastActivity, now),
-                l10n.duration(progress.totalTimeMs),
+              metaLine(
+                l10n.topikLastActivity(
+                  l10n.ago(lastActivity, now),
+                  l10n.duration(progress.totalTimeMs),
+                ),
               ),
               style: context.texts.bodyMedium?.copyWith(
                 color: context.colors.onSurfaceVariant,

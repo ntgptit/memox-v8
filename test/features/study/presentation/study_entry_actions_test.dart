@@ -17,6 +17,7 @@ import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 14's actions and the direction sheet: UC-STUDY-001 steps 3–5, A3b;
 // UC-STUDY-003; BR-STUDY-004, BR-STUDY-018, BR-STUDY-020.
@@ -76,7 +77,10 @@ void main() {
       env,
       _screen(leaf, onOpen: (id) => opened = id),
     );
-    expect(find.text(_en.studyEntryReviewCaption(3, 3)), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
+    );
 
     await tester.tap(_button(_en.studyEntryReviewCta(3)));
     await tester.pumpAndSettle();
@@ -85,12 +89,16 @@ void main() {
       find.widgetWithText(MxOptionRow, _en.studyDirectionTermFirst),
     );
     expect(termFirst.isSelected, isTrue);
-    expect(find.text(_en.studyDirectionNote), findsOneWidget);
+    // A note of prose: its dots stay on the word before them (Wrap Rule).
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaDots(_en.studyDirectionNote)),
+    );
     // The lock leads, above the options (BR-MODE-017; critique 2026-09-30
     // part 3c-1).
     expect(_en.studyDirectionNote, startsWith("The direction can't change"));
     expect(
-      tester.getTopLeft(find.text(_en.studyDirectionNote)).dy,
+      tester.getTopLeft(find.text(metaDots(_en.studyDirectionNote))).dy,
       lessThan(tester.getTopLeft(find.text(_en.studyDirectionTermFirst)).dy),
     );
 
@@ -208,7 +216,8 @@ void main() {
       find.text(_en.studyEntryResumeOverline.toUpperCase()),
       findsOneWidget,
     );
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
         metaLine(
           _en.studyEntryResumeLine(
@@ -219,7 +228,6 @@ void main() {
           ),
         ),
       ),
-      findsOneWidget,
     );
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
     // The session's progress as a track too (FE-A8 H2).
@@ -294,21 +302,22 @@ void main() {
     MxOptionRow row(String mode) =>
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
-    expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeMatch)),
-      findsOneWidget,
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
     );
     // The start button states the count (R5, critique 2026-09-30 part 3b).
-    expect(find.textContaining('5 due cards ·'), findsNothing);
+    // \s also matches the no-break spaces of a glued line.
+    expect(find.textContaining(RegExp(r'5\sdue\scards\s·')), findsNothing);
 
     await tester.tap(find.text(_en.cardModeGuess));
     await tester.pump();
 
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
-    expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeGuess)),
-      findsOneWidget,
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
     );
 
     await tester.tap(_button(_en.studyEntryReviewCta(5)));

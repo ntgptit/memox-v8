@@ -3,6 +3,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -121,7 +122,7 @@ class DeckActionSheetWidget extends StatelessWidget {
       MxActionSheetCommandRow(
         icon: AppIcons.studyOptions,
         label: l10n.deckStudyOptions,
-        subtitle: l10n.deckStudyOptionsHint,
+        subtitle: metaDots(l10n.deckStudyOptionsHint),
         hasChevron: true,
         onTap: () => choose(DeckAction.studyOptions),
       ),
@@ -130,7 +131,7 @@ class DeckActionSheetWidget extends StatelessWidget {
           icon: AppIcons.scheduler,
           label: l10n.deckReviewAlgorithm,
           subtitle: view.isSchedulerLocked
-              ? l10n.deckReviewAlgorithmLocked(algorithm)
+              ? metaDots(l10n.deckReviewAlgorithmLocked(algorithm))
               : algorithm,
           hasChevron: true,
           onTap: () => choose(DeckAction.reviewAlgorithm),

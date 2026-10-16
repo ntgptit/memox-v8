@@ -9,6 +9,7 @@ import 'package:memox/features/starter_decks/presentation/controllers/starter_ad
 import 'package:memox/features/starter_decks/presentation/states/starter_add_state.dart';
 import 'package:memox/features/starter_decks/presentation/widgets/support/starter_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -165,7 +166,9 @@ class _StarterAlgorithmSheetWidgetState
   String _description(SchedulerType scheduler) {
     final l10n = context.l10n;
     final description = starterSchedulerDescription(l10n, scheduler);
-    if (scheduler != widget.entry.suggestedScheduler) return description;
-    return l10n.starterSuggested(description);
+    if (scheduler != widget.entry.suggestedScheduler) {
+      return metaDots(description);
+    }
+    return metaDots(l10n.starterSuggested(description));
   }
 }

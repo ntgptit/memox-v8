@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
@@ -31,7 +32,7 @@ class ProgressTodayWidget extends StatelessWidget {
     final sub = switch ((isNever, today.total)) {
       (true, _) => l10n.progressNothingYet,
       (false, 0) => l10n.progressTodayNone,
-      _ => l10n.progressTodaySplit(today.learning, today.reviewing),
+      _ => metaDots(l10n.progressTodaySplit(today.learning, today.reviewing)),
     };
     return MxCard(
       isCompact: true,

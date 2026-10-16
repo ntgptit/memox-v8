@@ -67,6 +67,7 @@ The images are the goldens.
   redirect reads the coordinator; finished flows land on 23; one confirm dialog; the
   last-admin dialog on the router's navigator; two new icons (`switchAccount`, `signOut`).
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** Switch account, Sign out and Delete account are action rows (no chevron); Sign out's hint reads "Removes this phone's data · sign in again to get it back"; its online confirm is warning, the offline loss confirm destructive (F3).
+- **Q-C-1 (owner, 2026-10-16):** the sign-out hint keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

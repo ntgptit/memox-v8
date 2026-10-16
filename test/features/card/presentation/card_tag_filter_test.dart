@@ -6,6 +6,7 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_tag_filte
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -122,7 +123,7 @@ void main() {
     await _openSheet(tester);
     await tester.tap(_inSheet('verb'));
     await tester.pump();
-    expect(find.text(_en.cardTagFilterChosen(1)), findsOneWidget);
+    expect(find.text(metaDots(_en.cardTagFilterChosen(1))), findsOneWidget);
     await _apply(tester);
 
     expect(_fronts(tester)..sort(), ['annyeong', 'gamsa']);
@@ -131,7 +132,7 @@ void main() {
     await _openSheet(tester);
     await tester.tap(_inSheet('noun'));
     await tester.pump();
-    expect(find.text(_en.cardTagFilterChosen(2)), findsOneWidget);
+    expect(find.text(metaDots(_en.cardTagFilterChosen(2))), findsOneWidget);
     await _apply(tester);
 
     expect(_fronts(tester)..sort(), ['annyeong', 'gamsa', 'mul']);
@@ -227,7 +228,7 @@ void main() {
 
     expect(_inSheet('noun'), findsNothing);
     expect(_inSheet('verb'), findsOneWidget);
-    expect(find.text(_en.cardTagFilterChosen(1)), findsOneWidget);
+    expect(find.text(metaDots(_en.cardTagFilterChosen(1))), findsOneWidget);
     await tester.tap(_inSheet('verb'));
     await _apply(tester);
     expect(_tagsChip(tester).count, 2);
@@ -274,7 +275,7 @@ void main() {
     await tester.tap(_inSheet('extra 0'));
     await tester.pump();
 
-    expect(find.text(vi.cardTagFilterChosen(1)), findsOneWidget);
+    expect(find.text(metaDots(vi.cardTagFilterChosen(1))), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });

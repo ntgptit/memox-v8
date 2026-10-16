@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
@@ -23,6 +24,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _addedAt = DateTime(2026, 8, 1);
@@ -90,11 +92,19 @@ final class _FlakyHistory implements CardRepository {
 /// Scrolls to the end-of-history line, which follows the oldest answer.
 Future<void> _scrollToEnd(WidgetTester tester) async {
   await tester.scrollUntilVisible(
-    find.text(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    find.text(
+      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    ),
     500,
     scrollable: _scrollable,
   );
   await tester.pumpAndSettle();
+  expectBreaksOnlyBetweenWords(
+    tester,
+    find.text(
+      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    ),
+  );
 }
 
 Future<void> _tapLoadMore(WidgetTester tester, String label) async {
@@ -211,10 +221,12 @@ void main() {
     await tester.pumpAndSettle();
 
     final current = find.text(
-      _en.cardHistoryCycle(2, _en.cardSchedulerEightBox),
+      metaLine(_en.cardHistoryCycle(2, _en.cardSchedulerEightBox)),
     );
-    final earlier = find.text(_en.cardHistoryCycle(1, _en.cardSchedulerSm2));
-    expect(current, findsOneWidget);
+    final earlier = find.text(
+      metaLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2)),
+    );
+    expectBreaksOnlyBetweenWords(tester, current);
     expect(earlier, findsOneWidget);
     expect(
       tester.getTopLeft(current).dy,

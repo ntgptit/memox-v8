@@ -6,6 +6,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/speech/speech_language.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -29,6 +30,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -74,12 +76,14 @@ void main() {
           tester.getBottomLeft(find.byType(MxNote).first).dy,
       const AppDimens().space16,
     );
-    expect(
-      find.text(
+    // "{n} cards, {order}" is a phrase, not a short term: gluing it broke
+    // "order" inside the word beside the toggle at 360 dp (Q-C-1).
+    final following = find.text(
+      metaDots(
         _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
       ),
-      findsOneWidget,
     );
+    expectBreaksOnlyBetweenWords(tester, following);
     expect(
       find.text(_en.studyOptionsAppDefaultsHeader.toUpperCase()),
       findsOneWidget,
@@ -319,7 +323,9 @@ void main() {
     expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
     expect(
       find.text(
-        _en.studyOptionsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        metaDots(
+          _en.studyOptionsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        ),
       ),
       findsOneWidget,
     );
@@ -329,6 +335,7 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel(_en.studyOptionsUseAppDefaults));
     await tester.pumpAndSettle();
+    expect(find.text(metaDots(_en.studyOptionsOwn)), findsOneWidget);
     await tester.tap(find.text(_en.settingsSpeechLanguage));
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsOneWidget);

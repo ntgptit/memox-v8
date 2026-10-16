@@ -55,6 +55,7 @@ Every state above is built.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has the same "Add" button and add rule as create; Save adds the tag still typed (so pending tag text enables Save, and is saved), and an invalid one shows its error and saves nothing.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain text colour everywhere, the card list included (F6).
 - **DEV-169 (owner 2026-10-05):** every card field (term, meaning, example, hint, pronunciation) is the app's form field: muted fill that lightens on focus, r12, 12 padding, 52 floor, the body role; the term no longer sets 24/700 nor the meaning 16/500. The footer pair shares the row 1 : 1 like every footer pair. **DEV-372 (Material 3):** the field is the outlined M3 field: no fill (the page ground shows through), 16 text inset, 56 floor, the input in `bodyLarge`; the field paints its label above the box (4 clear, `labelMedium`, `onSurfaceVariant`, `error` in error) with the optional field's glyph before it and "Required" or "· optional" after it, and the count "{count} / {limit}" moves from the header to the trailing end of the supporting row under the box (`error` with the field's error); the caret turns `error` in error.
+- **Q-C-1 (owner, 2026-10-16):** as on 08, the Tags meta and Add details' field list wrap only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

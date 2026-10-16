@@ -9,6 +9,7 @@ import 'package:memox/features/settings/presentation/providers/app_settings_prov
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -141,7 +142,7 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
     final phoneLine = switch (phone?.languageCode) {
       'en' => l10n.settingsLanguagePhoneIs(l10n.languageEnglish),
       'vi' => l10n.settingsLanguagePhoneIs(l10n.languageVietnamese),
-      _ => l10n.settingsLanguageUnavailable,
+      _ => metaDots(l10n.settingsLanguageUnavailable),
     };
     // A language named the same in the UI language needs no second line.
     String? nameIn(String endonym, String name) =>

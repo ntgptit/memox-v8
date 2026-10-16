@@ -37,6 +37,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_language_{english
 - **D8, BR-SETTINGS-006:** the system row says "Phone is set to {language}"; the fallback line shows only for a language the app lacks.
 - The choices are `MxOptionRow` radios, the app's single-choice list; the note is the `MxSection` note (M3 review 2026-09-28 D4).
 - **Critique 2026-09-26:** a row has no sub-line when it would repeat the title.
+- **Q-C-1 (owner, 2026-10-16):** "Your phone's language isn't available · English" keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

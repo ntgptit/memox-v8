@@ -71,6 +71,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - **Plan 6a:** `testMissing` hides History, as above (owner question Q-P4-4 asks whether a removed test keeps it).
 - **Owner 2026-10-16 (Q-P6-2):** the level and section line is `MxAppBar.subtitle`, read with the title in one heading node that names the route.
 - **Owner 2026-10-16 (Q-P6-5):** a figure with nothing to show is a dash on screen and reads "None yet" to TalkBack (`MxStatTile.semanticValue`); a bare dash reads "en dash".
+- **Q-C-1 (owner, 2026-10-16):** Overall Progress' last activity line ("Last activity 2 days ago · 1h 20m") wraps only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

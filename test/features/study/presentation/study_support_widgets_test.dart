@@ -7,6 +7,7 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
@@ -385,7 +386,7 @@ void main() {
         'golden review)', (tester, env) async {
       final l10n = lookupAppLocalizations(locale);
       final hints = [
-        l10n.studyBrowseHint,
+        metaDots(l10n.studyBrowseHint),
         l10n.studySelfAssessHintPrompt,
         l10n.studySelfAssessHintGrade,
         l10n.studyMatchHint,

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_hero_widget.dart';
 import 'package:memox/core/error/failure.dart';
@@ -23,6 +24,7 @@ import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 // UC-STUDY-001 steps 1–4 on screen 14; IT-STUDY-001, IT-STUDY-004.
 
@@ -192,7 +194,18 @@ void main() {
     expect(find.byType(MxOptionRow), findsNothing);
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
-    expect(find.textContaining(_en.studyEntryLearnCount(1, 1)), findsOneWidget);
+    // The stages are a phrase; the count's terms stay whole (Wrap Rule).
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(
+        metaDots(
+          _en.studyEntryLearnLine(
+            _en.studyEntryLearnStagesSm2,
+            metaLine(_en.studyEntryLearnCount(1, 1)),
+          ),
+        ),
+      ),
+    );
     // Only new cards: the footer offers Learn, the row does not (critique
     // 2026-09-30 part 3d-1, D2).
     expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsNothing);

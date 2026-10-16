@@ -3,6 +3,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -44,12 +45,12 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
         MxSettingsRow(
           label: l10n.reminderTitle,
           icon: AppIcons.reminder,
-          subtitle: switch ((isOn, action.problem)) {
+          subtitle: metaDots(switch ((isOn, action.problem)) {
             (true, _) => l10n.reminderOnHint,
             (false, ReminderProblem.permissionDenied) =>
               l10n.reminderDeniedHint,
             (false, _) => l10n.reminderOffHint,
-          },
+          }),
           trailing: isTurning
               ? MxSpinner(semanticLabel: l10n.commonLoading)
               : MxToggle(
@@ -62,7 +63,9 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
           label: l10n.reminderTime,
           icon: AppIcons.clock,
           isEnabled: isOn,
-          subtitle: isOn ? l10n.reminderTimeOnHint : l10n.reminderTimeOffHint,
+          subtitle: metaDots(
+            isOn ? l10n.reminderTimeOnHint : l10n.reminderTimeOffHint,
+          ),
           trailing: MxButton(
             label: time,
             semanticLabel: l10n.reminderTimeButton(time),

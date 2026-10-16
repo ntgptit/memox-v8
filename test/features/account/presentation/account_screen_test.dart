@@ -4,6 +4,7 @@ import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -80,7 +81,7 @@ void main() {
       _en.accountSignOutHint,
       "Removes this phone's data · sign in again to get it back",
     );
-    expect(find.text(_en.accountSignOutHint), findsOneWidget);
+    expect(find.text(metaDots(_en.accountSignOutHint)), findsOneWidget);
   });
 
   accountTest('checked again offline: the commands wait and say why '

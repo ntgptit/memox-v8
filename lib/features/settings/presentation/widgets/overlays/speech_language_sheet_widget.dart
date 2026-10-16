@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -101,7 +102,7 @@ class _SpeechLanguageSheetWidgetState extends State<SpeechLanguageSheetWidget> {
               key: language == widget.selected ? _selectedRow : null,
               title: l10n.speechLanguageName(language.name),
               description: widget.missing.contains(language)
-                  ? l10n.settingsSpeechLanguageMissing
+                  ? metaDots(l10n.settingsSpeechLanguageMissing)
                   : null,
               isSelected: language == widget.selected,
               isDimmed: false,

@@ -10,6 +10,7 @@ import 'package:memox/features/transfer/presentation/states/card_export_state.da
 import 'package:memox/features/transfer/presentation/widgets/support/export_labels_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -231,7 +232,7 @@ class _FormatRow extends StatelessWidget {
     final (name, body) = l10n.exportFormat(format);
     return MxOptionRow(
       title: name,
-      description: body,
+      description: metaDots(body),
       isSelected: isSelected,
       onSelected: onSelected,
       trailing: format == TransferFormat.csv
