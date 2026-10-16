@@ -224,6 +224,137 @@ end
 $$;
 
 -- ============================================================================
+-- Admin RPCs: drafts and the audit log (§6.1)
+-- ============================================================================
+
+-- Every admin RPC requires a profile, then the admin role (the pattern of role_set).
+create function private.require_topik_admin() returns uuid
+language plpgsql stable set search_path = '' as $$
+declare
+  v_user uuid := private.require_current_profile();
+begin
+  if not private.is_admin() then
+    raise exception 'FORBIDDEN';
+  end if;
+  return v_user;
+end
+$$;
+
+-- One audit row, written by the caller's own transaction. clock_timestamp(), not
+-- now(): two changes in one transaction keep their order.
+create function private.topik_audit(p_action text, p_test_id text, p_content_version integer, p_detail jsonb)
+returns void language sql set search_path = '' as $$
+  insert into public.topik_master_audit (id, at, actor, action, test_id, content_version, detail)
+  values (gen_random_uuid(), clock_timestamp(), auth.uid(), p_action, p_test_id, p_content_version,
+    coalesce(p_detail, '{}'::jsonb))
+$$;
+
+-- Every test that has a draft or a publication.
+create function public.topik_admin_list() returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+begin
+  perform private.require_topik_admin();
+  return jsonb_build_object('items', coalesce((
+    select jsonb_agg(jsonb_build_object(
+      'testId', t.test_id,
+      'draft', case when d.test_id is null then null else jsonb_build_object(
+        'updatedAt', private.wire_time(d.updated_at), 'lastCheck', d.last_check) end,
+      'publication', case when p.test_id is null then null else jsonb_build_object(
+        'status', p.status, 'currentVersion', p.current_version, 'catalogVersion', p.catalog_version) end,
+      'latestVersion', (select max(v.content_version) from public.topik_test_version v where v.test_id = t.test_id))
+      order by t.test_id)
+    from (select test_id from public.topik_test_draft
+          union select test_id from public.topik_publication) t
+    left join public.topik_test_draft d on d.test_id = t.test_id
+    left join public.topik_publication p on p.test_id = t.test_id), '[]'::jsonb));
+end
+$$;
+
+create function public.topik_admin_draft_get(p_test_id text) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_row public.topik_test_draft;
+begin
+  perform private.require_topik_admin();
+  select * into v_row from public.topik_test_draft where test_id = p_test_id;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  return jsonb_build_object('testId', v_row.test_id, 'json', v_row.json, 'lastCheck', v_row.last_check,
+    'updatedAt', private.wire_time(v_row.updated_at), 'updatedBy', v_row.updated_by);
+end
+$$;
+
+-- A draft may be invalid while it is being written; its shape issues are returned
+-- and audited, not enforced (publishing enforces them).
+create function public.topik_admin_draft_save(p_test_id text, p_json jsonb, p_last_check jsonb, p_imported boolean)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_topik_admin();
+  v_issues text[];
+  v_at timestamptz := now();
+begin
+  if jsonb_typeof(p_json) is distinct from 'object' or p_json->>'testId' is distinct from p_test_id then
+    raise exception 'VALIDATION_FAILED';
+  end if;
+  v_issues := private.topik_master_shape_issues(p_json);
+  insert into public.topik_test_draft (test_id, json, last_check, updated_at, updated_by)
+  values (p_test_id, p_json, coalesce(p_last_check, '{}'::jsonb), v_at, v_user)
+  on conflict (test_id) do update
+    set json = excluded.json, last_check = excluded.last_check, updated_at = excluded.updated_at,
+        updated_by = excluded.updated_by;
+  perform private.topik_audit(case when p_imported then 'draft_import' else 'draft_save' end, p_test_id, null,
+    jsonb_build_object('issues', to_jsonb(v_issues)));
+  return jsonb_build_object('testId', p_test_id, 'updatedAt', private.wire_time(v_at), 'issues', to_jsonb(v_issues));
+end
+$$;
+
+create function public.topik_admin_draft_delete(p_test_id text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  perform private.require_topik_admin();
+  delete from public.topik_test_draft where test_id = p_test_id;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  perform private.topik_audit('draft_delete', p_test_id, null, '{}'::jsonb);
+  return jsonb_build_object('testId', p_test_id);
+end
+$$;
+
+-- Newest first; `next` is the p_before of the following page, null on the last.
+create function public.topik_admin_audit(p_test_id text, p_limit integer, p_before timestamptz) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_limit integer := least(greatest(coalesce(p_limit, 50), 1), 200);
+  v_items jsonb;
+  v_next timestamptz;
+begin
+  perform private.require_topik_admin();
+  with page as (
+    select a.*, row_number() over (order by a.at desc, a.id desc) as n
+    from public.topik_master_audit a
+    where (p_test_id is null or a.test_id = p_test_id)
+      and (p_before is null or a.at < p_before)
+    order by a.at desc, a.id desc
+    limit v_limit + 1)
+  select coalesce(jsonb_agg(jsonb_build_object('id', id, 'at', private.wire_time(at), 'actor', actor,
+           'action', action, 'testId', test_id, 'contentVersion', content_version, 'detail', detail)
+           order by at desc, id desc) filter (where n <= v_limit), '[]'::jsonb),
+         case when count(*) > v_limit then min(at) filter (where n <= v_limit) end
+  into v_items, v_next from page;
+  return jsonb_build_object('items', v_items, 'next', private.wire_time(v_next));
+end
+$$;
+
+revoke all on function public.topik_admin_list(), public.topik_admin_draft_get(text),
+  public.topik_admin_draft_save(text, jsonb, jsonb, boolean), public.topik_admin_draft_delete(text),
+  public.topik_admin_audit(text, integer, timestamptz) from public, anon, authenticated;
+grant execute on function public.topik_admin_list(), public.topik_admin_draft_get(text),
+  public.topik_admin_draft_save(text, jsonb, jsonb, boolean), public.topik_admin_draft_delete(text),
+  public.topik_admin_audit(text, integer, timestamptz) to authenticated;
+
+-- ============================================================================
 -- Function privileges (keep last)
 -- ============================================================================
 

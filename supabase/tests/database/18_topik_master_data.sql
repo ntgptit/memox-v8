@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(41);
+select plan(61);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -145,6 +145,58 @@ select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'r
   '{options}'::text[], 'an option with no text and no image');
 select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,words}', '[{"vi": "x"}]')),
   '{languages}'::text[], 'a words entry without en');
+
+-- ============================================================================
+-- Admin RPCs for drafts and the audit log (Task 3)
+-- ============================================================================
+-- The trigger on_auth_user_created (migration 20261010000000) creates each
+-- profile; the role is then set as 12_account.sql does.
+insert into auth.users (id, email, is_anonymous) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'admin@example.com', false),
+  ('bbbbbbbb-0000-0000-0000-000000000002', 'user@example.com', false)
+on conflict (id) do nothing;
+update public.profiles set role = 'admin' where id = 'aaaaaaaa-0000-0000-0000-000000000001';
+
+create function public.t_as(p_user text) returns void language sql as $$
+  select set_config('request.jwt.claims', format('{"sub":"%s","role":"authenticated"}', p_user), true) $$;
+
+-- t_test(…, 50, 2) is a valid section; one question raised to 3 points breaks the total.
+set local role authenticated;
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select throws_like($$select public.topik_admin_list()$$, 'FORBIDDEN', 'a user is not an admin: list');
+select throws_like($$select public.topik_admin_draft_get('topik2-96-reading')$$, 'FORBIDDEN',
+  'a user is not an admin: get');
+select throws_like($$select public.topik_admin_draft_save('topik2-96-reading', '{}'::jsonb, '{}'::jsonb, false)$$,
+  'FORBIDDEN', 'a user is not an admin: save');
+select throws_like($$select public.topik_admin_audit(null, 50, null)$$, 'FORBIDDEN', 'a user is not an admin: audit');
+
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select is(public.topik_admin_list()->'items', '[]'::jsonb, 'an admin sees an empty list');
+select is(public.topik_admin_draft_save('topik2-96-reading', public.t_test('topik2', 'reading', 1, 50, 2), '{"ok": true}'::jsonb, true)->'issues',
+  '[]'::jsonb, 'a valid draft saves with no issue');
+select is(public.topik_admin_draft_save('topik2-96-reading', jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,points}', '3'), '{}'::jsonb, false)->'issues',
+  '["points"]'::jsonb, 'an invalid draft saves and reports its issues');
+select throws_like($$select public.topik_admin_draft_save('topik2-96-reading', public.t_test('topik2', 'reading', 1, 50, 2) || '{"testId": "other"}'::jsonb, '{}'::jsonb, false)$$,
+  'VALIDATION_FAILED', 'a draft whose testId is not the key is refused');
+select is(public.topik_admin_list()->'items'->0->>'testId', 'topik2-96-reading', 'the list names the draft');
+select is(public.topik_admin_list()->'items'->0->'publication', 'null'::jsonb, 'not published yet');
+select is(public.topik_admin_draft_get('topik2-96-reading')->'json'->'questions'->0->>'points', '3', 'the draft reads back');
+select throws_like($$select public.topik_admin_draft_get('nope')$$, 'NOT_FOUND', 'an unknown draft');
+-- topik2-96-reading also holds the 'publish' row inserted above as postgres.
+select is((select count(*) from jsonb_array_elements(public.topik_admin_audit('topik2-96-reading', 50, null)->'items') i
+    where i->>'action' like 'draft%'), 2::bigint,
+  'two draft audit rows: import, then save');
+select is(public.topik_admin_audit('topik2-96-reading', 50, null)->'items'->0->>'action', 'draft_save', 'newest first');
+select isnt(public.topik_admin_audit('topik2-96-reading', 1, null)->>'next', null,
+  'a full page names the cursor of the next one');
+select is(public.topik_admin_audit('topik2-96-reading', 50, null)->>'next', null, 'the last page has no cursor');
+select is(public.topik_admin_draft_delete('topik2-96-reading')->>'testId', 'topik2-96-reading', 'delete returns the id');
+select throws_like($$select public.topik_admin_draft_delete('topik2-96-reading')$$, 'NOT_FOUND',
+  'deleting a missing draft');
+select is(public.topik_admin_list()->'items', '[]'::jsonb, 'the draft is gone');
+select is(public.topik_admin_audit('topik2-96-reading', 50, null)->'items'->0->>'action', 'draft_delete',
+  'the delete is in the audit log');
+reset role;
 
 select * from finish();
 rollback;
