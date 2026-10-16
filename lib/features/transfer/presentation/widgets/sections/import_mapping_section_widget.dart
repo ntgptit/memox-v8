@@ -4,6 +4,7 @@ import 'package:memox/features/transfer/presentation/states/card_import_state.da
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
@@ -66,9 +67,11 @@ class ImportMappingSectionWidget extends StatelessWidget {
             MxSettingsRow(
               label: l10n.importHeaderToggle,
               onTap: () => onHeaderRow(!draft.hasHeaderRow),
+              // The file's own column names keep their spaces; each dot
+              // stays with the name before it (The Wrap Rule).
               subtitle: header
                   ?.where((cell) => cell.trim().isNotEmpty)
-                  .join(' · '),
+                  .join(metaTermSeparator),
               trailing: MxToggle(
                 isOn: draft.hasHeaderRow,
                 onChanged: onHeaderRow,

@@ -84,6 +84,12 @@ void main() {
 
     await _tap(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
+    // The file's own column names keep their spaces; each dot stays with the
+    // name before it (The Wrap Rule).
+    expect(
+      find.text('front${metaTermSeparator}back${metaTermSeparator}tags'),
+      findsOneWidget,
+    );
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await _tap(tester, _en.importPreviewAction);
