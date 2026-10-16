@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -10,9 +11,6 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-
-const String _nonBreakingSpace = '\u00A0';
-const String _wordJoiner = '\u2060';
 
 /// The TOPIK screens' words for domain values (spec §8).
 extension TopikLabels on AppLocalizations {
@@ -58,19 +56,8 @@ extension TopikLabels on AppLocalizations {
         topikAttemptCount(status.completedCount),
       ],
     ];
-    return parts.isEmpty ? topikStatusNotStarted : topikTerms(parts);
+    return parts.isEmpty ? topikStatusNotStarted : metaTerms(parts);
   }
-
-  /// [terms] as one meta line that wraps only between whole terms (The Wrap
-  /// Rule): a term's own spaces and range dashes ("Levels 1–2") do not
-  /// break, and each dot stays with the term before it, as
-  /// `MxWorkloadBreakdownLine` glues its terms.
-  String topikTerms(Iterable<String> terms) => [
-    for (final term in terms)
-      term
-          .replaceAll(' ', _nonBreakingSpace)
-          .replaceAll('–', '$_wordJoiner–$_wordJoiner'),
-  ].join('$_nonBreakingSpace· ');
 
   String topikRejectionMessage(TopikRejection reason) => switch (reason) {
     TopikRejection.testUnavailable => topikTestMissingTitle,

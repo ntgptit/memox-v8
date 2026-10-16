@@ -177,6 +177,36 @@ void main() {
     expect(_plain(tester), '12 cards · nothing due · 3 scheduled');
   });
 
+  // The Wrap Rule (owner, Q-P6-4): a wrapping fallback is a line of terms
+  // too, glued like the counts it stands in for; a one-line row keeps it.
+  for (final canWrap in [true, false]) {
+    testWidgets('the fallback is ${canWrap ? '' : 'not '}glued when the line '
+        '${canWrap ? 'wraps' : 'keeps one line'}', (tester) async {
+      await pumpMx(
+        tester,
+        MxWorkloadBreakdownLine(
+          overdueCount: 0,
+          todayCount: 0,
+          newCount: 0,
+          scheduledCount: 3,
+          overdueLabel: (n) => '$n overdue',
+          todayLabel: (n) => '$n today',
+          newLabel: (n) => '$n new',
+          scheduledLabel: (n) => '$n scheduled',
+          fallback: '12 cards · nothing due',
+          canWrap: canWrap,
+        ),
+      );
+
+      expect(
+        _plain(tester),
+        canWrap
+            ? '12\u00A0cards\u00A0· nothing\u00A0due\u00A0· 3\u00A0scheduled'
+            : '12 cards · nothing due · 3 scheduled',
+      );
+    });
+  }
+
   testWidgets('a hero line wraps instead of cutting its suffix (FE-A8, kit '
       'hero)', (tester) async {
     await pumpMx(

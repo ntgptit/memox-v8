@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -72,7 +73,7 @@ void main() {
 
   test('a meta line breaks only between whole terms (The Wrap Rule)', () {
     expect(
-      en.topikTerms(['Levels 1–2', 'No tests yet']),
+      metaTerms(['Levels 1–2', 'No tests yet']),
       'Levels\u00A01\u2060–\u20602\u00A0· No\u00A0tests\u00A0yet',
     );
   });

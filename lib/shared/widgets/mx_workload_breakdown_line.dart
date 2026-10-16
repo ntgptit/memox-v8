@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/l10n/meta_line.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
 /// term across the whole product, and an optional muted "N scheduled".
@@ -81,14 +82,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   static const String _separator = ' · ';
   static const String _space = ' ';
 
-  // A wrapping line breaks only between terms: a term's own spaces do not
-  // break, and the dot stays with the term before it.
-  static const String _gluedSeparator = '\u00A0· ';
-  static const String _gluedDot = '\u00A0·';
-  static const String _nonBreakingSpace = '\u00A0';
+  // A wrapping line breaks only between terms (The Wrap Rule, meta_line).
 
-  String _termText(String label) =>
-      canWrap ? label.replaceAll(_space, _nonBreakingSpace) : label;
+  String _termText(String label) => canWrap ? wholeTerm(label) : label;
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +107,12 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
           color: context.colors.onSurfaceVariant,
         ),
         children: [
-          if (isFallbackShown) TextSpan(text: fallback),
+          // "1,248 cards · nothing due" is a line of terms too.
+          if (isFallbackShown)
+            TextSpan(text: canWrap ? metaLine(fallback) : fallback),
           for (final (index, (count, label, ink, _)) in terms.indexed) ...[
             if (index > 0 || isFallbackShown)
-              TextSpan(text: canWrap ? _gluedSeparator : _separator),
+              TextSpan(text: canWrap ? metaTermSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
               style: count > 0
@@ -193,9 +191,7 @@ class _GlyphStatement extends StatelessWidget {
                               : null,
                         ),
                         if (index < terms.length - 1)
-                          const TextSpan(
-                            text: MxWorkloadBreakdownLine._gluedDot,
-                          ),
+                          const TextSpan(text: metaTermDot),
                       ],
                     ),
                   ),

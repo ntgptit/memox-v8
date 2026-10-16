@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -69,14 +70,18 @@ void main() {
     expect(find.text(everydayTemplate.title), findsOneWidget);
     expect(
       find.text(
-        'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
+        metaLine(
+          'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
+        ),
       ),
       findsOneWidget,
     );
     expect(
       find.text(
-        'English · Vietnamese · 120 cards · 4 sub-decks · '
-        'Development fixture',
+        metaLine(
+          'English · Vietnamese · 120 cards · 4 sub-decks · '
+          'Development fixture',
+        ),
       ),
       findsOneWidget,
     );
@@ -100,7 +105,9 @@ void main() {
     );
 
     expect(
-      find.text('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
+      find.text(
+        metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
+      ),
       findsOneWidget,
     );
     expect(find.textContaining('Development fixture'), findsNothing);

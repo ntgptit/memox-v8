@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -104,7 +105,7 @@ void main() {
     expect(
       find.descendant(
         of: total,
-        matching: find.text(_en.progressRowCardsDays(26, 6)),
+        matching: find.text(metaLine(_en.progressRowCardsDays(26, 6))),
       ),
       findsOneWidget,
     );
@@ -117,7 +118,7 @@ void main() {
     expect(
       find.descendant(
         of: topik,
-        matching: find.text(_en.progressRowCardsDays(13, 6)),
+        matching: find.text(metaLine(_en.progressRowCardsDays(13, 6))),
       ),
       findsOneWidget,
     );
@@ -173,7 +174,10 @@ void main() {
     final basics = await _row(tester, 'Korean Basics');
     expect(
       // The card count leads the meta line (critique 2026-09-30 part 3d-1).
-      find.descendant(of: basics, matching: find.textContaining('10 cards · ')),
+      find.descendant(
+        of: basics,
+        matching: find.textContaining(metaTerms(['10 cards', ''])),
+      ),
       findsOneWidget,
     );
     final it = await _row(tester, 'IT');
