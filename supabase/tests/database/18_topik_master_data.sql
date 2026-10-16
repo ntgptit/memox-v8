@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(125);
+select plan(139);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -291,7 +291,8 @@ select is(public.topik_admin_versions('topik2-96-listening')->'items', '[]'::jso
 select is(public.t_audit('topik2-96-listening'), '{}'::text[], 'MEDIA_MISSING wrote no audit row');
 -- Storage objects are written by the storage service, not by an admin: postgres here.
 reset role;
-insert into storage.buckets (id, name) values ('topik-media', 'topik-media'), ('other', 'other');
+insert into storage.buckets (id, name) values ('topik-media', 'topik-media'), ('other', 'other')
+  on conflict (id) do nothing;
 insert into storage.objects (bucket_id, name) values ('other', 'a.mp3');
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
@@ -332,28 +333,55 @@ select is(public.topik_admin_unretire('topik1-96-reading', 'back')->>'status', '
 select is((select i->'publication'->>'currentVersion' from jsonb_array_elements(public.topik_admin_list()->'items') i
     where i->>'testId' = 'topik1-96-reading'), '2', 'unretiring restores the version it had');
 select throws_like($$select public.topik_admin_unretire('topik1-96-reading', 'again')$$, 'INVALID_STATE', 'unretiring a live test');
+-- A retired test is not republished behind the admin's back: unretire is explicit and audited.
+select is(public.topik_admin_retire('topik1-96-reading', 'pulled again')->>'status', 'retired', 'retired again');
+-- The draft says 3 and carries an empty image path on an option that has text: no media.
+select is(public.topik_admin_draft_save('topik1-96-reading',
+    jsonb_set(public.t_pub(3), '{questions,1,options,1,image}', '""'), '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'the next draft, with an empty image path');
+select throws_like($$select public.topik_admin_publish('topik1-96-reading', 3, 'while retired')$$, 'INVALID_STATE',
+  'a retired test cannot be published');
+select throws_like($$select public.topik_admin_rollback('topik1-96-reading', 1, 'while retired')$$, 'INVALID_STATE',
+  'a retired test cannot be rolled back');
+select is(jsonb_array_length(public.topik_admin_versions('topik1-96-reading')->'items'), 2, 'no version was stored meanwhile');
+select is(public.t_audit('topik1-96-reading'), '{retire,unretire,retire,publish,publish}'::text[],
+  'and no publish or rollback was audited');
+select is((select i->'publication'->>'status' from jsonb_array_elements(public.topik_admin_list()->'items') i
+    where i->>'testId' = 'topik1-96-reading'), 'retired', 'it stays retired');
+select is(public.topik_admin_unretire('topik1-96-reading', 'back again')->>'status', 'published', 'unretired again');
+select is(public.topik_admin_publish('topik1-96-reading', 3, 'third')->>'contentVersion', '3',
+  'now it publishes, as 3');
+select is(public.topik_admin_versions('topik1-96-reading')->'items'->0->'media', '[]'::jsonb,
+  'an empty image path is not a media object');
 select throws_like($$select public.topik_admin_retire('nope', 'x')$$, 'NOT_FOUND', 'retiring an unknown test');
 select throws_like($$select public.topik_admin_unretire('nope', 'x')$$, 'NOT_FOUND', 'unretiring an unknown test');
+-- A draft that was never published has no publication to retire.
+select is(public.topik_admin_draft_save('topik2-96-reading', public.t_test('topik2', 'reading', 1, 50, 2), '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'a draft that is not published');
+select throws_like($$select public.topik_admin_retire('topik2-96-reading', 'x')$$, 'NOT_FOUND', 'retiring a test that has only a draft');
+select throws_like($$select public.topik_admin_unretire('topik2-96-reading', 'x')$$, 'NOT_FOUND', 'unretiring a test that has only a draft');
 
 -- Rollback is a new version with the old content.
-select is(public.topik_admin_rollback('topik1-96-reading', 1, 'back to 1')->>'contentVersion', '3', 'rollback publishes version 3');
-select is(public.topik_admin_version_get('topik1-96-reading', 3)->'json'->>'contentVersion', '3',
+select is(public.topik_admin_rollback('topik1-96-reading', 1, 'back to 1')->>'contentVersion', '4', 'rollback publishes version 4');
+select is(public.topik_admin_version_get('topik1-96-reading', 4)->'json'->>'contentVersion', '4',
   'the rolled-back content carries the new version number');
-select is((public.topik_admin_version_get('topik1-96-reading', 3)->'json') - 'contentVersion',
+select is((public.topik_admin_version_get('topik1-96-reading', 4)->'json') - 'contentVersion',
   (public.topik_admin_version_get('topik1-96-reading', 1)->'json') - 'contentVersion', 'and is otherwise version 1');
 select is(public.topik_admin_rollback('topik1-96-reading', 1, 'again')->>'rolledBackFrom', '1', 'the result names the source version');
 select is((select a.i->'detail'->>'rolledBackFrom' from (select i from jsonb_array_elements(
     public.topik_admin_audit('topik1-96-reading', 50, null)->'items') i where i->>'action' = 'rollback' limit 1) a),
   '1', 'the audit names the source version');
 select is((select i->'publication'->>'currentVersion' from jsonb_array_elements(public.topik_admin_list()->'items') i
-    where i->>'testId' = 'topik1-96-reading'), '4', 'the publication points at the newest version');
+    where i->>'testId' = 'topik1-96-reading'), '5', 'the publication points at the newest version');
+select throws_like($$select public.topik_admin_rollback('topik1-96-reading', 5, 'x')$$, 'INVALID_STATE',
+  'rolling back to the version that is already current');
 select throws_like($$select public.topik_admin_rollback('topik1-96-reading', 9, 'x')$$, 'NOT_FOUND', 'rolling back to an unknown version');
 select throws_like($$select public.topik_admin_rollback('nope', 1, 'x')$$, 'NOT_FOUND', 'rolling back an unknown test');
 
 -- Every change is audited and takes the next catalog version.
-select is(public.t_audit('topik1-96-reading'), '{rollback,rollback,unretire,retire,publish,publish}'::text[],
+select is(public.t_audit('topik1-96-reading'), '{rollback,rollback,publish,unretire,retire,unretire,retire,publish,publish}'::text[],
   'each publication change has an audit row, newest first');
-select ok((select count(*) = 6 and bool_and(c > nxt)
+select ok((select count(*) = 9 and bool_and(c > nxt)
     from (select c, coalesce(lead(c) over (order by n), 0) nxt
           from (select (i->'detail'->>'catalogVersion')::bigint c, n
                 from jsonb_array_elements(public.topik_admin_audit('topik1-96-reading', 50, null)->'items') with ordinality t(i, n)

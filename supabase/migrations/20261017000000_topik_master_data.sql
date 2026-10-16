@@ -377,10 +377,23 @@ begin
 end
 $$;
 
+-- The next catalog_version. A client pulls "everything after N" (spec §6.2), so a
+-- smaller number must never commit after a larger one: the global lock is held to
+-- the end of the transaction, so allocation order is commit order (a sequence alone
+-- only orders the allocations). The one place that calls nextval.
+create function private.topik_next_catalog_version() returns bigint
+language plpgsql set search_path = '' as $$
+begin
+  perform pg_advisory_xact_lock(hashtext('public.topik_catalog_version_seq'));
+  return nextval('public.topik_catalog_version_seq');
+end
+$$;
+
 -- The one body of publish and rollback: the content stored at the next
 -- content_version (its own contentVersion overwritten, so the version table's
 -- CHECK cannot fail), the publication moved to it, the audit written. Raises
--- MEDIA_MISSING before it writes anything.
+-- INVALID_STATE for a retired test (the admin unretires first, explicitly and
+-- audited) and MEDIA_MISSING, both before it writes anything.
 create function private.topik_publish_version(p_user uuid, p_test_id text, p_json jsonb, p_note text,
   p_action text, p_detail jsonb) returns integer
 language plpgsql set search_path = '' as $$
@@ -391,20 +404,25 @@ declare
   v_questions jsonb := case when jsonb_typeof(v_json->'questions') = 'array' then v_json->'questions' else '[]'::jsonb end;
   v_media jsonb;
   v_catalog bigint;
+  v_status text;
 begin
+  select p.status into v_status from public.topik_publication p where p.test_id = p_test_id for update;
+  if v_status = 'retired' then
+    raise exception 'INVALID_STATE';
+  end if;
   -- The media the content names: the section audio and every image.
   select coalesce(jsonb_agg(distinct x.path), '[]'::jsonb) into v_media from (
     select v_json->'assets'->>'audio' as path
     union all select g->'passage'->>'image' from jsonb_array_elements(v_groups) g
     union all select o->>'image' from jsonb_array_elements(v_questions) q,
       jsonb_array_elements(case when jsonb_typeof(q->'options') = 'array' then q->'options' else '[]'::jsonb end) o) x
-  where x.path is not null;
+  where x.path is not null and x.path <> '';
   if exists (select 1 from jsonb_array_elements_text(v_media) m where not private.topik_media_exists(m)) then
     raise exception 'MEDIA_MISSING';
   end if;
   insert into public.topik_test_version (test_id, content_version, json, media, checksum, published_at, published_by, note)
   values (p_test_id, v_next, v_json, v_media, md5(v_json::text), now(), p_user, p_note);
-  v_catalog := nextval('public.topik_catalog_version_seq');
+  v_catalog := private.topik_next_catalog_version();
   insert into public.topik_publication (test_id, status, current_version, catalog_version, updated_at, updated_by)
   values (p_test_id, 'published', v_next, v_catalog, now(), p_user)
   on conflict (test_id) do update
@@ -460,7 +478,7 @@ begin
   if v_pub.status = p_status then
     raise exception 'INVALID_STATE';
   end if;
-  v_catalog := nextval('public.topik_catalog_version_seq');
+  v_catalog := private.topik_next_catalog_version();
   update public.topik_publication
   set status = p_status, catalog_version = v_catalog, updated_at = now(), updated_by = p_user
   where test_id = p_test_id;
@@ -485,7 +503,7 @@ end
 $$;
 
 -- Republishes an earlier version's content as a new version (max + 1); the
--- pointer never moves backwards.
+-- pointer never moves backwards. Not the current version (INVALID_STATE).
 create function public.topik_admin_rollback(p_test_id text, p_to_version integer, p_note text) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
@@ -497,6 +515,11 @@ begin
   where v.test_id = p_test_id and v.content_version = p_to_version;
   if not found then
     raise exception 'NOT_FOUND';
+  end if;
+  -- Republishing the version that is already current would only add a duplicate.
+  if exists (select 1 from public.topik_publication p
+             where p.test_id = p_test_id and p.current_version = p_to_version) then
+    raise exception 'INVALID_STATE';
   end if;
   v_version := private.topik_publish_version(v_user, p_test_id, v_old.json, p_note, 'rollback',
     jsonb_build_object('rolledBackFrom', p_to_version));
