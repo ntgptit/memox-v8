@@ -47,25 +47,15 @@ REPO_OWNED_SKILLS = (
 # diagram-design. Every other skill is the repo's, and is scanned.
 VENDORED_SKILLS = (
     # ECC
-    "android-clean-architecture",
-    "compose-multiplatform-patterns",
     "dart-flutter-patterns",
     "flutter-dart-code-review",
-    "foundation-models-on-device",
     "java-coding-standards",
     "jpa-patterns",
-    "kotlin-coroutines-flows",
-    "liquid-glass-design",
-    "react-native-patterns",
     "security-review",
     "springboot-patterns",
     "springboot-security",
     "springboot-tdd",
     "springboot-verification",
-    "swift-actor-persistence",
-    "swift-concurrency-6-2",
-    "swift-protocol-di-testing",
-    "swiftui-patterns",
     # Superpowers
     "brainstorming",
     "diagnosing-superpowers",

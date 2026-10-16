@@ -18,6 +18,18 @@
 #   --force ignore the pass stamp and run even if this exact tree already passed
 #   MEMOX_TEST_BUNDLES=<n>  host test bundles (default: one per core); 0 runs
 #           the test files one by one, the way the suite ran before 2026-10-02
+#   MEMOX_GATE_VERBOSE=1  print every step's log, not only the failed ones
+#
+# **A passing step prints one line.** Each step's full log is kept in
+# `.dart_tool/dod_check_logs/<step>.log`; the console shows the whole log of a
+# failed step and one line, with its time, for a step that passed. A pass used
+# to print 977 lines (about 100 KB) that whoever ran the gate had to read past.
+#
+# **`--changed` checks what the diff can reach.** On a plan that is not the
+# full suite (no tooling, theme, core or app-shell path changed), `m3_lint`
+# lints the changed `lib/` files only, and the guard's and the hooks' own tests
+# are left out: every path they read promotes the plan to the full suite. The
+# full gate, with no flag, runs every step over the whole tree.
 #
 # **The pass stamp, and why it exists.** Running this twice on an unchanged tree
 # is not caution, it is the same answer bought twice — and it happens on every
@@ -162,6 +174,9 @@ trap 'rm -rf "$WORK"' EXIT
 
 NEEDS_STATIC=1
 NEEDS_HOST_TESTS=1
+# 1 on a `--changed` plan narrower than the full suite (see the header).
+SCOPED=0
+SCOPED_OUT=()
 PLAN_JSON="$WORK/verification-plan.json"
 
 if [[ $CHANGED -eq 1 ]]; then
@@ -188,6 +203,7 @@ if [[ $CHANGED -eq 1 ]]; then
   }
   NEEDS_STATIC="$(read_plan_bool needs_static)"
   NEEDS_HOST_TESTS="$(read_plan_bool needs_host_tests)"
+  [[ "$(read_plan_bool full_suite)" == "1" ]] || SCOPED=1
   "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); print('verification plan:', p['risk'], '·', len(p['test_files']), 'test files'); [print('  -', r) for r in p['reasons']]" "$PLAN_JSON"
 fi
 
@@ -236,7 +252,7 @@ fi
 if [[ $NEEDS_STATIC -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
   # --fatal-infos would be stricter than the checklist requires; errors and
   # warnings are the bar, and analysis_options.yaml decides which is which.
-  plan analyze "flutter analyze" "flutter analyze --no-fatal-infos"
+  plan analyze "flutter analyze" "flutter analyze --no-fatal-infos --no-pub"
 fi
 
 # Generated output is gitignored, so nothing else here notices when it is stale,
@@ -295,7 +311,9 @@ fi
 # The design-token hook exits 0 on any error by design, so a hook that has
 # stopped loading its rules looks like a clean file; its tests are what notice.
 HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"
-if [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
+if [[ $SCOPED -eq 1 ]]; then
+  SCOPED_OUT+=("hook tests: no hook or guard path changed")
+elif [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
   plan hook_tests "hook tests" \
     "$PY -m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'"
 else
@@ -324,10 +342,25 @@ fi
 # an alias or a local function of the same name changes nothing. Fixtures and
 # the allowlist live in tools/m3_lint; the rule table is in
 # docs/shared/design/m3-adoption-ledger.md.
-if command -v dart >/dev/null 2>&1; then
-  plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"
-else
+if [[ $SCOPED -eq 1 ]]; then
+  # The changed hand-written Dart under lib/ that still exists. Resolving the
+  # whole of lib/ costs about a minute, so a scoped plan lints these alone.
+  M3_TARGETS=()
+  while IFS= read -r -d '' changed_path; do
+    [[ "$changed_path" == lib/*.dart && "$changed_path" != *.g.dart && -f "$changed_path" ]] \
+      && M3_TARGETS+=("$changed_path")
+  done <"$WORK/changed-paths.nul"
+fi
+if ! command -v dart >/dev/null 2>&1; then
   FAILED+=("m3_lint unavailable: dart is not on PATH")
+elif [[ $SCOPED -eq 0 ]]; then
+  plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"
+elif [[ ${#M3_TARGETS[@]} -gt 0 ]]; then
+  printf -v M3_QUOTED " %q" "${M3_TARGETS[@]}"
+  plan m3_lint "Material 3 AST rules (tools/m3_lint, ${#M3_TARGETS[@]} changed files)" \
+    "dart run tools/m3_lint/m3_lint.dart$M3_QUOTED"
+else
+  SCOPED_OUT+=("m3_lint: no Dart file under lib/ changed")
 fi
 
 # The guard's own probes, and they belong wherever the guard runs. A rule that
@@ -352,6 +385,8 @@ GUARD_PY="${GUARD_PY:-$PY}"
 GUARD_TESTS="$REPO_ROOT/code-verification-guard-v2/tests"
 if [[ $NEEDS_STATIC -eq 0 ]]; then
   :
+elif [[ $SCOPED -eq 1 ]]; then
+  SCOPED_OUT+=("guard self-tests: no guard path changed")
 elif [[ ! -d "$GUARD_TESTS" ]]; then
   FAILED+=("guard self-tests missing at $GUARD_TESTS")
 elif [[ -z "$GUARD_PY" ]]; then
@@ -399,7 +434,7 @@ plan_host_tests() {
   local scope="$1" quoted=""
   shift
   [[ $# -gt 0 ]] && printf -v quoted " %q" "$@"
-  plan test "host tests ($scope, no goldens, TZ=UTC)" "bash '$RUN_TESTS'$quoted"
+  plan test "host tests ($scope, no goldens, TZ=UTC)" "MEMOX_NO_PUB=1 bash '$RUN_TESTS'$quoted"
 }
 
 if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
@@ -427,28 +462,57 @@ fi
 
 
 # ------------------------------------------------------------- run them all
+# **Packages resolve once, before anything starts.** `flutter analyze` and
+# `flutter test` each ran `pub get` on their own, at the same moment, and waited
+# on each other's lock; both now run with `--no-pub` after this one call.
+if [[ $NEEDS_FLUTTER -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
+  if ! flutter pub get >"$WORK/pub_get.log" 2>&1; then
+    step "flutter pub get"
+    cat "$WORK/pub_get.log"
+    FAILED+=("flutter pub get")
+  fi
+fi
+
 # Output is captured per step rather than streamed. Interleaved output from
 # concurrent processes is unreadable exactly when it matters — when something
 # failed and you are looking for which line said so.
 for i in "${!NAMES[@]}"; do
   {
+    started=$(date +%s)
     eval "${CMDS[$i]}" >"$WORK/${NAMES[$i]}.log" 2>&1
     printf '%s' "$?" >"$WORK/${NAMES[$i]}.rc"
+    printf '%s' "$(( $(date +%s) - started ))" >"$WORK/${NAMES[$i]}.secs"
   } &
 done
 wait
 
+# Every log of this run, kept where a passing step's detail can still be read.
+LOG_DIR="$REPO_ROOT/.dart_tool/dod_check_logs"
+rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
+hr
 for i in "${!NAMES[@]}"; do
-  step "${LABELS[$i]}"
-  cat "$WORK/${NAMES[$i]}.log"
-  if [[ "$(cat "$WORK/${NAMES[$i]}.rc" 2>/dev/null || echo 1)" != "0" ]]; then
-    case "${NAMES[$i]}" in
-      format) FAILED+=("format — run with --fix, or 'dart format .'") ;;
-      guard)  FAILED+=("guard — see the rule ids above") ;;
-      *)      FAILED+=("${NAMES[$i]}") ;;
-    esac
+  name="${NAMES[$i]}"
+  cp "$WORK/$name.log" "$LOG_DIR/$name.log" 2>/dev/null
+  secs="$(cat "$WORK/$name.secs" 2>/dev/null || echo "?")"
+  if [[ "$(cat "$WORK/$name.rc" 2>/dev/null || echo 1)" == "0" ]]; then
+    if [[ ${MEMOX_GATE_VERBOSE:-0} -eq 1 ]]; then
+      step "${LABELS[$i]}"
+      cat "$WORK/$name.log"
+    fi
+    printf '✓ %s (%ss)\n' "${LABELS[$i]}" "$secs"
+    # The test count is the one detail of a passing step worth a line.
+    [[ "$name" == "test" ]] && grep -m1 '^test report:' "$WORK/$name.log" | sed 's/^/    /'
+    continue
   fi
+  step "✗ ${LABELS[$i]} (${secs}s)"
+  cat "$WORK/$name.log"
+  case "$name" in
+    format) FAILED+=("format — run with --fix, or 'dart format .'") ;;
+    guard)  FAILED+=("guard — see the rule ids above") ;;
+    *)      FAILED+=("$name") ;;
+  esac
 done
+echo "logs: .dart_tool/dod_check_logs/"
 
 # --------------------------------------------------------------- summary
 hr
@@ -462,6 +526,12 @@ if [[ $FAST -eq 1 ]]; then
   echo "⚡ --fast ran the Deck + app subset only. It did NOT run test/core,"
   echo "   test/shared, test/features/<other>, the visual audits, or goldens."
   echo "   Run without --fast before you commit."
+fi
+
+if [[ ${#SCOPED_OUT[@]} -gt 0 ]]; then
+  echo
+  echo "not run on this --changed plan (the full gate runs them):"
+  printf '  - %s\n' "${SCOPED_OUT[@]}"
 fi
 
 if [[ $CHANGED -eq 1 ]]; then

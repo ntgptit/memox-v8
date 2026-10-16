@@ -317,7 +317,10 @@ class GoldenBundleTest(_FixtureRepoCase):
         self.assertFalse((self.root / bundle_tests.BUNDLE_DIR).exists())
 
 
+# `pub get` is recorded apart and always succeeds, so a script's `flutter test`
+# stays the call the tests read, and FAKE_FLUTTER_EXIT is that call's code.
 _FAKE_FLUTTER = """#!/usr/bin/env bash
+if [ "$1" = "pub" ]; then printf '%s\\n' "$*" >> "$FAKE_FLUTTER_ARGS.pub"; exit 0; fi
 printf '%s\\n' "$@" > "$FAKE_FLUTTER_ARGS"
 for arg in "$@"; do
   case "$arg" in --file-reporter) ;; json:*) : > "${arg#json:}" ;; esac
@@ -359,6 +362,8 @@ class _ScriptCase(unittest.TestCase):
             cwd=SCRIPTS.parents[3], env=env, capture_output=True, text=True,
         )
         argv = recorded.read_text(encoding="utf-8").split("\n") if recorded.exists() else []
+        pub = Path(f"{recorded}.pub")
+        self.pub_calls = pub.read_text(encoding="utf-8").splitlines() if pub.exists() else []
         self.output = completed.stdout + completed.stderr
         return completed.returncode, [arg for arg in argv if arg]
 
@@ -383,6 +388,18 @@ class RunTestsTest(_ScriptCase):
         self.assertEqual(argv[argv.index("-r") + 1], "failures-only")
         self.assertTrue([arg for arg in argv if "/memox_test_bundles/run-" in arg], argv)
         self.assertNotIn("test/features/deck", argv)
+
+    def test_packages_resolve_once_and_the_run_does_not_resolve_them_again(self) -> None:
+        code, argv = self._run("test/features/deck")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.pub_calls, ["pub get"])
+        self.assertIn("--no-pub", argv)
+
+    def test_the_gate_that_already_resolved_them_skips_pub_get(self) -> None:
+        code, argv = self._run("test/features/deck", env_extra={"MEMOX_NO_PUB": "1"})
+        self.assertEqual(code, 0)
+        self.assertEqual(self.pub_calls, [])
+        self.assertIn("--no-pub", argv)
 
     def test_no_target_means_the_whole_host_suite(self) -> None:
         code, argv = self._run()
@@ -422,6 +439,15 @@ class RunGoldensTest(_ScriptCase):
         self.assertTrue(bundles, argv)
         self.assertNotIn("--update-goldens", argv)
         self.assertNotIn("--tags", argv)
+
+    def test_both_modes_print_failures_only_after_one_pub_get(self) -> None:
+        for args in ((), ("--update",)):
+            with self.subTest(args=args):
+                code, argv = self._run(*args)
+                self.assertEqual(code, 0)
+                self.assertEqual(argv[argv.index("-r") + 1], "failures-only")
+                self.assertIn("--no-pub", argv)
+                self.assertEqual(self.pub_calls, ["pub get"])
 
     def test_update_rewrites_through_the_golden_files_themselves(self) -> None:
         code, argv = self._run("--update")

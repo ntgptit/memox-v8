@@ -12,6 +12,12 @@
 #           n files at a time for --update (a memory-limited Docker VM sets it)
 #   MEMOX_TEST_BUNDLES=0  compare file by file, as before 2026-10-02.
 #
+# **Failures only, and `pub get` once, quietly.** The default reporter rewrote
+# one progress line per test, 137 KB of output on a passing run; the console
+# now shows failures and test_report.py's summary, and the JSON report keeps
+# everything. `pub get` runs first and prints only when it fails, as in
+# run_tests.sh.
+#
 # **Why it is a script.** `flutter test --tags golden` compiles and starts
 # every test file in `test/` only to skip the ones without the tag: 529 suites
 # for 40 golden files, 7m17s in the cloud container on 2026-10-02. Handing it
@@ -61,6 +67,12 @@ REPORT="${REPORT:-$RUN_DIR/golden-report.jsonl}"
 RC_FILE="$RUN_DIR/rc"
 trap '[[ "$(cat "$RC_FILE" 2>/dev/null || echo 0)" == "0" ]] && rm -rf "${REPO_ROOT:?}/${RUN_DIR:?}"' EXIT
 
+if ! flutter pub get >"$RUN_DIR/pub_get.log" 2>&1; then
+  cat "$RUN_DIR/pub_get.log"
+  echo "run_goldens: flutter pub get failed" >&2
+  exit 1
+fi
+
 # Processes for a file-by-file run: MEMOX_TEST_BUNDLES when it names a count,
 # so the cap a small machine sets for the bundles holds for --update too;
 # otherwise one per core, at most eight, like the bundles.
@@ -80,7 +92,7 @@ if [[ $UPDATE -eq 1 || "${MEMOX_TEST_BUNDLES:-}" == "0" ]]; then
   update_flag=()
   [[ $UPDATE -eq 1 ]] && update_flag=(--update-goldens)
   echo "goldens: ${#files[@]} files, one by one${update_flag:+, updating}"
-  TZ=UTC flutter test --tags golden "${update_flag[@]}" -j "$JOBS" \
+  TZ=UTC flutter test --no-pub -r failures-only --tags golden "${update_flag[@]}" -j "$JOBS" \
     --file-reporter "json:$REPORT" "${files[@]}"
 else
   if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --out "$RUN_DIR" test)"; then
@@ -89,7 +101,7 @@ else
   mapfile -t bundles <<<"$listed"
   bundles=("${bundles[@]%$'\r'}")
   [[ -n "${bundles[0]:-}" ]] || { echo "no golden test file under test/" >&2; exit 1; }
-  TZ=UTC flutter test -j "${#bundles[@]}" --file-reporter "json:$REPORT" "${bundles[@]}"
+  TZ=UTC flutter test --no-pub -r failures-only -j "${#bundles[@]}" --file-reporter "json:$REPORT" "${bundles[@]}"
 fi
 rc=$?
 printf '%s' "$rc" >"$RC_FILE"

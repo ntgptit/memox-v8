@@ -86,6 +86,13 @@ relevant paths and types, and every reference found before a change
   suite. Goldens run after it, in the Linux container only
   (`bash .claude/skills/flutter-workflow/scripts/run_goldens.sh`, `--update`
   to rewrite them); on Windows run the gate alone and never `--update-goldens`.
+- **Check the narrow thing while working; run the full gate once.** Between
+  edits, and in each task of a plan, run `run_tests.sh` on the tests the
+  change touches, or `dod_check.sh --changed` (the static checks and the tests
+  the diff reaches). Run `dod_check.sh` with no flag once, on the final tree,
+  before the commit that goes into the PR; a second run on an unchanged tree
+  answers from its pass stamp. A passing step prints one line; its log is in
+  `.dart_tool/dod_check_logs/`.
 - Part of the suite runs through
   `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`
   (bundled, failures only), once; `flutter test` on a directory or the whole

@@ -73,7 +73,7 @@ mechanical half is automated:
 .claude/skills/flutter-workflow/scripts/dod_check.sh
 ```
 
-That runs the full mechanical gate — codegen freshness, format, analyze, tests, the architecture boundary check, the code-verification guard and the docs guard (see the script header for the exact list). It cannot
+That runs the full mechanical gate — codegen freshness, format, analyze, tests, the architecture boundary check, the code-verification guard and the docs guard (see the script header for the exact list). Run it once, on the final tree, before the commit that goes into the PR; while working, `scripts/run_tests.sh <file|dir>…` or `dod_check.sh --changed` checks what the change reaches. It cannot
 judge whether the acceptance criteria are met, whether the UI matches the design,
 or whether the Linear issue is honest — that part is on you, and it is the half
 that actually catches problems.

@@ -6,20 +6,38 @@ import '../../tools/m3_lint/m3_rules.dart';
 
 String _abs(String p) => File(p).absolute.path;
 
-Future<List<M3Violation>> _lint(String dir) {
-  final files = Directory(dir)
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.dart'))
-      .map((f) => f.absolute.path)
-      .toList();
-  return lintPaths(files, root: _abs('.'), allowlist: const []);
-}
+// Not `_abs('.')`, which ends in `/.` and leaves every reported path absolute.
+final String _root = Directory.current.absolute.path;
+
+const String _negative = 'tools/m3_lint/fixtures/negative';
+const String _positive = 'tools/m3_lint/fixtures/positive';
+
+List<String> _dartFiles(String dir) =>
+    Directory(dir)
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart'))
+        .map((f) => f.absolute.path)
+        .toList();
+
+// Each lintPaths call builds a cold analysis context, about 9 s before the
+// first file resolves, so both fixture folders are resolved once, together,
+// for every test that reads them (lazy: on the first test that awaits it).
+final Future<List<M3Violation>> _fixtures = lintPaths(
+  [..._dartFiles(_negative), ..._dartFiles(_positive)],
+  root: _root,
+  allowlist: const [],
+);
+
+Future<List<M3Violation>> _lint(String dir) async => [
+  for (final v in await _fixtures)
+    if (v.path.startsWith('$dir/')) v,
+];
 
 void main() {
   test('every negative fixture trips the rule its name carries', () async {
-    final violations = await _lint('tools/m3_lint/fixtures/negative');
-    final dir = Directory('tools/m3_lint/fixtures/negative');
+    final violations = await _lint(_negative);
+    final dir = Directory(_negative);
     for (final file in dir.listSync().whereType<File>()) {
       final name = file.uri.pathSegments.last;
       final rule = name.substring(0, 5).toUpperCase();
@@ -33,7 +51,7 @@ void main() {
   test(
     'aliased Cupertino import and Switch.adaptive are both caught',
     () async {
-      final violations = await _lint('tools/m3_lint/fixtures/negative');
+      final violations = await _lint(_negative);
       final aliased = violations
           .where((v) => v.path.endsWith('m3l02_aliased_import.dart'))
           .toList();
@@ -43,11 +61,11 @@ void main() {
   );
 
   test('positive fixtures are clean', () async {
-    expect(await _lint('tools/m3_lint/fixtures/positive'), isEmpty);
+    expect(await _lint(_positive), isEmpty);
   }, timeout: const Timeout(Duration(minutes: 3)));
 
   test('a fixture with several constructs reports every one of them', () async {
-    final violations = await _lint('tools/m3_lint/fixtures/negative');
+    final violations = await _lint(_negative);
     const expected = {
       'm3l01_overlay_bypass.dart': 7,
       'm3l01_overlay_route_subclass.dart': 3,
@@ -168,10 +186,60 @@ void main() {
     });
   });
 
+  group('a lint of some files (dod_check.sh --changed)', () {
+    const entry = AllowEntry(
+      file: 'lib/shared/widgets/mx_dialog.dart',
+      rule: 'M3L01',
+      reason: 'r',
+      owner: 'o',
+      review: '2027-01-01',
+    );
+
+    test('an entry for a file outside the linted ones is not stale', () {
+      final result = applyAllowlist(
+        const [],
+        [entry],
+        today: DateTime(2026, 10, 15),
+        linted: const {'lib/features/deck/a.dart'},
+      );
+      expect(result, isEmpty);
+    });
+
+    test('an entry for a linted file that covers nothing is stale', () {
+      final result = applyAllowlist(
+        const [],
+        [entry],
+        today: DateTime(2026, 10, 15),
+        linted: const {'lib/shared/widgets/mx_dialog.dart'},
+      );
+      expect(result.single.message, contains('stale'));
+    });
+
+    test('an expired entry is reported whichever files were linted', () {
+      final result = applyAllowlist(
+        const [],
+        [entry],
+        today: DateTime(2027, 01, 02),
+        linted: const {},
+      );
+      expect(result.single.message, contains('expired'));
+    });
+
+    test('no file to lint resolves nothing and reports only expiry', () async {
+      final result = await lintPaths(
+        const [],
+        root: _root,
+        allowlist: [entry],
+        partial: true,
+      );
+      expect(result, isEmpty);
+    });
+  });
+
   test('an allowlist entry that suppresses nothing is reported', () async {
     final violations = await lintPaths(
       [_abs('tools/m3_lint/fixtures/positive/material_dialog_ok.dart')],
-      root: _abs('.'),
+      root: _root,
       allowlist: [
         const AllowEntry(
           file: 'tools/m3_lint/fixtures/positive/material_dialog_ok.dart',
