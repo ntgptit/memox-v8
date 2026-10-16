@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -24,7 +25,7 @@ class TopikRecentAttemptRowWidget extends StatelessWidget {
     final l10n = context.l10n;
     final attempt = numbered.attempt;
     final score = attempt.score;
-    final meta = l10n.topikTerms([
+    final meta = metaTerms([
       l10n.topikDateTime(attempt.startedAt),
       if (!attempt.isCompleted || score == null)
         l10n.topikStatusInProgress

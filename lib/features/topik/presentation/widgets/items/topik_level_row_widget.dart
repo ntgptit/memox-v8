@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
@@ -33,7 +34,7 @@ class TopikLevelRowWidget extends StatelessWidget {
     return MxListRow(
       title: l10n.topikLevelName(level),
       meta: Text(
-        l10n.topikTerms([
+        metaTerms([
           l10n.topikLevelGrades(level),
           l10n.topikBothSections,
           count,

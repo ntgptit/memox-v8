@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_model.dart';
@@ -40,7 +41,7 @@ class TopikTestRowWidget extends StatelessWidget {
       meta: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (tags.isNotEmpty) Text(l10n.topikTerms(tags), style: metaStyle),
+          if (tags.isNotEmpty) Text(metaTerms(tags), style: metaStyle),
           Text(l10n.topikTestStatusLine(entry.status), style: metaStyle),
         ],
       ),

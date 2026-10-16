@@ -99,6 +99,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart, as in
   browse mode.
 - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at large text, between whole terms; only the deck name keeps one line.
+- **Owner 2026-10-16 (Q-P6-4):** the row's structure line ("4 sub-decks · 1,248 cards") is glued by the shared `lib/l10n/meta_line.dart`, as the breakdown line is, so it breaks only between its terms; the empty line is a hint and wraps as words.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow (12/600 muted); the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the recent sort is labelled "Date added" (vi "Ngày tạo") with the hint "Newest first"; the search field is hidden while decks are reordered, as the summary, the due strip and the sort pill are, and returns with Done.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due strip's breakdown is overdue · today, the two halves of its total; New stays on each deck row (BR-STUDY-068).

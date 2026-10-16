@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -37,7 +38,7 @@ class TopikSummaryHeroWidget extends StatelessWidget {
             spacing: dimens.space4,
             children: [
               Text(
-                l10n.topikTerms([
+                metaTerms([
                   l10n.topikRoundNumber(attempt.round),
                   l10n.topikLevelName(attempt.level),
                   l10n.topikSectionName(attempt.section),
@@ -45,7 +46,7 @@ class TopikSummaryHeroWidget extends StatelessWidget {
                 style: context.texts.titleMedium,
               ),
               Text(
-                l10n.topikTerms([
+                metaTerms([
                   l10n.topikDateTime(attempt.startedAt),
                   l10n.duration(attempt.totalTimeMs),
                 ]),

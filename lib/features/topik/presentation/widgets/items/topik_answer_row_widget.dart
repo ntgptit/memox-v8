@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
@@ -35,7 +36,7 @@ class TopikAnswerRowWidget extends StatelessWidget {
     final status = answer.status ?? TopikAnswerStatus.unanswered;
     final selected = answer.selectedIdx;
     final correct = answer.correctIdx;
-    final meta = l10n.topikTerms([
+    final meta = metaTerms([
       if (selected == null)
         l10n.topikNotAnswered
       else

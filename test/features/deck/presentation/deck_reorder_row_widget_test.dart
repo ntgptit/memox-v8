@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_reorder_row_widget.dart';
@@ -61,7 +62,9 @@ void main() {
     expect(find.byIcon(AppIcons.library), findsOneWidget);
     expect(
       find.text(
-        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        ),
       ),
       findsOneWidget,
     );
@@ -74,6 +77,6 @@ void main() {
     await pump(tester, env, _tile(subDecks: 0, cards: 420));
 
     expect(find.byIcon(AppIcons.cardDeck), findsOneWidget);
-    expect(find.text(_en.deckCardCount(420)), findsOneWidget);
+    expect(find.text(wholeTerm(_en.deckCardCount(420))), findsOneWidget);
   });
 }
