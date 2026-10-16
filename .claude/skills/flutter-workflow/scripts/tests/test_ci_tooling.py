@@ -484,6 +484,31 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         plan = self._plan("scripts/some_new_thing.py")
         self.assertTrue(plan.full_suite)
 
+    def test_the_golden_plan_follows_imports_pictures_and_the_theme(self) -> None:
+        """run_goldens.sh --changed: a golden file runs when a Dart file it
+        imports changes or a picture beside it does; every golden for the
+        theme; none for documentation or tooling."""
+        golden = self.module.build_golden_plan
+        root = self.root
+        self.assertEqual(
+            ("test/shared/widgets/mx_components_golden_test.dart",),
+            golden(["test/shared/widgets/goldens/chip_light.png"], root=root,
+                   impact_map=self.impact_map).files,
+        )
+        self.assertTrue(
+            golden(["lib/core/theme/app_theme.dart"], root=root, impact_map=self.impact_map).everything
+        )
+        for path in ("docs/wbs_BE.md", ".claude/hooks/check_test_command.py"):
+            with self.subTest(path=path):
+                plan = golden([path], root=root, impact_map=self.impact_map)
+                self.assertFalse(plan.everything)
+                self.assertEqual((), plan.files)
+        self.assertTrue(
+            golden(["lib/features/card/presentation/gone.dart"], root=root,
+                   impact_map=self.impact_map).everything,
+            "a removed Dart file has unknown importers",
+        )
+
     def test_documents_alone_need_no_static_check_and_no_host_test(self) -> None:
         for path in ("docs/wbs_BE.md", ".impeccable/critique/notes.md"):
             with self.subTest(path=path):

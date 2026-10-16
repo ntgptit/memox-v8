@@ -646,6 +646,74 @@ def discover_test_consumers(
     return consumers
 
 
+def discover_goldens(root: Path) -> set[str]:
+    """Every golden-only test file under `test/` (what run_goldens.sh runs)."""
+    return {
+        path
+        for path in discover_worktree_dart_files(root)
+        if path.startswith("test/")
+        and path.endswith("_test.dart")
+        and is_golden_only_test(root / path)
+    }
+
+
+@dataclass(frozen=True)
+class GoldenPlan:
+    """What `run_goldens.sh --changed` compares: every golden, or [files]."""
+
+    everything: bool
+    files: tuple[str, ...]
+    reasons: tuple[str, ...]
+
+
+def build_golden_plan(
+    paths: Iterable[str], *, root: Path, impact_map: ImpactMap | None = None
+) -> GoldenPlan:
+    """The golden test files a change can move a pixel in.
+
+    Every golden for the theme, tokens, strings, fonts, assets, the test config
+    and anything under `lib/` that is not Dart (a `.drift` query feeds every
+    screen that lists rows), and for a Dart file that no longer exists. A Dart
+    change selects the golden files that import it, transitively; a committed
+    picture, the golden files beside its `goldens/` folder. Nothing else,
+    documentation and tooling included, can change a picture.
+    """
+    impact_map = impact_map or ImpactMap.load()
+    root = root.resolve()
+    goldens = discover_goldens(root)
+    reasons: set[str] = set()
+    selected: set[str] = set()
+    dart: set[str] = set()
+    for raw in paths:
+        path = normalize_path(raw)
+        if not path:
+            continue
+        if path in impact_map.full_scope_files or any(
+            path.startswith(prefix) for prefix in impact_map.full_scope_prefixes
+        ):
+            reasons.add(f"{path} reaches every picture")
+            return GoldenPlan(True, tuple(sorted(goldens)), tuple(sorted(reasons)))
+        if "/goldens/" in path and not path.endswith(".dart"):
+            folder = path.split("/goldens/")[0] + "/"
+            selected.update(g for g in goldens if g.startswith(folder))
+            reasons.add("a committed picture changed: the golden files beside it")
+            continue
+        if path.endswith(".dart") and path.startswith(("lib/", "test/", "tools/")):
+            if not (root / path).is_file():
+                reasons.add(f"{path} was removed: its importers are unknown")
+                return GoldenPlan(True, tuple(sorted(goldens)), tuple(sorted(reasons)))
+            dart.add(path)
+            continue
+        if path.startswith("lib/"):
+            reasons.add(f"{path} is not Dart and feeds the app")
+            return GoldenPlan(True, tuple(sorted(goldens)), tuple(sorted(reasons)))
+    if dart:
+        selected.update(path for path in dart if path in goldens)
+        selected.update(discover_test_consumers(root, dart, goldens))
+        reasons.add("the golden files that import a changed Dart file")
+    return GoldenPlan(False, tuple(sorted(selected)), tuple(sorted(reasons)))
+
+
 def build_plan(
     paths: Iterable[str],
     *,
@@ -671,11 +739,25 @@ def main() -> int:
     parser.add_argument("--paths-file", type=Path)
     parser.add_argument("--force-full", action="store_true")
     parser.add_argument("--nul", action="store_true")
+    parser.add_argument(
+        "--goldens", action="store_true",
+        help="print the golden plan (run_goldens.sh --changed) instead",
+    )
     args = parser.parse_args()
 
     raw = args.paths_file.read_bytes() if args.paths_file else sys.stdin.buffer.read()
     separator = b"\0" if args.nul else b"\n"
     paths = [item.decode("utf-8") for item in raw.split(separator) if item]
+    if args.goldens:
+        golden = build_golden_plan(
+            paths, root=args.root.resolve(), impact_map=ImpactMap.load(args.impact_map)
+        )
+        payload = json.dumps(asdict(golden), ensure_ascii=False, separators=(",", ":"))
+        if args.json_output:
+            args.json_output.write_text(payload + "\n", encoding="utf-8")
+            return 0
+        print(payload)
+        return 0
     plan = build_plan(
         paths,
         root=args.root.resolve(),

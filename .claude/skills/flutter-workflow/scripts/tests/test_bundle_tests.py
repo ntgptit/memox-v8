@@ -478,6 +478,16 @@ class RunGoldensTest(_ScriptCase):
         code, _ = self._run(exit_code=1)
         self.assertEqual(code, 1)
 
+    def test_changed_against_head_with_no_diff_compares_nothing(self) -> None:
+        """--changed reads the same diff dod_check.sh --changed does; when no
+        golden file reaches it, flutter is not started."""
+        if subprocess.run(["git", "diff", "--quiet", "HEAD"], cwd=SCRIPTS.parents[3]).returncode:
+            self.skipTest("the working tree has changes")
+        code, argv = self._run("--changed", "--base", "HEAD")
+        self.assertEqual(code, 0)
+        self.assertEqual(argv, [])
+        self.assertIn("no golden file reaches this change", self.output)
+
 
 if __name__ == "__main__":
     unittest.main()

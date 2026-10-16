@@ -25,8 +25,8 @@ from pathlib import Path
 from build_verification_plan import (
     GOLDEN_TAGS,
     LEADING_TRIVIA,
+    discover_goldens,
     discover_tests,
-    discover_worktree_dart_files,
     is_golden_only_test,
     normalize_path,
 )
@@ -86,17 +86,6 @@ def bundle_count(env_value: str | None, cpu_count: int | None) -> int:
             "files one by one then, so this script should not have been called"
         )
     return count
-
-
-def discover_goldens(root: Path) -> set[str]:
-    """Every golden-only test file under `test/`."""
-    return {
-        path
-        for path in discover_worktree_dart_files(root)
-        if path.startswith("test/")
-        and path.endswith("_test.dart")
-        and is_golden_only_test(root / path)
-    }
 
 
 def expand_targets(root: Path, targets: list[str], *, goldens: bool = False) -> list[str]:
