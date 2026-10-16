@@ -76,6 +76,14 @@ convenience; the CI `supabase` job is the gate.
    everyone else gets `FORBIDDEN`. This changes data, not schema, so the drift
    check does not see it.
 
+7. TOPIK Master Data (ADR-024) needs nothing by hand: the migration creates
+   the tables, the RPCs, the private bucket `topik-media` and its policies.
+   (The hosted ownership of the Storage tables is proven only by the push
+   after merge; the local stub cannot prove it.) The Free plan holds 1 GB of
+   storage and 5 GB of egress a month; one round's media is tens of MB. The
+   `supabase usage` workflow does not read Storage yet (database size and
+   active users only), so watch it under Project Settings → Usage.
+
 ## Sign-in setup (SB-A4, once)
 
 The app signs in with a 6-digit email code and with native Google (auth spec
@@ -168,10 +176,6 @@ fails.
    The workflow fails if a key is given and the APK still carries the debug
    key, or its signer cannot be read; without a key it only warns.
    `flutter run` on your machine keeps the debug key.
-
-The TOPIK media bucket `topik-media` and its policies need nothing by hand: they
-are in the migration (the hosted ownership of the Storage tables is proven only by
-the `db push` after merge; the local stub cannot prove it).
 
 After setup, run the device check (auth spec §9.1) and record its results
 there.

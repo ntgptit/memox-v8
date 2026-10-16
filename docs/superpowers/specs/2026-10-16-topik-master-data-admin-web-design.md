@@ -1,6 +1,6 @@
 # TOPIK Master Data on Supabase and the Admin Web
 
-Date: 2026-10-16 · Owner decision of 2026-10-16 (during the DEV-394 audit) · Status: approved by the owner 2026-10-16, with O1–O9 of §11 resolved as recommended. Nothing here is built; no migration runs until each plan is approved and merged.
+Date: 2026-10-16 · Owner decision of 2026-10-16 (during the DEV-394 audit) · Status: approved by the owner 2026-10-16, with O1–O9 of §11 resolved as recommended. Plan 1 (§10) is built on branch `ccr-b0d5b7c9-mlvno2` (DEV-394), PR pending; its migration is not yet pushed to the project (the owner runs the push after merge). Nothing else here is built; no migration runs until each plan is approved and merged.
 
 ## 1. Goal
 
@@ -110,16 +110,18 @@ All tables: RLS on, no policy, `revoke all … from public, anon, authenticated`
 | Table | Columns (key ones) | Rules |
 |---|---|---|
 | `public.topik_test_draft` | `test_id text pk`, `json jsonb`, `updated_at`, `updated_by uuid`, `last_check jsonb` (the Admin Web's validator report) | One draft per test id. Free-form while drafting; a draft may be invalid. Deleting a draft never touches versions |
-| `public.topik_test_version` | `test_id text`, `content_version int`, `json jsonb`, `media jsonb` (paths and checksums of the version's objects), `checksum text` (sha256 of `json`), `published_at`, `published_by uuid`, `note text`; pk `(test_id, content_version)` | **Immutable**: a `BEFORE UPDATE OR DELETE` trigger aborts (as `topik_attempt_completed_immutable`). `content_version` = the JSON's own `contentVersion`; a CHECK ties them. `json->>'testId' = test_id` |
+| `public.topik_test_version` | `test_id text`, `content_version int`, `json jsonb`, `media jsonb` (an array of the version's object paths, no checksums), `checksum text` (`md5(json::text)` of the stored JSON), `published_at`, `published_by uuid`, `note text`; pk `(test_id, content_version)` | **Immutable**: a `BEFORE UPDATE OR DELETE` trigger aborts (as `topik_attempt_completed_immutable`). `content_version` = the JSON's own `contentVersion`; a CHECK ties them, and the server overwrites the stored JSON's `contentVersion` with the new version number at publish. `json->>'testId' = test_id` |
 | `public.topik_publication` | `test_id text pk`, `current_version int null`, `status text check in ('published','retired')`, `catalog_version bigint` (global, monotonic), `updated_at`, `updated_by` | What clients see. `published` ⇒ `current_version` not null and exists in `topik_test_version`; `retired` ⇒ clients drop the test. Every change takes the next `catalog_version` from a sequence, so a client pulls "everything since N" |
 | `public.topik_master_audit` | `id uuid pk`, `at timestamptz`, `actor uuid`, `action text` (`draft_save`, `draft_import`, `draft_delete`, `publish`, `retire`, `unretire`, `rollback`), `test_id`, `content_version int null`, `detail jsonb` | Append-only (trigger). Written inside the same transaction as the change it records, by the RPC, never by the client |
 
 Versioning rules:
 
-- **Publish** validates the draft (§7), inserts `topik_test_version` with `content_version` = max existing + 1 (the Admin Web sets the JSON's `contentVersion` to that number before the call; the server checks the two agree), sets the publication to `published` at that version, bumps `catalog_version`, audits. The draft stays as the working copy.
+- **Publish** validates the draft (§7), inserts `topik_test_version` with `content_version` = max existing + 1 (the Admin Web sets the JSON's `contentVersion` to that number before the call; the server checks the two agree, and then overwrites it in the stored JSON), sets the publication to `published` at that version, bumps `catalog_version`, audits. The draft stays as the working copy.
 - **Retire** sets `status = 'retired'`, keeps every version, bumps `catalog_version`, audits. Clients drop the test from their catalog; attempts keep their snapshots; Review says the test is unavailable (BR-TOPIK-019, already built).
-- **Rollback** republishes an earlier version's `json` as a **new** `content_version` (max + 1), with `detail.rolled_back_from = N`. Versions stay monotonic, so a client's cache check (§8.3) stays a simple `>` comparison and BR-TOPIK-007 holds. The pointer never moves backwards.
+- **Rollback** republishes an earlier version's `json` as a **new** `content_version` (max + 1), with `detail.rolledBackFrom = N` (camelCase, as in every RPC result). Versions stay monotonic, so a client's cache check (§8.3) stays a simple `>` comparison and BR-TOPIK-007 holds. The pointer never moves backwards.
 - **Unretire** sets `status = 'published'` at `current_version`, bumps `catalog_version`, audits.
+- **Retired tests are closed to publishing.** Publish and rollback on a retired test raise `INVALID_STATE`; the admin unretires first, explicitly and audited. Rollback to the version that is already current also raises `INVALID_STATE` (it would only add a duplicate).
+- **`catalog_version` order is commit order.** Every `catalog_version` is allocated under one global advisory lock held to the end of the transaction, so allocation order equals commit order and no smaller number can commit after a client has seen a larger one. The `since` cursor of `topik_catalog` (§6.2) relies on it.
 
 ## 6. RPCs
 
@@ -132,7 +134,7 @@ All functions: `SECURITY DEFINER`, `set search_path = ''`, `revoke all … from 
 | `topik_admin_list()` | Every test id with its draft (updated_at, last_check summary), publication status, current version and the latest version |
 | `topik_admin_draft_get(test_id)` / `topik_admin_draft_save(test_id, json, last_check)` / `topik_admin_draft_delete(test_id)` | The working copy. `save` checks the JSON's identity fields match `test_id` (`testId`, `level`, `round`, `section`) and audits |
 | `topik_admin_versions(test_id)` / `topik_admin_version_get(test_id, content_version)` | History and one immutable version |
-| `topik_admin_publish(test_id, expected_content_version, note)` | §5 publish; refuses when the draft's `contentVersion` ≠ max + 1 (`VERSION_MISMATCH`), when the shape check fails (`VALIDATION_FAILED` with the rule names), when a referenced media object is missing in Storage (`MEDIA_MISSING`) |
+| `topik_admin_publish(test_id, expected_content_version, note)` | §5 publish; refuses when `expected_content_version` ≠ max + 1, or the draft's own `contentVersion` ≠ the expected one (`VERSION_MISMATCH`; the draft must already say the next version), when the shape check fails (`VALIDATION_FAILED` with the rule names), when a media path is not `{test_id}/{positive integer}/{file}` (`VALIDATION_FAILED` with `detail = 'media'`), when a referenced media object is missing in Storage (`MEDIA_MISSING`), and for a retired test (`INVALID_STATE`) |
 | `topik_admin_retire(test_id, note)` / `topik_admin_unretire(test_id, note)` / `topik_admin_rollback(test_id, to_version, note)` | §5 |
 | `topik_admin_audit(test_id null, limit, before)` | The audit log, newest first |
 
@@ -140,20 +142,20 @@ All functions: `SECURITY DEFINER`, `set search_path = ''`, `revoke all … from 
 
 | RPC | Does |
 |---|---|
-| `topik_catalog(since bigint)` | Publications with `catalog_version > since`: `test_id`, `status`, `current_version`, `checksum`, `media` manifest, and the identity fields the list screens need (`level`, `round`, `section`, `titleKo`, derived tags). Paged like `sync_changes` (`next`, `more`). A retired test comes as `status = 'retired'`, which is its tombstone |
+| `topik_catalog(since bigint)` | Publications with `catalog_version > since`: `test_id`, `status`, `current_version`, `checksum` (of the JSON), `media` (the object paths), and the identity fields the list screens need (`level`, `round`, `section`, `titleKo`, derived tags). Paged like `sync_changes` (`next`, `more`): `next` is the last `catalog_version` of the page and equals `since` on an empty page; `more` is false when exactly 500 remain. A retired test comes as `status = 'retired'`, which is its tombstone. A user without a `profiles` row gets `UNAUTHORIZED` |
 | `topik_test_content(test_id, content_version)` | The published `json` of that version, or `NOT_FOUND`. Only versions that are the test's `current_version` are served (a client never downloads a superseded version) |
 
 Both are `authenticated`-only (the app is always signed in, anonymously at least, ADR-015 #4). Master Data is not personal, so nothing filters by `auth.uid()`; the grant is what keeps `anon` out.
 
 ### 6.3 Shape checks in SQL
 
-`topik_admin_publish` runs the cheap structural checks that need no Korean text knowledge: required keys and types, `format = pbt`, `source.publishedBy = 'NIIED'`, non-empty `source.url`, `schemaVersion = 1`, question count and numbering for the level and section (BR-TOPIK-001), points sum 100 and the per-level point sets (BR-TOPIK-002), four options with `idx` 1–4 and `answerIdx` in 1–4 (BR-TOPIK-003), every question in exactly one group and every group listed (BR-TOPIK-004), `vi` and `en` present on every multilingual object (BR-TOPIK-006). They mirror the Dart rules `identity`, `metadata`, `numbering`, `points`, `options`, `groups`, `languages` and are pinned by pgTAP against the same fixtures (§7). The question-type map (`questionType`, a warning in Dart) is not checked in SQL.
+`topik_admin_publish` runs the cheap structural checks that need no Korean text knowledge: required keys and types, `format = pbt`, `source.publishedBy = 'NIIED'`, non-empty `source.url`, `schemaVersion = 1`, question count and numbering for the level and section (BR-TOPIK-001), points sum 100 and the per-level point sets (BR-TOPIK-002), four options with `idx` 1–4 and `answerIdx` in 1–4 (BR-TOPIK-003), every question in exactly one group and every group listed (BR-TOPIK-004), `vi` and `en` present on every multilingual object (BR-TOPIK-006). They mirror the Dart rules `identity`, `metadata`, `numbering`, `points`, `options`, `groups`, `languages` and are pinned by pgTAP against the same fixtures (§7). The question-type map (`questionType`, a warning in Dart) is not checked in SQL. The check's handler catches SQLSTATE class 22 only (a bad cast, a scalar where an array was expected): a wrongly typed field is reported as `identity` plus `metadata`, and any other error is a bug and raises. A non-array `questions` or `groups` is read as empty.
 
 ### 6.4 Media (Supabase Storage)
 
-- Bucket `topik-media`, private. Objects `{test_id}/{content_version}/{file}`, listed in `topik_test_version.media` with checksums; the JSON's `assets.audio` and image paths are these object paths.
+- Bucket `topik-media`, private. Objects `{test_id}/{content_version}/{file}`, listed as paths in `topik_test_version.media` (no checksums); the JSON's `assets.audio` and image paths are these object paths. Publish enforces the path contract: every media path must be `{test_id}/{positive integer}/{file}` (else `VALIDATION_FAILED`, `detail = 'media'`). The Admin Web uploads under `{test_id}/{expected next version}/`; a rollback carries the old version segments of the republished content.
 - **Write:** the Admin Web uploads through supabase-js with the admin's session. Storage authorises through policies on `storage.objects` (Supabase's own mechanism; tables stay policy-free): `insert`/`update`/`delete` for `private.is_admin()` on this bucket only. This is the one place a policy exists, and §11 asks the owner to confirm the exception to ADR-015 #5's wording.
-- **Read:** `select` for `authenticated` on this bucket, limited to objects whose `{test_id}/{content_version}` prefix is a published current version (`exists (select 1 from public.topik_publication p where p.status = 'published' and p.current_version::text = split_part(name, '/', 2) and p.test_id = split_part(name, '/', 1))`). Drafts' media (uploaded before publish) is readable by admins only. The app downloads with its session; no signed URLs, no secret.
+- **Read:** `select` for `authenticated` with a `profiles` row (a deleted user's live JWT has none), limited to objects whose first segment is the id of a `published` test and whose second segment is **any existing `content_version` of that test**, not only the current one: a rollback republishes old content whose media paths carry the old version. Any object under such a prefix reads (deliberate). Admins read everything in the bucket, so drafts' media (uploaded before publish) is readable by admins only. The policy calls the security-definer helper `topik_media_can_read(name)`; it casts nothing in the name, so a malformed one is denied. The app downloads with its session; no signed URLs, no secret.
 - Size: the Free plan holds 1 GB of storage and 5 GB egress a month. One round (two listening files re-encoded mono, low bitrate, plus pictures) is tens of MB; the app downloads a test's media once per version. Enough for a personal app; the plan's limits are noted in `supabase/README.md`.
 
 ## 7. One rule set, three gates
@@ -164,7 +166,7 @@ BR-TOPIK-008's reason stands: two validators drift. The decision keeps **one ref
 2. **SQL shape checks** in `topik_admin_publish` (§6.3): a subset, so an invalid test cannot be published by mistake.
 3. **TypeScript validator** in the Admin Web, for authoring feedback before publish, a port of the Dart rules.
 
-The contract between them is the **fixture set** this repo already has: a structurally complete synthetic test per level and section and one broken variant per rule (spec 2026-10-15 §4.5, `test/support/topik_content_fixtures.dart`). The fixtures are exported as JSON files to `test/fixtures/topik/` (generated by a Dart tool, checked by the gate), the pgTAP suite runs the SQL checks over them, and the Admin Web's CI runs the TS validator over them, asserting the same verdict per fixture. A rule change starts in Dart and the fixtures; the two ports go red until they follow.
+The contract between them is the **fixture set** this repo already has: a structurally complete synthetic test per level and section and one broken variant per rule (spec 2026-10-15 §4.5, `test/support/topik_content_fixtures.dart`). The fixtures are exported as JSON files to `test/fixtures/topik/` (generated by a Dart tool, checked by the gate), the pgTAP suite runs the SQL checks over them, and the Admin Web's CI runs the TS validator over them, asserting the same verdict per fixture. The SQL side is a subset, so the contract asserts SQL ⊆ Dart only on fixtures the Dart mapper accepts; a fixture Dart refuses with `shape` asserts "both reject". There are 12 fixtures today. A rule change starts in Dart and the fixtures; the two ports go red until they follow.
 
 ## 8. Flutter: consuming published Master Data
 
@@ -185,7 +187,7 @@ Media files live under the app's documents directory, `topik/{test_id}/{content_
 
 `RefreshTopikContentUseCase` (data layer, run by the app on start and on return to the foreground when online, with a minimum interval; never from the UI thread of a screen):
 
-1. `topik_catalog(since: cursor)`; for each entry: `retired` → delete the row and its media; `published` with a `(test_id, content_version)` not cached → `topik_test_content`, run `checkTopikTest`, download the media listed in `media` and verify checksums, write the row; cached and equal → nothing.
+1. `topik_catalog(since: cursor)`; for each entry: `retired` → delete the row and its media; `published` with a `(test_id, content_version)` not cached → `topik_test_content`, run `checkTopikTest`, download the media listed in `media` (paths only: no per-file checksums, so a file counts as downloaded when the transfer completes) and compare the JSON's `checksum`, write the row; cached and equal → nothing.
 2. Advance `catalog_cursor` only after every entry of the page is applied (a failed download leaves the cursor, so the next refresh retries).
 3. The repository's stream re-emits; screens update in place (UC-TOPIK-001 A2 already covers "status updates in place"; the catalog itself now updates too).
 
@@ -211,7 +213,7 @@ The cache is not user data: `LocalDataReset` leaves it in place (BR-TOPIK-027 co
 
 | # | Plan | Repo | Depends on |
 |---|---|---|---|
-| 1 | Master Data store: tables, triggers, admin and client RPCs, Storage bucket and policies, pgTAP (identity, immutability, publish/retire/rollback, audit, FORBIDDEN for non-admins, catalog paging), the fixture export tool and the SQL checks over the fixtures | memox-v8 (`supabase/`) | this spec; owner runs `supabase db push` only after the plan merges |
+| 1 | Master Data store: tables, triggers, admin and client RPCs, Storage bucket and policies, pgTAP (identity, immutability, publish/retire/rollback, audit, FORBIDDEN for non-admins, catalog paging), the fixture export tool and the SQL checks over the fixtures | memox-v8 (`supabase/`); built on `ccr-b0d5b7c9-mlvno2`, PR pending | this spec; owner runs `supabase db push` only after the plan merges |
 | 2 | App: `TopikContentRemoteDataSource`, Drift v18 cache, `RefreshTopikContentUseCase`, repository over the cache, media files for the player, removal of the bundled assets, screen 34's offline hint; IT scenarios for refresh, retire, new version, offline first run | memox-v8 | 1 |
 | 3 | Admin Web MVP: auth gate, Tests, Test (import, validate, upload, publish, retire), Versions (rollback), Audit; TS validator with the fixture contract test; Vercel preview deployments | memox-topik-admin | 1 (RPC contract), fixtures of §7 |
 | 4 | Round 96: import through the Admin Web, validate against the official 정답·배점표, publish; the final check of spec 2026-10-15 §11 | content + admin | 2, 3 |
@@ -239,6 +241,6 @@ Plan 2 can ship before any test is published: the catalog is simply empty ("No t
 |---|---|
 | Validator drift between Dart, SQL and TypeScript | The fixture contract (§7); a rule change is a change to the fixtures first |
 | A publication while a learner is mid-attempt | Unchanged behaviour (BR-TOPIK-019): the content of the submit moment scores; the question set is fixed per level and section so `contentMismatch` is rare; the version banner on Review |
-| Cache and server disagree after a failed download | The cursor advances only after a page is fully applied; checksums on JSON and media |
+| Cache and server disagree after a failed download | The cursor advances only after a page is fully applied; checksum on the JSON, media listed by path |
 | Admin Web with a stale RPC contract | Generated types checked in its CI against this repo's migrations; error codes are an enumerated list in both |
 | Free plan pause after a week idle | The existing keep-alive workflow (ADR-015 #9) covers the project; the Admin Web adds no new project |
