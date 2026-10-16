@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
@@ -6,6 +7,7 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
+import '../../support/route_naming.dart';
 import '../../support/widget_harness.dart';
 
 MxStudyTopBar _bar({int current = 3, int total = 10}) => MxStudyTopBar(
@@ -31,6 +33,27 @@ void main() {
     expect(_fill(tester), 0.3);
     expect(find.text('3 / 10'), findsOneWidget);
   });
+
+  // DEV-393: the session route is pushed full screen with this bar on top,
+  // so its mode names the route, as the SDK AppBar's title does.
+  for (final (platform, announces) in [
+    (TargetPlatform.android, true),
+    (TargetPlatform.iOS, false),
+  ]) {
+    testWidgets('the mode ${announces ? 'names' : 'does not name'} the route '
+        'on ${platform.name}', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final handle = tester.ensureSemantics();
+      await pumpMx(tester, _bar());
+      final node = tester.getSemantics(find.text('REVIEW'));
+      final count = routeNamingNodes(tester);
+      debugDefaultTargetPlatformOverride = null;
+
+      expect(node, isSemantics(label: 'REVIEW', namesRoute: announces));
+      expect(count, announces ? 1 : 0);
+      handle.dispose();
+    });
+  }
 
   testWidgets('the badge is the mode label upper-cased', (tester) async {
     await pumpMx(tester, _bar());
