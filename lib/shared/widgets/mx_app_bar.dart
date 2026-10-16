@@ -17,6 +17,7 @@ class MxAppBar extends StatelessWidget {
   const MxAppBar({
     super.key,
     this.title,
+    this.subtitle,
     this.titleWidget,
     this.leading,
     this.actions = const [],
@@ -25,9 +26,18 @@ class MxAppBar extends StatelessWidget {
   }) : assert(
          (title == null) != (titleWidget == null),
          'MxAppBar takes a title or a titleWidget, not both',
+       ),
+       assert(
+         subtitle == null || title != null,
+         'A subtitle goes under a title, not under a titleWidget',
        );
 
   final String? title;
+
+  /// One line under [title] (`labelMedium`, `onSurfaceVariant`), such as the
+  /// level and section of a TOPIK test (screens 34, 36). It is read in the
+  /// title's heading node, so the route is named once with both (Q-P6-2).
+  final String? subtitle;
 
   /// Takes the title's place and its width, such as the search field of
   /// screen 04. It brings its own semantics; no header flag is added. Say
@@ -84,12 +94,7 @@ class MxAppBar extends StatelessWidget {
                     Semantics(
                       namesRoute: _namesRoute(context),
                       header: true,
-                      child: Text(
-                        title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.texts.titleLarge,
-                      ),
+                      child: _title(context),
                     ),
               ),
               if (actions.isNotEmpty)
@@ -105,6 +110,33 @@ class MxAppBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// The title, with its subtitle under it when there is one.
+  Widget _title(BuildContext context) {
+    final titleText = Text(
+      title!,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: context.texts.titleLarge,
+    );
+    final subtitle = this.subtitle;
+    if (subtitle == null) return titleText;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        titleText,
+        Text(
+          subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.texts.labelMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 

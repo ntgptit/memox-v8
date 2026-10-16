@@ -212,6 +212,10 @@
   "@topikBest": {
     "description": "Screen 36 figure."
   },
+  "topikNoFigure": "None yet",
+  "@topikNoFigure": {
+    "description": "Screen 36: what a screen reader says for a figure with no value yet (the screen shows a dash)."
+  },
   "topikAverage": "Average",
   "@topikAverage": {
     "description": "Screen 36 figure."
@@ -658,6 +662,10 @@
       }
     },
     "description": "Screen 38: the figure's label, with the question that took longest."
+  },
+  "topikNone": "None",
+  "@topikNone": {
+    "description": "Screen 38: what a screen reader says for a figure with no value on a submitted attempt (the screen shows a dash)."
   },
   "topikFilterAll": "All",
   "@topikFilterAll": {

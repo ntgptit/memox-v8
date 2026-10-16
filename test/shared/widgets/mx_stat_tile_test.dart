@@ -22,6 +22,25 @@ void main() {
     handle.dispose();
   });
 
+  // Q-P6-5 (owner, 2026-10-16): a figure with no value shows a dash, which
+  // TalkBack reads as "en dash"; the caller says what it means instead.
+  testWidgets('a spoken value replaces the shown one for a screen reader', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxStatTile(value: '–', semanticValue: 'None yet', label: 'Best'),
+    );
+
+    expect(find.text('–'), findsOneWidget);
+    expect(
+      tester.getSemantics(find.byType(MxStatTile)),
+      matchesSemantics(label: 'Best', value: 'None yet'),
+    );
+    handle.dispose();
+  });
+
   testWidgets('primary takes the primary text, muted the variant text, plain '
       'the surface ink', (tester) async {
     await pumpMx(

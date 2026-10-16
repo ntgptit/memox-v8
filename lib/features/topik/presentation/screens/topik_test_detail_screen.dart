@@ -12,7 +12,6 @@ import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/controllers/topik_test_detail_controller.dart';
 import 'package:memox/features/topik/presentation/providers/topik_test_detail_provider.dart';
 import 'package:memox/features/topik/presentation/widgets/overlays/topik_attempt_dialogs_widget.dart';
-import 'package:memox/features/topik/presentation/widgets/sections/topik_app_bar_title_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_history_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_overview_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -112,15 +111,12 @@ class _TopikTestDetailScreenState extends ConsumerState<TopikTestDetailScreen> {
         !(detail.progress.isEmpty && _tab == _Tab.overview);
     return MxAppShell(
       appBar: MxAppBar(
-        title: test == null ? l10n.topikTitle : null,
-        titleWidget: test == null
+        title: test?.titleKo ?? l10n.topikTitle,
+        subtitle: test == null
             ? null
-            : TopikAppBarTitleWidget(
-                title: test.titleKo,
-                subtitle: l10n.topikTestSubtitle(
-                  l10n.topikLevelName(test.level),
-                  l10n.topikSectionName(test.section),
-                ),
+            : l10n.topikTestSubtitle(
+                l10n.topikLevelName(test.level),
+                l10n.topikSectionName(test.section),
               ),
         leading: MxIconButton(
           icon: AppIcons.back,

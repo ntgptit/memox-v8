@@ -8,7 +8,6 @@ import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_catalog_provider.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_level_row_widget.dart';
-import 'package:memox/features/topik/presentation/widgets/sections/topik_app_bar_title_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -52,10 +51,8 @@ class TopikHomeScreen extends ConsumerWidget {
     };
     return MxAppShell(
       appBar: MxAppBar(
-        titleWidget: TopikAppBarTitleWidget(
-          title: l10n.topikTitle,
-          subtitle: l10n.topikSubtitle,
-        ),
+        title: l10n.topikTitle,
+        subtitle: l10n.topikSubtitle,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
