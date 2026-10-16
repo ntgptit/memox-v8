@@ -59,16 +59,12 @@ void main() {
 
     expect(find.text(_en.progressToday.toUpperCase()), findsNothing);
     final whole = find.widgetWithText(MxListRow, _en.progressWholeDeck);
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.descendant(
         of: whole,
         matching: find.text(metaLine(_en.progressRowCardsDays(3, 1))),
       ),
-      findsOneWidget,
-    );
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.progressRowCardsDays(3, 1))),
     );
     // A child opens its level; the total does not (critique 2026-09-30 part
     // 3d-1, D3; Review Focus 4).
