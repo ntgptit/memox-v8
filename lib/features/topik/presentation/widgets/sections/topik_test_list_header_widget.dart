@@ -40,8 +40,8 @@ class TopikTestListHeaderWidget extends StatelessWidget {
             children: [
               MxIconTile(
                 icon: section == TopikSection.reading
-                    ? AppIcons.fileText
-                    : AppIcons.speak,
+                    ? AppIcons.book
+                    : AppIcons.headphones,
               ),
               Expanded(
                 child: Text(

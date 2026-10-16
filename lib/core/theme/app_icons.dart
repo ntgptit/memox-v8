@@ -18,6 +18,7 @@ abstract final class AppIcons {
   static const IconData inbox = Icons.inbox_outlined; // inbox
   static const IconData tag = Icons.sell_outlined; // tag
   static const IconData chevronDown = Icons.keyboard_arrow_down; // chevron-down
+  static const IconData chevronUp = Icons.keyboard_arrow_up; // chevron-up
   static const IconData sort = Icons.swap_vert; // arrow-up-down
   static const IconData filters = Icons.tune; // sliders-horizontal
   static const IconData filter = Icons.filter_list; // filter
@@ -101,6 +102,9 @@ abstract final class AppIcons {
   static const IconData fileUp = Icons.upload_file_outlined; // file-up
   static const IconData clipboard = Icons.content_paste; // clipboard
   static const IconData fileText = Icons.description_outlined; // file-text
+  // TOPIK's sections (owner, Q-P6-3).
+  static const IconData book = Icons.auto_stories_outlined; // book-open
+  static const IconData headphones = Icons.headphones_outlined; // headphones
   static const IconData folderOpen = Icons.folder_open_outlined; // folder-open
   static const IconData arrowRight = Icons.arrow_forward; // arrow-right
   static const IconData preview = Icons.visibility_outlined; // eye

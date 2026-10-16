@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/topik/domain/models/topik_audio_model.dart';
@@ -7,6 +8,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_audio_b
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// A group's shared material (detail file 37, critique F5, F12):
@@ -76,13 +78,15 @@ class TopikGroupPaneWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // A chevron named for TalkBack (critique F5, Q-P6b-4).
                   if (hasMaterial)
-                    MxButton(
-                      label: isCollapsed
+                    MxIconButton(
+                      icon: isCollapsed
+                          ? AppIcons.chevronDown
+                          : AppIcons.chevronUp,
+                      semanticLabel: isCollapsed
                           ? l10n.topikShowPassage
                           : l10n.topikHidePassage,
-                      tone: MxButtonTone.text,
-                      size: MxButtonSize.small,
                       onPressed: onToggleCollapsed,
                     ),
                 ],

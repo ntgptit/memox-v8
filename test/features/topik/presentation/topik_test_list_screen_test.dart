@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_catalog_provider.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
@@ -59,6 +60,7 @@ void main() {
     expect(findPlainTextContaining('In progress · Best'), findsOneWidget);
     expect(find.text('Not started'), findsNWidgets(2));
     expect(findPlainTextContaining('Explanation · Words'), findsWidgets);
+    expect(find.byIcon(AppIcons.book), findsOneWidget);
   });
 
   libraryTest('Listening shows its tests; the choice is per screen', (
@@ -77,6 +79,9 @@ void main() {
 
     expect(find.text('1 test'), findsOneWidget);
     expect(findPlainTextContaining('Script'), findsWidgets);
+    // Q-P6-3 (owner, 2026-10-16): each section has its own glyph.
+    expect(find.byIcon(AppIcons.headphones), findsOneWidget);
+    expect(find.byIcon(AppIcons.book), findsNothing);
   });
 
   libraryTest('the sort sheet re-orders the rows', (tester, env) async {
@@ -126,6 +131,14 @@ void main() {
 
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text('No tests yet for this section'), findsOneWidget);
+    // The empty state takes its section's glyph (Q-P6-3).
+    expect(
+      find.descendant(
+        of: find.byType(MxEmptyState),
+        matching: find.byIcon(AppIcons.book),
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(MxChipTrigger), findsNothing);
     expect(find.text('Listening'), findsOneWidget);
   });
