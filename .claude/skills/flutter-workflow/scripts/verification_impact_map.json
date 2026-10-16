@@ -133,7 +133,12 @@
       "test/core/network/supabase_client_test.dart",
       "test/visual_audit/screens/screen_audit_coverage_test.dart"
     ],
-    "design/": ["test/core/theme/token_contrast_test.dart"],
+    "design/": [
+      "test/core/theme/token_contrast_test.dart",
+      "test/core/theme/token_source.dart",
+      "test/support/approved_palette.dart"
+    ],
+    "docs/shared/data/schema.md": ["test/support/invariant_queries.dart"],
     "drift_schemas/": ["test/database/schema_test.dart"],
     "supabase/migrations/": ["test/core/database/schema_constants_parity_test.dart"],
     "assets/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"],
@@ -144,6 +149,11 @@
     "tools/m3_lint/": ["test/tools/m3_lint_test.dart"],
     "tools/topik/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"]
   },
+  "golden_scope_files": [
+    ".claude/skills/flutter-testing/scripts/golden.Dockerfile",
+    ".claude/skills/flutter-workflow/scripts/prepare_test_fonts.sh",
+    ".claude/skills/flutter-workflow/scripts/run_goldens.sh"
+  ],
   "inert_prefixes": [
     ".vscode/",
     ".idea/",

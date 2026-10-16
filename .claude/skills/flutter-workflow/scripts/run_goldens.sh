@@ -82,7 +82,7 @@ if [[ $CHANGED -eq 1 ]]; then
     || { echo "cannot resolve --base ref: $BASE_REF" >&2; exit 2; }
   CHANGED_PATHS="$(mktemp)"
   {
-    git diff --name-only --diff-filter=ACMRTD -z "$BASE_REF" --
+    git diff --name-only --no-renames --diff-filter=ACMRTD -z "$BASE_REF" --
     git ls-files --others --exclude-standard -z
   } >"$CHANGED_PATHS"
   GOLDEN_PLAN="$("$PY" "$SCRIPTS/build_verification_plan.py" --root "$REPO_ROOT" --nul \

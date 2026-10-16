@@ -194,7 +194,9 @@ if [[ $CHANGED -eq 1 ]]; then
   {
     # Include type changes (`T`), otherwise a mixed docs + script-to-symlink
     # change can hide the high-risk path and incorrectly select docs-only.
-    git diff --name-only --diff-filter=ACMRTD -z "$BASE_REF" --
+    # --no-renames: a moved file lists its old path too, which may be the one
+    # that selects more (a file moved out of lib/core/theme/).
+    git diff --name-only --no-renames --diff-filter=ACMRTD -z "$BASE_REF" --
     git ls-files --others --exclude-standard -z
   } >"$WORK/changed-paths.nul"
   PLAN_BUILDER="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/build_verification_plan.py"
@@ -330,7 +332,7 @@ fi
 # The design-token hook exits 0 on any error by design, so a hook that has
 # stopped loading its rules looks like a clean file; its tests are what notice.
 HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"
-if ! changed_under .claude/hooks/ .claude/settings.json code-verification-guard-v2/ tools/design/removed_symbols.json; then
+if ! changed_under .claude/hooks/ .claude/settings.json code-verification-guard-v2/ tools/design/removed_symbols; then
   SCOPED_OUT+=("hook tests: no hook, hook setting or guard path changed")
 elif [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
   plan hook_tests "hook tests" \

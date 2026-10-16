@@ -95,6 +95,8 @@ _ADR010_SOURCE_FILES: dict[str, str] = {
     "lib/shared/widgets/mx_chip.dart": "// fixture\n",
     "lib/core/clock/day_clock.dart": "// fixture\n",
     "tools/m3_lint/m3_rules.dart": "// fixture\n",
+    "lib/core/platform/web_impl.dart": "// fixture\n",
+    "lib/core/platform/io_impl.dart": "// fixture\n",
 }
 
 # Each maps to the `package:memox/...` import(s) that make it a transitive
@@ -137,6 +139,10 @@ _ADR010_TEST_FILES: dict[str, str] = {
         "void main() { test('t', () {}); }\n",
     "test/tools/m3_lint_test.dart":
         "import '../../tools/m3_lint/m3_rules.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/core/platform/platform_test.dart":
+        "import 'package:memox/core/platform/web_impl.dart'\n"
+        "    if (dart.library.io) 'package:memox/core/platform/io_impl.dart';\n"
         "void main() { test('t', () {}); }\n",
     "test/architecture/boundaries_test.dart":
         "void main() { test('t', () {}); }\n",
@@ -215,7 +221,9 @@ _ADR010_IMPACT_MAP_RAW: dict[str, object] = {
     "file_readers": {
         "lib/": ["test/architecture/"],
         "android/": ["test/app/android_manifest_test.dart"],
+        "docs/schema.md": ["test/support/clock_harness.dart"],
     },
+    "golden_scope_files": [".claude/skills/flutter-workflow/scripts/run_goldens.sh"],
     "inert_prefixes": [".vscode/", ".idea/", ".github/ISSUE_TEMPLATE/"],
     "inert_files": [
         ".editorconfig",
@@ -508,6 +516,31 @@ class VerificationPlanBuilderTest(unittest.TestCase):
                    impact_map=self.impact_map).everything,
             "a removed Dart file has unknown importers",
         )
+
+    def test_a_helper_that_reads_a_file_selects_the_tests_that_import_it(self) -> None:
+        """A document a helper reads (schema.md's invariants) is a test input."""
+        plan = self._plan("docs/schema.md")
+        self.assertTrue(plan.needs_host_tests)
+        self.assertEqual(
+            ("test/features/study/presentation/study_clock_test.dart",), plan.test_files
+        )
+
+    def test_every_uri_of_a_conditional_import_is_an_edge(self) -> None:
+        for path in ("lib/core/platform/web_impl.dart", "lib/core/platform/io_impl.dart"):
+            with self.subTest(path=path):
+                self.assertIn("test/core/platform/platform_test.dart", self._plan(path).test_files)
+
+    def test_what_renders_the_pictures_reaches_every_golden(self) -> None:
+        plan = self.module.build_golden_plan(
+            [".claude/skills/flutter-workflow/scripts/run_goldens.sh"],
+            root=self.root, impact_map=self.impact_map,
+        )
+        self.assertTrue(plan.everything)
+
+    def test_tooling_dart_no_test_imports_is_tooling(self) -> None:
+        plan = self._plan("integration_test/app_flow_test.dart")
+        self.assertEqual("tooling", plan.risk)
+        self.assertFalse(plan.needs_host_tests)
 
     def test_documents_alone_need_no_static_check_and_no_host_test(self) -> None:
         for path in ("docs/wbs_BE.md", ".impeccable/critique/notes.md"):
@@ -1222,7 +1255,9 @@ class FileReadersAreDeclaredTest(unittest.TestCase):
         )
         readers = impact["file_readers"]
         missing = []
-        for path in sorted((REPO_ROOT / "test").rglob("*_test.dart")):
+        # Helpers as well as tests: test/support/invariant_queries.dart reads
+        # docs/shared/data/schema.md for five tests.
+        for path in sorted((REPO_ROOT / "test").rglob("*.dart")):
             relative = path.relative_to(REPO_ROOT).as_posix()
             if relative in _NOT_READERS:
                 continue
@@ -1289,7 +1324,7 @@ class ScopedOutChecksFollowTheirPathsTest(unittest.TestCase):
     def test_the_hook_tests_follow_the_hooks_their_settings_and_the_guard(self) -> None:
         self.assertIn(
             "if ! changed_under .claude/hooks/ .claude/settings.json "
-            "code-verification-guard-v2/ tools/design/removed_symbols.json; then",
+            "code-verification-guard-v2/ tools/design/removed_symbols; then",
             self._gate(),
         )
 

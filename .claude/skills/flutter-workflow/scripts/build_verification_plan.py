@@ -109,6 +109,9 @@ class ImpactMap:
     # Path prefix -> the tests that read it from disk (a value ending in `/`
     # is a test folder). Imports cannot see these dependencies.
     file_readers: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # What renders the pictures (fonts, the golden image, the golden runner):
+    # tooling to the host plan, every golden to the golden plan.
+    golden_scope_files: frozenset[str] = frozenset()
 
     @classmethod
     def load(cls, path: Path = DEFAULT_IMPACT_MAP) -> "ImpactMap":
@@ -133,6 +136,7 @@ class ImpactMap:
                 key: tuple(value)
                 for key, value in raw.get("file_readers", {}).items()
             },
+            golden_scope_files=frozenset(raw.get("golden_scope_files", ())),
         )
 
 
@@ -201,6 +205,8 @@ class VerificationPlanBuilder:
                 if reader.endswith("/"):
                     self.reader_prefixes.add(reader)
                 else:
+                    # A helper that reads the file stands for the tests that
+                    # import it (seal resolves them).
                     self.reader_files.add(reader)
 
     def require_downstream(self, feature: str, reason: str) -> None:
@@ -296,9 +302,8 @@ class VerificationPlanBuilder:
         ):
             self.has_tooling_changes = True
             self.add_reason("tooling outside the Dart host suite changed")
-            if path.endswith(".dart"):
-                # tools/ Dart (m3_lint, topik) is imported by its own tests.
-                self.has_code_changes = True
+            # tools/ Dart (m3_lint, topik) is imported by its own tests, which
+            # seal finds; integration_test/ Dart selects none.
             return
 
         # **A picture is not code.** Nothing the gate runs can fail on a
@@ -399,6 +404,7 @@ class VerificationPlanBuilder:
         )
         if consumer_tests:
             self.exact_test_files.update(consumer_tests)
+            self.has_code_changes = True
             self.add_reason("import-derived transitive test consumers selected")
         def chosen(files: set[str], prefixes: set[str]) -> set[str]:
             return {
@@ -410,10 +416,14 @@ class VerificationPlanBuilder:
         by_code = chosen(self.exact_test_files, self.test_prefixes)
         if self.requires_host_coverage and not by_code and not self.full_suite:
             self.require_full("code change selected no executable verification")
+        reader_helpers = {path for path in self.reader_files if path not in runnable_tests}
+        by_readers = chosen(self.reader_files, self.reader_prefixes) | discover_test_consumers(
+            self.root, reader_helpers, runnable_tests
+        )
         if self.full_suite:
             selected = runnable_tests
         else:
-            selected = by_code | chosen(self.reader_files, self.reader_prefixes)
+            selected = by_code | by_readers
 
         code_required = self.has_code_changes or self.full_suite
         needs_host_tests = (code_required or self.has_reader_tests) and bool(selected)
@@ -603,11 +613,14 @@ def _reverse_import_graph(root: Path) -> dict[str, set[str]]:
         return cached
 
     package_name = _package_name(root)
-    directive = re.compile(r"\b(?:import|export|part)\s+['\"]([^'\"]+)['\"]")
+    # The whole directive, so a conditional import's every URI is an edge:
+    # `import 'a.dart' if (dart.library.io) 'b.dart';`.
+    directive = re.compile(r"(?m)^\s*(?:import|export|part)(?!\s+of\b)\s+(['\"][^;]*);")
+    quoted = re.compile(r"['\"]([^'\"]+)['\"]")
     reverse: dict[str, set[str]] = {}
     for importer in discover_worktree_dart_files(root):
         text = (root / importer).read_text(encoding="utf-8")
-        for uri in directive.findall(text):
+        for uri in (u for d in directive.findall(text) for u in quoted.findall(d)):
             dependency = _resolve_dart_uri(importer, uri, package_name)
             if dependency:
                 reverse.setdefault(dependency, set()).add(importer)
@@ -675,8 +688,9 @@ def build_golden_plan(
     and anything under `lib/` that is not Dart (a `.drift` query feeds every
     screen that lists rows), and for a Dart file that no longer exists. A Dart
     change selects the golden files that import it, transitively; a committed
-    picture, the golden files beside its `goldens/` folder. Nothing else,
-    documentation and tooling included, can change a picture.
+    picture, the golden files beside its `goldens/` folder. What renders the
+    pictures (`golden_scope_files`) selects every golden; nothing else,
+    documentation and the rest of the tooling, can change a picture.
     """
     impact_map = impact_map or ImpactMap.load()
     root = root.resolve()
@@ -688,7 +702,7 @@ def build_golden_plan(
         path = normalize_path(raw)
         if not path:
             continue
-        if path in impact_map.full_scope_files or any(
+        if path in impact_map.full_scope_files or path in impact_map.golden_scope_files or any(
             path.startswith(prefix) for prefix in impact_map.full_scope_prefixes
         ):
             reasons.add(f"{path} reaches every picture")
