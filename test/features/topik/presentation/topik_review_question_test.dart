@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
+import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_review_question_widget.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -72,6 +73,58 @@ void main() {
     expect(findPlainTextContaining('기획'), findsOneWidget);
     expect(findPlainTextContaining('planning'), findsOneWidget);
     expect(find.byType(MxInlineBanner), findsNothing);
+  });
+
+  // Q-C-2 (owner, 2026-10-16): a word and its part of speech stay whole; its
+  // meaning is authored prose and breaks as words, or a long gloss would
+  // break inside a word.
+  libraryTest('a word stays whole, its meaning breaks as words', (
+    tester,
+    env,
+  ) async {
+    final glossed = TopikQuestion(
+      no: first.no,
+      groupId: first.groupId,
+      questionType: first.questionType,
+      points: first.points,
+      stemKo: first.stemKo,
+      options: first.options,
+      answerIdx: first.answerIdx,
+      words: const [
+        TopikWord(
+          ko: '기획 회의',
+          pos: 'n',
+          meaning: TopikText(
+            vi: 'cuộc họp lập kế hoạch',
+            en: 'a planning meeting',
+          ),
+        ),
+      ],
+      grammars: const [
+        TopikGrammar(
+          pattern: '-(으)ㄹ 수 있다',
+          meaning: TopikText(vi: 'có thể làm gì', en: 'can do something'),
+        ),
+      ],
+    );
+    await host(
+      tester,
+      env,
+      TopikReviewQuestionWidget(
+        question: glossed,
+        answer: _answer(glossed, 1),
+        isContentUpdated: false,
+      ),
+    );
+
+    expect(
+      find.text('기획\u00A0회의\u00A0· n\u00A0· a planning meeting'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('-(으)ㄹ\u00A0수\u00A0있다\u00A0· can do something'),
+      findsOneWidget,
+    );
   });
 
   libraryTest('a right answer with no supporting content: no section', (

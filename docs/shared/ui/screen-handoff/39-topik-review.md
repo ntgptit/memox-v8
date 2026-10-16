@@ -75,6 +75,7 @@ Each question of a submitted attempt with the right answer and the supporting co
 - **V8 (plan 6c):** contentMissing (neutral, Back to summary), attemptMissing, loading and error with Retry; an attempt not submitted reads as attemptMissing.
 - **V9 (plan 6c):** `?q=` opens that question under All; an unknown number opens the first.
 - **V10 (plan 6c):** the audio bar of 37, with its Practice controls.
+- **Q-C-2 (owner, 2026-10-16):** in Words and Grammar the word, its part of speech and the pattern stay whole terms (The Wrap Rule); the meaning is authored prose and breaks between its words.
 
 ## Copy
 
