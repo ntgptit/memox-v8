@@ -21,6 +21,7 @@ trong khi branch nội bộ và màn hình gốc của nó vẫn là Decks.
   nằm trong branch Settings: màn 24 ở `/settings/reminder`, trên root navigator như Theme
   và Language, Back về màn 23.
 - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), không phải tab riêng.
+- Luyện đề TOPIK (UC-TOPIK-001…005, [ADR-023](../decisions/ADR-023-luyen-de-topik.md)) là child flow bên trong tab Học (branch Study), không phải tab riêng: thẻ Practice trên Study home mở TOPIK home (màn 34, `/study/topik`); danh sách đề (màn 35) và chi tiết đề (màn 36) giữ thanh tab; màn làm bài (37), Summary (38) và Review (39) nằm trên root navigator, toàn màn hình. Close hoặc Done về màn 36, hoặc TOPIK home khi mở bằng liên kết.
 - Tài khoản không có tab riêng; mọi màn của nó nằm trong branch Settings, trên root
   navigator: đồng bộ (màn 27, `/settings/sync`), đăng nhập và mã (màn 30–31,
   `/settings/sign-in`), tài khoản (màn 32, `/settings/account`), và hai màn chỉ admin

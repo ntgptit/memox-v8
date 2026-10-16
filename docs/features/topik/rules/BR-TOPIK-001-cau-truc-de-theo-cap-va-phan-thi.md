@@ -27,7 +27,7 @@ Người học so kết quả với đề giấy và đáp án chính thức the
 
 ## Ví dụ
 
-Đề `topik1-96-reading` có 40 câu đánh số 31–70; câu đầu trong navigator và trong bảng Summary là 31.
+Đề `topik1-96-reading` có 40 câu đánh số 31–70; câu đầu trong navigator và trong danh sách câu của Summary là 31.
 
 ## Edge case
 

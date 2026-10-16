@@ -2,7 +2,7 @@
 
 Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "Truy vết" của [danh mục](../../shared/testing/scenario-catalog.md)). Hướng dẫn thực thi, mã chuẩn bị `SETUP-*` và hồ sơ thực thi nằm ở [`shared/testing/`](../../shared/testing/README.md).
 
-Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §9, không dựa vào code. Feature chưa xây, nên mọi kịch bản ở mức `KNOWN-GAP`: chạy chỉ để xác nhận khoảng trống, không bao giờ ghi là đạt. Plan của từng màn chuyển kịch bản của nó sang `READY` khi test tương ứng chạy được.
+Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §9, không dựa vào code. Feature đã xây (DEV-394, kế hoạch 6a–6c): mức sẵn sàng của từng kịch bản ghi ở [danh mục](../../shared/testing/scenario-catalog.md). Kịch bản `HOST-WIDGET` và `HOST-FLOW` chạy bằng `flutter test` trên gói fixture tổng hợp (`SETUP-TOPIK-PACK`, `SETUP-TOPIK-HISTORY`; `test/support/topik_*.dart`); `IT-TOPIK-019` cần gói nội dung thật (`assets/topik/manifest.json` còn rỗng, chờ file kỳ 96) và một phase trong `integration_test/`, chưa có.
 
 ## Nhóm: Kịch bản IT — Luyện đề TOPIK
 
@@ -43,7 +43,7 @@ Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Mở màn 36 của đề, chạm FAB | Màn 37 mở; bộ đếm "31 / 70"; lượt `in_progress` có 40 hàng đáp án trống trong database |
+| 1 | Mở màn 36 của đề, chạm Start trong thẻ rỗng của Overview (chưa có lượt nên không có FAB) | Màn 37 mở; bộ đếm "31 / 70"; lượt `in_progress` có 40 hàng đáp án trống trong database |
 | 2 | Mở lưới câu | Ô đầu là 31, ô cuối là 70; không ô nào đã trả lời |
 
 ## IT-TOPIK-004 — Đổi đáp án và thời gian cộng dồn
@@ -159,11 +159,12 @@ Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Mở Summary | Điểm "95 / 100"; thời lượng "1h 02m 11s"; biểu đồ và bảng bắt đầu từ 31 |
-| 2 | Đọc hàng câu 31 | Your và Correct là ①–④, không phải văn bản; trạng thái Wrong |
+| 1 | Mở Summary | Điểm "95 / 100"; thời lượng "1h 02m 11s"; biểu đồ và danh sách câu bắt đầu từ 31 |
+| 2 | Đọc hàng câu 31 | Your answer và Right answer là ①–④, không phải văn bản; trạng thái Wrong |
 | 3 | Chọn bộ lọc Wrong | Chỉ còn câu 31 và 45 |
-| 4 | Chạm biểu tượng mắt | Cột Correct ẩn; chạm lại thì hiện |
+| 4 | Chạm biểu tượng mắt | Phần "Right answer" của mọi hàng ẩn; chạm lại thì hiện |
 | 5 | Đọc mục By question type | Mỗi dạng có đúng/tổng; dạng yếu nhất được đánh dấu theo BR-TOPIK-024 |
+| 6 | Chạm một cột của biểu đồ | Review mở ở câu của cột (UC-TOPIK-005) |
 
 ## IT-TOPIK-013 — Ôn lại chỉ đọc, nội dung đã đổi và nội dung không còn
 
@@ -183,7 +184,7 @@ Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-
 
 - **Ưu tiên:** P1
 - **Hồ sơ:** `HOST-WIDGET`
-- **Tiền điều kiện:** `SETUP-TOPIK-PACK`. Lượt dở `topik2-96-listening`; trình phát giả (`FakeClipAudioPlayer`).
+- **Tiền điều kiện:** `SETUP-TOPIK-PACK`. Lượt dở `topik2-96-listening`; trình phát giả (`FakeTopikAudioRepository`, `test/support/topik_fakes.dart`).
 - **Liên kết:** BR-TOPIK-004, BR-TOPIK-017.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
@@ -192,7 +193,7 @@ Viết từ BR/UC và 12 edge case của [spec](../../superpowers/specs/2026-10-
 | 2 | Phát, tới giây 30, sang câu 22 | Audio vẫn phát tiếp từ giây 30, không nạp lại |
 | 3 | Chọn tốc độ 1.5 | Trình phát nhận tốc độ 1.5 |
 | 4 | Sang câu 23 | Audio nhóm trước dừng; nhóm mới chưa phát |
-| 5 | Làm trình phát báo lỗi | Banner "Couldn't play this audio" với Try again; đáp án không đổi |
+| 5 | Làm trình phát báo lỗi | Banner "Couldn't play this audio" với Retry; đáp án không đổi |
 
 ## IT-TOPIK-015 — Đồng bộ chỉ lượt đã nộp, một lần, kèm đáp án
 

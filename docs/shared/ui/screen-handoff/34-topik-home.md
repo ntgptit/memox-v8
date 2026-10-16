@@ -36,9 +36,9 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 | From | Event | To | Evidence |
 |---|---|---|---|
 | loading | catalog read | loaded / noTests | UC-TOPIK-001 step 1; BR-TOPIK-008. VERIFIED `topik_home_screen_test.dart::each level with its count; a tap opens it`, `::a level with no valid test says so and is not a button (BR-TOPIK-008)` |
-| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again` |
-| error | Retry | loading | UC-TOPIK-001 E1. VERIFIED same test |
-| loaded | tap a level with tests | 35 (that level, Reading) | UC-TOPIK-001 step 2. VERIFIED `test/app/topik_routes_test.dart::Study home → TOPIK → a level → a test under the tab bar; Back climbs one level each time` |
+| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again`; a `Failure` reads in its own words, never a technical cause: `::a read that fails with a Failure speaks in its own words, never a technical cause (UC-TOPIK-001 E1, BR-CORE-005)` |
+| error | Retry | error with Retry spinning, then the state the read gives | UC-TOPIK-001 E1. VERIFIED same test (the error stays up with its retry in progress; no skeleton, as on 38 and 39) |
+| loaded | tap a level with tests | 35 (that level, Reading) | UC-TOPIK-001 step 2. VERIFIED `test/app/topik_routes_test.dart::Study home → TOPIK → a level → a test under the tab bar; Back climbs one level each time`. A level whose tests are all Listening still opens Reading, empty (UC-TOPIK-001 step 2; owner question Q-A-1 below) |
 | loaded | tap a level without tests | no change (no tap target) | BR-TOPIK-008. VERIFIED `::a level with no valid test says so and is not a button (BR-TOPIK-008)` |
 | any | Back | 13 | navigation. VERIFIED `topik_routes_test.dart::Study home → TOPIK → …` |
 | any | language changes | same state, relabelled | UC-TOPIK-003 A4. VERIFIED `::in Vietnamese, the same screen relabelled (UC-TOPIK-003 A4)` (rendered in vi; a live switch is the app's locale provider, shared with every screen) |
@@ -51,6 +51,7 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 - **Plan 6a:** a level without tests is information, not a disabled control: no chevron, no tap, not dimmed (critique F5).
 - **Plan 6a:** the level glyph is `AppIcons.fileText`, a paper: a level holds both sections, so it takes neither section's glyph (owner 2026-10-16, Q-P6-3, gave the sections `book` and `headphones` on 35).
 - **Owner 2026-10-16 (Q-P6-2):** the Korean subtitle is `MxAppBar.subtitle`, read with the title in one heading node that names the route; the TOPIK-local title widget is gone.
+- **Audit 2026-10-16 (DEV-394):** OPEN QUESTION Q-A-1: a level with tests only in Listening opens 35 on an empty Reading section (UC-TOPIK-001 step 2 fixes Reading as the default). Proposed: open the first section that has tests. Code unchanged until the owner rules.
 - **Wireframe pass (owner, 2026-10-16):** nothing missing in scope. The section description line has no slot in `MxSection` and adds no fact; the level cards keep their rows; Beginner/Intermediate/Advanced (level drills) and Simulated Exams are Phase C and B and stay absent, per the index rule.
 
 ## Copy
@@ -58,4 +59,4 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 - App bar: "TOPIK" · "한국어능력시험".
 - Section: "Practice".
 - Rows: "TOPIK I" · "Levels 1–2 · Reading, Listening · {n} tests" · "TOPIK II" · "Levels 3–6 · Reading, Listening · {n} tests" · "No tests yet".
-- Error: "Couldn't load the tests" · "Nothing was lost. Try again." · "Try again".
+- Error: "Couldn't load the tests" · "Nothing was lost. Try again." (a `Failure`: its own sentence, BR-CORE-005) · "Retry".

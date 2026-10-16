@@ -17,9 +17,9 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 |---|---|---|
 | App bar | `MxAppBar` | The Korean title, one line, with "{Level} · {Section}" as subtitle. |
 | Switch | `MxSegmentedTray` | Overview · History. |
-| Overall Progress | `MxCard` | A 3×2 grid of boxed `MxStatTile`s: Accuracy · Completion, Best · Average, Sessions · Completed (BR-TOPIK-020's six figures); a meta line "Last activity {ago} · {total time}"; `MxNote.hint` "Scores use completed tests only". No attempt: the card becomes an `MxEmptyState` (primary) "No attempts yet" with "Start" (BR-TOPIK-020). |
+| Overall Progress | `MxListSectionHeader` + `MxCard` | A 3×2 grid of boxed `MxStatTile`s: Accuracy · Completion, Best · Average, Sessions · Completed (six of BR-TOPIK-020's eight numbers); a meta line "Last activity {ago} · {total time}" (the other two); under the card `MxNote.hint` "Scores use completed tests only". No attempt: the card becomes an `MxEmptyState` (primary) "No attempts yet" with "Start" (BR-TOPIK-020). |
 | Recent attempts | `MxListSectionHeader` + `MxCard` of `MxListRow`s | At most five: "#{n}", date and time, "{score} / {max}", "{correct} / {count} correct" and duration (BR-TOPIK-021); an in-progress row reads "In progress" and continues the attempt. |
-| History | `MxListSectionHeader` "{n} attempts" + `MxCard` of `MxListRow`s | Every attempt, newest first: "#{n}" · `MxBadge` Completed or In progress · date and time · "{score} / {max}" · "{correct} / {count} correct" · duration (BR-TOPIK-021); actions small `MxButton`s "Summary" and "Review" (completed) or "Continue" (in progress); a trailing delete `MxIconButton` → `showMxConfirm`. |
+| History | `MxListSectionHeader` "{n} attempts" + `MxCard` of `MxListRow`s | Every attempt, newest first: "#{n}" · `MxBadge` Completed or In progress · date and time · (completed only) "{score} / {max}" · "{correct} / {count} correct" · duration (BR-TOPIK-021); actions small `MxButton`s "Summary" and "Review" (completed) or "Continue" (in progress); a trailing delete `MxIconButton` → `showMxConfirm`. Every action is named with its attempt number for TalkBack ("Summary of attempt 3", "Delete attempt 3"), since each row shows the same labels. |
 | Start | `MxFab` "+" | Starts an attempt; with one in progress, an `MxDialog`: "Continue" (primary) or "Start new", which asks once more before it deletes the attempt in progress (BR-TOPIK-011). Absent while loading and on error (The Content Gate Rule). |
 
 ## States
@@ -32,6 +32,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | historyEmpty | `topik_detail_history_empty_light.png` | `topik_detail_history_empty_dark.png` | "No attempts yet". |
 | deleteConfirm | `topik_detail_delete_light.png` | `topik_detail_delete_dark.png` | `showMxConfirm` over History. |
 | continueOrNew | `topik_detail_continue_light.png` | `topik_detail_continue_dark.png` | The Continue or Start new dialog. |
+| startNewConfirm | — | — | `showMxConfirm` "Start a new attempt?" after Start new; no golden (a `showMxConfirm`, as deleteConfirm is). |
 | testMissing | `topik_detail_missing_light.png` | `topik_detail_missing_dark.png` | Deep link to an unknown or invalid test: neutral `MxEmptyState` with "Back to tests"; no Retry, no FAB (UC-TOPIK-002 E1). |
 | loading | `topik_detail_loading_light.png` | `topik_detail_loading_dark.png` | Skeletons; no FAB. |
 | error | `topik_detail_error_light.png` | `topik_detail_error_dark.png` | `MxErrorState` with Retry; no FAB and the generic title, also when the error follows loaded data. |
@@ -47,17 +48,19 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | overview / history | FAB, an attempt in progress | continueOrNew | BR-TOPIK-011. VERIFIED `::the FAB with an attempt in progress asks; Continue opens it (BR-TOPIK-011)` |
 | continueOrNew | Continue | 37 at its current question | BR-TOPIK-011. VERIFIED same test |
 | continueOrNew | dismissed | no change | BR-TOPIK-011. VERIFIED `::the dialog dismissed changes nothing` |
-| continueOrNew | Start new, confirmed | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
+| continueOrNew | Start new | startNewConfirm | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
+| startNewConfirm | Start new | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED same test |
+| startNewConfirm | Cancel | no change: the attempt in progress stays | BR-TOPIK-011. VERIFIED `::Start new asks again; Cancel keeps the attempt in progress (BR-TOPIK-011)` |
 | history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
 | deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
 | history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `topik_test_detail_history_test.dart::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
 | any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3. VERIFIED at the stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); the screen re-renders from it (the delete test above) |
-| any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`, plan 2) and the stream re-emits empty; no screen test drives an account switch |
+| any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`, `test/core/database/local_data_reset_test.dart`) and the stream re-emits empty; no screen test drives an account switch |
 | history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3. VERIFIED `topik_test_detail_history_test.dart::History: Summary, Review and Continue open their screens` (the routes of 37–39 come with plans 6b, 6c) |
-| overview | a recent row | 38 when completed, 37 when in progress | BR-TOPIK-021. VERIFIED `::a recent row opens Summary when completed and the attempt when in progress (BR-TOPIK-021)` |
-| overview / history | FAB, the start refused (the test left, or an attempt in progress appeared) | same state + snackbar naming why | BR-TOPIK-011, BR-TOPIK-019. VERIFIED `::a start refused because the test left says so (BR-TOPIK-019)` |
+| overview | a recent row | 38 when completed, 37 when in progress | BR-TOPIK-021. VERIFIED `::a recent row opens Summary when completed and the attempt when in progress (BR-TOPIK-021)`; the five newest of seven: `::Recent attempts are the five newest, #7 to #3 (BR-TOPIK-021, UC-TOPIK-002)`; the total time to the second: `::Total time sums every attempt and reads to the second: 1h 02m 11s (BR-TOPIK-020, -025)` |
+| overview / history | FAB, the start refused (the test left, or an attempt in progress appeared) | same state + snackbar naming why | BR-TOPIK-011, BR-TOPIK-019. VERIFIED `::a start refused because the test left says so (BR-TOPIK-019)`, `::a start refused because an attempt in progress appeared says so (BR-TOPIK-011)` |
 | loading / any loaded | the read fails | error: no FAB, the generic title | The Content Gate Rule. VERIFIED `::an error after the test loaded drops the FAB and the title (States: error, The Content Gate Rule)` |
-| error | Retry | loading, then the state the read gives | UC-TOPIK-002 E3. VERIFIED `::error: Retry reads the test again (States: error to loaded)` |
+| error | Retry | error with Retry spinning, then the state the read gives | UC-TOPIK-002 E2. VERIFIED `::error: Retry reads the test again (States: error to loaded)` (no skeleton, as on 38 and 39) |
 | loading | test unknown | testMissing | UC-TOPIK-002 E1. VERIFIED `::an unknown test: missing, with Back to tests and no FAB (UC-TOPIK-002 E1)`, `topik_routes_test.dart::deep links: …` |
 
 ## Rulings
@@ -72,6 +75,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - **Owner 2026-10-16 (Q-P6-2):** the level and section line is `MxAppBar.subtitle`, read with the title in one heading node that names the route.
 - **Owner 2026-10-16 (Q-P6-5):** a figure with nothing to show is a dash on screen and reads "None yet" to TalkBack (`MxStatTile.semanticValue`); a bare dash reads "en dash".
 - **Q-C-1 (owner, 2026-10-16):** Overall Progress' last activity line ("Last activity 2 days ago · 1h 20m") wraps only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
+- **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
 - **Wireframe pass (owner, 2026-10-16):** Overall Progress shows Completion and Sessions as figures of their own, as BR-TOPIK-020 lists them (it had folded them into "{completed} / {sessions}"); History is headed by its count, as Overview's lists are headed by a list header. The wireframe's accuracy ring repeats the Accuracy figure (one number per element), so it is not added; Score Trend, Needs Review, Bookmarks, Notes and the Words tab are Phase B (spec §10) and stay absent; its bottom tabs stay the segmented switch.
 
 ## Copy
@@ -80,9 +84,9 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - Overall Progress: "Accuracy" · "Completion" · "Best" · "Average" · "Sessions" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only"; TalkBack "None yet" for a dash.
 - Empty: "No attempts yet" · "Start" · "Each attempt is saved as you answer."
 - Recent: "Recent attempts" · "#{n}" · "In progress" · "{score} / {max}" · "{correct} / {count} correct".
-- History: "{n} attempts" · "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt".
+- History: "{n} attempts" · "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt"; TalkBack "Summary of attempt {n}" · "Review of attempt {n}" · "Continue attempt {n}" · "Delete attempt {n}".
 - Delete confirm: "Delete this attempt?" · "Its answers are deleted too. This can't be undone." · "Delete" · "Cancel".
 - Continue dialog: "You have an attempt in progress" · "Continue where you left off, or start again." · "Continue" · "Start new"; then "Start a new attempt?" · "The attempt in progress and its answers are deleted." · "Start new" · "Cancel".
 - Missing: "This test isn't available" · "Back to tests".
 - Error: "Couldn't load this test" · "Nothing was lost. Try again." · "Retry".
-- Refusals (snackbar): "This test isn't available" · "This attempt isn't here any more" · "That didn't go through. Nothing was lost."
+- Refusals (snackbar): "This test isn't available" · "You have an attempt in progress" (one appeared since the read) · "That didn't go through. Nothing was lost."; an attempt already gone says nothing (its row has left).

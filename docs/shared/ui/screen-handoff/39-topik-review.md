@@ -59,7 +59,8 @@ Each question of a submitted attempt with the right answer and the supporting co
 | listening question | show | the audio bar loaded, not playing; the script open | BR-TOPIK-017. VERIFIED `::listening: the audio bar and the script, open (BR-TOPIK-017)` |
 | any loaded | collapse / expand the group pane | the material folds to its instruction (audio kept), and back | V1. VERIFIED on the shared pane `topik_attempt_widgets_test.dart::the group pane: instruction, passage; collapsed it keeps the instruction on one line`, `::a listening group: the audio stays when collapsed; the script shows with its translation in the UI language`; UNVERIFIED on 39 itself: no 39 test taps the collapse |
 | any loaded | Hide / Show script | the group's script hidden or shown, remembered per group while 39 is open | V1. UNVERIFIED on 39: the shared pane's toggle is tested on 37 (`topik_attempt_widgets_test.dart`); 39's per-group memory (`_scriptChoice`) is read from the code only |
-| any loaded | Back / Done on the last | where it came from (38 or 36; TOPIK when opened alone) | navigation. VERIFIED `topik_routes_test.dart::from the summary a row opens Review at its question; Back returns to the summary (UC-TOPIK-004 step 7)`; Done shares Back's callback (`::Next and Previous walk the filter; …`) |
+| any loaded | Back / Done on the last | where it came from (38 or 36; TOPIK when opened alone) | navigation. VERIFIED `topik_routes_test.dart::from the summary a row opens Review at its question; Back returns to the summary (UC-TOPIK-004 step 7)`; Done shares Back's callback (`topik_review_screen_test.dart::Next and Previous walk the filter; a filter opens its first question; the last says Done (UC-TOPIK-005 step 4)`) |
+| any loaded | language changes | the explanation, words and labels in the UI language; the Korean stays | BR-TOPIK-006, UC-TOPIK-005 A4. VERIFIED (rendered in vi) `topik_review_screen_test.dart::in Vietnamese, the explanation and the words read in Vietnamese; the Korean stays (BR-TOPIK-006, UC-TOPIK-005)` |
 
 ## Rulings
 
@@ -75,6 +76,7 @@ Each question of a submitted attempt with the right answer and the supporting co
 - **V8 (plan 6c):** contentMissing (neutral, Back to summary), attemptMissing, loading and error with Retry; an attempt not submitted reads as attemptMissing.
 - **V9 (plan 6c):** `?q=` opens that question under All; an unknown number opens the first.
 - **V10 (plan 6c):** the audio bar of 37, with its Practice controls.
+- **Audit 2026-10-16 (DEV-394):** UC-TOPIK-005 A3 is rewritten to V5 and V9 as built (a question outside the current filter cannot occur). The right option marked is the snapshot's `correct_idx` (`topik_review_question_widget.dart`), while the stem, options and supporting content are the current content's: after an `answerIdx` correction the old index stays marked beside a current explanation. OPEN QUESTION Q-A-8: mark the current content's `answerIdx` as right (Review teaches the truth; the score stays from the snapshot and the banner says so) or keep the snapshot's. Code unchanged until the owner rules. "Back to summary" uses `go`, so Done on that summary lands on TOPIK home, not 36 (owner ruling Q-P6c, 2026-10-16: as built).
 - **Q-C-2 (owner, 2026-10-16):** in Words and Grammar the word, its part of speech and the pattern stay whole terms (The Wrap Rule); the meaning is authored prose and breaks between its words.
 
 ## Copy

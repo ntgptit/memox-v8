@@ -37,12 +37,15 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 
 | From | Event | To | Evidence |
 |---|---|---|---|
+| loading | catalog read | reading (the default section) / empty | UC-TOPIK-001 step 2, A1. VERIFIED `topik_test_list_screen_test.dart::reading first, newest round first, with tags and status`, `::a section with no test is a calm empty state with no sort (A1, The Content Gate Rule)` |
 | reading | tap Listening | listening | UC-TOPIK-001 step 3. VERIFIED `topik_test_list_screen_test.dart::Listening shows its tests; the choice is per screen` |
-| any loaded | pick a sort | same section, re-sorted | BR-TOPIK-022. VERIFIED `::the sort sheet re-orders the rows` |
-| any loaded | attempt submitted, deleted or synced elsewhere | status updates in place | UC-TOPIK-001 A2. VERIFIED for a submit `::a submitted attempt updates the status in place (A2)`; a delete or a sync reaches the same stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`) |
+| any loaded | pick a sort | same section, re-sorted | BR-TOPIK-022. VERIFIED `::the sort sheet re-orders the rows` (Oldest round through the sheet; the three orders at the domain, `test/features/topik/domain/topik_catalog_test.dart`); the sheet dismissed with no pick, or the order already chosen, changes nothing: UNVERIFIED on the screen, no test drives it |
+| any loaded | attempt submitted, deleted or synced elsewhere | status updates in place | UC-TOPIK-001 A2. VERIFIED for a submit `::a submitted attempt updates the status in place (A2)`; a delete reaches the same stream and clears the best score (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); a sync write is the same stream, read from the code |
 | any loaded | tap a row | 36 | UC-TOPIK-001 step 5. VERIFIED `::a row opens its test`, `topik_routes_test.dart::Study home → TOPIK → …` |
-| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again, and the section tray stays` |
-| error | Retry | loading | UC-TOPIK-001 E1. VERIFIED same test |
+| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again, and the section tray stays`; a `Failure` in its own words: `::a read that fails with a Failure speaks in its own words, and the section tray stays (UC-TOPIK-001 E1, BR-CORE-005)` |
+| error | Retry | error with Retry spinning, then the state the read gives | UC-TOPIK-001 E1. VERIFIED same test (no skeleton, as on 34) |
+| any | Back | 34 | navigation. VERIFIED `topik_routes_test.dart::Study home → TOPIK → a level → a test under the tab bar; Back climbs one level each time` |
+| any | language changes | same state, relabelled; the Korean title stays | UC-TOPIK-001 A3. UNVERIFIED on 35: the labels are the same keys 34 renders in Vietnamese (`topik_home_screen_test.dart::in Vietnamese, the same screen relabelled (UC-TOPIK-003 A4)`) and `topik_labels_test.dart::a status line for every case, in-progress first` reads the status line in vi; no 35 test pumps in vi |
 | reading / listening | no valid test | empty | UC-TOPIK-001 A1. VERIFIED `::a section with no test is a calm empty state with no sort (A1, The Content Gate Rule)` |
 
 ## Rulings
@@ -53,6 +56,7 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 - **Plan 6a (2026-10-15):** the header (count and sort) shows only with tests; the section tray stays in every state (The Content Gate Rule, critique F4). The count and the sort share the first line; the description reads full width under them.
 - **Plan 6a:** the round badge is neutral (The One Accent Rule); the Korean title is content and may end in an ellipsis (critique F7); tags and status are glued terms (The Wrap Rule).
 - **Owner 2026-10-16 (Q-P6-3):** Reading is `AppIcons.book`, Listening `AppIcons.headphones`, in the header and the empty state (they were the stand-ins `fileText` and `speak`).
+- **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name is the current order alone ("Newest round"); nothing in the node says it sorts. `MxChipTrigger` has no semantic label slot, so the fix is shared: OPEN QUESTION Q-A-2 for the owner. BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
 - **Wireframe pass (owner, 2026-10-16):** nothing missing in scope. The header's "Reading" and "{n} tests" chips repeat the switch and the title; tags stay a meta line (The Wrap Rule); Writing is Phase C.
 
 ## Copy
@@ -62,3 +66,4 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 - Tags: "Explanation" · "Translation" · "Words" · "Grammar" · "Script".
 - Status: "Not started" · "In progress" · "Best {score} · {n} attempts".
 - Empty: "No tests yet for this section".
+- Error: "Couldn't load the tests" · "Nothing was lost. Try again." (a `Failure`: its own sentence) · "Retry".
