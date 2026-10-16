@@ -32,7 +32,10 @@ When Docker runs but the CLI cannot pull its service images (Docker Hub answers
 `429 Too Many Requests`), `bash tools/supabase/image_pgtap.sh` runs the migrations
 and the pgTAP suite on the `supabase/postgres` image alone, with a stub of the
 Storage tables and GoTrue's `auth.*` additions (its header lists what the stub
-does not prove). `supabase test db` on the full stack stays the reference.
+does not prove; storage-api's own triggers and functions on `storage.objects`
+are absent, so direct DML on it is not proven there). `supabase test db` on the
+full stack stays the reference: the `supabase migrations` workflow runs it
+before `db push`, which is the first proof of the Storage path.
 
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
@@ -197,8 +200,11 @@ there.
   `topik_catalog` and `topik_test_content` (everyone). Its media sits in the
   private bucket `topik-media`; Storage authorises through four policies on
   `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
-  each calling `topik_media_can_read` / `topik_media_can_write`, which are
-  granted to `authenticated` only to serve those policies.
+  each calling `topik_media_can_read` / `topik_media_can_write` /
+  `topik_media_can_modify`, which are granted to `authenticated` only to serve
+  those policies. An object a published version lists in its `media` cannot be
+  updated or deleted, even by an admin, and a media path must name the version
+  being published or an existing one.
 - A new synced entity type changes four functions in one migration:
   `private.push_one` (its accepted list), `private.apply_operation` (upsert,
   and delete unless the type is never deleted), `private.current_change` and

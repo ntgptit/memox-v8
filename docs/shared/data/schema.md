@@ -761,7 +761,7 @@ mọi thay đổi.
 
 Phía Supabase, không phải Drift: kho nội dung đề TOPIK của [ADR-024](../decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md),
 mô tả đầy đủ ở [spec](../../superpowers/specs/2026-10-16-topik-master-data-admin-web-design.md) §5.
-Migration `20261017000000_topik_master_data.sql`; schema Drift không đổi trong plan này (bảng cache
+Migration `20261016120000_topik_master_data.sql`; schema Drift không đổi trong plan này (bảng cache
 `topik_content_cache`, `topik_content_state` đến ở plan 2, v18). Các bảng RLS bật, không policy, chỉ đi qua RPC.
 
 - `topik_test_draft`: bản nháp sửa tự do của một đề, một dòng cho mỗi `test_id`, có thể không hợp lệ.
