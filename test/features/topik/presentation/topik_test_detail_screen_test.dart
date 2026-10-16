@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
+import 'package:memox/features/topik/domain/models/topik_test_model.dart';
+import 'package:memox/features/topik/domain/repositories/topik_attempt_repository.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/domain/usecases/start_topik_attempt_use_case.dart';
 import 'package:memox/features/topik/presentation/providers/start_topik_attempt_use_case_provider.dart';
@@ -265,6 +270,96 @@ void main() {
     expect(find.text("This test isn't available"), findsOneWidget);
   });
 
+  libraryTest('Recent attempts are the five newest, #7 to #3 '
+      '(BR-TOPIK-021, UC-TOPIK-002)', (tester, env) async {
+    for (var day = 0; day < 7; day++) {
+      await topikSeedCompleted(
+        env,
+        test,
+        startedAt: libraryToday.add(Duration(days: day)),
+      );
+    }
+    await pumpTopikTestDetail(tester, env, test, TopikDetailTaps());
+
+    expect(topikDetailFigure(tester, 'Sessions'), '7');
+    for (final number in ['#7', '#6', '#5', '#4', '#3']) {
+      expect(find.text(number), findsOneWidget);
+    }
+    expect(find.text('#2'), findsNothing);
+    expect(find.text('#1'), findsNothing);
+  });
+
+  libraryTest('Total time sums every attempt and reads to the second: '
+      '1h 02m 11s (BR-TOPIK-020, -025)', (tester, env) async {
+    await topikSeedCompleted(
+      env,
+      test,
+      startedAt: libraryToday,
+      elapsedMs: 3731000,
+    );
+    await pumpTopikTestDetail(tester, env, test, TopikDetailTaps());
+
+    // Overall Progress' last-activity line and the attempt's own row.
+    expect(findPlainTextContaining('1h 02m 11s'), findsNWidgets(2));
+    expect(
+      find.byWidgetPredicate((widget) {
+        if (widget is! Text) return false;
+        final plain = (widget.data ?? '').replaceAll('\u00A0', ' ');
+        return plain.startsWith('Last activity') &&
+            plain.endsWith('1h 02m 11s');
+      }),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('Start new asks again; Cancel keeps the attempt in progress '
+      '(BR-TOPIK-011)', (tester, env) async {
+    final open = await topikSeedInProgress(env, test, startedAt: libraryToday);
+    final taps = TopikDetailTaps();
+    await pumpTopikTestDetail(tester, env, test, taps);
+
+    await tester.tap(find.byType(MxFab));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Start new'));
+    await tester.pumpAndSettle();
+    expect(find.text('Start a new attempt?'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Start a new attempt?'), findsNothing);
+    expect(taps.attempts, isEmpty);
+    final stored = await tester.runAsync(
+      () => TopikAttemptRepositoryImpl(env.db).watchAttempt(open.id).first,
+    );
+    expect(stored!.attempt.isCompleted, isFalse);
+  });
+
+  libraryTest('a start refused because an attempt in progress appeared says '
+      'so (BR-TOPIK-011)', (tester, env) async {
+    final taps = TopikDetailTaps();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      topikTestDetailScreen(test, taps),
+      overrides: [
+        ...topikContentOverrides([test]),
+        // Another screen started an attempt between the read and the tap.
+        startTopikAttemptUseCaseProvider.overrideWith(
+          (ref) => StartTopikAttemptUseCase(
+            FakeTopikContentRepository([test]),
+            _InProgressAppeared(),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start'));
+    await tester.pumpAndSettle();
+    expect(taps.attempts, isEmpty);
+    expect(find.text('You have an attempt in progress'), findsOneWidget);
+  });
+
   libraryTest('the test title names the route once, as a heading', (
     tester,
     env,
@@ -278,4 +373,17 @@ void main() {
     expect(routeNamingNodes(tester), 1);
     handle.dispose();
   });
+}
+
+/// The store once another screen has started an attempt of the test.
+final class _InProgressAppeared implements TopikAttemptRepository {
+  @override
+  Future<Outcome<TopikAttempt, TopikRejection>> start(
+    TopikTest test, {
+    DateTime? now,
+  }) async => const Rejected(TopikRejection.inProgressExists);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName}');
 }

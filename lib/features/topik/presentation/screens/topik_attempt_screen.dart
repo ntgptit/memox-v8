@@ -165,9 +165,11 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
   }
 
   /// A state with nothing to answer: the plain bar with Close, and [body]
-  /// (The Content Gate Rule: no footer, no grid; critique F8).
+  /// (The Content Gate Rule: no footer, no grid; critique F8). No question
+  /// is on screen, so the clock stops (BR-TOPIK-015).
   Widget _plain(Widget body) {
     final l10n = context.l10n;
+    unawaited(_controller.hideQuestion());
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.topikPractice,
@@ -183,6 +185,8 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
 
   Widget _answering(TopikAttemptView view, bool isSubmitting) {
     final l10n = context.l10n;
+    // A question is on screen: its clock runs (BR-TOPIK-015).
+    _controller.showQuestion();
     final test = view.test!;
     final questions = test.questions;
     final attempt = view.detail.attempt;

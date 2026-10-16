@@ -12,7 +12,7 @@
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
 | [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | draft | Media lưu trong thư mục riêng của ứng dụng. | — |
 | [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
-| [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | UC-CARD-002, UC-PROGRESS-001, UC-PROGRESS-002, UC-TOPIK-001, UC-TOPIK-002, UC-TOPIK-003 |
+| [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | UC-CARD-002, UC-PROGRESS-001, UC-PROGRESS-002, UC-TOPIK-001, UC-TOPIK-002, UC-TOPIK-003, UC-TOPIK-004, UC-TOPIK-005 |
 
 ### Decisions
 
@@ -41,6 +41,7 @@
 | [ADR-021](../shared/decisions/ADR-021-linear-theo-doi-tien-do.md) | Tiến độ công việc nằm trên Linear, không còn trong file WBS | active | — |
 | [ADR-022](../shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md) | Một nguồn token và theme theo cấu trúc Flutter thông thường | active | — |
 | [ADR-023](../shared/decisions/ADR-023-luyen-de-topik.md) | Luyện đề TOPIK trong MemoX | active | — |
+| [ADR-024](../shared/decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md) | Master Data TOPIK trên Supabase và Admin Web | active | — |
 
 ## [account](../features/account/README.md)
 
@@ -513,14 +514,14 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TOPIK-001](../features/topik/rules/BR-TOPIK-001-cau-truc-de-theo-cap-va-phan-thi.md) | Cấu trúc đề theo cấp và phần thi | active | Mỗi đề có đúng số câu và dải số câu thật của (cấp, phần thi): TOPIK I nghe 30 câu 1–30, đọc 40 câu 31–70; TOPIK II nghe và đọc 50 câu 1–50. | UC-TOPIK-001 |
+| [BR-TOPIK-001](../features/topik/rules/BR-TOPIK-001-cau-truc-de-theo-cap-va-phan-thi.md) | Cấu trúc đề theo cấp và phần thi | active | Mỗi đề có đúng số câu và dải số câu thật của (cấp, phần thi): TOPIK I nghe 30 câu 1–30, đọc 40 câu 31–70; TOPIK II nghe và đọc 50 câu 1–50. | UC-TOPIK-001, UC-TOPIK-003 |
 | [BR-TOPIK-002](../features/topik/rules/BR-TOPIK-002-diem-tung-cau-la-du-lieu.md) | Điểm từng câu là dữ liệu của đề | active | Điểm của mỗi câu lấy từ 배점표 chính thức trong nội dung, tổng một phần thi bằng 100; domain chỉ cộng, không bao giờ suy ra điểm từ số câu đúng. | UC-TOPIK-001 |
 | [BR-TOPIK-003](../features/topik/rules/BR-TOPIK-003-lua-chon-luu-bang-chi-so.md) | Lựa chọn lưu bằng chỉ số 1–4 | active | Mỗi câu có đúng bốn lựa chọn chỉ số 1–4; đáp án đúng và đáp án người dùng chọn đều lưu bằng chỉ số, khớp ①–④ của 정답표. | UC-TOPIK-001 |
 | [BR-TOPIK-004](../features/topik/rules/BR-TOPIK-004-nhom-cau-va-doan-audio.md) | Nhóm câu và đoạn audio của nhóm | active | Mỗi câu thuộc đúng một nhóm; nhóm mang chỉ thị, đoạn văn và đoạn audio dùng chung; đề nghe có đoạn audio cho mọi nhóm và số lần phát theo bảng. | UC-TOPIK-001, UC-TOPIK-003 |
 | [BR-TOPIK-005](../features/topik/rules/BR-TOPIK-005-dang-cau-theo-cap-va-phan-thi.md) | Dạng câu theo cấp và phần thi | active | Mỗi câu mang một `questionType` thuộc tập dạng của cấp và phần thi; lệch bản đồ số câu mặc định chỉ là cảnh báo. | UC-TOPIK-001 |
 | [BR-TOPIK-006](../features/topik/rules/BR-TOPIK-006-van-ban-da-ngon-ngu-du-vi-va-en.md) | Văn bản đa ngôn ngữ có đủ vi và en | active | Giải thích và bản dịch là tùy chọn theo từng câu, nhưng mọi văn bản đa ngôn ngữ có mặt MUST có cả `vi` và `en` không rỗng. | UC-TOPIK-001, UC-TOPIK-005 |
 | [BR-TOPIK-007](../features/topik/rules/BR-TOPIK-007-nguon-de-va-phien-ban-noi-dung.md) | Nguồn đề và phiên bản nội dung | active | Chỉ nạp đề công khai của NIIED; mỗi đề ghi nguồn, bản đề và `contentVersion` tăng sau mỗi lần sửa nội dung. | UC-TOPIK-001 |
-| [BR-TOPIK-008](../features/topik/rules/BR-TOPIK-008-de-khong-hop-le-bi-loai-khi-nap.md) | Đề không hợp lệ bị loại khi nạp | active | Một bộ kiểm tra nội dung duy nhất chạy ở app và ở gate; đề vi phạm bị loại khỏi mọi danh sách, ghi log, và không chặn đề khác. | UC-TOPIK-001 |
+| [BR-TOPIK-008](../features/topik/rules/BR-TOPIK-008-de-khong-hop-le-bi-loai-khi-nap.md) | Đề không hợp lệ bị loại khi nạp | active | Một bộ kiểm tra nội dung duy nhất chạy ở app và ở gate; đề vi phạm bị loại khỏi mọi danh sách, ghi log, và không chặn đề khác. | UC-TOPIK-001, UC-TOPIK-003 |
 | [BR-TOPIK-009](../features/topik/rules/BR-TOPIK-009-the-noi-dung-suy-ra-tu-du-lieu.md) | Thẻ nội dung suy ra từ dữ liệu | active | Các thẻ explanation, translation, words, grammars, script của một đề được suy ra từ dữ liệu có thật, không nhập tay. | UC-TOPIK-001 |
 | [BR-TOPIK-010](../features/topik/rules/BR-TOPIK-010-vong-doi-luot-lam-bai.md) | Vòng đời của lượt làm bài | active | Lượt làm bài đi `in_progress` → `completed` khi nộp, hoặc bị xoá; `completed` là bất biến. | UC-TOPIK-003, UC-TOPIK-005 |
 | [BR-TOPIK-011](../features/topik/rules/BR-TOPIK-011-mot-luot-dang-do-cho-moi-de-tren-mot-may.md) | Một lượt đang dở cho mỗi đề trên một máy | active | Một máy có nhiều nhất một lượt `in_progress` cho mỗi đề; bắt đầu khi đã có lượt dở thì người dùng chọn Tiếp tục hoặc Bắt đầu mới. | UC-TOPIK-002, UC-TOPIK-003 |
@@ -550,11 +551,11 @@
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-TOPIK-001](../features/topik/usecases/UC-TOPIK-001-chon-de-luyen-tap.md) | Chọn đề để luyện tập | draft | — |
-| [UC-TOPIK-002](../features/topik/usecases/UC-TOPIK-002-xem-chi-tiet-de.md) | Xem chi tiết đề và lịch sử | draft | — |
-| [UC-TOPIK-003](../features/topik/usecases/UC-TOPIK-003-lam-bai-che-do-luyen-tap.md) | Làm bài ở chế độ luyện tập | draft | — |
-| [UC-TOPIK-004](../features/topik/usecases/UC-TOPIK-004-xem-tong-ket-luot-lam-bai.md) | Xem tổng kết lượt làm bài | draft | — |
-| [UC-TOPIK-005](../features/topik/usecases/UC-TOPIK-005-on-lai-cau-hoi.md) | Ôn lại câu hỏi của một lượt | draft | — |
+| [UC-TOPIK-001](../features/topik/usecases/UC-TOPIK-001-chon-de-luyen-tap.md) | Chọn đề để luyện tập | ready | — |
+| [UC-TOPIK-002](../features/topik/usecases/UC-TOPIK-002-xem-chi-tiet-de.md) | Xem chi tiết đề và lịch sử | ready | — |
+| [UC-TOPIK-003](../features/topik/usecases/UC-TOPIK-003-lam-bai-che-do-luyen-tap.md) | Làm bài ở chế độ luyện tập | ready | — |
+| [UC-TOPIK-004](../features/topik/usecases/UC-TOPIK-004-xem-tong-ket-luot-lam-bai.md) | Xem tổng kết lượt làm bài | ready | — |
+| [UC-TOPIK-005](../features/topik/usecases/UC-TOPIK-005-on-lai-cau-hoi.md) | Ôn lại câu hỏi của một lượt | ready | — |
 
 ## [transfer](../features/transfer/README.md)
 

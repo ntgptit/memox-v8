@@ -1,9 +1,9 @@
 ---
 id: UC-TOPIK-001
 title: Chọn đề để luyện tập
-status: draft
+status: ready
 rules: [BR-CORE-005, BR-TOPIK-001, BR-TOPIK-002, BR-TOPIK-003, BR-TOPIK-004, BR-TOPIK-005, BR-TOPIK-006, BR-TOPIK-007, BR-TOPIK-008, BR-TOPIK-009, BR-TOPIK-022]
-code: []
+code: [lib/features/topik/domain/usecases/watch_topik_catalog_use_case.dart, lib/features/topik/presentation/screens/topik_home_screen.dart, lib/features/topik/presentation/screens/topik_test_list_screen.dart, lib/features/topik/presentation/providers/topik_catalog_provider.dart, lib/features/topik/presentation/widgets/items/topik_practice_entry_widget.dart, lib/app/router/topik_routes.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
@@ -15,7 +15,7 @@ code: []
 
 **Main flow:**
 1. Người dùng chạm thẻ TOPIK trên Study home. Hệ thống mở TOPIK home (màn 34) với phần Practice: thẻ TOPIK I và TOPIK II, mỗi thẻ kèm số đề hợp lệ của cấp đó (BR-TOPIK-008).
-2. Người dùng chạm một cấp. Hệ thống mở danh sách đề của cấp (màn 35), phần thi mặc định là 읽기, với thẻ đầu trang (phần thi, số đề) và một hàng cho mỗi đề: số kỳ, tên tiếng Hàn, thẻ nội dung suy ra từ dữ liệu và trạng thái của người dùng (BR-TOPIK-009, BR-TOPIK-022).
+2. Người dùng chạm một cấp có đề. Hệ thống mở danh sách đề của cấp (màn 35), phần thi mặc định là 읽기, với thẻ đầu trang (phần thi, số đề) và một hàng cho mỗi đề: số kỳ, tên tiếng Hàn, thẻ nội dung suy ra từ dữ liệu và trạng thái của người dùng (BR-TOPIK-009, BR-TOPIK-022).
 3. Người dùng đổi phần thi sang 듣기: danh sách đổi ngay sang các đề nghe của cấp.
 4. Người dùng đổi thứ tự (kỳ giảm, kỳ tăng, hoạt động gần nhất); danh sách sắp lại (BR-TOPIK-022).
 5. Người dùng chạm một đề. Hệ thống mở chi tiết đề (UC-TOPIK-002).
@@ -23,7 +23,8 @@ code: []
 ## Alternative / Error flow
 
 **Alternative flows:**
-- **A1 — Cấp hoặc phần thi không có đề hợp lệ nào:** hệ thống hiện trạng thái rỗng trung tính nói chưa có đề cho phần này; không phải lỗi, không có Retry. Đề bị loại vì nội dung không hợp lệ không hiện ở đâu (BR-TOPIK-008).
+- **A1 — Phần thi không có đề hợp lệ nào:** màn 35 hiện trạng thái rỗng trung tính nói chưa có đề cho phần này, vẫn giữ công tắc phần thi; không phải lỗi, không có Retry. Đề bị loại vì nội dung không hợp lệ không hiện ở đâu (BR-TOPIK-008).
+- **A4 — Cấp không có đề hợp lệ nào:** màn 34 vẫn hiện hàng của cấp với "No tests yet", không có mũi tên và không chạm được; không phải lỗi (BR-TOPIK-008).
 - **A2 — Một lượt được nộp hay xoá ở màn khác, hoặc đồng bộ về:** trạng thái của đề trên danh sách tự cập nhật.
 - **A3 — Đổi ngôn ngữ giao diện:** nhãn đổi theo; tên đề tiếng Hàn giữ nguyên.
 
@@ -32,7 +33,7 @@ code: []
 
 ## UI
 
-**UI states:** màn 34: loading · loaded · error + retry. Màn 35: loading · loaded · rỗng (A1) · error + retry.
+**UI states:** màn 34: loading · loaded · noTests (A4) · error + retry. Màn 35: loading · loaded · rỗng (A1) · error + retry. Màn hình: [34](../../../shared/ui/screen-handoff/34-topik-home.md), [35](../../../shared/ui/screen-handoff/35-topik-test-list.md).
 
 ## Local
 
@@ -49,4 +50,5 @@ Không áp dụng — UC chạy trên Drift và nội dung đóng gói, không g
 - [ ] **Given** một đề có lượt dở và hai lượt đã nộp với điểm tốt nhất 88, **when** mở danh sách, **then** hàng của đề hiện trạng thái đang làm và 88 kèm số lượt 2 (BR-TOPIK-022).
 - [ ] **Given** danh sách có các kỳ 91 và 96, **when** chọn thứ tự kỳ tăng dần, **then** 91 đứng trước 96 (BR-TOPIK-022).
 - [ ] **Given** một cấp không có đề nghe hợp lệ, **when** chọn phần thi 듣기, **then** hiện trạng thái rỗng trung tính, không có Retry (A1).
+- [ ] **Given** một cấp không có đề hợp lệ, **when** mở TOPIK home, **then** hàng của cấp ghi "No tests yet", không có mũi tên và chạm không mở gì (A4, BR-TOPIK-008).
 - [ ] **Given** đọc danh sách thất bại với một `Failure`, **when** màn nhận lỗi, **then** hiện câu của đúng kiểu failure và Retry, không nêu nguyên nhân kỹ thuật (E1, BR-CORE-005).

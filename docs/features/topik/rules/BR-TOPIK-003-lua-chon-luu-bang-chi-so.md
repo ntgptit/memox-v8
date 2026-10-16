@@ -20,7 +20,7 @@ Chỉ số là thứ 정답표 chính thức dùng, nên đối chiếu được
 
 ## Ví dụ
 
-Người dùng chọn ③ ở câu 21: `selected_idx = 3`; cột Your trong Summary hiện ③.
+Người dùng chọn ③ ở câu 21: `selected_idx = 3`; hàng của câu 21 trong Summary ghi Your answer ③.
 
 ## Edge case
 

@@ -14,7 +14,8 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 /// badge, then when, "{score} / {max}", "{correct} / {count} correct" and how
 /// long, then its actions as small outline
 /// buttons (never primary: one row of many, The One Accent Rule) and the
-/// delete button at the end.
+/// delete button at the end. Every action is named with the attempt's
+/// number for TalkBack, since each row shows the same labels.
 class TopikHistoryRowWidget extends StatelessWidget {
   const TopikHistoryRowWidget({
     super.key,
@@ -88,45 +89,60 @@ class TopikHistoryRowWidget extends StatelessWidget {
               ],
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  spacing: dimens.space8,
-                  runSpacing: dimens.space8,
-                  children: [
-                    if (isCompleted) ...[
-                      MxButton(
-                        label: l10n.topikSummary,
-                        onPressed: onSummary,
-                        tone: MxButtonTone.outline,
-                        size: MxButtonSize.small,
-                      ),
-                      MxButton(
-                        label: l10n.topikReview,
-                        onPressed: onReview,
-                        tone: MxButtonTone.outline,
-                        size: MxButtonSize.small,
-                      ),
-                    ] else
-                      MxButton(
-                        label: l10n.topikContinue,
-                        onPressed: onContinue,
-                        tone: MxButtonTone.outline,
-                        size: MxButtonSize.small,
-                      ),
-                  ],
-                ),
-              ),
-              MxIconButton(
-                icon: AppIcons.delete,
-                semanticLabel: l10n.topikDeleteAttempt,
-                onPressed: onDelete,
-              ),
-            ],
-          ),
+          _actions(context),
         ],
       ),
+    );
+  }
+
+  /// The row's actions, each named with the attempt's number for TalkBack
+  /// (every row shows the same labels), and the delete button at the end.
+  Widget _actions(BuildContext context) {
+    final l10n = context.l10n;
+    final dimens = context.dimens;
+    final isCompleted = numbered.attempt.isCompleted;
+    return Row(
+      children: [
+        Expanded(
+          child: Wrap(
+            spacing: dimens.space8,
+            runSpacing: dimens.space8,
+            children: [
+              if (isCompleted) ...[
+                MxButton(
+                  label: l10n.topikSummary,
+                  semanticLabel: l10n.topikSummaryOfAttempt(numbered.number),
+                  onPressed: onSummary,
+                  tone: MxButtonTone.outline,
+                  size: MxButtonSize.small,
+                ),
+                MxButton(
+                  label: l10n.topikReview,
+                  semanticLabel: l10n.topikReviewOfAttempt(numbered.number),
+                  onPressed: onReview,
+                  tone: MxButtonTone.outline,
+                  size: MxButtonSize.small,
+                ),
+              ] else
+                MxButton(
+                  label: l10n.topikContinue,
+                  semanticLabel: l10n.topikContinueAttempt(numbered.number),
+                  onPressed: onContinue,
+                  tone: MxButtonTone.outline,
+                  size: MxButtonSize.small,
+                ),
+            ],
+          ),
+        ),
+        MxIconButton(
+          icon: AppIcons.delete,
+          // Named with its number: a History of many rows repeats
+          // "Delete attempt", and TalkBack must tell them apart
+          // (as deckMoreActions names its deck).
+          semanticLabel: l10n.topikDeleteAttemptNumber(numbered.number),
+          onPressed: onDelete,
+        ),
+      ],
     );
   }
 }

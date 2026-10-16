@@ -5,12 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
+import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
+import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_answer_row_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_answer_filter_chips_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_question_bar_chart_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_score_donut_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_summary_figures_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_summary_hero_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
@@ -58,6 +61,27 @@ TopikAttemptSummary _summary(List<TopikAttemptAnswer> answers) {
     answers: answers,
   );
 }
+
+TopikAttempt _attempt(TopikAttemptSummary summary) => TopikAttempt(
+  id: 'A',
+  testId: 'topik2-96-reading',
+  level: TopikLevel.topik2,
+  section: TopikSection.reading,
+  round: 96,
+  mode: TopikAttemptMode.practice,
+  status: TopikAttemptStatus.completed,
+  startedAt: DateTime.utc(2026, 10, 15, 2),
+  completedAt: DateTime.utc(2026, 10, 15, 3),
+  updatedAt: DateTime.utc(2026, 10, 15, 3),
+  totalTimeMs: 3731000,
+  currentQuestionNo: 31,
+  questionCount: summary.questionCount,
+  maxScore: summary.maxScore,
+  score: summary.score,
+  correctCount: summary.correctCount,
+  answeredCount: summary.answeredCount,
+  contentVersion: 1,
+);
 
 // Screen 38's parts (detail file 38; critique S1, S3–S7).
 void main() {
@@ -281,6 +305,29 @@ void main() {
     );
     final node = tester.getSemantics(find.text('Wrong'));
     expect(node.getSemanticsData().flagsCollection.isSelected, Tristate.isTrue);
+    handle.dispose();
+  });
+
+  libraryTest('the hero: which test, when and how long, from the attempt, '
+      'and one TalkBack node for the score (critique S2, S3)', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await host(
+      tester,
+      env,
+      TopikSummaryHeroWidget(attempt: _attempt(summary), summary: summary),
+    );
+
+    expect(findPlainText('#96 · TOPIK II · Reading'), findsOneWidget);
+    expect(findPlainTextContaining('1h 02m 11s'), findsOneWidget);
+    expect(find.text('4 / 8'), findsOneWidget);
+    // One node: the card merges the hero's lines into it.
+    expect(
+      find.bySemanticsLabel(RegExp(r'Score 4 of 8, 2 of 4 correct')),
+      findsOneWidget,
+    );
     handle.dispose();
   });
 }

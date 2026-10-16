@@ -1,6 +1,6 @@
 # TOPIK Practice: past-paper practice with official scoring
 
-Date: 2026-10-15 · Owner decisions in the brainstorm of 2026-10-15 · Status: draft for owner review
+Date: 2026-10-15 · Owner decisions in the brainstorm of 2026-10-15 · Status: approved by the owner 2026-10-15 (§13); built by plans 1–6c (DEV-394); plan 7 (the round-96 pack) waits on the NIIED files. As built, Summary shows one row per answer and the eye hides "Right answer" (screen 38, S5 and S9).
 
 ## 1. Goal
 
