@@ -5,6 +5,20 @@ The plan grows monotonically: every rule may add checks, tests or downstream
 features, but no rule can remove work selected by an earlier rule. Unknown and
 high-risk paths promote the plan to the complete non-golden host suite.
 
+**Imports decide, folders only add.** A changed Dart file selects every test
+that imports it, directly or through another file; that is what can break.
+Presentation, dependency wiring, `lib/shared/`, `lib/core/` outside the theme
+and the database, `lib/app/` and test support are selected that way alone.
+Data and domain changes keep their folder and downstream-feature rules on top,
+because a behaviour change there can reach a test through the database rather
+than through an import. A test that reads a file from disk instead of
+importing it is declared in the impact map's `file_readers`.
+
+**Tooling is not the host suite.** Python, shell, CI, hooks, the guard and
+native platform folders cannot change what a Dart test does unless the test
+reads them, and those tests are declared readers. Such a change needs the
+static checks and the tooling's own tests, which `dod_check.sh` runs.
+
 `dod_check.sh --changed` is its only caller; V8's CI runs the full gate.
 """
 
@@ -16,7 +30,7 @@ import posixpath
 import re
 import subprocess
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
@@ -89,6 +103,12 @@ class ImpactMap:
     # nobody has classified.
     inert_prefixes: tuple[str, ...]
     inert_files: frozenset[str]
+    # Paths outside the Dart host suite: tooling, CI, native platforms. They
+    # select no host test unless a declared reader reads them.
+    tooling_prefixes: tuple[str, ...] = ()
+    # Path prefix -> the tests that read it from disk (a value ending in `/`
+    # is a test folder). Imports cannot see these dependencies.
+    file_readers: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
     @classmethod
     def load(cls, path: Path = DEFAULT_IMPACT_MAP) -> "ImpactMap":
@@ -108,6 +128,11 @@ class ImpactMap:
             full_scope_files=frozenset(raw["full_scope_files"]),
             inert_prefixes=tuple(raw.get("inert_prefixes", ())),
             inert_files=frozenset(raw.get("inert_files", ())),
+            tooling_prefixes=tuple(raw.get("tooling_prefixes", ())),
+            file_readers={
+                key: tuple(value)
+                for key, value in raw.get("file_readers", {}).items()
+            },
         )
 
 
@@ -124,7 +149,13 @@ class VerificationPlanBuilder:
         self.unmatched_paths: set[str] = set()
         self.test_prefixes: set[str] = set()
         self.exact_test_files: set[str] = set()
+        # Kept apart: the fail-safe below asks whether the code change itself
+        # selected a test, and a reader of all of `lib/` would always answer.
+        self.reader_prefixes: set[str] = set()
+        self.reader_files: set[str] = set()
         self.has_code_changes = False
+        self.has_tooling_changes = False
+        self.has_reader_tests = False
         self.requires_host_coverage = False
         self.has_golden_image_changes = False
         self.full_suite = False
@@ -151,6 +182,26 @@ class VerificationPlanBuilder:
         self.add_reason(reason)
         for layer in normalized_layers:
             self.test_prefixes.add(f"test/features/{feature}/{layer}/")
+
+    def require_importers(self, reason: str) -> None:
+        """A Dart change whose tests are the files that import it, which
+        `seal` adds; with none, the plan falls back to the full suite."""
+        self.has_code_changes = True
+        self.requires_host_coverage = True
+        self.add_reason(reason)
+
+    def require_readers(self, path: str) -> None:
+        """The declared tests that read [path] from disk."""
+        for prefix, readers in self.impact_map.file_readers.items():
+            if not path.startswith(prefix):
+                continue
+            self.has_reader_tests = True
+            self.add_reason("a test that reads the changed file from disk selected")
+            for reader in readers:
+                if reader.endswith("/"):
+                    self.reader_prefixes.add(reader)
+                else:
+                    self.reader_files.add(reader)
 
     def require_downstream(self, feature: str, reason: str) -> None:
         pending = [feature]
@@ -187,6 +238,9 @@ class VerificationPlanBuilder:
                 return
             self.exact_test_files.add(path)
             return
+        if path.endswith(".dart") and (self.root / path).is_file():
+            self.require_importers("test support changed: the tests that import it")
+            return
         parts = path.split("/")
         if len(parts) >= 4 and parts[:2] == ["test", "features"]:
             feature = parts[2]
@@ -208,6 +262,7 @@ class VerificationPlanBuilder:
 
     def classify_path(self, path: str) -> None:
         self.changed_paths.add(path)
+        self.require_readers(path)
 
         if path.startswith("docs/") or path in {"AGENTS.md", "CLAUDE.md", "README.md"}:
             self.add_reason("documentation contract changed")
@@ -234,6 +289,16 @@ class VerificationPlanBuilder:
             path.startswith(prefix) for prefix in self.impact_map.full_scope_prefixes
         ):
             self.require_full("high-risk or verification-infrastructure path changed")
+            return
+
+        if not path.endswith(".md") and any(
+            path.startswith(prefix) for prefix in self.impact_map.tooling_prefixes
+        ):
+            self.has_tooling_changes = True
+            self.add_reason("tooling outside the Dart host suite changed")
+            if path.endswith(".dart"):
+                # tools/ Dart (m3_lint, topik) is imported by its own tests.
+                self.has_code_changes = True
             return
 
         # **A picture is not code.** Nothing the gate runs can fail on a
@@ -275,8 +340,12 @@ class VerificationPlanBuilder:
             self.require_full("database schema, migration or shared database path changed")
             return
 
-        if path.startswith("lib/core/") or path.startswith("lib/main"):
-            self.require_full("shared core or application entrypoint changed")
+        if path.startswith("lib/main"):
+            self.require_full("application entrypoint changed")
+            return
+
+        if path.endswith(".dart") and path.startswith(("lib/core/", "lib/shared/", "lib/app/")):
+            self.require_importers("shared source changed: the tests that import it")
             return
 
         if path.startswith("lib/"):
@@ -314,16 +383,10 @@ class VerificationPlanBuilder:
         if layer == "data":
             self.require_feature_layers(feature, ("data",), "feature data layer changed")
             return
-        if layer == "presentation":
-            self.require_feature_layers(
-                feature, ("presentation",), "feature presentation changed"
-            )
-            return
-        if layer == "di":
-            self.require_feature_layers(
-                feature, ("presentation",), "feature dependency wiring changed"
-            )
-            self.test_prefixes.add("test/app/")
+        if layer in ("presentation", "di"):
+            self.features.add(feature)
+            self.layers.add(layer)
+            self.require_importers(f"feature {layer} changed: the tests that import it")
             return
         self.require_full("feature source path has unknown layer", unmatched_path=path)
 
@@ -337,22 +400,23 @@ class VerificationPlanBuilder:
         if consumer_tests:
             self.exact_test_files.update(consumer_tests)
             self.add_reason("import-derived transitive test consumers selected")
+        def chosen(files: set[str], prefixes: set[str]) -> set[str]:
+            return {
+                path
+                for path in runnable_tests
+                if path in files or any(path.startswith(prefix) for prefix in prefixes)
+            }
+
+        by_code = chosen(self.exact_test_files, self.test_prefixes)
+        if self.requires_host_coverage and not by_code and not self.full_suite:
+            self.require_full("code change selected no executable verification")
         if self.full_suite:
             selected = runnable_tests
         else:
-            selected = {
-                path
-                for path in runnable_tests
-                if path in self.exact_test_files
-                or any(path.startswith(prefix) for prefix in self.test_prefixes)
-            }
+            selected = by_code | chosen(self.reader_files, self.reader_prefixes)
 
         code_required = self.has_code_changes or self.full_suite
-        needs_host_tests = code_required and bool(selected)
-        if self.requires_host_coverage and not needs_host_tests:
-            self.require_full("code change selected no executable verification")
-            selected = runnable_tests
-            needs_host_tests = bool(selected)
+        needs_host_tests = (code_required or self.has_reader_tests) and bool(selected)
 
         # `pixels` rather than `docs` for a picture-only change: both require no
         # Dart verification, but calling a regenerated golden "docs" in the one
@@ -362,7 +426,9 @@ class VerificationPlanBuilder:
             "full"
             if self.full_suite
             else "targeted"
-            if code_required
+            if code_required or self.has_reader_tests
+            else "tooling"
+            if self.has_tooling_changes
             else "pixels"
             if self.has_golden_image_changes
             else "docs"
@@ -376,7 +442,7 @@ class VerificationPlanBuilder:
             test_files=tuple(sorted(selected)),
             local_test_targets=compress_test_targets(selected, runnable_tests),
             risk=risk,
-            needs_static=code_required,
+            needs_static=code_required or self.has_tooling_changes,
             needs_host_tests=needs_host_tests,
             full_suite=self.full_suite,
         )
@@ -453,8 +519,8 @@ def discover_worktree_dart_files(root: Path) -> set[str]:
         return set(cached)
     paths: set[str] = set()
     for arguments in (
-        ["ls-files", "-z", "--", "lib", "test"],
-        ["ls-files", "--others", "--exclude-standard", "-z", "--", "lib", "test"],
+        ["ls-files", "-z", "--", "lib", "test", "tools"],
+        ["ls-files", "--others", "--exclude-standard", "-z", "--", "lib", "test", "tools"],
     ):
         completed = subprocess.run(
             ["git", "-C", str(root), *arguments],

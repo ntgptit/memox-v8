@@ -92,6 +92,9 @@ _ADR010_SOURCE_FILES: dict[str, str] = {
     "lib/features/study/domain/usecases/start_study_session_use_case.dart": "// fixture\n",
     "lib/core/database/tables/cards.drift": "-- fixture\n",
     "lib/core/database/queries/study.drift": "-- fixture\n",
+    "lib/shared/widgets/mx_chip.dart": "// fixture\n",
+    "lib/core/clock/day_clock.dart": "// fixture\n",
+    "tools/m3_lint/m3_rules.dart": "// fixture\n",
 }
 
 # Each maps to the `package:memox/...` import(s) that make it a transitive
@@ -123,6 +126,21 @@ _ADR010_TEST_FILES: dict[str, str] = {
     "test/integration/flows/stored_not_inferred_flow_test.dart":
         "void main() { test('t', () {}); }\n",
     "test/database/invariants_after_flow_test.dart":
+        "void main() { test('t', () {}); }\n",
+    "test/shared/widgets/mx_chip_test.dart":
+        "import 'package:memox/shared/widgets/mx_chip.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/support/clock_harness.dart":
+        "import 'package:memox/core/clock/day_clock.dart';\n",
+    "test/features/study/presentation/study_clock_test.dart":
+        "import '../../../support/clock_harness.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/tools/m3_lint_test.dart":
+        "import '../../tools/m3_lint/m3_rules.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/architecture/boundaries_test.dart":
+        "void main() { test('t', () {}); }\n",
+    "test/app/android_manifest_test.dart":
         "void main() { test('t', () {}); }\n",
     # Filename alone marks this golden-only (`is_golden_only_test`); content
     # does not matter.
@@ -180,22 +198,9 @@ _ADR010_IMPACT_MAP_RAW: dict[str, object] = {
         "trash": [],
     },
     "database_query_features": {"study": ["study", "progress"]},
-    "full_scope_prefixes": [
-        ".github/",
-        ".claude/skills/flutter-workflow/scripts/",
-        "lib/app/",
-        "lib/core/theme/",
-        "lib/l10n/",
-        "integration_test/",
-        "e2e/",
-        "android/",
-        "ios/",
-        "linux/",
-        "macos/",
-        "web/",
-        "windows/",
-    ],
+    "full_scope_prefixes": ["lib/core/theme/", "lib/l10n/", "design/", "assets/"],
     "full_scope_files": [
+        ".claude/skills/flutter-workflow/scripts/run_tests.sh",
         ".fvmrc",
         "analysis_options.yaml",
         "build.yaml",
@@ -203,6 +208,14 @@ _ADR010_IMPACT_MAP_RAW: dict[str, object] = {
         "pubspec.lock",
         "pubspec.yaml",
     ],
+    "tooling_prefixes": [
+        ".claude/", ".github/", ".impeccable/", "code-verification-guard-v2/",
+        "tools/", "integration_test/", "android/", "ios/",
+    ],
+    "file_readers": {
+        "lib/": ["test/architecture/"],
+        "android/": ["test/app/android_manifest_test.dart"],
+    },
     "inert_prefixes": [".vscode/", ".idea/", ".github/ISSUE_TEMPLATE/"],
     "inert_files": [
         ".editorconfig",
@@ -349,13 +362,36 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             force_full=force_full,
         )
 
-    def test_a_shared_widget_change_selects_the_full_host_suite(self) -> None:
-        """A path under `lib/` outside a feature and `lib/core/` has no rule to
-        narrow it, so it runs every non-golden host test."""
+    def test_a_shared_widget_change_selects_the_tests_that_import_it(self) -> None:
+        """Imports decide for `lib/shared/`: a shared widget can break only a
+        test that builds it, and every such test imports it, directly or
+        through a screen. Plus the declared readers of `lib/`."""
+        plan = self._plan("lib/shared/widgets/mx_chip.dart")
+        self.assertFalse(plan.full_suite)
+        self.assertEqual(
+            ("test/architecture/boundaries_test.dart", "test/shared/widgets/mx_chip_test.dart"),
+            plan.test_files,
+        )
+
+    def test_a_shared_file_no_test_imports_falls_back_to_the_full_suite(self) -> None:
+        """The fail-safe: a Dart change that selects nothing may be one the
+        import graph cannot see, so it runs everything."""
         plan = self._plan("lib/shared/widgets/mx_button_pair.dart")
         self.assertTrue(plan.full_suite)
-        self.assertTrue(plan.needs_static)
         self.assertTrue(plan.needs_host_tests)
+
+    def test_core_outside_theme_and_database_selects_its_importers_through_support(self) -> None:
+        """Through a test-support file: the import closure is transitive."""
+        plan = self._plan("lib/core/clock/day_clock.dart")
+        self.assertFalse(plan.full_suite)
+        self.assertIn("test/features/study/presentation/study_clock_test.dart", plan.test_files)
+
+    def test_a_test_support_file_selects_the_tests_that_import_it(self) -> None:
+        plan = self._plan("test/support/clock_harness.dart")
+        self.assertFalse(plan.full_suite)
+        self.assertEqual(
+            ("test/features/study/presentation/study_clock_test.dart",), plan.test_files
+        )
 
     def test_test_support_outside_the_known_folders_selects_everything(self) -> None:
         """Only `test/features/<feature>/<layer>/`, `test/app/`, `test/core/`
@@ -381,7 +417,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
 
     def test_a_picture_beside_its_widget_keeps_the_widget_selection(self) -> None:
         """The narrowing must not survive contact with a real code change."""
-        widget = "lib/features/card/presentation/widgets/items/card_tile_widget.dart"
+        widget = "lib/features/card/presentation/screens/card_list_screen.dart"
         alone = self._plan(widget)
         beside = self._plan(
             "test/features/card/presentation/goldens/card_list_light.png", widget
@@ -406,18 +442,46 @@ class VerificationPlanBuilderTest(unittest.TestCase):
                 self.assertFalse(plan.needs_static)
                 self.assertFalse(plan.needs_host_tests)
 
-    def test_the_workflow_itself_still_runs_everything(self) -> None:
-        """Not an oversight left in place — the one case where running the
-        whole suite *is* the point. Changing what verification runs is a claim
-        that the new pipeline works, and only a full run tests that claim.
-        """
-        plan = self._plan(".github/workflows/ci.yml")
+    def test_tooling_needs_the_static_checks_and_no_host_test(self) -> None:
+        """CI, the gate's scripts, hooks and the guard cannot change what a
+        Dart test does (owner 2026-10-16). Their own tests run in every gate
+        (`dod_check.sh` keys the hook and guard tests to their paths), and
+        the full gate before the PR still runs everything."""
+        for path in (
+            ".github/workflows/ci.yml",
+            ".claude/skills/flutter-workflow/scripts/dod_check.sh",
+            ".claude/hooks/check_test_command.py",
+            "code-verification-guard-v2/guard/run.py",
+        ):
+            with self.subTest(path=path):
+                plan = self._plan(path)
+                self.assertFalse(plan.full_suite)
+                self.assertTrue(plan.needs_static)
+                self.assertFalse(plan.needs_host_tests)
+                self.assertEqual("tooling", plan.risk)
+
+    def test_the_test_runner_itself_still_runs_everything(self) -> None:
+        """Changing how tests run is a claim that the new runner works, and
+        only a full run tests that claim."""
+        plan = self._plan(".claude/skills/flutter-workflow/scripts/run_tests.sh")
         self.assertTrue(plan.full_suite)
+
+    def test_tooling_dart_selects_its_importing_test(self) -> None:
+        plan = self._plan("tools/m3_lint/m3_rules.dart")
+        self.assertFalse(plan.full_suite)
+        self.assertEqual(("test/tools/m3_lint_test.dart",), plan.test_files)
+
+    def test_a_declared_reader_runs_when_the_path_it_reads_changes(self) -> None:
+        """Native folders are tooling, except for the test that reads them."""
+        plan = self._plan("android/app/src/main/AndroidManifest.xml")
+        self.assertFalse(plan.full_suite)
+        self.assertEqual(("test/app/android_manifest_test.dart",), plan.test_files)
+        self.assertTrue(plan.needs_host_tests)
 
     def test_an_unclassified_path_still_widens_to_everything(self) -> None:
         """The fallback is the safe default: a path nobody classified runs
         everything."""
-        plan = self._plan("tools/some_new_thing.py")
+        plan = self._plan("scripts/some_new_thing.py")
         self.assertTrue(plan.full_suite)
 
     def test_documents_alone_need_no_static_check_and_no_host_test(self) -> None:
@@ -533,22 +597,16 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.full_suite)
         self.assertEqual(("test",), plan.local_test_targets)
 
-    def test_shared_theme_router_native_and_dependency_changes_are_full(self) -> None:
+    def test_theme_tokens_and_dependency_changes_are_full(self) -> None:
         for path in (
             "lib/core/theme/app_theme.dart",
-            "lib/shared/widgets/mx_card.dart",
-            "lib/app/router/app_router.dart",
-            "android/app/build.gradle.kts",
+            "lib/l10n/app_en.arb",
+            "design/tokens.json",
             "pubspec.yaml",
         ):
             with self.subTest(path=path):
                 self.assertTrue(self._plan(path).full_suite)
 
-    def test_a_verification_script_change_is_full(self) -> None:
-        """Like the workflow: a change to the gate's own scripts is proved
-        only by the full run it selects."""
-        plan = self._plan(".claude/skills/flutter-workflow/scripts/dod_check.sh")
-        self.assertTrue(plan.full_suite)
 
     def test_test_only_change_runs_exact_tracked_test(self) -> None:
         path = "test/features/card/domain/card_text_test.dart"
@@ -1103,8 +1161,7 @@ class GateRunsTheHookTestsTest(unittest.TestCase):
     """The design-token hook exits 0 on any error, so a hook that has stopped
     working looks like a clean file; its tests are what notice. The full gate
     runs them, and so does every `--changed` plan that reaches a hook or the
-    guard (such a plan is the full suite: see
-    `test_every_path_a_scoped_out_check_reads_selects_the_full_suite`)."""
+    guard (`ScopedOutChecksFollowTheirPathsTest`)."""
 
     def test_the_gate_runs_the_hook_tests(self) -> None:
         script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
@@ -1112,36 +1169,115 @@ class GateRunsTheHookTestsTest(unittest.TestCase):
         self.assertIn("-m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'", script)
 
 
-class ScopedOutChecksAreFullScopeTest(unittest.TestCase):
-    """The safety property of `dod_check.sh --changed`, against the committed
-    impact map: on a plan narrower than the full suite the gate leaves out the
-    guard's and the hooks' own tests and lints only the changed `lib/` files.
-    That is sound only while every path those checks read selects the full
-    suite."""
+# Repository paths a test may read from disk. A literal that starts with one
+# of them, in a test that touches the file system or runs a process, is a
+# dependency the import graph cannot see.
+_READ_PATH = re.compile(
+    r"""['"]((?:lib|design|supabase|assets|android|ios|tools|docs|drift_schemas|"""
+    r"""integration_test|code-verification-guard-v2|\.github|\.claude)(?:/[^'"\s$]*)?"""
+    r"""|pubspec\.yaml|\.gitignore)"""
+)
+_DISK_ACCESS = re.compile(r"\b(?:File|Directory|Process)\s*[.(]")
+# Tests whose matching literals are not paths they read.
+_NOT_READERS = {
+    # Allowlist entries and paths built in memory, linted from fixtures.
+    "test/tools/m3_lint_test.dart",
+}
 
-    def test_every_path_a_scoped_out_check_reads_selects_the_full_suite(self) -> None:
-        module = _load("build_verification_plan")
-        impact_map = module.ImpactMap.load(SCRIPTS / "verification_impact_map.json")
-        with tempfile.TemporaryDirectory() as temp:
-            root = _fixture_repo(Path(temp) / "repo", "test/a_test.dart")
-            for path in (
-                ".claude/hooks/check_design_tokens.py",
-                ".claude/settings.json",
-                "code-verification-guard-v2/code_verification_guard/reporters/console_reporter.py",
-                "code-verification-guard-v2/registries/projects/memox-v8/rules/memox-design-token-rules.yaml",
-                # Markdown too: the ruleset contract test reads every file there.
-                "code-verification-guard-v2/registries/projects/memox-v8/rules/README.md",
-                ".claude/hooks/check_test_command.py",
-                "tools/m3_lint/m3_rules.dart",
-                "tools/m3_lint/allowlist.json",
-                "tools/design/removed_symbols.json",
-                "lib/core/theme/app_theme.dart",
-            ):
-                with self.subTest(path=path):
-                    plan = module.build_plan(
-                        [path], root=root, impact_map=impact_map, force_full=False
+
+@requires_app_tree
+class FileReadersAreDeclaredTest(unittest.TestCase):
+    """`dod_check.sh --changed` selects tests by imports. A test that reads a
+    file from disk instead depends on it invisibly, and is declared in the
+    impact map's `file_readers` so that a change to the file selects it."""
+
+    def test_every_test_that_reads_a_repository_path_is_declared(self) -> None:
+        impact = json.loads(
+            (SCRIPTS / "verification_impact_map.json").read_text(encoding="utf-8")
+        )
+        readers = impact["file_readers"]
+        missing = []
+        for path in sorted((REPO_ROOT / "test").rglob("*_test.dart")):
+            relative = path.relative_to(REPO_ROOT).as_posix()
+            if relative in _NOT_READERS:
+                continue
+            text = path.read_text(encoding="utf-8")
+            if not _DISK_ACCESS.search(text):
+                continue
+            for literal in {m.group(1) for m in _READ_PATH.finditer(text)}:
+                covered = any(
+                    (literal + "/").startswith(prefix) or literal == prefix.rstrip("/")
+                    for prefix, tests in readers.items()
+                    if any(
+                        relative == test or (test.endswith("/") and relative.startswith(test))
+                        for test in tests
                     )
-                    self.assertTrue(plan.full_suite)
+                )
+                if not covered:
+                    missing.append(f"{relative} reads {literal}")
+        self.assertEqual([], missing)
+
+
+@requires_app_tree
+class TheRealPlanIsNarrowWhereItCanBeTest(unittest.TestCase):
+    """The selector against the committed map and tree (2026-10-16): before
+    the library harness stopped importing the app, every screen selected the
+    same 243 tests, and tooling ran the whole host suite."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.module = _load("build_verification_plan")
+        cls.impact = cls.module.ImpactMap.load(SCRIPTS / "verification_impact_map.json")
+
+    def _plan(self, path: str):
+        return self.module.build_plan([path], root=REPO_ROOT, impact_map=self.impact)
+
+    def test_a_screen_selects_a_small_part_of_the_suite(self) -> None:
+        screens = sorted((REPO_ROOT / "lib/features").glob("*/presentation/screens/*.dart"))
+        self.assertTrue(screens)
+        everything = len(self.module.discover_tests(REPO_ROOT))
+        for screen in screens:
+            relative = screen.relative_to(REPO_ROOT).as_posix()
+            with self.subTest(screen=relative):
+                plan = self._plan(relative)
+                self.assertFalse(plan.full_suite, plan.reasons)
+                self.assertLess(len(plan.test_files), everything // 4)
+
+    def test_python_tooling_selects_no_host_test(self) -> None:
+        plan = self._plan(".claude/skills/flutter-workflow/scripts/build_verification_plan.py")
+        self.assertEqual("tooling", plan.risk)
+        self.assertFalse(plan.needs_host_tests)
+
+    def test_the_theme_still_runs_everything(self) -> None:
+        self.assertTrue(self._plan("lib/core/theme/app_theme.dart").full_suite)
+
+
+class ScopedOutChecksFollowTheirPathsTest(unittest.TestCase):
+    """On a narrow `--changed` plan the hook tests and the guard's self-tests
+    run only when a path they read changed. They used to rely on those paths
+    promoting the plan to the full suite; tooling no longer does."""
+
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+
+    def test_the_hook_tests_follow_the_hooks_their_settings_and_the_guard(self) -> None:
+        self.assertIn(
+            "if ! changed_under .claude/hooks/ .claude/settings.json "
+            "code-verification-guard-v2/ tools/design/removed_symbols.json; then",
+            self._gate(),
+        )
+
+    def test_the_guard_self_tests_follow_the_guard_whatever_the_plan_needs(self) -> None:
+        """A guard README is read by its ruleset contract test, and a
+        Markdown-only plan needs no static check."""
+        gate = self._gate()
+        self.assertIn("if ! changed_under code-verification-guard-v2/; then", gate)
+        block = gate[gate.index('GUARD_TESTS="$REPO_ROOT'):gate.index("GUARD_RUNNER=")]
+        self.assertNotIn("NEEDS_STATIC", block)
+
+    def test_outside_a_scoped_plan_every_path_counts_as_changed(self) -> None:
+        self.assertIn("[[ $SCOPED -eq 0 ]] && return 0", self._gate())
 
 
 class GateScopesAChangedRunTest(unittest.TestCase):
