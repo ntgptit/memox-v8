@@ -23,6 +23,9 @@ create table public.topik_test_version (
   test_id text not null,
   content_version integer not null check (content_version > 0),
   json jsonb not null,
+  -- The files the content names, one {path, size, eTag} object per distinct path,
+  -- ordered by path: size and eTag are what Storage held at publish (null when it
+  -- recorded none), so a client can verify a download.
   media jsonb not null default '[]'::jsonb,
   checksum text not null,
   published_at timestamptz not null default now(),
@@ -420,6 +423,11 @@ $$;
 --     {test_id}/{version}/{file}, or its version is neither the version being
 --     published nor an existing version of the test;
 --   MEDIA_MISSING, detail = the first path Storage does not hold.
+-- The version's media is an array of {path, size, eTag}, one per distinct path
+-- ordered by path, read from storage.objects at publish (a rollback re-reads it from
+-- the old content's paths, so a file replaced since is recorded as it is now). A size
+-- or eTag Storage did not record is JSON null; it never fails the publish, and a
+-- size that is not a plain integer fitting a bigint is null too, never a cast error.
 create function private.topik_publish_version(p_user uuid, p_test_id text, p_json jsonb, p_note text,
   p_action text, p_detail jsonb) returns integer
 language plpgsql set search_path = '' as $$
@@ -428,6 +436,7 @@ declare
   v_json jsonb := jsonb_set(p_json, '{contentVersion}', to_jsonb(v_next));
   v_groups jsonb := case when jsonb_typeof(v_json->'groups') = 'array' then v_json->'groups' else '[]'::jsonb end;
   v_questions jsonb := case when jsonb_typeof(v_json->'questions') = 'array' then v_json->'questions' else '[]'::jsonb end;
+  v_paths jsonb;
   v_media jsonb;
   v_catalog bigint;
   v_status text;
@@ -442,7 +451,7 @@ begin
     raise exception 'INVALID_STATE';
   end if;
   -- The media the content names: the section audio and every image.
-  select coalesce(jsonb_agg(distinct x.path), '[]'::jsonb) into v_media from (
+  select coalesce(jsonb_agg(distinct x.path), '[]'::jsonb) into v_paths from (
     select v_json->'assets'->>'audio' as path
     union all select g->'passage'->>'image' from jsonb_array_elements(v_groups) g
     union all select o->>'image' from jsonb_array_elements(v_questions) q,
@@ -452,7 +461,7 @@ begin
   -- version segment must exist: it is the version being published, or (a rollback carries
   -- an old one) the content_version of an existing version of this test. A segment that
   -- names a version that never exists would be unreadable to users.
-  if exists (select 1 from jsonb_array_elements_text(v_media) m
+  if exists (select 1 from jsonb_array_elements_text(v_paths) m
       where split_part(m, '/', 1) <> p_test_id
          or split_part(m, '/', 3) = ''
          or not (split_part(m, '/', 2) = v_next::text
@@ -461,12 +470,18 @@ begin
     raise exception 'VALIDATION_FAILED' using detail = 'media';
   end if;
   select m.path into v_missing
-  from jsonb_array_elements_text(v_media) with ordinality m(path, n)
+  from jsonb_array_elements_text(v_paths) with ordinality m(path, n)
   where not private.topik_media_exists(m.path)
   order by m.n limit 1;
   if v_missing is not null then
     raise exception 'MEDIA_MISSING' using detail = v_missing;
   end if;
+  -- Every path exists now: record the size and eTag Storage holds for it.
+  select coalesce(jsonb_agg(jsonb_build_object('path', m.path,
+      'size', case when (o.metadata->>'size') ~ '^[0-9]{1,18}$' then (o.metadata->>'size')::bigint end,
+      'eTag', o.metadata->>'eTag') order by m.path), '[]'::jsonb) into v_media
+  from jsonb_array_elements_text(v_paths) m(path)
+  left join storage.objects o on o.bucket_id = 'topik-media' and o.name = m.path;
   insert into public.topik_test_version (test_id, content_version, json, media, checksum, published_at, published_by, note)
   values (p_test_id, v_next, v_json, v_media, md5(v_json::text), now(), p_user, p_note);
   v_catalog := private.topik_next_catalog_version();
@@ -571,7 +586,7 @@ begin
 end
 $$;
 
--- Newest first.
+-- Newest first; each version's media is its array of {path, size, eTag}.
 create function public.topik_admin_versions(p_test_id text) returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
 begin
@@ -650,7 +665,8 @@ $$;
 -- topik_next_catalog_version() takes a global lock held to the end of the
 -- transaction: allocation order is commit order, so no smaller catalog_version
 -- can commit after a client has seen a larger one. A retired test is a tombstone
--- (no content fields). Master Data is not personal, so nothing filters by user;
+-- (no content fields). A live entry's media is the version's array of
+-- {path, size, eTag}, for the client to verify each download. Master Data is not personal, so nothing filters by user;
 -- the grant keeps anon out and the profile check keeps a deleted user's live JWT out.
 create function public.topik_catalog(since bigint) returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
@@ -726,11 +742,13 @@ $$;
 
 -- Changing or removing media is the admin's too, except an object a published
 -- version lists in its media: that version is immutable (BR-TOPIK-007), so what it
--- names stays. The version's media array holds the object's name as written.
+-- names stays. The version's media array holds {path, size, eTag} objects; the path
+-- is the object's name as written.
 create function public.topik_media_can_modify(p_name text) returns boolean
 language sql stable security definer set search_path = '' as $$
   select private.is_admin()
-    and not exists (select 1 from public.topik_test_version v where v.media ? p_name)
+    and not exists (select 1 from public.topik_test_version v, jsonb_array_elements(v.media) m
+                    where m->>'path' = p_name)
 $$;
 
 -- Reading: a caller with a profile (a deleted user's live JWT has none), and an

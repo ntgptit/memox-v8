@@ -202,7 +202,8 @@ there.
   `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
   each calling `topik_media_can_read` / `topik_media_can_write` /
   `topik_media_can_modify`, which are granted to `authenticated` only to serve
-  those policies. An object a published version lists in its `media` cannot be
+  those policies. A published version's `media` lists each file as `{path, size, eTag}`
+  (from Storage at publish). An object it lists cannot be
   updated or deleted, even by an admin, and a media path must name the version
   being published or an existing one.
 - A new synced entity type changes four functions in one migration:

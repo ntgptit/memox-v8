@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(282);
+select plan(285);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -350,11 +350,14 @@ select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select throws_like($$select public.topik_admin_publish('topik2-96-listening', 1, 'wrong bucket')$$, 'MEDIA_MISSING',
   'an object of another bucket does not count');
 reset role;
-insert into storage.objects (bucket_id, name) values ('topik-media', 'topik2-96-listening/1/a.mp3');
+insert into storage.objects (bucket_id, name, metadata) values ('topik-media', 'topik2-96-listening/1/a.mp3',
+  jsonb_build_object('size', 3, 'eTag', '"abc"', 'mimetype', 'audio/mpeg'));
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select is(public.topik_admin_publish('topik2-96-listening', 1, 'audio there')->>'contentVersion', '1', 'published once the audio exists');
-select is(public.topik_admin_versions('topik2-96-listening')->'items'->0->'media', '["topik2-96-listening/1/a.mp3"]'::jsonb, 'the version lists its media');
+select is(public.topik_admin_versions('topik2-96-listening')->'items'->0->'media',
+  '[{"path": "topik2-96-listening/1/a.mp3", "size": 3, "eTag": "\"abc\""}]'::jsonb,
+  'the version lists its media with the size and eTag Storage holds');
 -- The path contract: {test_id}/{version}/{file}, so the read policy and the existence check agree.
 select is(public.topik_admin_draft_save('topik1-96-listening',
     jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{assets,audio}', '"a.mp3"'), '{}'::jsonb, false)->'issues',
@@ -390,12 +393,15 @@ select is(public.topik_admin_draft_save('topik1-96-listening',
       '{groups,0,passage}', '{"image": "topik1-96-listening/1/p.png"}'), '{}'::jsonb, false)->'issues',
   '[]'::jsonb, 'a draft with an option image and a passage image');
 reset role;
-insert into storage.objects (bucket_id, name) values ('topik-media', 'topik1-96-listening/1/a.mp3');
+insert into storage.objects (bucket_id, name, metadata) values ('topik-media', 'topik1-96-listening/1/a.mp3',
+  jsonb_build_object('size', 12345, 'eTag', '"5d41402abc4b2a76b9719d911017c592"', 'mimetype', 'audio/mpeg'));
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select throws_like($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$, 'MEDIA_MISSING', 'neither image exists yet');
 reset role;
-insert into storage.objects (bucket_id, name) values ('topik-media', 'topik1-96-listening/1/o.png');
+-- A size that does not fit a bigint is recorded as null, never an error; its eTag is kept.
+insert into storage.objects (bucket_id, name, metadata) values ('topik-media', 'topik1-96-listening/1/o.png',
+  '{"size": 99999999999999999999, "eTag": "\"o\"", "mimetype": "image/png"}'::jsonb);
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select throws_like($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$, 'MEDIA_MISSING',
@@ -405,8 +411,15 @@ insert into storage.objects (bucket_id, name) values ('topik-media', 'topik1-96-
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select is(public.topik_admin_publish('topik1-96-listening', 1, 'images there')->>'contentVersion', '1', 'published once every image exists');
-select is(public.topik_admin_versions('topik1-96-listening')->'items'->0->'media', '["topik1-96-listening/1/a.mp3", "topik1-96-listening/1/o.png", "topik1-96-listening/1/p.png"]'::jsonb,
-  'audio and both images are listed');
+-- p.png was inserted without metadata (the local stub can): publish still succeeds.
+select is(public.topik_admin_versions('topik1-96-listening')->'items'->0->'media',
+  '[{"path": "topik1-96-listening/1/a.mp3", "size": 12345, "eTag": "\"5d41402abc4b2a76b9719d911017c592\""},
+    {"path": "topik1-96-listening/1/o.png", "size": null, "eTag": "\"o\""},
+    {"path": "topik1-96-listening/1/p.png", "size": null, "eTag": null}]'::jsonb,
+  'audio and both images are listed by path, with size and eTag, null where Storage has none');
+select ok(jsonb_typeof(public.topik_admin_versions('topik1-96-listening')->'items'->0->'media'->2->'size') = 'null'
+  and jsonb_typeof(public.topik_admin_versions('topik1-96-listening')->'items'->0->'media'->2->'eTag') = 'null',
+  'a missing size and eTag are JSON null, the keys stay');
 
 -- Retire, unretire.
 select is(public.topik_admin_retire('topik1-96-reading', 'pulled')->>'status', 'retired', 'retired');
@@ -501,7 +514,7 @@ select ok((select bool_and(c > p) from (select (e->>'catalogVersion')::bigint c,
     from jsonb_array_elements(public.topik_catalog(0)->'entries') with ordinality t(e, n)) s),
   'catalog versions strictly increase');
 select is((public.topik_catalog(0)->'entries'->0) - 'catalogVersion' - 'checksum',
-  '{"testId": "topik2-96-listening", "status": "published", "contentVersion": 1, "media": ["topik2-96-listening/1/a.mp3"], "level": "topik2",
+  '{"testId": "topik2-96-listening", "status": "published", "contentVersion": 1, "media": [{"path": "topik2-96-listening/1/a.mp3", "size": 3, "eTag": "\"abc\""}], "level": "topik2",
     "round": 96, "section": "listening", "titleKo": "제96회", "tags": []}'::jsonb,
   'an entry carries its identity fields, its media and no tags without supporting content');
 select is(public.topik_catalog(0)->'entries'->0->>'checksum',
@@ -690,6 +703,8 @@ select ok(not public.topik_media_can_modify('topik2-96-listening/1/a.mp3'),
   'an admin may not modify an object a published version lists');
 select ok(not public.topik_media_can_modify('topik1-96-listening/1/o.png'),
   'nor an image a published version lists');
+select ok(not public.topik_media_can_modify('topik1-96-listening/1/p.png'),
+  'nor one it lists with a null size and eTag');
 select ok(public.topik_media_can_modify('topik2-96-listening/1/listening.mp3'),
   'an object under a published prefix that no version lists is still the admin''s');
 select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
@@ -774,8 +789,9 @@ reset role;
 -- A rollback republishes old content whose media carries an old version segment
 -- ============================================================================
 reset role;
-insert into storage.objects (bucket_id, name) values
-  ('topik-media', 'topik2-97-listening/1/a.mp3'), ('topik-media', 'topik2-97-listening/2/a.mp3');
+insert into storage.objects (bucket_id, name, metadata) values
+  ('topik-media', 'topik2-97-listening/1/a.mp3', '{"size": 5, "eTag": "\"v1\""}'),
+  ('topik-media', 'topik2-97-listening/2/a.mp3', '{"size": 6, "eTag": "\"w1\""}');
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select is(public.topik_admin_draft_save('topik2-97-listening',
@@ -788,10 +804,20 @@ select is(public.topik_admin_draft_save('topik2-97-listening',
       "assets": {"audio": "topik2-97-listening/2/a.mp3"}}', '{}'::jsonb, false)->'issues',
   '[]'::jsonb, 'the next draft, with its audio under version 2');
 select is(public.topik_admin_publish('topik2-97-listening', 2, 'two')->>'contentVersion', '2', 'published as 2');
+-- The file under segment 1 is replaced in Storage before the rollback republishes it.
+reset role;
+update storage.objects set metadata = '{"size": 9, "eTag": "\"v2\""}'
+  where bucket_id = 'topik-media' and name = 'topik2-97-listening/1/a.mp3';
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select is(public.topik_admin_rollback('topik2-97-listening', 1, 'back')->>'contentVersion', '3',
   'a rollback to 1 publishes as 3, its audio still under segment 1 (an existing version)');
-select is(public.topik_admin_versions('topik2-97-listening')->'items'->0->'media', '["topik2-97-listening/1/a.mp3"]'::jsonb,
-  'and the version lists that media');
+select is(public.topik_admin_versions('topik2-97-listening')->'items'->0->'media',
+  '[{"path": "topik2-97-listening/1/a.mp3", "size": 9, "eTag": "\"v2\""}]'::jsonb,
+  'and the version lists that media with the size and eTag Storage holds at rollback time');
+select is(public.topik_admin_versions('topik2-97-listening')->'items'->2->'media',
+  '[{"path": "topik2-97-listening/1/a.mp3", "size": 5, "eTag": "\"v1\""}]'::jsonb,
+  'while version 1 keeps what it recorded when it was published');
 reset role;
 
 select * from finish();

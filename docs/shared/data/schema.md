@@ -765,7 +765,7 @@ Migration `20261016120000_topik_master_data.sql`; schema Drift không đổi tro
 `topik_content_cache`, `topik_content_state` đến ở plan 2, v18). Các bảng RLS bật, không policy, chỉ đi qua RPC.
 
 - `topik_test_draft`: bản nháp sửa tự do của một đề, một dòng cho mỗi `test_id`, có thể không hợp lệ.
-- `topik_test_version`: một phiên bản đã publish, bất biến (trigger chặn sửa và xoá), khoá `(test_id, content_version)`, giữ JSON, danh sách đường dẫn media và `md5` của JSON.
+- `topik_test_version`: một phiên bản đã publish, bất biến (trigger chặn sửa và xoá), khoá `(test_id, content_version)`, giữ JSON, danh sách media (mỗi file một `{path, size, eTag}`, lấy từ Storage lúc publish) và `md5` của JSON.
 - `topik_publication`: điều client nhìn thấy, một dòng cho mỗi đề: `published` hoặc `retired`, phiên bản hiện hành và `catalog_version` toàn cục để client kéo "mọi thứ sau N".
 - `topik_master_audit`: nhật ký chỉ thêm, ghi trong cùng transaction với mỗi thay đổi Master Data.
 
