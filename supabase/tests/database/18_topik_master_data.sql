@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(241);
+select plan(282);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -131,9 +131,12 @@ select is(private.topik_master_shape_issues(public.t_test('topik1', 'reading', 3
   'TOPIK I reading, numbered 31 to 70 totalling 100, passes');
 select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{questions,0,points}', '5')),
   '{points}'::text[], 'TOPIK I listening: a 5-point question, the total is 101');
--- The testId matches its fields, so identity evaluates (round)::integer on "abc": SQLSTATE 22P02,
--- a data_exception, which the function turns into identity and metadata.
+-- A round that is not a JSON number is an identity issue and nothing is cast, so no error.
 select is(private.topik_master_shape_issues(public.t_test('topik2', 'reading', 1, 50, 2) || '{"round": "abc", "testId": "topik2-abc-reading"}'::jsonb),
+  '{identity}'::text[], 'a round that is not a number is an identity issue, not an error');
+-- A metadata number the casts cannot read ("abc" as the schemaVersion): SQLSTATE 22P02, a
+-- data_exception, which the function turns into identity and metadata.
+select is(private.topik_master_shape_issues(public.t_test('topik2', 'reading', 1, 50, 2) || '{"schemaVersion": "abc"}'::jsonb),
   '{identity,metadata}'::text[], 'a wrongly typed field is an identity and metadata failure, not an error');
 select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,options}', '"x"')),
   '{options}'::text[], 'a scalar options reports options and not the fallback');
@@ -145,6 +148,50 @@ select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'r
   '{options}'::text[], 'an option with no text and no image');
 select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,words}', '[{"vi": "x"}]')),
   '{languages}'::text[], 'a words entry without en');
+
+-- Required keys and their JSON types. t_issue: the result names the rule and does NOT name
+-- metadata, so the class-22 fallback (identity + metadata) is not what is being seen.
+create function public.t_issue(p_json jsonb, p_rule text) returns boolean language sql as $$
+  select r @> array[p_rule] and not (r && array['metadata'])
+  from (select private.topik_master_shape_issues(p_json) r) s $$;
+-- Question 0 loses its points (4); four 3-point questions (nos 11 to 14) rise to 4, so the
+-- points that remain still sum to 100 and every one is allowed: the missing key is the only defect.
+create function public.t_without_points() returns jsonb language sql as $$
+  select jsonb_set(t, '{questions}', (select jsonb_agg(case
+      when (q->>'no')::int = 1 then q - 'points'
+      when (q->>'no')::int between 11 and 14 then jsonb_set(q, '{points}', '4')
+      else q end order by (q->>'no')::int) from jsonb_array_elements(t->'questions') q))
+  from (select public.t_test('topik1', 'listening', 1, 30, 4) t) s $$;
+select is((select sum((q->>'points')::int) from jsonb_array_elements(public.t_without_points()->'questions') q), 100::bigint,
+  'the fixture: the points that remain sum to 100');
+select is(private.topik_master_shape_issues(public.t_without_points()), '{points}'::text[],
+  'a question without points is a points issue, and only that');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) - 'level', 'identity'),
+  'a missing level is an identity issue');
+select ok(public.t_issue((public.t_test('topik2', 'reading', 1, 50, 2) - 'level') || '{"testId": "-96-reading"}', 'identity'),
+  'and when the testId was built from the missing level too');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) - 'section', 'identity'),
+  'a missing section is an identity issue');
+select ok(public.t_issue((public.t_test('topik2', 'reading', 1, 50, 2) - 'section') || '{"testId": "topik2-96-"}', 'identity'),
+  'and when the testId was built from the missing section too');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) - 'round', 'identity'),
+  'a missing round is an identity issue');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) || '{"round": "96"}', 'identity'),
+  'a round that is a string is an identity issue');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) || '{"round": 0, "testId": "topik2-0-reading"}', 'identity'),
+  'a round below 1 is an identity issue');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) || '{"round": 96.5, "testId": "topik2-96.5-reading"}', 'identity'),
+  'a fractional round is an identity issue');
+select ok(public.t_issue(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,points}', '"2"'), 'points'),
+  'a points that is a string is a points issue');
+select ok(public.t_issue(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,no}', '"1"'), 'numbering'),
+  'a no that is a string is a numbering issue');
+select ok(public.t_issue(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,answerIdx}', '"1"'), 'options'),
+  'an answerIdx that is a string is an options issue');
+select ok(public.t_issue(public.t_test('topik2', 'reading', 1, 50, 2) #- '{questions,0,answerIdx}', 'options'),
+  'a missing answerIdx is an options issue');
+select ok(public.t_issue(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,options,0,idx}', '"1"'), 'options'),
+  'an option idx that is a string is an options issue');
 
 -- ============================================================================
 -- Admin RPCs for drafts and the audit log (Task 3)
@@ -169,6 +216,8 @@ select throws_like($$select public.topik_admin_draft_get('topik2-96-reading')$$,
 select throws_like($$select public.topik_admin_draft_save('topik2-96-reading', '{}'::jsonb, '{}'::jsonb, false)$$,
   'FORBIDDEN', 'a user is not an admin: save');
 select throws_like($$select public.topik_admin_audit(null, 50, null)$$, 'FORBIDDEN', 'a user is not an admin: audit');
+select throws_like($$select public.topik_admin_draft_delete('topik2-96-reading')$$, 'FORBIDDEN',
+  'a user is not an admin: delete');
 
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select is(public.topik_admin_list()->'items', '[]'::jsonb, 'an admin sees an empty list');
@@ -287,6 +336,8 @@ select is(public.topik_admin_draft_save('topik2-96-listening', public.t_test('to
   '[]'::jsonb, 'a listening draft');
 select throws_like($$select public.topik_admin_publish('topik2-96-listening', 1, 'no audio yet')$$, 'MEDIA_MISSING',
   'a referenced media object must exist in the bucket');
+select is(public.t_detail($$select public.topik_admin_publish('topik2-96-listening', 1, 'no audio yet')$$),
+  'topik2-96-listening/1/a.mp3', 'MEDIA_MISSING names the first missing path in its detail');
 select is(public.topik_admin_versions('topik2-96-listening')->'items', '[]'::jsonb, 'MEDIA_MISSING stored no version');
 select is(public.t_audit('topik2-96-listening'), '{}'::text[], 'MEDIA_MISSING wrote no audit row');
 -- Storage objects are written by the storage service, not by an admin: postgres here.
@@ -321,6 +372,18 @@ select is(public.topik_admin_draft_save('topik1-96-listening',
   '[]'::jsonb, 'a draft whose audio has version segment 0');
 select throws_like($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$, 'VALIDATION_FAILED',
   'a version segment must be a positive number');
+-- The segment must be the version being published (here 1) or an existing version, not any number.
+select is(public.topik_admin_draft_save('topik1-96-listening',
+    jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{assets,audio}', '"topik1-96-listening/2/a.mp3"'), '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'a draft whose audio has version segment 2, one past the next version');
+select throws_like($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$, 'VALIDATION_FAILED',
+  'a version segment that names no version, now or later, is refused');
+select is(public.t_detail($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$), 'media', 'with the detail media');
+select is(public.topik_admin_draft_save('topik1-96-listening',
+    jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{assets,audio}', '"topik1-96-listening//a.mp3"'), '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'a draft whose audio has an empty version segment');
+select is(public.t_detail($$select public.topik_admin_publish('topik1-96-listening', 1, 'x')$$), 'media',
+  'an empty version segment is refused');
 -- Images: an option's image and a group's passage image.
 select is(public.topik_admin_draft_save('topik1-96-listening',
     jsonb_set(jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{questions,0,options,0,image}', '"topik1-96-listening/1/o.png"'),
@@ -398,6 +461,13 @@ select throws_like($$select public.topik_admin_rollback('topik1-96-reading', 5, 
   'rolling back to the version that is already current');
 select throws_like($$select public.topik_admin_rollback('topik1-96-reading', 9, 'x')$$, 'NOT_FOUND', 'rolling back to an unknown version');
 select throws_like($$select public.topik_admin_rollback('nope', 1, 'x')$$, 'NOT_FOUND', 'rolling back an unknown test');
+-- topik2-96-reading v1 is the minimal json inserted as postgres in Task 1: it fails the shape
+-- check, and a rollback runs the check again on the old content, as a publish does.
+select is(public.t_detail($$select public.topik_admin_rollback('topik2-96-reading', 1, 'x')$$),
+  'identity,metadata,numbering,points,groups', 'a rollback to content that fails the shape check is refused with its issues');
+select throws_like($$select public.topik_admin_rollback('topik2-96-reading', 1, 'x')$$, 'VALIDATION_FAILED',
+  'as VALIDATION_FAILED');
+select is(jsonb_array_length(public.topik_admin_versions('topik2-96-reading')->'items'), 1, 'and stores no version');
 
 -- Every change is audited and takes the next catalog version.
 select is(public.t_audit('topik1-96-reading'), '{rollback,rollback,publish,unretire,retire,unretire,retire,publish,publish}'::text[],
@@ -579,8 +649,21 @@ select ok((select bool_and(coalesce(qual, '') || coalesce(with_check, '') like '
   from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname like 'topik_media_%'),
   'each policy is limited to the media bucket');
 select ok(not has_function_privilege('anon', 'public.topik_media_can_read(text)', 'execute')
-  and not has_function_privilege('anon', 'public.topik_media_can_write(text)', 'execute'),
+  and not has_function_privilege('anon', 'public.topik_media_can_write(text)', 'execute')
+  and not has_function_privilege('anon', 'public.topik_media_can_modify(text)', 'execute'),
   'anon cannot call the helpers');
+-- The update and delete policies name topik_media_can_modify, the insert policy topik_media_can_write,
+-- each in the media bucket: what the storage service evaluates, whatever DML it runs.
+select ok((select qual like '%topik_media_can_modify(name)%' and qual like '%bucket_id = ''topik-media''%'
+    and with_check like '%topik_media_can_modify(name)%' and with_check like '%bucket_id = ''topik-media''%'
+  from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'topik_media_update'),
+  'the update policy checks topik_media_can_modify in the media bucket, before and after');
+select ok((select qual like '%topik_media_can_modify(name)%' and qual like '%bucket_id = ''topik-media''%'
+  from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'topik_media_delete'),
+  'the delete policy checks topik_media_can_modify in the media bucket');
+select ok((select with_check like '%topik_media_can_write(name)%' and with_check like '%bucket_id = ''topik-media''%'
+  from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'topik_media_insert'),
+  'the insert policy checks topik_media_can_write in the media bucket');
 
 -- Rows an UPDATE or DELETE touched (a data-modifying WITH is not allowed in a subquery).
 create function public.t_rows(p_sql text) returns bigint language plpgsql as $$
@@ -600,11 +683,22 @@ select set_config('t.media_n', (select count(*) from storage.objects where bucke
 set local role authenticated;
 select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
 select ok(public.topik_media_can_write('topik2-96-listening/1/listening.mp3'), 'an admin may write');
+-- Modifying: an admin may, unless a published version lists the object in its media.
+select ok(public.topik_media_can_modify('topik2-96-reading/1/admin.png'),
+  'an admin may modify a draft upload no version lists');
+select ok(not public.topik_media_can_modify('topik2-96-listening/1/a.mp3'),
+  'an admin may not modify an object a published version lists');
+select ok(not public.topik_media_can_modify('topik1-96-listening/1/o.png'),
+  'nor an image a published version lists');
+select ok(public.topik_media_can_modify('topik2-96-listening/1/listening.mp3'),
+  'an object under a published prefix that no version lists is still the admin''s');
 select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
 select ok(not public.topik_media_can_write('topik2-96-listening/1/listening.mp3'), 'a user may not write');
+select ok(not public.topik_media_can_modify('topik2-96-reading/1/admin.png'), 'a user may not modify a draft upload');
+select ok(not public.topik_media_can_modify('topik2-96-listening/1/a.mp3'), 'nor a published object');
 select ok(public.topik_media_can_read('topik1-96-reading/5/picture.png'), 'a user may read a published test''s current version''s objects');
 select ok(public.topik_media_can_read('topik1-96-reading/4/picture.png'),
-  'nor a superseded version''s: a rollback republishes old content with its old paths');
+  'a user may read a superseded version''s objects too: a rollback republishes old content with its old paths');
 select ok(not public.topik_media_can_read('topik1-96-reading/9/picture.png'), 'but not a version that does not exist');
 select ok(not public.topik_media_can_read('topik2-96-reading/1/picture.png'), 'not an unpublished test''s');
 select ok(not public.topik_media_can_read('topik2-96-listening/1/listening.mp3'), 'not a retired test''s');
@@ -651,23 +745,53 @@ select lives_ok($$insert into storage.objects (bucket_id, name) values ('topik-m
   'an admin inserts into the bucket');
 select throws_like($$insert into storage.objects (bucket_id, name) values ('other', 'admin.png')$$,
   '%row-level security%', 'not into another bucket');
-select is(public.t_rows($$update storage.objects set name = 'topik2-96-reading/2/admin.png' where bucket_id = 'topik-media'
-    and name = 'topik2-96-reading/1/admin.png'$$), 1::bigint, 'an admin updates');
-select throws_like($$update storage.objects set bucket_id = 'other' where bucket_id = 'topik-media'
-    and name = 'topik2-96-reading/2/admin.png'$$, '%row-level security%', 'but cannot move an object out of the bucket');
+-- Direct UPDATE and DELETE by an admin are not run here: the stub lacks storage-api's own triggers
+-- on storage.objects, so what they do on the real stack is not proven by this suite (the policy
+-- predicates above and the pg_policies asserts are). An object a published version lists matches
+-- no row, so 0 rows are touched and no trigger would fire.
+select is(public.t_rows($$update storage.objects set name = name || 'x' where bucket_id = 'topik-media'
+    and name = 'topik2-96-listening/1/a.mp3'$$), 0::bigint, 'an admin cannot update a published version''s object');
 select is(public.t_rows($$delete from storage.objects where bucket_id = 'topik-media'
-    and name = 'topik2-96-reading/2/admin.png'$$), 1::bigint, 'an admin deletes');
+    and name = 'topik2-96-listening/1/a.mp3'$$), 0::bigint, 'nor delete it');
 select is(public.t_rows($$update storage.objects set name = 'x' where bucket_id = 'other'$$), 0::bigint,
   'an admin cannot update another bucket''s objects');
 select is(public.t_rows($$delete from storage.objects where bucket_id = 'other'$$), 0::bigint,
   'nor delete them');
 reset role;
+-- The admin's upload goes with it (as postgres, the storage service's role here).
+delete from storage.objects where bucket_id = 'topik-media' and name = 'topik2-96-reading/1/admin.png';
+select is((select count(*) from storage.objects where bucket_id = 'topik-media'), current_setting('t.media_n')::bigint,
+  'the bucket holds what it held before the admin''s upload');
 
 -- anon has no policy.
 set local role anon;
 select is((select count(*) from storage.objects), 0::bigint, 'anon sees no object');
 select throws_like($$insert into storage.objects (bucket_id, name) values ('topik-media', 'anon.png')$$,
   '%row-level security%', 'anon cannot insert');
+reset role;
+
+-- ============================================================================
+-- A rollback republishes old content whose media carries an old version segment
+-- ============================================================================
+reset role;
+insert into storage.objects (bucket_id, name) values
+  ('topik-media', 'topik2-97-listening/1/a.mp3'), ('topik-media', 'topik2-97-listening/2/a.mp3');
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select is(public.topik_admin_draft_save('topik2-97-listening',
+    public.t_test('topik2', 'listening', 1, 50, 2) || '{"testId": "topik2-97-listening", "round": 97,
+      "assets": {"audio": "topik2-97-listening/1/a.mp3"}}', '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'a listening draft whose audio is under version 1');
+select is(public.topik_admin_publish('topik2-97-listening', 1, 'one')->>'contentVersion', '1', 'published as 1');
+select is(public.topik_admin_draft_save('topik2-97-listening',
+    public.t_test('topik2', 'listening', 1, 50, 2) || '{"testId": "topik2-97-listening", "round": 97, "contentVersion": 2,
+      "assets": {"audio": "topik2-97-listening/2/a.mp3"}}', '{}'::jsonb, false)->'issues',
+  '[]'::jsonb, 'the next draft, with its audio under version 2');
+select is(public.topik_admin_publish('topik2-97-listening', 2, 'two')->>'contentVersion', '2', 'published as 2');
+select is(public.topik_admin_rollback('topik2-97-listening', 1, 'back')->>'contentVersion', '3',
+  'a rollback to 1 publishes as 3, its audio still under segment 1 (an existing version)');
+select is(public.topik_admin_versions('topik2-97-listening')->'items'->0->'media', '["topik2-97-listening/1/a.mp3"]'::jsonb,
+  'and the version lists that media');
 reset role;
 
 select * from finish();

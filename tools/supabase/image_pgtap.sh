@@ -5,7 +5,10 @@
 # the Storage tables the storage-api service would create (`storage.buckets`,
 # `storage.objects`, their helpers and grants), applies `supabase/migrations/`
 # as `postgres` and runs every file in `supabase/tests/database/` as pgTAP.
-# `supabase test db` on the full stack stays the reference.
+# `supabase test db` on the full stack stays the reference. storage-api's own
+# triggers and functions on `storage.objects` are absent from the stub, so direct
+# DML on it (an admin's UPDATE or DELETE) is not proven here; the policy predicates
+# are.
 # Usage: tools/supabase/image_pgtap.sh [test-file…]   (default: every test)
 # Env:   PGTAP_IMAGE (default supabase/postgres:17.11.0.004), PGTAP_PORT (54329)
 set -euo pipefail

@@ -1,4 +1,4 @@
--- supabase/migrations/20261017000000_topik_master_data.sql
+-- supabase/migrations/20261016120000_topik_master_data.sql
 -- ADR-024, spec 2026-10-16 §5–§6: TOPIK Master Data (the tests themselves)
 -- live here, managed by the Admin Web through topik_admin_* and read by the
 -- app through topik_catalog and topik_test_content. Not a sync entity type:
@@ -136,10 +136,15 @@ declare
   v_groups jsonb := case when jsonb_typeof(p_json->'groups') = 'array' then p_json->'groups' else '[]'::jsonb end;
   v_points_ok boolean;
 begin
-  -- identity: testId = {level}-{round}-{section}
+  -- identity: testId = {level}-{round}-{section}. A missing level or section, or a round
+  -- that is not a JSON number >= 1, is an identity issue (null-safe: `null not in (...)`
+  -- is null, not true). The case keeps the cast off anything but a number.
   if p_json->>'testId' is distinct from format('%s-%s-%s', v_level, p_json->>'round', v_section)
-     or v_level not in ('topik1', 'topik2') or v_section not in ('listening', 'reading')
-     or coalesce((p_json->>'round')::integer, 0) <= 0 then
+     or v_level is null or v_level not in ('topik1', 'topik2')
+     or v_section is null or v_section not in ('listening', 'reading')
+     or not coalesce(case when jsonb_typeof(p_json->'round') = 'number'
+                          then (p_json->>'round')::numeric >= 1 and (p_json->>'round')::numeric = trunc((p_json->>'round')::numeric) end,
+                     false) then
     v_issues := array_append(v_issues, 'identity');
   end if;
   -- metadata: BR-TOPIK-007 and the fixed format
@@ -159,31 +164,43 @@ begin
               when v_level = 'topik1' and v_section = 'reading' then 40
               else 50 end
   into v_first, v_count;
-  if (select coalesce(array_agg((q->>'no')::integer order by (q->>'no')::integer), '{}')
-      from jsonb_array_elements(v_questions) q)
-     is distinct from (select array_agg(n) from generate_series(v_first, v_first + v_count - 1) n) then
+  -- Every `no` must be a JSON number (the case keeps the cast off anything else).
+  if exists (select 1 from jsonb_array_elements(v_questions) q where jsonb_typeof(q->'no') is distinct from 'number')
+     or (select coalesce(array_agg(s.n order by s.n), '{}'::numeric[])
+         from (select case when jsonb_typeof(q->'no') = 'number' then (q->>'no')::numeric end as n
+               from jsonb_array_elements(v_questions) q) s)
+        is distinct from (select array_agg(n::numeric) from generate_series(v_first, v_first + v_count - 1) n) then
     v_issues := array_append(v_issues, 'numbering');
   end if;
   -- points: BR-TOPIK-002
-  select coalesce(sum((q->>'points')::integer), 0) = 100
-     and bool_and(case when v_level = 'topik2' then (q->>'points')::integer = 2
-                       when v_section = 'listening' then (q->>'points')::integer in (3, 4)
-                       else (q->>'points')::integer in (2, 3) end)
-  into v_points_ok from jsonb_array_elements(v_questions) q;
+  -- Every question carries a numeric `points`; a missing or non-numeric one is null here,
+  -- and `p is not null and ...` keeps bool_and from skipping it.
+  select coalesce(sum(s.p), 0) = 100
+     and bool_and(s.p is not null and case when v_level = 'topik2' then s.p = 2
+                                           when v_section = 'listening' then s.p in (3, 4)
+                                           else s.p in (2, 3) end)
+  into v_points_ok
+  from (select case when jsonb_typeof(q->'points') = 'number' then (q->>'points')::numeric end as p
+        from jsonb_array_elements(v_questions) q) s;
   if not coalesce(v_points_ok, false) then
     v_issues := array_append(v_issues, 'points');
   end if;
   -- options: BR-TOPIK-003
   -- jsonb_array_elements only runs when options is an array (a scalar raises 22023);
-  -- the case is what guarantees it, not the order of the or.
+  -- the case is what guarantees it, not the order of the or. Every idx and the answerIdx
+  -- must be a JSON number; the casts below are guarded the same way.
   if exists (select 1 from jsonb_array_elements(v_questions) q
              where case when jsonb_typeof(q->'options') = 'array' then
-                          (select coalesce(array_agg((o->>'idx')::integer order by (o->>'idx')::integer), '{}')
-                           from jsonb_array_elements(q->'options') o) <> '{1,2,3,4}'::integer[]
+                          exists (select 1 from jsonb_array_elements(q->'options') o
+                                  where jsonb_typeof(o->'idx') is distinct from 'number')
+                          or (select coalesce(array_agg(s.i order by s.i), '{}'::numeric[])
+                              from (select case when jsonb_typeof(o->'idx') = 'number' then (o->>'idx')::numeric end as i
+                                    from jsonb_array_elements(q->'options') o) s) is distinct from '{1,2,3,4}'::numeric[]
                           or exists (select 1 from jsonb_array_elements(q->'options') o
                                      where coalesce(o->>'textKo', '') = '' and coalesce(o->>'image', '') = '')
                         else true end
-                or coalesce((q->>'answerIdx')::integer, 0) not between 1 and 4) then
+                or not coalesce(case when jsonb_typeof(q->'answerIdx') = 'number'
+                                     then (q->>'answerIdx')::numeric in (1, 2, 3, 4) end, false)) then
     v_issues := array_append(v_issues, 'options');
   end if;
   -- groups: BR-TOPIK-004 (membership; the audio range is Dart's)
@@ -191,7 +208,7 @@ begin
      or exists (select 1 from jsonb_array_elements(v_questions) q
                 where not exists (select 1 from jsonb_array_elements(v_groups) g
                                   where g->>'groupId' = q->>'groupId'
-                                    and g->'questionNos' @> to_jsonb(array[(q->>'no')::integer])))
+                                    and g->'questionNos' @> jsonb_build_array(q->'no')))
      or (select count(*) from jsonb_array_elements(v_groups) g)
         <> (select count(distinct g->>'groupId') from jsonb_array_elements(v_groups) g)
      or exists (select 1 from jsonb_array_elements(v_groups) g, jsonb_array_elements(g->'questionNos') n
@@ -368,11 +385,13 @@ $$;
 
 -- The content_version the next publication of a test takes. The advisory lock
 -- (held to the end of the transaction) serialises publishers of one test, so
--- the number checked is the number inserted.
+-- the number checked is the number inserted. The two-int lock form (class 7101
+-- for a test, 7102 for the catalog key below) is a different key space from
+-- the one-bigint form, so it cannot collide with the sync functions' locks.
 create function private.topik_next_version(p_test_id text) returns integer
 language plpgsql set search_path = '' as $$
 begin
-  perform pg_advisory_xact_lock(hashtext('public.topik_test_version:' || p_test_id));
+  perform pg_advisory_xact_lock(7101, hashtext(p_test_id));
   return (select coalesce(max(v.content_version), 0) + 1 from public.topik_test_version v where v.test_id = p_test_id);
 end
 $$;
@@ -384,16 +403,23 @@ $$;
 create function private.topik_next_catalog_version() returns bigint
 language plpgsql set search_path = '' as $$
 begin
-  perform pg_advisory_xact_lock(hashtext('public.topik_catalog_version_seq'));
+  perform pg_advisory_xact_lock(7102, hashtext('public.topik_catalog_version_seq'));
   return nextval('public.topik_catalog_version_seq');
 end
 $$;
 
 -- The one body of publish and rollback: the content stored at the next
 -- content_version (its own contentVersion overwritten, so the version table's
--- CHECK cannot fail), the publication moved to it, the audit written. Raises
--- INVALID_STATE for a retired test (the admin unretires first, explicitly and
--- audited) and MEDIA_MISSING, both before it writes anything.
+-- CHECK cannot fail), the publication moved to it, the audit written. Raises,
+-- all before it writes anything:
+--   VALIDATION_FAILED, detail = the shape issues (comma-joined): the content
+--     fails the shape check (a rollback checks the old JSON again);
+--   INVALID_STATE for a retired test (the admin unretires first, explicitly and
+--     audited);
+--   VALIDATION_FAILED, detail = 'media': a media path is not
+--     {test_id}/{version}/{file}, or its version is neither the version being
+--     published nor an existing version of the test;
+--   MEDIA_MISSING, detail = the first path Storage does not hold.
 create function private.topik_publish_version(p_user uuid, p_test_id text, p_json jsonb, p_note text,
   p_action text, p_detail jsonb) returns integer
 language plpgsql set search_path = '' as $$
@@ -405,7 +431,12 @@ declare
   v_media jsonb;
   v_catalog bigint;
   v_status text;
+  v_issues text[] := private.topik_master_shape_issues(v_json);
+  v_missing text;
 begin
+  if cardinality(v_issues) > 0 then
+    raise exception 'VALIDATION_FAILED' using detail = array_to_string(v_issues, ',');
+  end if;
   select p.status into v_status from public.topik_publication p where p.test_id = p_test_id for update;
   if v_status = 'retired' then
     raise exception 'INVALID_STATE';
@@ -418,13 +449,23 @@ begin
       jsonb_array_elements(case when jsonb_typeof(q->'options') = 'array' then q->'options' else '[]'::jsonb end) o) x
   where x.path is not null and x.path <> '';
   -- The path contract {test_id}/{version}/{file}: what the read policy matches. The
-  -- version segment is not compared with v_next: a rollback carries an old one.
+  -- version segment must exist: it is the version being published, or (a rollback carries
+  -- an old one) the content_version of an existing version of this test. A segment that
+  -- names a version that never exists would be unreadable to users.
   if exists (select 1 from jsonb_array_elements_text(v_media) m
-      where split_part(m, '/', 1) <> p_test_id or split_part(m, '/', 2) !~ '^[1-9][0-9]*$' or split_part(m, '/', 3) = '') then
+      where split_part(m, '/', 1) <> p_test_id
+         or split_part(m, '/', 3) = ''
+         or not (split_part(m, '/', 2) = v_next::text
+                 or exists (select 1 from public.topik_test_version tv
+                            where tv.test_id = p_test_id and tv.content_version::text = split_part(m, '/', 2)))) then
     raise exception 'VALIDATION_FAILED' using detail = 'media';
   end if;
-  if exists (select 1 from jsonb_array_elements_text(v_media) m where not private.topik_media_exists(m)) then
-    raise exception 'MEDIA_MISSING';
+  select m.path into v_missing
+  from jsonb_array_elements_text(v_media) with ordinality m(path, n)
+  where not private.topik_media_exists(m.path)
+  order by m.n limit 1;
+  if v_missing is not null then
+    raise exception 'MEDIA_MISSING' using detail = v_missing;
   end if;
   insert into public.topik_test_version (test_id, content_version, json, media, checksum, published_at, published_by, note)
   values (p_test_id, v_next, v_json, v_media, md5(v_json::text), now(), p_user, p_note);
@@ -442,13 +483,13 @@ $$;
 
 -- Publishes the draft as max + 1; the draft must already say so in its own
 -- contentVersion (compared as text: a missing or non-numeric one is a mismatch,
--- not a cast error).
+-- not a cast error). The shape check and the media checks run in
+-- topik_publish_version, the body publish and rollback share.
 create function public.topik_admin_publish(p_test_id text, p_expected_content_version integer, p_note text)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
   v_user uuid := private.require_topik_admin();
   v_draft public.topik_test_draft;
-  v_issues text[];
   v_version integer;
 begin
   select * into v_draft from public.topik_test_draft where test_id = p_test_id for update;
@@ -458,10 +499,6 @@ begin
   if p_expected_content_version is distinct from private.topik_next_version(p_test_id)
      or v_draft.json->>'contentVersion' is distinct from p_expected_content_version::text then
     raise exception 'VERSION_MISMATCH';
-  end if;
-  v_issues := private.topik_master_shape_issues(v_draft.json);
-  if cardinality(v_issues) > 0 then
-    raise exception 'VALIDATION_FAILED' using detail = array_to_string(v_issues, ',');
   end if;
   v_version := private.topik_publish_version(v_user, p_test_id, v_draft.json, p_note, 'publish', '{}'::jsonb);
   return jsonb_build_object('testId', p_test_id, 'contentVersion', v_version,
@@ -676,15 +713,24 @@ grant execute on function public.topik_catalog(bigint), public.topik_test_conten
 
 -- Media in a private bucket. Storage authorises through policies on
 -- storage.objects, the one place a policy exists (ADR-024 #7, owner O1); the
--- policies call two security-definer helpers so they can read our tables.
+-- policies call three security-definer helpers so they can read our tables.
 insert into storage.buckets (id, name, public)
 values ('topik-media', 'topik-media', false)
 on conflict (id) do update set public = false;
 
--- Writing media is the admin's.
+-- Writing (inserting) media is the admin's.
 create function public.topik_media_can_write(p_name text) returns boolean
 language sql stable security definer set search_path = '' as $$
   select private.is_admin()
+$$;
+
+-- Changing or removing media is the admin's too, except an object a published
+-- version lists in its media: that version is immutable (BR-TOPIK-007), so what it
+-- names stays. The version's media array holds the object's name as written.
+create function public.topik_media_can_modify(p_name text) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select private.is_admin()
+    and not exists (select 1 from public.topik_test_version v where v.media ? p_name)
 $$;
 
 -- Reading: a caller with a profile (a deleted user's live JWT has none), and an
@@ -703,19 +749,20 @@ language sql stable security definer set search_path = '' as $$
         and p.test_id = split_part(p_name, '/', 1)
         and v.content_version::text = split_part(p_name, '/', 2)))
 $$;
-revoke all on function public.topik_media_can_write(text), public.topik_media_can_read(text)
-  from public, anon, authenticated;
-grant execute on function public.topik_media_can_write(text), public.topik_media_can_read(text) to authenticated;
+revoke all on function public.topik_media_can_write(text), public.topik_media_can_modify(text),
+  public.topik_media_can_read(text) from public, anon, authenticated;
+grant execute on function public.topik_media_can_write(text), public.topik_media_can_modify(text),
+  public.topik_media_can_read(text) to authenticated;
 
 create policy topik_media_read on storage.objects for select to authenticated
   using (bucket_id = 'topik-media' and public.topik_media_can_read(name));
 create policy topik_media_insert on storage.objects for insert to authenticated
   with check (bucket_id = 'topik-media' and public.topik_media_can_write(name));
 create policy topik_media_update on storage.objects for update to authenticated
-  using (bucket_id = 'topik-media' and public.topik_media_can_write(name))
-  with check (bucket_id = 'topik-media' and public.topik_media_can_write(name));
+  using (bucket_id = 'topik-media' and public.topik_media_can_modify(name))
+  with check (bucket_id = 'topik-media' and public.topik_media_can_modify(name));
 create policy topik_media_delete on storage.objects for delete to authenticated
-  using (bucket_id = 'topik-media' and public.topik_media_can_write(name));
+  using (bucket_id = 'topik-media' and public.topik_media_can_modify(name));
 
 -- ============================================================================
 -- Function privileges (keep last)

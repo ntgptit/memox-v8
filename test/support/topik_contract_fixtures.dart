@@ -93,6 +93,23 @@ List<ContractFixture> topikContractFixtures() => [
     _mutated((j) => j['questions'] = 'x'),
     sqlRules: const {'numbering', 'points', 'groups'},
   ),
+  // A required key is absent: the mapper refuses it (Dart: shape). The SQL check
+  // must reject it too, whatever it names.
+  ContractFixture(
+    'shape-missing-level',
+    _mutated((j) => j.remove('level')),
+    sqlRules: const {'identity'},
+  ),
+  ContractFixture(
+    'shape-missing-section',
+    _mutated((j) => j.remove('section')),
+    sqlRules: const {'identity'},
+  ),
+  ContractFixture(
+    'shape-question-without-points',
+    _mutated((j) => _question(j, 0).remove('points')),
+    sqlRules: const {'points'},
+  ),
   ContractFixture(
     'languages-missing-en',
     _mutated((j) => _question(j, 0)['explanation'] = {'vi': 'x'}),
