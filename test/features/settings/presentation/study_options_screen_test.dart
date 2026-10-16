@@ -83,7 +83,6 @@ void main() {
         _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
       ),
     );
-    expect(following, findsOneWidget);
     expectBreaksOnlyBetweenWords(tester, following);
     expect(
       find.text(_en.studyOptionsAppDefaultsHeader.toUpperCase()),

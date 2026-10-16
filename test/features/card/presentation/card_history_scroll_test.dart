@@ -226,7 +226,6 @@ void main() {
     final earlier = find.text(
       metaLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2)),
     );
-    expect(current, findsOneWidget);
     expectBreaksOnlyBetweenWords(tester, current);
     expect(earlier, findsOneWidget);
     expect(

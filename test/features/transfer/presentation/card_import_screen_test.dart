@@ -81,7 +81,6 @@ void main() {
     expect(find.text(metaDots(_en.importSourceFileHint)), findsOneWidget);
     await _tap(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
-    expect(find.text(metaLine(_en.importFileReady('CSV'))), findsOneWidget);
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileReady('CSV'))),
@@ -400,20 +399,12 @@ void main() {
     );
     await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
-    expect(
-      find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
     );
 
     await _tap(tester, _en.importHeaderToggle);
-    expect(
-      find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileRead('CSV', 3, 2))),

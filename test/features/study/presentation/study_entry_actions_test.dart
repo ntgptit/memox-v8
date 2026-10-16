@@ -77,10 +77,6 @@ void main() {
       env,
       _screen(leaf, onOpen: (id) => opened = id),
     );
-    expect(
-      find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
@@ -216,19 +212,6 @@ void main() {
       find.text(_en.studyEntryResumeOverline.toUpperCase()),
       findsOneWidget,
     );
-    expect(
-      find.text(
-        metaLine(
-          _en.studyEntryResumeLine(
-            _en.studyKindLearning,
-            _en.cardModeBrowse,
-            0,
-            2,
-          ),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
@@ -315,10 +298,6 @@ void main() {
     MxOptionRow row(String mode) =>
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
-    expect(
-      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
@@ -332,10 +311,6 @@ void main() {
 
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
-    expect(
-      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),

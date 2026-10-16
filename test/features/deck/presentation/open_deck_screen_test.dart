@@ -302,14 +302,6 @@ void main() {
     );
 
     expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
-    expect(
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
@@ -433,14 +425,6 @@ void main() {
     await tester.tap(find.text(_en.commonDone));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(

@@ -68,21 +68,9 @@ void main() {
     expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
-    expect(
-      find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
-    );
-    expect(
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
-        ),
-      ),
-      findsOneWidget,
     );
     expectBreaksOnlyBetweenWords(
       tester,
@@ -127,14 +115,6 @@ void main() {
       _screen(onOpenStudyDefaults: () => opened++),
     );
 
-    expect(
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
@@ -161,10 +141,6 @@ void main() {
       _screen(onOpenReminder: () => opened++),
     );
 
-    expect(
-      find.text(metaLine(_en.settingsReminderOn('21:00'))),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.settingsReminderOn('21:00'))),
@@ -451,14 +427,6 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, _screen());
 
-    expect(
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
@@ -482,7 +450,6 @@ void main() {
         vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
       ),
     );
-    expect(summary, findsOneWidget);
     expectBreaksOnlyBetweenWords(tester, summary);
     // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
     expect(tester.getSize(summary).height, lessThanOrEqualTo(43));

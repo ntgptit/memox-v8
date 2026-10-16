@@ -155,7 +155,6 @@ void main() {
       await add('Verb');
       await add('verb');
       expect(find.bySemanticsLabel(_en.cardTagRemove('Verb')), findsOneWidget);
-      expect(find.text(metaLine(_en.cardTagsMeta(1, 10))), findsOneWidget);
       expectBreaksOnlyBetweenWords(
         tester,
         find.text(metaLine(_en.cardTagsMeta(1, 10))),

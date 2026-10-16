@@ -69,14 +69,6 @@ void main() {
 
     expect(find.text(_en.starterNote), findsOneWidget);
     expect(find.text(everydayTemplate.title), findsOneWidget);
-    expect(
-      find.text(
-        metaLine(
-          'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
@@ -84,15 +76,6 @@ void main() {
           'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
         ),
       ),
-    );
-    expect(
-      find.text(
-        metaLine(
-          'English · Vietnamese · 120 cards · 4 sub-decks · '
-          'Development fixture',
-        ),
-      ),
-      findsOneWidget,
     );
     expectBreaksOnlyBetweenWords(
       tester,
@@ -122,12 +105,6 @@ void main() {
       overrides: [StarterLibraryFake(env).asOverride],
     );
 
-    expect(
-      find.text(
-        metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(

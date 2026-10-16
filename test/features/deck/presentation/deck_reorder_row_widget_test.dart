@@ -61,14 +61,6 @@ void main() {
     await pump(tester, env, _tile(subDecks: 4, cards: 1248));
 
     expect(find.byIcon(AppIcons.library), findsOneWidget);
-    expect(
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(

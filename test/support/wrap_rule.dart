@@ -2,10 +2,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Expects the [Text] found by [finder] to break only where a word ends
+/// Expects one [Text] found by [finder], breaking only where a word ends
 /// (The Wrap Rule): a glued run longer than its line is broken inside a word,
 /// which is the defect this catches.
 void expectBreaksOnlyBetweenWords(WidgetTester tester, Finder finder) {
+  expect(finder, findsOneWidget);
   final paragraph = tester.renderObject<RenderParagraph>(
     find.descendant(of: finder, matching: find.byType(RichText)).first,
   );

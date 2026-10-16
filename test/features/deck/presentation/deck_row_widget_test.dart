@@ -65,14 +65,6 @@ void main() {
     expect(find.byType(MxCard), findsOneWidget);
     expect(find.text('Korean'), findsOneWidget);
     expect(find.widgetWithText(MxBadge, _en.deckDueBadge(86)), findsOneWidget);
-    expect(
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(

@@ -88,17 +88,6 @@ void main() {
     expect(tile(tester, 'Best'), matchesSemantics(label: 'Best', value: '72'));
     // Short terms: the line breaks only between them (The Wrap Rule).
     final en = lookupAppLocalizations(const Locale('en'));
-    expect(
-      find.text(
-        metaLine(
-          en.topikLastActivity(
-            en.ago(DateTime.utc(2026, 10, 15), DateTime.utc(2026, 10, 16)),
-            en.duration(60000),
-          ),
-        ),
-      ),
-      findsOneWidget,
-    );
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(
