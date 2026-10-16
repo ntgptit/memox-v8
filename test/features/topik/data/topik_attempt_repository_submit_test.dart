@@ -5,6 +5,8 @@ import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
+import 'package:memox/features/topik/domain/models/topik_question_model.dart';
+import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 
 import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
@@ -155,6 +157,42 @@ void main() {
       expect(row.totalTimeMs, 0);
     });
 
+    test('refuses the same test id with other question numbers, fewer or '
+        'as many, and writes nothing (BR-TOPIK-019)', () async {
+      final attempt = topikOk(await repository.start(_test));
+      final first = _test.questions.first;
+      final variants = {
+        'one question fewer': _test.questions.skip(1).toList(),
+        'as many, one renumbered': [
+          TopikQuestion(
+            no: 31,
+            groupId: first.groupId,
+            questionType: first.questionType,
+            points: first.points,
+            stemKo: first.stemKo,
+            options: first.options,
+            answerIdx: first.answerIdx,
+          ),
+          ..._test.questions.skip(1),
+        ],
+      };
+      final before = await totalChanges(db);
+      for (final MapEntry(key: name, value: questions) in variants.entries) {
+        expect(
+          topikReason(
+            await repository.submit(
+              attemptId: attempt.id,
+              test: _withQuestions(questions),
+              elapsedMs: 100,
+            ),
+          ),
+          TopikRejection.contentMismatch,
+          reason: name,
+        );
+      }
+      expect(await totalChanges(db), before);
+    });
+
     test(
       'a content correction made before submit is the one that scores',
       () async {
@@ -230,3 +268,22 @@ void main() {
     });
   });
 }
+
+/// [_test] with other [questions]: the same test id, a later content version.
+/// The content check would refuse such a test, so it is built by hand.
+TopikTest _withQuestions(List<TopikQuestion> questions) => TopikTest(
+  schemaVersion: _test.schemaVersion,
+  contentVersion: _test.contentVersion + 1,
+  testId: _test.testId,
+  level: _test.level,
+  round: _test.round,
+  section: _test.section,
+  format: _test.format,
+  form: _test.form,
+  titleKo: _test.titleKo,
+  officialTimeLimitSec: _test.officialTimeLimitSec,
+  source: _test.source,
+  groups: _test.groups,
+  questions: questions,
+  audioAsset: _test.audioAsset,
+);
