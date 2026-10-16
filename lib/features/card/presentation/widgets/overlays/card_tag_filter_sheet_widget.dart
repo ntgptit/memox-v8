@@ -5,6 +5,7 @@ import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/card/presentation/providers/card_tag_filter_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
@@ -128,7 +129,7 @@ class _CardTagFilterSheetWidgetState
       title: l10n.cardTagFilterTitle,
       subtitle: _draft.isEmpty
           ? l10n.cardTagFilterNone
-          : l10n.cardTagFilterChosen(_draft.length),
+          : metaDots(l10n.cardTagFilterChosen(_draft.length)),
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.cardTagFilterClear,

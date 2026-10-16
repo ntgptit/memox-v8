@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/presentation/widgets/support/tag_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
@@ -74,7 +75,7 @@ class TagActionsSheetWidget extends StatelessWidget {
             MxActionSheetCommandRow(
               icon: AppIcons.delete,
               label: l10n.tagsDelete,
-              subtitle: l10n.tagsDeleteHint(tag.cardCount),
+              subtitle: metaDots(l10n.tagsDeleteHint(tag.cardCount)),
               isDestructive: true,
               onTap: () => choose(TagAction.delete),
             ),

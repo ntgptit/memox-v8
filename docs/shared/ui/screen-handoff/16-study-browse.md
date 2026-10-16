@@ -104,6 +104,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the footer hint's glyph sits inline before the first line, and every hint is one line in both languages, so the CTA stands still with no empty line under it (R6, amended at the owner's golden review); the bar is Indigo in every mode (R8); the context line holds two lines at most (R9).
+- **Q-C-1 (owner, 2026-10-16):** the footer hint keeps each dot on the phrase before it (`metaDots`); the session context line above every session is capped at two lines with an ellipsis, so it stays unglued, as the Trash meta does (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

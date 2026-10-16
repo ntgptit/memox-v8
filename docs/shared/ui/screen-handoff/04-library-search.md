@@ -43,3 +43,4 @@ Nothing pending since FE-A10.
 - The match is emphasised with `rowTitleMatch` (primary, 700) and no background mark.
 - The field in the app bar is `MxSearchField` at its 52 input floor inside the 56 bar.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** no header repeats the query (the field shows it, and user data is never upper-cased); Decks and Cards stay section labels.
+- **Q-C-1 (owner, 2026-10-16):** the footer ("Decks first, then cards · …") keeps each dot on the phrase before it (`metaDots`); a deck hit's path line is one line with an ellipsis, so it is left as is (The Wrap Rule; `lib/l10n/meta_line.dart`).

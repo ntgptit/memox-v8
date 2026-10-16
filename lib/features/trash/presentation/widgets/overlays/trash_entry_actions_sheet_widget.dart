@@ -3,6 +3,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -42,10 +43,12 @@ class TrashEntryActionsSheetWidget extends StatelessWidget {
     void choose(TrashEntryAction action) => Navigator.of(context).pop(action);
     return MxBottomSheet(
       title: trashEntryName(entry),
-      subtitle: switch (entry) {
+      // It holds the parent's name: the dots stay with the phrase before
+      // them, and the phrases wrap as words (The Wrap Rule).
+      subtitle: metaDots(switch (entry) {
         TrashCardEntry() => l10n.trashCardActionsMeta(ago, parent),
         TrashDeckEntry() => l10n.trashDeckActionsMeta(ago, parent),
-      },
+      }),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(
@@ -60,7 +63,7 @@ class TrashEntryActionsSheetWidget extends StatelessWidget {
             MxActionSheetCommandRow(
               icon: AppIcons.delete,
               label: l10n.trashDeletePermanently,
-              subtitle: l10n.trashDeletePermanentlyHint,
+              subtitle: metaDots(l10n.trashDeletePermanentlyHint),
               isDestructive: true,
               hasChevron: true,
               onTap: () => choose(TrashEntryAction.purge),

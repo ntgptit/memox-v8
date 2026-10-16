@@ -14,6 +14,7 @@ import 'package:memox/features/tags/presentation/controllers/tag_actions_control
 import 'package:memox/features/tags/presentation/widgets/support/tag_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -155,9 +156,8 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
                 : null,
             supportingText: switch ((rejection, merge)) {
               (null, null) => l10n.tagsCaseHint,
-              (null, _) => l10n.tagsLengthUnique(
-                _length,
-                TagEntity.maxNameLength,
+              (null, _) => metaDots(
+                l10n.tagsLengthUnique(_length, TagEntity.maxNameLength),
               ),
               _ => null,
             },

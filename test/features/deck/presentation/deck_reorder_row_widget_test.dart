@@ -8,6 +8,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _today = DateTime(2026, 9, 24);
@@ -60,13 +61,13 @@ void main() {
     await pump(tester, env, _tile(subDecks: 4, cards: 1248));
 
     expect(find.byIcon(AppIcons.library), findsOneWidget);
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
         metaLine(
           _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
         ),
       ),
-      findsOneWidget,
     );
   });
 

@@ -8,6 +8,7 @@ import 'package:memox/features/study/presentation/states/study_entry_offer_state
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
@@ -67,9 +68,14 @@ class StudyEntryFooterWidget extends ConsumerWidget {
         AppIcons.play,
         // SM-2 asks its direction next; Eight boxes names the mode (E1).
         target.isDirectionRequired
-            ? l10n.studyEntryReviewCaption(target.cardCount, entry.dueCardCount)
+            ? metaLine(
+                l10n.studyEntryReviewCaption(
+                  target.cardCount,
+                  entry.dueCardCount,
+                ),
+              )
             // The button states the count (critique 2026-09-30 part 3b).
-            : l10n.studyEntryModeCaption(l10n.studyMode(target.mode)),
+            : metaLine(l10n.studyEntryModeCaption(l10n.studyMode(target.mode))),
         onReview,
       ),
       EntryFooterAction.learn => (

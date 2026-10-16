@@ -57,6 +57,7 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 - **DEV-179 (owner 2026-10-06):** the header already names the cards, so the action reads "Export" alone.
 - **BR-TRANSFER-013, backend plan C5:** the file name keeps the deck's own letters (`Nhà-hàng-2026-09-26.csv`).
 - Banners use their tone glyph; `MxInlineBanner` has no glyph slot.
+- **Q-C-1 (owner, 2026-10-16):** a format's body keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

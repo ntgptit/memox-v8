@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
@@ -19,6 +20,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 // The import screen over the real backend and a fake picker (UC-TRANSFER-001,
 // IT-NAV-012, IT-CARD-014).
@@ -76,11 +78,22 @@ void main() {
     );
 
     expect(find.text(_en.importPickTitle), findsOneWidget);
+    expect(find.text(metaDots(_en.importSourceFileHint)), findsOneWidget);
     await _tap(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileReady('CSV'))),
+    );
 
     await _tap(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
+    // The file's own column names keep their spaces; each dot stays with the
+    // name before it (The Wrap Rule).
+    expect(
+      find.text('front${metaTermSeparator}back${metaTermSeparator}tags'),
+      findsOneWidget,
+    );
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await _tap(tester, _en.importPreviewAction);
@@ -386,9 +399,15 @@ void main() {
     );
     await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
-    expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
+    );
 
     await _tap(tester, _en.importHeaderToggle);
-    expect(find.text(_en.importFileRead('CSV', 3, 2)), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
+    );
   });
 }

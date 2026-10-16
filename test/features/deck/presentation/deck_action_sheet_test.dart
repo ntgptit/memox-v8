@@ -6,6 +6,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -45,6 +46,21 @@ Future<String?> _parentOf(LibraryEnv env, String id) async =>
         .read<String?>('parent_id');
 
 void main() {
+  libraryTest('a locked root says so under its scheduler, the dots kept on '
+      'the phrase before them (The Wrap Rule)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    await _openSheet(tester);
+
+    expect(
+      find.text(
+        metaDots(_en.deckReviewAlgorithmLocked(_en.deckSchedulerEightBox)),
+      ),
+      findsOneWidget,
+    );
+  });
+
   libraryTest('a root offers rename, its scheduler and delete, not move', (
     tester,
     env,
@@ -63,7 +79,7 @@ void main() {
     // (FE-A3 D3).
     expect(find.text(_en.studyThisDeck), findsOneWidget);
     expect(find.text(_en.deckStudyOptions), findsOneWidget);
-    expect(find.text(_en.deckStudyOptionsHint), findsOneWidget);
+    expect(find.text(metaDots(_en.deckStudyOptionsHint)), findsOneWidget);
   });
 
   libraryTest('Study options opens the deck\'s options, below Rename '

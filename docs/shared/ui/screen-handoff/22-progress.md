@@ -76,6 +76,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows the screen's own skeleton, a Today card, a Streak card and a deck-list card (`MxSkeletonPulse`, `MxCard`, `MxSkeleton`, `MxSkeletonRow`); deck progress keeps its range control and shows the deck-list card.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every day's bars draw at full strength, reviewing in primary and learning in `statusLearning` (Day's learning bars on the card are a recorded contrast exception, owner 2026-10-10); Today is told by its bold label (F5).
 - **Owner 2026-10-16 (Q-P6-4):** a row's "N cards · N active days" and its learning · reviewing card-days wrap only between whole terms (`lib/l10n/meta_line.dart`).
+- **Q-C-1 (owner, 2026-10-16):** Today's line and the footer keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

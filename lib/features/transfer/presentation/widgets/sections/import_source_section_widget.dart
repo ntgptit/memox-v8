@@ -16,6 +16,7 @@ import 'package:memox/features/transfer/presentation/widgets/overlays/import_opt
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
@@ -107,7 +108,7 @@ class _ImportSourceSectionWidgetState
                 child: ImportSourceOptionWidget(
                   icon: AppIcons.fileUp,
                   label: l10n.importSourceFile,
-                  hint: l10n.importSourceFileHint,
+                  hint: metaDots(l10n.importSourceFileHint),
                   isSelected: !isPaste,
                   // The card picks the file, selected or not (critique
                   // 2026-10-02, F9).
@@ -249,13 +250,15 @@ class _SourceChip extends StatelessWidget {
       _ => l10n.importPastedFormat,
     };
     final isFile = source is FileSource;
-    final meta = table == null
-        ? l10n.importFileReady(format)
-        : l10n.importFileRead(
-            format,
-            _dataRows(table.rows.length),
-            table.columnCount,
-          );
+    final meta = metaLine(
+      table == null
+          ? l10n.importFileReady(format)
+          : l10n.importFileRead(
+              format,
+              _dataRows(table.rows.length),
+              table.columnCount,
+            ),
+    );
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

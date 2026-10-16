@@ -19,6 +19,7 @@ import 'package:memox/features/settings/presentation/controllers/settings_contro
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -29,6 +30,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/sync_fakes.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -66,11 +68,17 @@ void main() {
     expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
+    );
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
-        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+        metaLine(
+          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+        ),
       ),
-      findsOneWidget,
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
     expect(find.text(_en.settingsReminderOff), findsOneWidget);
@@ -83,7 +91,9 @@ void main() {
     // The summary may wrap, never clip (review focus 4).
     final summary = tester.widget<Text>(
       find.text(
-        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+        metaLine(
+          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+        ),
       ),
     );
     expect(summary.maxLines, isNull);
@@ -105,11 +115,13 @@ void main() {
       _screen(onOpenStudyDefaults: () => opened++),
     );
 
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
-        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
+        metaLine(
+          _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
+        ),
       ),
-      findsOneWidget,
     );
     await tester.tap(find.text(_en.settingsStudyDefaults));
     expect(opened, 1);
@@ -129,7 +141,10 @@ void main() {
       _screen(onOpenReminder: () => opened++),
     );
 
-    expect(find.text(_en.settingsReminderOn('21:00')), findsOneWidget);
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaLine(_en.settingsReminderOn('21:00'))),
+    );
     await tester.tap(find.text(_en.settingsReminder));
     expect(opened, 1);
   });
@@ -412,14 +427,17 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, _screen());
 
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
-        _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
+        metaLine(
+          _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
+        ),
       ),
-      findsOneWidget,
     );
-    expect(find.textContaining('1 cards'), findsNothing);
-    expect(find.textContaining('Read aloud on'), findsOneWidget);
+    // \s also matches the no-break spaces of a glued line.
+    expect(find.textContaining(RegExp(r'\b1\scards')), findsNothing);
+    expect(find.textContaining(RegExp(r'Read\saloud\son')), findsOneWidget);
   });
 
   libraryTest('in Vietnamese at 360×800 the hub still fits and the Study '
@@ -428,9 +446,11 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(), locale: const Locale('vi'));
 
     final summary = find.text(
-      vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
+      metaLine(
+        vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
+      ),
     );
-    expect(summary, findsOneWidget);
+    expectBreaksOnlyBetweenWords(tester, summary);
     // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
     expect(tester.getSize(summary).height, lessThanOrEqualTo(43));
     expect(

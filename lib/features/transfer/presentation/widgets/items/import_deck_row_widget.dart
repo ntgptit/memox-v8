@@ -5,6 +5,7 @@ import 'package:memox/features/transfer/domain/models/import_preview_model.dart'
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
@@ -103,7 +104,7 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               Expanded(
                 child: Text(
                   widget.willWrite == 0
-                      ? l10n.importDeckNothing
+                      ? metaDots(l10n.importDeckNothing)
                       : l10n.importDeckCards(widget.willWrite),
                   style: context.texts.bodyMedium?.copyWith(
                     color: context.colors.onSurfaceVariant,

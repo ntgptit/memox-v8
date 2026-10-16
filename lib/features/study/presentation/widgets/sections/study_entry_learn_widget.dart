@@ -5,6 +5,7 @@ import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
@@ -31,9 +32,15 @@ class StudyEntryLearnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final line = l10n.studyEntryLearnLine(
-      l10n.studyLearnStages(entry.schedulerType),
-      l10n.studyEntryLearnCount(offer.learnShown, entry.newCardCount),
+    // The stages are a phrase and wrap as words; the count's terms stay
+    // whole (The Wrap Rule).
+    final line = metaDots(
+      l10n.studyEntryLearnLine(
+        l10n.studyLearnStages(entry.schedulerType),
+        metaLine(
+          l10n.studyEntryLearnCount(offer.learnShown, entry.newCardCount),
+        ),
+      ),
     );
     return MxCard(
       isFullBleed: true,

@@ -17,6 +17,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/progress_screen_fixtures.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 22 at a deck's level: UC-PROGRESS-002 (steps 1, 5; A1; E1; E2),
 // FE-A9 D2, D5.
@@ -58,12 +59,12 @@ void main() {
 
     expect(find.text(_en.progressToday.toUpperCase()), findsNothing);
     final whole = find.widgetWithText(MxListRow, _en.progressWholeDeck);
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.descendant(
         of: whole,
         matching: find.text(metaLine(_en.progressRowCardsDays(3, 1))),
       ),
-      findsOneWidget,
     );
     // A child opens its level; the total does not (critique 2026-09-30 part
     // 3d-1, D3; Review Focus 4).

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -62,7 +63,7 @@ class CardAddDetailsWidget extends StatelessWidget {
                           child: SizedBox(width: context.dimens.space8),
                         ),
                         TextSpan(
-                          text: l10n.cardAddDetailsFields,
+                          text: metaLine(l10n.cardAddDetailsFields),
                           style: context.texts.bodyMedium?.copyWith(
                             color: context.colors.onSurfaceVariant,
                           ),
