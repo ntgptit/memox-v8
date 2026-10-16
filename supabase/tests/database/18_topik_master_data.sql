@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(33);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -69,6 +69,56 @@ select is((select actor from public.topik_master_audit where id = '18000000-0000
 select throws_like(
   $$update public.topik_master_audit set test_id = 'x' where id = '18000000-0000-0000-0000-0000000000a1'$$,
   '%append-only%', 'an audit row with a null actor still cannot be edited');
+
+-- ============================================================================
+-- The SQL shape check (Task 2)
+-- ============================================================================
+-- §6.3: the SQL shape check, a subset of checkTopikTest, in the Dart rules' names.
+create function public.t_test(p_level text, p_section text, p_first int, p_count int, p_points int)
+returns jsonb language sql as $$
+  select jsonb_build_object(
+    'schemaVersion', 1, 'contentVersion', 1,
+    'testId', p_level || '-96-' || p_section, 'level', p_level, 'round', 96, 'section', p_section,
+    'format', 'pbt', 'form', 'B-홀수형', 'titleKo', '제96회', 'officialTimeLimitSec', 3600,
+    'source', jsonb_build_object('publishedBy', 'NIIED', 'url', 'https://www.topik.go.kr/x'),
+    'assets', case when p_section = 'listening' then jsonb_build_object('audio', 'a.mp3') else '{}'::jsonb end,
+    'groups', (select jsonb_agg(jsonb_build_object('groupId', 'g' || n, 'instructionKo', '※',
+        'questionNos', jsonb_build_array(n),
+        'audio', case when p_section = 'listening'
+          then jsonb_build_object('startMs', 0, 'endMs', 1000, 'playCount', 2) end))
+      from generate_series(p_first, p_first + p_count - 1) n),
+    'questions', (select jsonb_agg(jsonb_build_object('no', n, 'groupId', 'g' || n,
+        'questionType', 'X', 'points', p_points, 'stemKo', 'q',
+        'options', jsonb_build_array(jsonb_build_object('idx', 1, 'textKo', 'a'),
+          jsonb_build_object('idx', 2, 'textKo', 'b'), jsonb_build_object('idx', 3, 'textKo', 'c'),
+          jsonb_build_object('idx', 4, 'textKo', 'd')),
+        'answerIdx', 1))
+      from generate_series(p_first, p_first + p_count - 1) n)) $$;
+
+select is(private.topik_master_shape_issues(public.t_test('topik2', 'reading', 1, 50, 2)), '{}'::text[],
+  'TOPIK II reading, 50 × 2 points, passes');
+select is(private.topik_master_shape_issues(public.t_test('topik1', 'listening', 1, 30, 4) || '{"questions": []}'::jsonb),
+  '{numbering,points,groups}'::text[], 'no questions: numbering, points and groups');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{testId}', '"topik2-95-reading"')),
+  '{identity}'::text[], 'a test id that does not match its fields');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{source,publishedBy}', '"ETS"')),
+  '{metadata}'::text[], 'a publisher other than NIIED');
+select is(private.topik_master_shape_issues(public.t_test('topik1', 'reading', 1, 40, 2) || '{"questions": null}'::jsonb)
+  @> '{numbering}'::text[], true, 'TOPIK I reading must start at 31');
+select is(private.topik_master_shape_issues(public.t_test('topik2', 'reading', 1, 50, 3)), '{points}'::text[],
+  'TOPIK II points other than 2, total other than 100');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,answerIdx}', '5')),
+  '{options}'::text[], 'an answer index of 5');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,groupId}', '"nope"')),
+  '{groups}'::text[], 'a question whose group does not exist');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,explanation}', '{"vi": "x"}')),
+  '{languages}'::text[], 'an explanation without en');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik2', 'reading', 1, 50, 2), '{questions,0,explanation}', '{"vi": "x", "en": "y"}')),
+  '{}'::text[], 'an explanation with both languages passes');
+select is(private.topik_master_shape_issues('{"testId": "x"}'::jsonb) @> '{identity,metadata}'::text[], true,
+  'a bare object fails identity and metadata and does not throw');
+select is(private.topik_master_shape_issues(jsonb_set(public.t_test('topik1', 'listening', 1, 30, 4), '{questions,0,points}', '3')) @> '{points}'::text[],
+  true, 'TOPIK I listening: 29 × 4 + 3 is not 100');
 
 select * from finish();
 rollback;

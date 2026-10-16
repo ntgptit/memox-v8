@@ -119,6 +119,108 @@ before truncate on public.topik_master_audit
 for each statement execute function private.topik_audit_append_only();
 
 -- ============================================================================
+-- The shape check (§6.3)
+-- ============================================================================
+
+-- The structural half of BR-TOPIK-001…004, 006, 007, in the Dart rules'
+-- names; a subset of checkTopikTest, which the app still runs on download.
+create function private.topik_master_shape_issues(p_json jsonb) returns text[]
+language plpgsql immutable set search_path = '' as $$
+declare
+  v_issues text[] := '{}';
+  v_level text := p_json->>'level';
+  v_section text := p_json->>'section';
+  v_first integer;
+  v_count integer;
+  v_questions jsonb := case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end;
+  v_groups jsonb := case when jsonb_typeof(p_json->'groups') = 'array' then p_json->'groups' else '[]'::jsonb end;
+  v_points_ok boolean;
+begin
+  -- identity: testId = {level}-{round}-{section}
+  if p_json->>'testId' is distinct from format('%s-%s-%s', v_level, p_json->>'round', v_section)
+     or v_level not in ('topik1', 'topik2') or v_section not in ('listening', 'reading')
+     or coalesce((p_json->>'round')::integer, 0) <= 0 then
+    v_issues := array_append(v_issues, 'identity');
+  end if;
+  -- metadata: BR-TOPIK-007 and the fixed format
+  if coalesce((p_json->>'schemaVersion')::integer, 0) <> 1
+     or coalesce((p_json->>'contentVersion')::integer, 0) < 1
+     or p_json->>'format' is distinct from 'pbt'
+     or coalesce(p_json->>'form', '') = ''
+     or p_json->'source'->>'publishedBy' is distinct from 'NIIED'
+     or coalesce(p_json->'source'->>'url', '') = '' then
+    v_issues := array_append(v_issues, 'metadata');
+  end if;
+  -- numbering: BR-TOPIK-001
+  select case when v_level = 'topik1' and v_section = 'listening' then 1
+              when v_level = 'topik1' and v_section = 'reading' then 31
+              else 1 end,
+         case when v_level = 'topik1' and v_section = 'listening' then 30
+              when v_level = 'topik1' and v_section = 'reading' then 40
+              else 50 end
+  into v_first, v_count;
+  if (select coalesce(array_agg((q->>'no')::integer order by (q->>'no')::integer), '{}')
+      from jsonb_array_elements(v_questions) q)
+     is distinct from (select array_agg(n) from generate_series(v_first, v_first + v_count - 1) n) then
+    v_issues := array_append(v_issues, 'numbering');
+  end if;
+  -- points: BR-TOPIK-002
+  select coalesce(sum((q->>'points')::integer), 0) = 100
+     and bool_and(case when v_level = 'topik2' then (q->>'points')::integer = 2
+                       when v_section = 'listening' then (q->>'points')::integer in (3, 4)
+                       else (q->>'points')::integer in (2, 3) end)
+  into v_points_ok from jsonb_array_elements(v_questions) q;
+  if not coalesce(v_points_ok, false) then
+    v_issues := array_append(v_issues, 'points');
+  end if;
+  -- options: BR-TOPIK-003
+  if exists (select 1 from jsonb_array_elements(v_questions) q
+             where jsonb_typeof(q->'options') is distinct from 'array'
+                or (select coalesce(array_agg((o->>'idx')::integer order by (o->>'idx')::integer), '{}')
+                    from jsonb_array_elements(q->'options') o) <> '{1,2,3,4}'::integer[]
+                or exists (select 1 from jsonb_array_elements(q->'options') o
+                           where coalesce(o->>'textKo', '') = '' and coalesce(o->>'image', '') = '')
+                or coalesce((q->>'answerIdx')::integer, 0) not between 1 and 4) then
+    v_issues := array_append(v_issues, 'options');
+  end if;
+  -- groups: BR-TOPIK-004 (membership; the audio range is Dart's)
+  if jsonb_array_length(v_groups) = 0
+     or exists (select 1 from jsonb_array_elements(v_questions) q
+                where not exists (select 1 from jsonb_array_elements(v_groups) g
+                                  where g->>'groupId' = q->>'groupId'
+                                    and g->'questionNos' @> to_jsonb(array[(q->>'no')::integer])))
+     or (select count(*) from jsonb_array_elements(v_groups) g)
+        <> (select count(distinct g->>'groupId') from jsonb_array_elements(v_groups) g)
+     or exists (select 1 from jsonb_array_elements(v_groups) g, jsonb_array_elements(g->'questionNos') n
+                where not exists (select 1 from jsonb_array_elements(v_questions) q where q->'no' = n))
+     or (select count(*) from jsonb_array_elements(v_groups) g, jsonb_array_elements(g->'questionNos') n)
+        <> jsonb_array_length(v_questions) then
+    v_issues := array_append(v_issues, 'groups');
+  end if;
+  -- languages: BR-TOPIK-006, every multilingual object has non-empty vi and en
+  if exists (
+    select 1 from (
+      select q->'explanation' as t from jsonb_array_elements(v_questions) q
+      union all select q->'translation' from jsonb_array_elements(v_questions) q
+      union all select g->'scriptTranslation' from jsonb_array_elements(v_groups) g
+      union all select w from jsonb_array_elements(v_questions) q,
+        jsonb_array_elements(case when jsonb_typeof(q->'words') = 'array' then q->'words' else '[]'::jsonb end) w
+      union all select gr from jsonb_array_elements(v_questions) q,
+        jsonb_array_elements(case when jsonb_typeof(q->'grammars') = 'array' then q->'grammars' else '[]'::jsonb end) gr
+    ) x
+    where x.t is not null and jsonb_typeof(x.t) <> 'null'
+      and (coalesce(btrim(x.t->>'vi'), '') = '' or coalesce(btrim(x.t->>'en'), '') = '')) then
+    v_issues := array_append(v_issues, 'languages');
+  end if;
+  return v_issues;
+exception when others then
+  -- A JSON that is not the shape at all (a wrong type in a field) is an identity
+  -- and metadata failure, never an error to the caller.
+  return array['identity', 'metadata'];
+end
+$$;
+
+-- ============================================================================
 -- Function privileges (keep last)
 -- ============================================================================
 
