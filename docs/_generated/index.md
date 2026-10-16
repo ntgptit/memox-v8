@@ -41,6 +41,7 @@
 | [ADR-021](../shared/decisions/ADR-021-linear-theo-doi-tien-do.md) | Tiến độ công việc nằm trên Linear, không còn trong file WBS | active | — |
 | [ADR-022](../shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md) | Một nguồn token và theme theo cấu trúc Flutter thông thường | active | — |
 | [ADR-023](../shared/decisions/ADR-023-luyen-de-topik.md) | Luyện đề TOPIK trong MemoX | active | — |
+| [ADR-024](../shared/decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md) | Master Data TOPIK trên Supabase và Admin Web | draft | — |
 
 ## [account](../features/account/README.md)
 
