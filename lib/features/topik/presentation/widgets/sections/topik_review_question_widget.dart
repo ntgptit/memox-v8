@@ -139,7 +139,9 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           children: [
             for (final word in question.words)
               line(
-                metaTerms([word.ko, ?word.pos, l10n.topikText(word.meaning)]),
+                // The word stays whole; its meaning is prose (Q-C-2).
+                '${metaTerms([word.ko, ?word.pos])}'
+                '$metaTermSeparator${l10n.topikText(word.meaning)}',
               ),
           ],
         ),
@@ -149,7 +151,8 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           children: [
             for (final grammar in question.grammars)
               line(
-                metaTerms([grammar.pattern, l10n.topikText(grammar.meaning)]),
+                '${wholeTerm(grammar.pattern)}'
+                '$metaTermSeparator${l10n.topikText(grammar.meaning)}',
               ),
           ],
         ),
