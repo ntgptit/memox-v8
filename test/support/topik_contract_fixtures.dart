@@ -19,6 +19,8 @@ final class ContractFixture {
     : dartErrorRules = {
         for (final issue in topikContentOf([
           (origin: '$name.json', json: json),
+          // Assets are outside the SQL check, so the contract is silent on them
+          // by design: every asset path counts as present.
         ], assetExists: (_) => true).issues)
           if (issue.isError) issue.rule.name,
       };
@@ -84,6 +86,13 @@ List<ContractFixture> topikContractFixtures() => [
     _mutated((j) => _question(j, 0)['groupId'] = 'nope'),
     sqlRules: const {'groups'},
   ),
+  // The mapper refuses a wrongly-typed field (Dart: shape); the SQL check
+  // reads `questions` as no questions at all and names what then fails.
+  ContractFixture(
+    'shape-questions-not-array',
+    _mutated((j) => j['questions'] = 'x'),
+    sqlRules: const {'numbering', 'points', 'groups'},
+  ),
   ContractFixture(
     'languages-missing-en',
     _mutated((j) => _question(j, 0)['explanation'] = {'vi': 'x'}),
@@ -128,7 +137,7 @@ Map<String, String> renderTopikContractFiles() {
         )
         ..writeln(
           "select is($sortedCall, '{$rules}'::text[],\n"
-          "  '${f.name}: the SQL rules are exactly $rules');",
+          "  '${f.name}: the SQL rules are exactly ${rules.isEmpty ? 'none' : rules}');",
         );
       continue;
     }
