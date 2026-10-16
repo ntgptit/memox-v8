@@ -95,6 +95,39 @@ void main() {
     handle.dispose();
   });
 
+  // DEV-393: a titleWidget names the route only when its screen says so; the
+  // selection bars and the account screens' empty boxes must not.
+  for (final isNaming in [true, false]) {
+    testWidgets('a titleWidget ${isNaming ? 'names' : 'does not name'} the '
+        'route when the screen ${isNaming ? 'asks' : 'does not ask'}', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final handle = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        MxAppBar(
+          titleWidget: const Text('Korean'),
+          isTitleWidgetRouteName: isNaming,
+        ),
+      );
+      final node = tester.getSemantics(find.text('Korean'));
+      final count = routeNamingNodes(tester);
+      debugDefaultTargetPlatformOverride = null;
+
+      expect(node, isSemantics(label: 'Korean', namesRoute: isNaming));
+      expect(count, isNaming ? 1 : 0);
+      handle.dispose();
+    });
+  }
+
+  test('only a titleWidget can be asked to name the route', () {
+    expect(
+      () => MxAppBar(title: 'Library', isTitleWidgetRouteName: true),
+      throwsAssertionError,
+    );
+  });
+
   test('a subtitle needs a title: under a titleWidget it is an error', () {
     expect(
       () => MxAppBar(titleWidget: const SizedBox(), subtitle: 'x'),

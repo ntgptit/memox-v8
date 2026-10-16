@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
@@ -65,7 +66,9 @@ void main() {
     expect(find.widgetWithText(MxBadge, _en.deckDueBadge(86)), findsOneWidget);
     expect(
       find.text(
-        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        ),
       ),
       findsOneWidget,
     );
@@ -77,7 +80,7 @@ void main() {
   ) async {
     await pump(tester, env, _tile(subDecks: 0, cards: 420));
 
-    expect(find.text(_en.deckCardCount(420)), findsOneWidget);
+    expect(find.text(wholeTerm(_en.deckCardCount(420))), findsOneWidget);
     expect(find.textContaining(_en.deckSubDeckCount(0)), findsNothing);
   });
 
@@ -88,7 +91,7 @@ void main() {
     await pump(tester, env, _tile(subDecks: 0, cards: 0, overdue: 0, today: 0));
 
     expect(find.byType(MxBadge), findsNothing);
-    expect(find.text(_en.deckRowEmpty), findsOneWidget);
+    expect(find.text(metaDots(_en.deckRowEmpty)), findsOneWidget);
   });
 
   libraryTest('the mastery bar fills to the mastered share and the row says '
@@ -129,7 +132,9 @@ void main() {
     await pump(tester, env, _tile());
     final meta = tester.widget<Text>(
       find.text(
-        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+        ),
       ),
     );
 

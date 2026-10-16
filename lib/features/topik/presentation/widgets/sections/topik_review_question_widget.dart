@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
@@ -60,7 +61,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           SizedBox(height: dimens.space8),
         ],
         Text(
-          l10n.topikTerms([
+          metaTerms([
             if (selected == null)
               l10n.topikNotAnswered
             else
@@ -138,11 +139,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           children: [
             for (final word in question.words)
               line(
-                l10n.topikTerms([
-                  word.ko,
-                  ?word.pos,
-                  l10n.topikText(word.meaning),
-                ]),
+                metaTerms([word.ko, ?word.pos, l10n.topikText(word.meaning)]),
               ),
           ],
         ),
@@ -152,10 +149,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           children: [
             for (final grammar in question.grammars)
               line(
-                l10n.topikTerms([
-                  grammar.pattern,
-                  l10n.topikText(grammar.meaning),
-                ]),
+                metaTerms([grammar.pattern, l10n.topikText(grammar.meaning)]),
               ),
           ],
         ),

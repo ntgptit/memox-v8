@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -25,8 +26,6 @@ class ProgressDeckRowWidget extends StatelessWidget {
   /// Null for the total row.
   final VoidCallback? onOpen;
 
-  static const String _separator = ' · ';
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -42,10 +41,14 @@ class ProgressDeckRowWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Two lines of short terms: they break only between terms
+                // (The Wrap Rule).
                 Text(
-                  l10n.progressRowCardsDays(
-                    numbers.activeCards,
-                    numbers.activeDays,
+                  metaLine(
+                    l10n.progressRowCardsDays(
+                      numbers.activeCards,
+                      numbers.activeDays,
+                    ),
                   ),
                   style: caption,
                 ),
@@ -54,17 +57,17 @@ class ProgressDeckRowWidget extends StatelessWidget {
                     children: [
                       TextSpan(text: l10n.progressRowCardDaysLead),
                       TextSpan(
-                        text: l10n.progressRowLearning(
-                          numbers.learningCardDays,
+                        text: wholeTerm(
+                          l10n.progressRowLearning(numbers.learningCardDays),
                         ),
                         style: context.texts.labelSmall?.copyWith(
                           color: context.mxColors.warning,
                         ),
                       ),
-                      const TextSpan(text: _separator),
+                      const TextSpan(text: metaTermSeparator),
                       TextSpan(
-                        text: l10n.progressRowReviewing(
-                          numbers.reviewingCardDays,
+                        text: wholeTerm(
+                          l10n.progressRowReviewing(numbers.reviewingCardDays),
                         ),
                         style: context.texts.labelSmall?.copyWith(
                           color: context.accentColor,

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_tile_signs_widget.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -61,9 +62,10 @@ class DeckSummaryCardWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      l10n.deckRowMeta(
-                        l10n.deckSubDeckCount(level.deckCount),
-                        l10n.deckCardCount(cards),
+                      deckStructureLine(
+                        l10n,
+                        subDecks: level.deckCount,
+                        cards: cards,
                       ),
                       style: context.texts.titleSmall,
                     ),

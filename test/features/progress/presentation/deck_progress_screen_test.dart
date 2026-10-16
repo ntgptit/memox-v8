@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
@@ -60,7 +61,7 @@ void main() {
     expect(
       find.descendant(
         of: whole,
-        matching: find.text(_en.progressRowCardsDays(3, 1)),
+        matching: find.text(metaLine(_en.progressRowCardsDays(3, 1))),
       ),
       findsOneWidget,
     );

@@ -11,6 +11,7 @@ import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -111,9 +112,8 @@ class WelcomeScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: context.dimens.space16),
-            Semantics(
-              header: true,
-              namesRoute: true,
+            MxRouteName(
+              isHeader: true,
               child: Text(l10n.appTitle, style: context.texts.titleLarge),
             ),
             SizedBox(height: context.dimens.space8),

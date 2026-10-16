@@ -166,7 +166,12 @@ class _MxSearchFieldState extends State<MxSearchField> {
       ),
     );
     final onTap = widget.onTap;
-    if (onTap == null) return field;
+    // An empty field is named by its hint; one holding a query keeps that
+    // name, or it reads only as its value (and names its route with nothing
+    // on screen 04, DEV-393).
+    if (onTap == null) {
+      return Semantics(label: hasQuery ? widget.hintText : null, child: field);
+    }
     return Semantics(
       button: true,
       label: widget.hintText,

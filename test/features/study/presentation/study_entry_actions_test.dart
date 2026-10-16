@@ -1,3 +1,4 @@
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import 'dart:async';
@@ -209,11 +210,13 @@ void main() {
     );
     expect(
       find.text(
-        _en.studyEntryResumeLine(
-          _en.studyKindLearning,
-          _en.cardModeBrowse,
-          0,
-          2,
+        metaLine(
+          _en.studyEntryResumeLine(
+            _en.studyKindLearning,
+            _en.cardModeBrowse,
+            0,
+            2,
+          ),
         ),
       ),
       findsOneWidget,

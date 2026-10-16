@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
@@ -36,7 +37,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
     final dimens = context.dimens;
     final attempt = numbered.attempt;
     final isCompleted = attempt.isCompleted;
-    final meta = l10n.topikTerms([
+    final meta = metaTerms([
       l10n.topikDateTime(attempt.startedAt),
       if (isCompleted) ...[
         l10n.topikOfTotal(attempt.score ?? 0, attempt.maxScore),
