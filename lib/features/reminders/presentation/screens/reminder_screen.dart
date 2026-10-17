@@ -42,8 +42,18 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
   /// The time dialog is open (kit `changingTime`).
   var _isPickingTime = false;
 
+  /// The failed-save toast while it shows. Its Retry acts on this screen's
+  /// controller, so it leaves with the screen.
+  MxSnackbarController? _failureToast;
+
   ReminderController get _controller =>
       ref.read(reminderControllerProvider.notifier);
+
+  @override
+  void dispose() {
+    _failureToast?.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +63,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
       failed,
     ) {
       if (failed == null) return;
-      showMxSnackbar(
+      _failureToast = showMxSnackbar(
         context,
         message: l10n.reminderSaveFailed,
         actionLabel: l10n.commonRetry,
