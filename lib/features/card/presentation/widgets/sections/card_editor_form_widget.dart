@@ -341,6 +341,9 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                 saveLabel: _isCreating
                     ? l10n.cardSaveCard
                     : l10n.cardSaveChanges,
+                failedTitle: _isCreating
+                    ? l10n.cardSaveFailedTitle
+                    : l10n.cardSaveChangesFailedTitle,
                 hasFailed: _hasFailed,
                 isSaving: _isSaving,
                 onCancel: _close,
@@ -384,15 +387,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
       if (!_isCreating && !_isGone)
-        // One node: the button and its toggled state.
+        // One node: the button and its toggled state, under one name ("Flag
+        // this card, on"): a name that flips with the state would read as
+        // its contradiction ("Remove flag, on").
         MergeSemantics(
           child: Semantics(
             toggled: _isFlagged,
             child: MxIconButton(
               icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
-              semanticLabel: _isFlagged
-                  ? l10n.cardFlagClear
-                  : l10n.cardFlagLabel,
+              semanticLabel: l10n.cardFlagLabel,
               onPressed: () => setState(() => _isFlagged = !_isFlagged),
             ),
           ),

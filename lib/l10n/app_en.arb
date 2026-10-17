@@ -1877,9 +1877,13 @@
   "@cardSaveFailedTitle": {
     "description": "Inline banner title after a failed save."
   },
-  "cardSaveFailedBody": "Nothing was lost. Tap Save to try again.",
+  "cardSaveChangesFailedTitle": "Couldn't save changes.",
+  "@cardSaveChangesFailedTitle": {
+    "description": "Screen handoff 09: the failed save's title in edit (audit 2026-10-17)."
+  },
+  "cardSaveFailedBody": "Nothing was lost. Tap Retry save to try again.",
   "@cardSaveFailedBody": {
-    "description": "Inline banner body after a failed save."
+    "description": "Screen handoff 08/09: the failed save's body; names the button as it reads (audit 2026-10-17)."
   },
   "cardDeckRejectsTitle": "This deck no longer accepts cards.",
   "@cardDeckRejectsTitle": {
@@ -4427,17 +4431,17 @@
   "@importProblemSectionsTitle": {
     "description": "Title: a file with * rows imported into a deck of cards (UC-TRANSFER-001 E7)."
   },
-  "importProblemSectionsBody": "A deck of cards can’t hold decks. Import from its parent deck instead. Nothing was added.",
+  "importProblemSectionsBody": "Nothing was added. A deck of cards can’t hold decks: import from its parent deck instead.",
   "@importProblemSectionsBody": {
-    "description": "Guidance for E7."
+    "description": "Screen handoff 11 (E7): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemDepthTitle": "No room for another level",
   "@importProblemDepthTitle": {
     "description": "Title: the target is at level 10 (UC-TRANSFER-001 E8)."
   },
-  "importProblemDepthBody": "Decks go at most 10 levels deep. Import from a higher deck. Nothing was added.",
+  "importProblemDepthBody": "Nothing was added. Decks go at most 10 levels deep: import from a higher deck.",
   "@importProblemDepthBody": {
-    "description": "Guidance for E8."
+    "description": "Screen handoff 11 (E8): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemChangedTitle": "A deck changed meanwhile",
   "@importProblemChangedTitle": {
@@ -4922,17 +4926,17 @@
   "@importProblemEncodingTitle": {
     "description": "Import problem: BR-TRANSFER-006."
   },
-  "importProblemEncodingBody": "Save it again as UTF-8 (CSV UTF-8 in Excel or Sheets) and choose it once more. Nothing was read.",
+  "importProblemEncodingBody": "Nothing was read. Save it again as UTF-8 (CSV UTF-8 in Excel or Sheets) and choose it once more.",
   "@importProblemEncodingBody": {
-    "description": "Import problem: how to fix the encoding."
+    "description": "Screen handoff 11 (E1): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemUnreadableTitle": "This file can't be read",
   "@importProblemUnreadableTitle": {
     "description": "Import problem: E1."
   },
-  "importProblemUnreadableBody": "Choose a CSV, TSV or XLSX file that is not protected. Nothing was read.",
+  "importProblemUnreadableBody": "Nothing was read. Choose a CSV, TSV or XLSX file that is not protected.",
   "@importProblemUnreadableBody": {
-    "description": "Import problem: how to fix an unreadable file."
+    "description": "Screen handoff 11 (E1): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemEmptyTitle": "There are no rows to import",
   "@importProblemEmptyTitle": {

@@ -176,6 +176,7 @@ void main() {
         bottomNavigationBar: CardEditorFooterWidget(
           caption: _en.cardCaptionKeepAdding,
           saveLabel: _en.cardSaveCard,
+          failedTitle: _en.cardSaveFailedTitle,
           hasFailed: true,
           isSaving: false,
           onCancel: () {},

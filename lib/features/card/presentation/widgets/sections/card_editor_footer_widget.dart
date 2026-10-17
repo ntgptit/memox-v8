@@ -15,6 +15,7 @@ class CardEditorFooterWidget extends StatelessWidget {
     super.key,
     required this.caption,
     required this.saveLabel,
+    required this.failedTitle,
     required this.hasFailed,
     required this.isSaving,
     required this.onCancel,
@@ -23,6 +24,9 @@ class CardEditorFooterWidget extends StatelessWidget {
 
   final String caption;
   final String saveLabel;
+
+  /// The failed save's title: the card in create, its changes in edit.
+  final String failedTitle;
   final bool hasFailed;
   final bool isSaving;
   final VoidCallback onCancel;
@@ -43,7 +47,7 @@ class CardEditorFooterWidget extends StatelessWidget {
           if (hasFailed)
             MxInlineBanner(
               tone: MxBannerTone.danger,
-              title: l10n.cardSaveFailedTitle,
+              title: failedTitle,
               message: l10n.cardSaveFailedBody,
               isInCommitBar: true,
             ),
