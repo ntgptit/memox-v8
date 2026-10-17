@@ -25,7 +25,8 @@ class MxSpinner extends StatelessWidget {
 
   final MxSpinnerSize size;
 
-  /// The glyph colour. Null is `primary`, for a spinner on a surface; a
+  /// The glyph colour. Null is the accent icon colour, for a spinner on a
+  /// surface; a
   /// spinner on a fill passes the foreground that fill is read with, so it
   /// keeps its contrast (M3F-02).
   final Color? color;
@@ -58,7 +59,7 @@ class MxSpinner extends StatelessWidget {
         style: FCircularProgressStyleDelta.delta(
           iconStyle: IconThemeDataDelta.delta(
             size: dimension,
-            color: color ?? context.colors.primary,
+            color: color ?? context.status.accentMark,
           ),
           motion: const FCircularProgressMotion(duration: _cycle),
         ),

@@ -33,8 +33,6 @@ const Map<String, double> _darkExceptions = {
   'primary on background': 3.0,
   'primary on card': 2.71,
   'primary on muted': 2.33,
-  'primary on its tint over background': 2.68,
-  'primary on its tint over card': 2.38,
 };
 
 List<_Pair> _pairs(FColors colors) {
@@ -61,8 +59,13 @@ List<_Pair> _pairs(FColors colors) {
     ('card', colors.card),
   ]) {
     // A tint carries its own ink: a banner, a badge, an answered choice.
+    // The accent tint's label is the accent mark (owner ruling 2026-10-17).
+    add(
+      'accentMark on the primary tint over $where',
+      status.accentMark,
+      colors.primary.tintOver(ground),
+    );
     for (final (role, ink) in [
-      ('primary', colors.primary),
       ('error', colors.error),
       ('success', status.success),
       ('warning', status.warning),
@@ -79,6 +82,15 @@ List<_Pair> _pairs(FColors colors) {
   );
   add('onSuccessFill on successFill', status.onSuccessFill, status.successFill);
   add('onWarningFill on warningFill', status.onWarningFill, status.warningFill);
+  // An accent mark as a glyph: an icon tile's glyph, a dot, the selected
+  // tab's icon.
+  for (final (where, ground) in [
+    ('background', colors.background),
+    ('card', colors.card),
+    ('muted', colors.muted),
+  ]) {
+    add('accentMark glyph on $where', status.accentMark, ground, _nonText);
+  }
   // A control's resting edge or a supporting glyph.
   add(
     'mutedForeground glyph on background',

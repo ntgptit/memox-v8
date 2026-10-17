@@ -18,7 +18,7 @@ class CardAddDetailsWidget extends StatelessWidget {
     final l10n = context.l10n;
     final radius = context.radii.md;
     final glyph = IconThemeData(
-      color: context.colors.primary,
+      color: context.status.accentMark,
       size: context.dimens.sizeIconInline,
     );
     // The press layer and the focus outline keep to the rounded box.

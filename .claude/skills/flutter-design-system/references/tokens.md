@@ -13,7 +13,7 @@ Never copy a hex, a size or a duration into code, a test or a document.
 ```
 lib/core/theme/
 ├── app_palette.dart        # appLightColors / appDarkColors (ForUI FColors): the only colour values
-├── mx_status_colors.dart   # MxStatusColors: success, warning, info and their fills (light / dark)
+├── mx_status_colors.dart   # MxStatusColors: success, warning, info, their fills, accentMark (light / dark)
 ├── app_typography.dart     # AppTypography.build → FTypography; MxTextRoles (the 12 roles); mono family
 ├── app_dimens.dart         # AppDimens: spacing, margins, layout sizes, breakpoints
 ├── app_theme.dart          # buildLightTheme() / buildDarkTheme() (FThemeData); materialHostTheme
@@ -33,7 +33,7 @@ list closed.
 extension ThemeContext on BuildContext {
   FColors get colors;          // ForUI's palette
   MxTextRoles get texts;       // the twelve roles on ForUI's type scale
-  MxStatusColors get status;   // success, warning, info
+  MxStatusColors get status;   // success, warning, info, accentMark
   AppDimens get dimens;
   FBorderRadius get radii;     // ForUI's radius scale
   double get hairline;         // ForUI's border width

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -67,6 +68,19 @@ void main() {
       find.descendant(of: _toast, matching: find.byType(DecoratedBox)).first,
     );
     expect(box.decoration, style.decoration);
+  });
+
+  testWidgets('the message reads at the banner message size, 14 at 500, '
+      "below ForUI's 16 title (owner ruling 2026-10-17)", (tester) async {
+    await pumpMx(tester, trigger(actionLabel: null));
+    await show(tester);
+
+    final style = tester
+        .renderObject<RenderParagraph>(find.text('Moved to Trash'))
+        .text
+        .style!;
+    expect(style.fontSize, 14);
+    expect(style.fontWeight, FontWeight.w500);
   });
 
   testWidgets('a message alone shows no action', (tester) async {

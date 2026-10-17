@@ -44,7 +44,8 @@ class MxActionSheetCommandRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = isDestructive ? colors.error : context.colors.primary;
+    // The command's glyph; an accent icon unless the command destroys.
+    final ink = isDestructive ? colors.error : context.status.accentMark;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,

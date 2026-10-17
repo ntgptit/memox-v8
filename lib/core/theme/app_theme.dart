@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 
 /// The light theme: ForUI's touch theme on the app palette and type scale.
 /// Built once; every caller shares it.
@@ -22,13 +23,28 @@ FThemeData themeFor(sdk.Brightness brightness) => switch (brightness) {
   sdk.Brightness.dark => buildDarkTheme(),
 };
 
-FThemeData _build(FColors colors, String label) => FThemeData(
-  debugLabel: label,
-  colors: colors,
-  touch: true,
-  typography: AppTypography.build(colors),
-  extensions: const [AppDimens()],
-);
+FThemeData _build(FColors colors, String label) {
+  final theme = FThemeData(
+    debugLabel: label,
+    colors: colors,
+    touch: true,
+    typography: AppTypography.build(colors),
+    extensions: const [AppDimens()],
+  );
+  // The selected tab's icon is an accent icon; its label stays primary.
+  final accentMark = colors.extension<MxStatusColors>().accentMark;
+  return theme.copyWith(
+    bottomNavigationBarStyle: FBottomNavigationBarStyleDelta.delta(
+      itemStyle: FBottomNavigationBarItemStyleDelta.delta(
+        iconStyle: FVariantsDelta.delta([
+          FVariantOperation.match({
+            FTappableVariant.selected,
+          }, IconThemeDataDelta.delta(color: accentMark)),
+        ]),
+      ),
+    ),
+  );
+}
 
 /// The SDK Material theme the app's infrastructure host reads, derived one
 /// way from [theme] (ADR-026): `MaterialApp.router` (go_router's page

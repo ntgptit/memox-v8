@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
@@ -11,9 +12,9 @@ import 'package:memox/features/card/presentation/widgets/items/card_removable_ta
 import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 
-// A glyph reads in the accent colour; the tag chip is the shared ForUI chip.
+// A glyph is the accent mark; the tag chip is the shared ForUI chip.
 void main() {
-  final accent = appDarkColors.primary;
+  final accent = appDarkColors.extension<MxStatusColors>().accentMark;
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(
@@ -23,7 +24,7 @@ void main() {
     ),
   ).color;
 
-  libraryTest('Add details: the glyph is the accent', (tester, env) async {
+  libraryTest('Add details: the glyph is the accent mark', (tester, env) async {
     await pumpLibraryScreen(
       tester,
       env,
