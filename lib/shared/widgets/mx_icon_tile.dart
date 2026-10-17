@@ -81,7 +81,7 @@ class MxIconTile extends StatelessWidget {
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
         tinted.tintOver(MxTintBase.of(context)),
-        seed ?? context.status.primaryInk,
+        seed ?? context.colors.primary,
       ),
       MxIconTileTone.primary => (colors.primary, colors.primaryForeground),
       MxIconTileTone.warning => (

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -18,7 +18,7 @@ Color? _fill(WidgetTester tester, Finder finder) =>
     };
 
 void main() {
-  final mx = lightStatus;
+  const mx = MxStatusColors.light;
   final colors = appLightColors;
 
   testWidgets(

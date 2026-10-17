@@ -181,7 +181,7 @@ class _MxStepperState extends State<MxStepper> {
               ? Border.all(
                   color: widget.isInvalid
                       ? colors.error
-                      : context.status.primaryInk,
+                      : context.colors.primary,
                   width: context.hairline,
                 )
               : null,

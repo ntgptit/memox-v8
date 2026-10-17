@@ -112,7 +112,7 @@ class ThemeChoiceCardWidget extends StatelessWidget {
                       Icon(
                         AppIcons.check,
                         size: context.dimens.sizeIconCompact,
-                        color: context.status.primaryInk,
+                        color: context.colors.primary,
                       ),
                   ],
                 ),

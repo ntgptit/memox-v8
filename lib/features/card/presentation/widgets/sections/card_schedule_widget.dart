@@ -190,7 +190,7 @@ class _BoxRamp extends StatelessWidget {
                 height: index == box ? _currentBarHeight : _barHeight,
                 decoration: BoxDecoration(
                   color: index <= box
-                      ? context.status.primaryInk
+                      ? colors.primary
                       : MasteryRamp.track(colors),
                   borderRadius: BorderRadius.circular(
                     (index == box ? _currentBarHeight : _barHeight) / 2,

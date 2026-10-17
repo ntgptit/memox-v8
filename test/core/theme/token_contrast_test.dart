@@ -7,8 +7,8 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 
 // WCAG 2 contrast of the palette's pairs (ADR-026): text keeps 4.5:1 and a
 // glyph or control edge 3:1, in both modes, on the grounds the widgets draw
-// them on. No exception is recorded: a pair below its floor is a palette
-// change in lib/core/theme/app_palette.dart.
+// them on. A pair below its floor is a palette change in
+// lib/core/theme/app_palette.dart, except the pairs in [_darkExceptions].
 
 const double _text = 4.5;
 const double _nonText = 3;
@@ -25,6 +25,18 @@ Color _over(Color ink, Color ground) => Color.alphaBlend(ink, ground);
 
 typedef _Pair = (String name, Color ink, Color ground, double minimum);
 
+/// Owner ruling 2026-10-17: dark mode keeps the brand indigo on the MemoX
+/// navy page as before the ForUI migration, so dark primary as text sits
+/// below 4.5:1. Each pair is held at the ratio it has under that ruling, so
+/// a further drop still fails.
+const Map<String, double> _darkExceptions = {
+  'primary on background': 3.0,
+  'primary on card': 2.71,
+  'primary on muted': 2.33,
+  'primary on its tint over background': 2.68,
+  'primary on its tint over card': 2.38,
+};
+
 List<_Pair> _pairs(FColors colors) {
   final status = colors.extension<MxStatusColors>();
   final pairs = <_Pair>[];
@@ -38,9 +50,7 @@ List<_Pair> _pairs(FColors colors) {
   ]) {
     add('foreground on $where', colors.foreground, ground);
     add('mutedForeground on $where', colors.mutedForeground, ground);
-    // The brand as text, a glyph or an edge is its ink; primary itself is
-    // a fill under primaryForeground.
-    add('primaryInk on $where', status.primaryInk, ground);
+    add('primary on $where', colors.primary, ground);
     add('error on $where', colors.error, ground);
     add('success on $where', status.success, ground);
     add('warning on $where', status.warning, ground);
@@ -51,13 +61,13 @@ List<_Pair> _pairs(FColors colors) {
     ('card', colors.card),
   ]) {
     // A tint carries its own ink: a banner, a badge, an answered choice.
-    for (final (role, ink, hue) in [
-      ('primaryInk', status.primaryInk, colors.primary),
-      ('error', colors.error, colors.error),
-      ('success', status.success, status.success),
-      ('warning', status.warning, status.warning),
+    for (final (role, ink) in [
+      ('primary', colors.primary),
+      ('error', colors.error),
+      ('success', status.success),
+      ('warning', status.warning),
     ]) {
-      add('$role on its tint over $where', ink, hue.tintOver(ground));
+      add('$role on its tint over $where', ink, ink.tintOver(ground));
     }
   }
   add('primaryForeground on primary', colors.primaryForeground, colors.primary);
@@ -85,7 +95,8 @@ void main() {
     ('dark', appDarkColors),
   ]) {
     group(mode, () {
-      for (final (name, ink, ground, minimum) in _pairs(colors)) {
+      for (final (name, ink, ground, floor) in _pairs(colors)) {
+        final minimum = mode == 'dark' ? _darkExceptions[name] ?? floor : floor;
         test(name, () {
           final ratio = _contrast(_over(ink, ground), ground);
           expect(

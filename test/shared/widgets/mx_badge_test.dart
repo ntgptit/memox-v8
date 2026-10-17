@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -17,7 +17,7 @@ Color? _ink(WidgetTester tester, String label) =>
 
 void main() {
   final colors = appLightColors;
-  final mx = lightStatus;
+  const mx = MxStatusColors.light;
 
   testWidgets(
     'tonal: the tone tinted over the surface under a tone label; a 22 pill, 8 inset',
@@ -96,7 +96,7 @@ void main() {
       expect(_pill(tester).color, mx.success.tintOver(colors.background));
       expect(_ink(tester, 'Ready · 2'), mx.success);
 
-      final darkSemantic = darkStatus;
+      const darkSemantic = MxStatusColors.dark;
       await pumpMx(
         tester,
         const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),

@@ -4,12 +4,12 @@ import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
 Finder _tile(IconData icon) => find
@@ -62,8 +62,8 @@ void main() {
     final tones = {
       MxEmptyStateTone.primary: colors.primary,
       MxEmptyStateTone.neutral: colors.mutedForeground,
-      MxEmptyStateTone.success: lightStatus.success,
-      MxEmptyStateTone.warning: lightStatus.warningFill,
+      MxEmptyStateTone.success: MxStatusColors.light.success,
+      MxEmptyStateTone.warning: MxStatusColors.light.warningFill,
       MxEmptyStateTone.danger: colors.error,
     };
     for (final MapEntry(key: tone, value: color) in tones.entries) {
@@ -83,9 +83,9 @@ void main() {
       // success glyph in its ink (critique 2026-09-30 tone pass, T7).
       final glyph = switch (tone) {
         MxEmptyStateTone.primary => colors.primary,
-        MxEmptyStateTone.success => lightStatus.success,
+        MxEmptyStateTone.success => MxStatusColors.light.success,
         // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
-        MxEmptyStateTone.warning => lightStatus.warning,
+        MxEmptyStateTone.warning => MxStatusColors.light.warning,
         _ => color,
       };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);

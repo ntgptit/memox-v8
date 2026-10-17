@@ -173,17 +173,16 @@ MemoX should feel like a quiet, focused study space. The app is drawn with ForUI
 **Key Characteristics:**
 - One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve text roles on ForUI's type scale.
 - Neutral grounds: `background` for the page, `card` for cards, `muted` for recessed grounds, each edge a `border` hairline.
-- One accent: `primary`, the brand indigo in both modes, for the primary fill under white text; the brand as text, a glyph, an edge or a selected mark is `status.primaryInk`, which equals `primary` in light and is a lighter step of it on the dark navy page.
+- One accent: `primary`, the brand indigo in both modes, for the primary fill, the selected control and accent text. Dark keeps it on the MemoX navy page as before the ForUI migration (owner ruling 2026-10-17); as dark text it sits below 4.5:1, a recorded exception.
 - Phone first, `context.screenMargin` at the screen edge, `sizeControl` touch targets everywhere.
-- Every text and edge pair of the palette is contrast-tested in both modes, with no exception list.
+- Every text and edge pair of the palette is contrast-tested in both modes; the only exceptions are dark `primary` as text, by owner ruling.
 
 ## Colors
 
-An indigo accent on a neutral field (ForUI's in light, one computed from the MemoX navy page in dark), a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
+An indigo accent on ForUI's neutral field, a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
 
 ### Primary
-- **Accent** (`primary`): the brand indigo, the same in both modes: the primary button, the FAB, a selected choice tile, a solid badge, the current step: a fill that carries `primaryForeground`.
-- **Accent Ink** (`status.primaryInk`): the brand as text, a glyph, an edge or a mark: the selected tab, a ticked box, a selected radio, a switch that is on, a slider's or a bar's fill, the focus outline, accent text and glyphs. In light it is `primary`; on the dark navy page it is computed from `primary` and the foreground so it reads at 4.5:1 on every ground, and the theme gives ForUI's controls the same ink.
+- **Accent** (`primary`): the primary button, the FAB, the selected tab, chip, radio and checkbox, progress, the focus outline, and accent text and glyphs. It is the same indigo in light and dark; in dark it sits on the MemoX navy page, and every other dark value is computed from those two colours.
 - **On Accent** (`primaryForeground`): text and glyphs on an accent fill.
 - **Accent Tint** (`primary.tintOver(MxTintBase.of(context))`): the hero card and the accent's tinted grounds.
 

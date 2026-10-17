@@ -86,7 +86,7 @@ class MxCard extends StatelessWidget {
     };
     final edge = isSelected
         ? BorderSide(
-            color: context.status.primaryInk,
+            color: colors.primary,
             width: context.hairline * _selectedEdgeFactor,
           )
         : BorderSide(color: colors.border, width: context.hairline);

@@ -85,9 +85,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
         width: isNext ? focusWidth : context.hairline,
       );
     }
-    if (isNext) {
-      return BorderSide(color: context.status.primaryInk, width: focusWidth);
-    }
+    if (isNext) return BorderSide(color: colors.primary, width: focusWidth);
     // A disabled code takes the disabled edge, as a disabled field does.
     return BorderSide(
       color: widget.field.isEnabled

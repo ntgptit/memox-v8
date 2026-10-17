@@ -22,7 +22,7 @@ host (lib/app/app_theme_host.dart, MaterialApp.router)   infrastructure only
 
 | Piece | File | Notes |
 |---|---|---|
-| Palette | `lib/core/theme/app_palette.dart` | `appLightColors`, `appDarkColors` (`FColors`). Light: ForUI neutral base, `primary` MemoX indigo, `mutedForeground` and `error`/`destructive` adjusted for contrast. Dark: the navy page and the brand primary from before the migration, every other role computed from them (`darkColorsFrom`). The brand as text, glyph, edge or mark is `status.primaryInk`; `app_theme.dart` builds ForUI's control styles on it (focus outline, checkbox, radio, switch, slider, bottom navigation, text field). |
+| Palette | `lib/core/theme/app_palette.dart` | `appLightColors`, `appDarkColors` (`FColors`). Light: ForUI neutral base, `primary` MemoX indigo, `mutedForeground` and `error`/`destructive` adjusted for contrast. Dark: the navy page and the indigo from before the migration, every other value computed from them and written as hex; dark `primary` as text is a recorded contrast exception (owner ruling 2026-10-17). |
 | Status colours | `lib/core/theme/mx_status_colors.dart` | `MxStatusColors` (`success`, `warning`, `info` and their fills), an `FColors` extension. |
 | Type | `lib/core/theme/app_typography.dart` | `AppTypography.build(colors)` → `FTypography` (Be Vietnam Pro, Noto Sans KR fallback); `MxTextRoles`, the twelve roles. |
 | Dimens | `lib/core/theme/app_dimens.dart` | `AppDimens`, spacing, margins and layout sizes; an `FThemeData` extension. Radii and border width are ForUI's (`context.radii`, `context.hairline`). |
@@ -33,8 +33,9 @@ The palette is the only Dart that writes a colour value (`tools/design/check.py`
 `DESIGN.md`'s frontmatter and `.impeccable/design.json` are rendered from the two
 production themes by `tools/design/design_doc.dart`; `test/tools/design_doc_test.dart`
 fails when the committed files differ. The contrast floor (4.5:1 text, 3:1
-non-text) is `test/core/theme/token_contrast_test.dart`, over every palette pair,
-with no exception list.
+non-text) is `test/core/theme/token_contrast_test.dart`, over every palette pair.
+Its only exceptions are dark `primary` as text, held at their ratios by owner
+ruling (2026-10-17).
 
 ## Theme scope and mode
 

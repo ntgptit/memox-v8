@@ -90,7 +90,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     final muted = context.colors.mutedForeground;
     final terms = [
       (overdueCount, overdueLabel, context.status.warning, AppIcons.overdue),
-      (todayCount, todayLabel, context.status.primaryInk, AppIcons.dueNow),
+      (todayCount, todayLabel, context.colors.primary, AppIcons.dueNow),
       (newCount, newLabel, context.colors.mutedForeground, AppIcons.newCards),
       if (scheduledLabel case final label?)
         (scheduledCount, label, muted, null),

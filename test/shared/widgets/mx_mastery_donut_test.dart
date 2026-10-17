@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
 RenderObject _ring(WidgetTester tester) => tester.renderObject(
@@ -18,7 +18,7 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 
 void main() {
   final colors = appLightColors;
-  final mx = lightStatus;
+  const mx = MxStatusColors.light;
 
   testWidgets('56 box; the arc in the ramp fill, the label in its band\'s '
       'text colour (SW-REV-001)', (tester) async {

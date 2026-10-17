@@ -97,7 +97,7 @@ class MxEmptyState extends StatelessWidget {
                 icon: icon,
                 color: toneColor,
                 foreground: switch (tone) {
-                  MxEmptyStateTone.primary => context.status.primaryInk,
+                  MxEmptyStateTone.primary => context.colors.primary,
                   MxEmptyStateTone.success => context.status.success,
                   // As the caution tile and the warning banner (critique
                   // 2026-09-30 part 3d-2, E14).

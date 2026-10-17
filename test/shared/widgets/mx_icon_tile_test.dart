@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
 const _childKey = ValueKey('tile-child');
@@ -126,10 +126,10 @@ void main() {
         const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
       );
 
-      expect(_tile(tester).color, lightStatus.warningFill);
+      expect(_tile(tester).color, MxStatusColors.light.warningFill);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        lightStatus.onWarningFill,
+        MxStatusColors.light.onWarningFill,
       );
     },
   );

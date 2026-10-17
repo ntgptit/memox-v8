@@ -15,7 +15,6 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/meta_line.dart';
 
-import '../../../support/palette_status.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -138,7 +137,7 @@ void main() {
 
     expect(colors.card, isNot(MasteryRamp.track(colors)));
     // Boxes 1-3 are filled; 4-8 are the track.
-    expect(bars(inkOf(colors)), 3);
+    expect(bars(colors.primary), 3);
     expect(bars(MasteryRamp.track(colors)), 5);
   });
 

@@ -3,10 +3,10 @@ import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
 MxWorkloadBreakdownLine _line({
@@ -60,7 +60,7 @@ double _lineHeight(WidgetTester tester) {
 
 void main() {
   final colors = appLightColors;
-  final mx = lightStatus;
+  const mx = MxStatusColors.light;
 
   testWidgets('all three terms in order, each in its colour', (tester) async {
     await pumpMx(tester, _line());

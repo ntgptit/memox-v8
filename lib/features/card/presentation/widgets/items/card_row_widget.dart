@@ -69,7 +69,7 @@ class _Content extends StatelessWidget {
     return switch (status) {
       CardDisplayStatus.newCard => context.colors.mutedForeground,
       CardDisplayStatus.beginning => context.status.warning,
-      CardDisplayStatus.reviewing => context.status.primaryInk,
+      CardDisplayStatus.reviewing => context.colors.primary,
       CardDisplayStatus.mastered => context.status.success,
     };
   }

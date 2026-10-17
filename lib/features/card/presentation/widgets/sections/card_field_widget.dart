@@ -63,7 +63,7 @@ class CardFieldWidget extends StatelessWidget {
                 ? Text(
                     l10n.cardRequiredLegend,
                     style: context.texts.body.copyWith(
-                      color: context.status.primaryInk,
+                      color: context.colors.primary,
                     ),
                   )
                 : Text(

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
-import '../../../support/palette_status.dart';
 import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 
 // A glyph reads in the accent colour; the tag chip is the shared ForUI chip.
 void main() {
-  final accent = darkStatus.primaryInk;
+  final accent = appDarkColors.primary;
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(

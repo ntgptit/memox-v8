@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/theme_harness.dart';
 
 void main() {
@@ -26,7 +26,7 @@ void main() {
     final theme = buildDarkTheme();
     expect(captured.colors, theme.colors);
     expect(captured.texts.body.fontSize, theme.typography.body.xs.fontSize);
-    expect(captured.status, darkStatus);
+    expect(captured.status, MxStatusColors.dark);
     expect(captured.dimens, isA<AppDimens>());
     expect(captured.radii, theme.style.borderRadius);
     expect(captured.hairline, theme.style.borderWidth);

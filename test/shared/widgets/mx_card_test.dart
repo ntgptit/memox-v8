@@ -4,10 +4,10 @@ import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
-import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -27,7 +27,7 @@ void main() {
   for (final brightness in Brightness.values) {
     final isLight = brightness == Brightness.light;
     final colors = isLight ? appLightColors : appDarkColors;
-    final mx = isLight ? lightStatus : darkStatus;
+    final mx = isLight ? MxStatusColors.light : MxStatusColors.dark;
 
     group(brightness.name, () {
       testWidgets(
@@ -128,7 +128,7 @@ void main() {
         expect(
           _shape(tester).side,
           BorderSide(
-            color: inkOf(colors),
+            color: colors.primary,
             width: _theme(tester).style.borderWidth * 2,
           ),
         );

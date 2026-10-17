@@ -33,9 +33,7 @@ An `Mx*` widget:
 - reads every value from the theme: `context.colors` (`FColors`),
   `context.status`, `context.texts`, `context.dimens`, `context.radii`,
   `context.hairline`, `context.focusOutlineReach`, or a resolved ForUI style
-  (`FTheme.of(context)`); the brand as text, a glyph, an edge or a mark is
-  `context.status.primaryInk`, never `colors.primary`, which is the fill under
-  `primaryForeground`;
+  (`FTheme.of(context)`);
 - restyles ForUI only through style deltas (`FButtonStyleDelta.delta`,
   `DecorationDelta.shapeDelta`, `EdgeInsetsGeometryDelta.value`, …) or
   `FVariants`, so every state ForUI resolves keeps working;

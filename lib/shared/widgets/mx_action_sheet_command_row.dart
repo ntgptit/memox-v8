@@ -44,7 +44,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = isDestructive ? colors.error : context.status.primaryInk;
+    final ink = isDestructive ? colors.error : context.colors.primary;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,

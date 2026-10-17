@@ -19,7 +19,7 @@
         "displayName": "Foreground",
         "canonical": "#0A0A0A",
         "light": "#0A0A0A",
-        "dark": "#E7E6EA",
+        "dark": "#E6E6EA",
         "tonalRamp": [
           "#0A0A0A"
         ],
@@ -63,7 +63,7 @@
         "displayName": "Secondary Foreground",
         "canonical": "#171717",
         "light": "#171717",
-        "dark": "#E7E6EA",
+        "dark": "#E6E6EA",
         "tonalRamp": [
           "#171717"
         ],
@@ -85,7 +85,7 @@
         "displayName": "Muted Foreground",
         "canonical": "#616161",
         "light": "#616161",
-        "dark": "#A4A4B1",
+        "dark": "#A4A3B1",
         "tonalRamp": [
           "#616161"
         ],
@@ -151,7 +151,7 @@
         "displayName": "Border",
         "canonical": "#E5E5E5",
         "light": "#E5E5E5",
-        "dark": "#E7E6EA26",
+        "dark": "#E6E6EA26",
         "tonalRamp": [
           "#E5E5E5"
         ],

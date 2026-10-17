@@ -1,11 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
-
-import '../../support/palette_status.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 
 void main() {
-  final status = lightStatus;
+  const status = MxStatusColors.light;
   final accent = appLightColors.primary;
 
   test('0% paints no fill, only the track', () {

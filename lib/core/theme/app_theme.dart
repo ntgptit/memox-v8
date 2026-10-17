@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart' as sdk;
-import 'package:flutter/painting.dart' show Color;
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 
 /// The light theme: ForUI's touch theme on the app palette and type scale.
 /// Built once; every caller shares it.
@@ -24,73 +22,13 @@ FThemeData themeFor(sdk.Brightness brightness) => switch (brightness) {
   sdk.Brightness.dark => buildDarkTheme(),
 };
 
-/// The theme of [colors]. Where ForUI draws the brand as a mark, an edge or
-/// a selected label (the focus outline, a ticked box, a switch that is on, a
-/// slider's fill, the selected tab, a focused field), it draws it in the
-/// brand's ink: ForUI's own styles, computed on the palette with the ink as
-/// `primary`. A primary fill under text (a button, a badge) keeps `primary`.
-/// Light's ink is its primary, so light is ForUI's default.
-FThemeData _build(FColors colors, String label) {
-  final typography = AppTypography.build(colors);
-  final ink = colors.extension<MxStatusColors>().primaryInk;
-  final inked = colors.copyWith(
-    primary: ink,
-    primaryForeground: _onInk(colors, ink),
-  );
-  final style = FStyle.inherit(
-    colors: inked,
-    typography: typography,
-    touch: true,
-  );
-  return FThemeData(
-    debugLabel: label,
-    colors: colors,
-    touch: true,
-    typography: typography,
-    style: style,
-    checkboxStyle: FCheckboxStyle.inherit(
-      colors: inked,
-      icons: const FIcons.lucide(),
-      style: style,
-      touch: true,
-    ),
-    radioStyle: FRadioStyle.inherit(colors: inked, style: style, touch: true),
-    switchStyle: FSwitchStyle.inherit(colors: inked, style: style),
-    sliderStyles: FSliderStyles.inherit(
-      colors: inked,
-      typography: typography,
-      style: style,
-      hapticFeedback: const FHapticFeedback(),
-    ),
-    bottomNavigationBarStyle: FBottomNavigationBarStyle.inherit(
-      colors: inked,
-      typography: typography,
-      style: style,
-    ),
-    textFieldStyles: FTextFieldSizeStyles.inherit(
-      colors: inked,
-      typography: typography,
-      style: style,
-      touch: true,
-    ),
-    extensions: const [AppDimens()],
-  );
-}
-
-/// The colour a mark on [ink] reads in: the palette's `primaryForeground` or
-/// its page, whichever stands out more (white on light's indigo, the navy
-/// page on dark's pale ink).
-Color _onInk(FColors colors, Color ink) {
-  final onPrimary = colors.primaryForeground;
-  final page = colors.background;
-  return _contrast(onPrimary, ink) >= _contrast(page, ink) ? onPrimary : page;
-}
-
-double _contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  return la > lb ? (la + 0.05) / (lb + 0.05) : (lb + 0.05) / (la + 0.05);
-}
+FThemeData _build(FColors colors, String label) => FThemeData(
+  debugLabel: label,
+  colors: colors,
+  touch: true,
+  typography: AppTypography.build(colors),
+  extensions: const [AppDimens()],
+);
 
 /// The SDK Material theme the app's infrastructure host reads, derived one
 /// way from [theme] (ADR-026): `MaterialApp.router` (go_router's page
@@ -101,7 +39,6 @@ double _contrast(Color a, Color b) {
 /// and nothing reads it back.
 sdk.ThemeData materialHostTheme(FThemeData theme) {
   final colors = theme.colors;
-  final ink = colors.extension<MxStatusColors>().primaryInk;
   final scheme = sdk.ColorScheme(
     brightness: colors.brightness,
     primary: colors.primary,
@@ -134,11 +71,10 @@ sdk.ThemeData materialHostTheme(FThemeData theme) {
     canvasColor: colors.background,
     // ForUI draws every press and focus state; the host draws no ripple.
     splashFactory: sdk.NoSplash.splashFactory,
-    // The caret and the handles are marks, in the brand's ink.
     textSelectionTheme: sdk.TextSelectionThemeData(
-      cursorColor: ink,
-      selectionColor: ink.withValues(alpha: 0.4),
-      selectionHandleColor: ink,
+      cursorColor: colors.primary,
+      selectionColor: colors.primary.withValues(alpha: 0.4),
+      selectionHandleColor: colors.primary,
     ),
     visualDensity: sdk.VisualDensity.standard,
     materialTapTargetSize: sdk.MaterialTapTargetSize.padded,
