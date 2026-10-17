@@ -82,6 +82,24 @@ void main() {
     expect(row.isEnabled, isFalse);
   });
 
+  for (final starting in [const Bootstrapping(), const Validating(null)]) {
+    accountTest('while the account starts (${starting.runtimeType}), Sign in '
+        'waits without saying it needs a connection (audit 2026-10-17, as '
+        'ACC-2)', (tester, env, world) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        section(),
+        overrides: [...accountOverrides(world), authStateOf(starting)],
+      );
+
+      expect(find.text(_en.accountSignInLater), findsNothing);
+      expect(find.text(_en.accountSignInHint), findsOneWidget);
+      final row = tester.widget<MxSettingsRow>(find.byType(MxSettingsRow));
+      expect(row.isEnabled, isFalse);
+    });
+  }
+
   accountTest('an attached account shows its email', (
     tester,
     env,

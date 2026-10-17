@@ -32,10 +32,15 @@ class AccountSettingsRowWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final account = ref.watch(deviceAccountProvider);
     final canLink = ref.watch(canLinkProvider);
+    // While the account is still starting it is not offline: the row waits
+    // without saying it needs a connection (as Welcome, ACC-2).
+    final isStarting = ref.watch(isAccountStartingProvider);
     if (account == null) {
       return MxSettingsRow(
         label: l10n.accountSignIn,
-        subtitle: canLink ? l10n.accountSignInHint : l10n.accountSignInLater,
+        subtitle: canLink || isStarting
+            ? l10n.accountSignInHint
+            : l10n.accountSignInLater,
         icon: AppIcons.account,
         isEnabled: canLink,
         onTap: canLink ? onSignIn : null,

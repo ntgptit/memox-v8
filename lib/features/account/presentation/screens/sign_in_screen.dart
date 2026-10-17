@@ -133,8 +133,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (!isSure || !context.mounted) return;
     final result = await controller.continueWithoutAccount();
     if (!context.mounted) return;
-    if (result == AccountCommandResult.done)
-      return widget.onLeftAccount?.call();
+    if (result == AccountCommandResult.done) {
+      widget.onLeftAccount?.call();
+      return;
+    }
     sayAccountResult(context, result);
   }
 }
