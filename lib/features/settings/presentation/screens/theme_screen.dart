@@ -83,10 +83,13 @@ class ThemeScreen extends ConsumerWidget {
                     children: cards,
                   );
                 }
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: context.dimens.space8,
-                  children: [for (final card in cards) Expanded(child: card)],
+                // One height when a hint wraps in one card and not the others.
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: context.dimens.space8,
+                    children: [for (final card in cards) Expanded(child: card)],
+                  ),
                 );
               },
             ),

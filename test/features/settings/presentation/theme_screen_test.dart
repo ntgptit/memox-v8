@@ -5,6 +5,7 @@ import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
@@ -73,6 +74,28 @@ void main() {
     );
   });
 
+  libraryTest('the side-by-side cards are one height when a hint wraps '
+      '(audit 2026-10-17 SET-5)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const ThemeScreen(),
+      locale: const Locale('vi'),
+    );
+
+    final cards = find.byType(MxCard);
+    expect(cards, findsNWidgets(3));
+    // Side by side, and "Theo điện thoại" wraps where the others do not.
+    expect(
+      tester.getTopLeft(cards.at(0)).dy,
+      tester.getTopLeft(cards.at(2)).dy,
+    );
+    final heights = [
+      for (var i = 0; i < 3; i++) tester.getSize(cards.at(i)).height,
+    ];
+    expect(heights.toSet(), hasLength(1));
+  });
+
   libraryTest('a failed read shows the error with Retry and no invented '
       'choice (E3)', (tester, env) async {
     await pumpLibraryScreen(
@@ -102,6 +125,37 @@ void main() {
       find.descendant(of: note, matching: find.text(_en.settingsAppliesAtOnce)),
       findsOneWidget,
     );
+  });
+
+  libraryTest('the cards are one radio group for TalkBack, as Language is '
+      '(audit 2026-10-17 SET-8)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(tester, env, const ThemeScreen());
+
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(_system)),
+      isSemantics(
+        label: _system,
+        isChecked: true,
+        hasCheckedState: true,
+        isInMutuallyExclusiveGroup: true,
+        hasSelectedState: true,
+        isSelected: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(_dark)),
+      isSemantics(
+        label: _dark,
+        isChecked: false,
+        hasCheckedState: true,
+        isInMutuallyExclusiveGroup: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    handle.dispose();
   });
 
   // SW-REV-005: the card's one TalkBack node keeps the tap its excluded
