@@ -12,3 +12,13 @@ bool canLink(Ref ref) => switch (ref.watch(authStateProvider).value) {
   Ready(:final user) => user.isAnonymous,
   _ => false,
 };
+
+/// Whether the account is still coming up, as it does at every start before
+/// `Ready`: not offline, so the screens show no offline note while they wait
+/// for it. `LocalOnly` and the rest are "unavailable", not "starting".
+@riverpod
+bool isAccountStarting(Ref ref) => switch (ref.watch(authStateProvider)) {
+  AsyncData(:final value) =>
+    value is Booting || value is Bootstrapping || value is Validating,
+  _ => true,
+};

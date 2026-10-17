@@ -67,6 +67,9 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
   late final TopikAttemptController _controller;
   late final AppLifecycleListener _lifecycle;
 
+  /// A question is on screen, as the clock was last told.
+  var _isQuestionShown = false;
+
   /// The group pane shows its instruction alone (critique F5).
   var _isCollapsed = false;
 
@@ -81,6 +84,17 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
       topikAttemptControllerProvider(widget.attemptId).notifier,
     );
     _lifecycle = AppLifecycleListener(onStateChange: _onLifecycle);
+    // The clock follows what is on screen, so it is driven by the state
+    // changing and not by the build (audit 2026-10-17 TOPIK-3).
+    ref.listenManual(
+      topikAttemptProvider(widget.attemptId),
+      (_, _) => _syncClock(),
+      fireImmediately: true,
+    );
+    ref.listenManual(
+      topikAttemptControllerProvider(widget.attemptId),
+      (_, _) => _syncClock(),
+    );
   }
 
   @override
@@ -91,6 +105,30 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
     unawaited(_controller.leave());
     super.dispose();
   }
+
+  /// Starts the question clock when a question comes on screen and stops it
+  /// when one goes (BR-TOPIK-015); a repeat of the same answer does nothing.
+  void _syncClock() {
+    final isAnswering = _isAnswering(
+      ref.read(topikAttemptProvider(widget.attemptId)),
+      ref.read(topikAttemptControllerProvider(widget.attemptId)),
+    );
+    if (isAnswering == _isQuestionShown) return;
+    _isQuestionShown = isAnswering;
+    if (isAnswering) return _controller.showQuestion();
+    unawaited(_controller.hideQuestion());
+  }
+
+  /// Whether [build] shows a question: its last branch, in the order of the
+  /// switch there (an error shows its state even over a previous value).
+  bool _isAnswering(AsyncValue<TopikAttemptView?> async, bool isSubmitting) =>
+      switch (async) {
+        AsyncError() => false,
+        AsyncValue(:final value?) =>
+          !(value.detail.attempt.isCompleted && !isSubmitting) &&
+              !value.isContentMissing,
+        _ => false,
+      };
 
   void _onLifecycle(AppLifecycleState state) {
     switch (state) {
@@ -166,10 +204,9 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
 
   /// A state with nothing to answer: the plain bar with Close, and [body]
   /// (The Content Gate Rule: no footer, no grid; critique F8). No question
-  /// is on screen, so the clock stops (BR-TOPIK-015).
+  /// is on screen, so the clock is stopped (BR-TOPIK-015; [_syncClock]).
   Widget _plain(Widget body) {
     final l10n = context.l10n;
-    unawaited(_controller.hideQuestion());
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.topikPractice,
@@ -185,8 +222,6 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
 
   Widget _answering(TopikAttemptView view, bool isSubmitting) {
     final l10n = context.l10n;
-    // A question is on screen: its clock runs (BR-TOPIK-015).
-    _controller.showQuestion();
     final test = view.test!;
     final questions = test.questions;
     final attempt = view.detail.attempt;

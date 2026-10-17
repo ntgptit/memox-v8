@@ -179,6 +179,30 @@ void main() {
     expect(dones, 1);
   });
 
+  for (final starting in <AuthState>[
+    const Bootstrapping(),
+    const Validating(null),
+  ]) {
+    accountTest('while the account starts (${starting.runtimeType}), Welcome '
+        'keeps its three ways, disabled, and never looks offline (audit '
+        '2026-10-17 ACC-2)', (tester, env, world) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        screen(),
+        overrides: [...accountOverrides(world), shown, authStateOf(starting)],
+      );
+
+      MxButton button(String label) =>
+          tester.widget<MxButton>(find.widgetWithText(MxButton, label));
+      expect(button(_en.accountContinueGoogle).onPressed, isNull);
+      expect(button(_en.accountContinueEmail).onPressed, isNull);
+      expect(button(_en.accountContinueWithout).tone, MxButtonTone.text);
+      expect(button(_en.accountContinueWithout).onPressed, isNotNull);
+      expect(find.text(_en.accountOfflineNote), findsNothing);
+    });
+  }
+
   accountTest('the lead says MemoX works without an account, and two '
       'benefits follow', (tester, env, world) async {
     await pumpLibraryScreen(

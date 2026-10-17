@@ -4,6 +4,7 @@ import 'package:memox/features/topik/presentation/widgets/support/topik_labels_w
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_row.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 /// All · Wrong · Unanswered · Correct, each with its count in the chip's
 /// count slot (screens 38, 39). [isEmptyDisabled] turns off a chip with no
@@ -25,11 +26,17 @@ class TopikAnswerFilterChipsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return MxChipRow(
-      children: [
-        for (final filter in TopikAnswerFilter.values)
-          _chip(l10n.topikFilterName(filter), filter),
-      ],
+    // The chips never shrink or wrap, so at 360 dp the row scrolls and a
+    // cut chip fades at the edge instead of being clipped (audit 2026-10-17
+    // TOPIK-2).
+    return MxScrollFade(
+      axis: Axis.horizontal,
+      child: MxChipRow(
+        children: [
+          for (final filter in TopikAnswerFilter.values)
+            _chip(l10n.topikFilterName(filter), filter),
+        ],
+      ),
     );
   }
 

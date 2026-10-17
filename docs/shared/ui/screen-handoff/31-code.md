@@ -16,7 +16,7 @@ The six digits sent to the address. SB-A2; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content) + back | Back only, no title. |
+| App bar | `MxAppBar` (content) + back | Back only, no title. Back (the bar's and the system's) is held while the six digits are verified, as "Use another email" is, so the sign-in ends here with its toast (audit 2026-10-17 ACC-3). |
 | Title | `screenTitle`, header semantics | "Enter the code". |
 | Lead | `texts.body` in `mutedForeground` | "We sent a 6-digit code to", then the email on its own line in `texts.itemTitle` (the foreground colour), so a typo shows. TalkBack reads the lead and the address as one stop (`MergeSemantics`, DEV-168). |
 | Code | `MxTextField` (code), `section` (24) under the lead | Six slots over one hidden field (DESIGN.md Inputs): numeric keyboard, one-time-code autofill, TalkBack "Code, 6 digits". Autofocused when the screen opens. Six digits check at once. A wrong code clears the field (plan ruling 11). |
@@ -39,7 +39,7 @@ The images are the goldens.
 |---|---|---|---|
 | waiting | ![](../../../../test/features/account/presentation/goldens/code_waiting_light.png) | ![](../../../../test/features/account/presentation/goldens/code_waiting_dark.png) | Golden `code_waiting_*`. |
 | wrong | ![](../../../../test/features/account/presentation/goldens/code_wrong_light.png) | ![](../../../../test/features/account/presentation/goldens/code_wrong_dark.png) | Golden `code_wrong_*`. |
-| verifying | — | — | The field read-only, the digits at full strength; `MxSpinner` in the status line. |
+| verifying | — | — | The field read-only, the digits at full strength; `MxSpinner` in the status line. Back is held (app bar disabled, `PopScope`). |
 | resend ready | — | — | The wait is over: "Resend code" (text button) takes the status line as a polite live region, so TalkBack speaks it once. `code_semantics_test.dart::Resend arrives as one labelled live-region button, so TalkBack speaks it when the wait ends (final review I1)`; no golden. |
 | resending | — | — | The button spins and is the status line's only content (no "New code in 0:00"); a code typed meanwhile is kept and checked. `code_screen_test.dart::a resend in flight spins on the button, not "New code in 0:00" (final review F1)`, `::a code typed while a new one is on its way is kept and checked`; no golden. |
 | resend failed | — | — | A refused resend shows its problem under the field (the field's error text; offline, rate-limited or failed) and leaves "Resend code" available at once, with no new wait. Code read: `code_controller.dart` `resend`; no golden. |
@@ -64,6 +64,7 @@ The images are the goldens.
 | resend loss dialog | Lose | resending with the loss confirmed | VERIFIED the M7 test above |
 | waiting / resend ready | tap Use another email, or Back | screen 30 (or the layer's form) | `UNVERIFIED (code read)`: both call `maybePop`; the disabled-while-verifying state of the button is code read as well |
 | verifying | tap Use another email | ignored (the button is disabled) | `UNVERIFIED (code read)`: `onPressed: state.isVerifying ? null : …` |
+| verifying | Back (app bar or system) | held: the check finishes and its toast and flow end follow (audit 2026-10-17 ACC-3) | VERIFIED `code_screen_back_test.dart::Back is held while the code is checked` |
 | any | the person leaves while a check or resend runs | the controller ends with no state written | `UNVERIFIED (code read)`: `ref.mounted` guards in `CodeController` |
 | any | the screen is read by TalkBack | the title is the route name; the lead and the address are one stop | VERIFIED `::the title names the route for TalkBack`; `code_semantics_test.dart::the lead and the address read as one stop` |
 

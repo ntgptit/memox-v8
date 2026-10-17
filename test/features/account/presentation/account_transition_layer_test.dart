@@ -428,4 +428,29 @@ void main() {
     // L5: running, the layer has no footer.
     expect(find.byType(MxFooterBar), findsNothing);
   });
+
+  libraryTest('the step is announced once, by its live region and not by '
+      'the spinner as well (audit 2026-10-17 ACC-6)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(
+              TransitionKind.switchAccount,
+              TransitionStage.targetSignedIn,
+              choice: TransitionChoice.merge,
+            ),
+          ),
+        ),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.bySemanticsLabel(_en.accountStepMerging), findsOneWidget);
+    handle.dispose();
+  });
 }
