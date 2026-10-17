@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -12,6 +13,7 @@ import 'package:memox/features/account/presentation/widgets/sections/code_form_w
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
@@ -125,6 +127,44 @@ void main() {
     held.complete();
     world.gateway.holdRequests = null;
     await _settle(tester);
+  });
+
+  accountTest('Back is held while the code is checked, so the sign-in ends '
+      'on this screen (audit 2026-10-17 ACC-3)', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => unawaited(
+            Navigator.of(context)
+                .push(MaterialPageRoute<void>(builder: (_) => screen())),
+          ),
+          child: const Text('open'),
+        ),
+      ),
+      overrides: accountOverrides(world),
+    );
+    await tester.tap(find.text('open'));
+    await _settle(tester);
+    await tester.pumpAndSettle();
+
+    final held = world.gateway.holdRequests = Completer<void>();
+    await tester.enterText(find.byType(FTextField), '123456');
+    await tester.pump();
+
+    final back = find.widgetWithIcon(MxIconButton, AppIcons.back);
+    expect(tester.widget<MxIconButton>(back).onPressed, isNull);
+    await tester.binding.handlePopRoute();
+    await _settle(tester);
+    expect(find.byType(CodeScreen), findsOneWidget);
+
+    held.complete();
+    world.gateway.holdRequests = null;
+    await _settle(tester);
+    expect(signIns, 1);
+    expect(tester.widget<MxIconButton>(back).onPressed, isNotNull);
   });
 
   accountTest('a wrong code clears the field and says so; the right one then '

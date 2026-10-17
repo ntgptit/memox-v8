@@ -21,7 +21,7 @@ import 'package:memox/core/theme/theme_context.dart';
 /// Screen 30 (account UI spec §5.2): attach Google or an email to this
 /// device's anonymous user (`link`), or sign in again after the session was
 /// refused (`reauth`), which may also continue without an account.
-class SignInScreen extends ConsumerWidget {
+class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({
     super.key,
     required this.onCodeSent,
@@ -43,7 +43,17 @@ class SignInScreen extends ConsumerWidget {
   final VoidCallback? onLeftAccount;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends ConsumerState<SignInScreen> {
+  /// "Continue without" is asking or running: a second tap waits for it, so
+  /// no second dialog opens over the first (audit 2026-10-17 ACC-4).
+  var _isAsking = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final purpose = widget.purpose;
     final l10n = context.l10n;
     final isReauth = purpose == SignInPurpose.reauth;
     final canAct = isReauth
@@ -63,10 +73,10 @@ class SignInScreen extends ConsumerWidget {
       purpose: purpose,
       isEnabled: canAct,
       initialEmail: isReauth ? ref.watch(deviceAccountProvider)?.email : null,
-      onCodeSent: onCodeSent,
+      onCodeSent: widget.onCodeSent,
       onSignedIn: () {
         saySignedIn(context, stateAfterCommand(ref));
-        onSignedIn();
+        widget.onSignedIn();
       },
       below: [
         // S9: the way out sits in the body, 32 under the form, out of the
@@ -78,7 +88,7 @@ class SignInScreen extends ConsumerWidget {
             tone: MxButtonTone.text,
             isBlock: true,
             onPressed: canAct && !isLeaving
-                ? () => unawaited(_leave(context, ref))
+                ? () => unawaited(_leave(context))
                 : null,
           ),
         ],
@@ -88,7 +98,17 @@ class SignInScreen extends ConsumerWidget {
 
   /// Gives up the refused account (auth spec #38) once the loss is
   /// confirmed; the layer shows the clearing (spec §9 B8).
-  Future<void> _leave(BuildContext context, WidgetRef ref) async {
+  Future<void> _leave(BuildContext context) async {
+    if (_isAsking) return;
+    _isAsking = true;
+    try {
+      await _askAndLeave(context);
+    } finally {
+      _isAsking = false;
+    }
+  }
+
+  Future<void> _askAndLeave(BuildContext context) async {
     final controller = ref.read(accountManageControllerProvider.notifier);
     final email = ref.read(deviceAccountProvider)?.email ?? '';
     final unsent = await controller.unsentChanges();
@@ -113,7 +133,8 @@ class SignInScreen extends ConsumerWidget {
     if (!isSure || !context.mounted) return;
     final result = await controller.continueWithoutAccount();
     if (!context.mounted) return;
-    if (result == AccountCommandResult.done) return onLeftAccount?.call();
+    if (result == AccountCommandResult.done)
+      return widget.onLeftAccount?.call();
     sayAccountResult(context, result);
   }
 }

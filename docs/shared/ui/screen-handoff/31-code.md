@@ -16,7 +16,7 @@ The six digits sent to the address. SB-A2; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content) + back | Back only, no title. |
+| App bar | `MxAppBar` (content) + back | Back only, no title. Back (the bar's and the system's) is held while the six digits are verified, as "Use another email" is, so the sign-in ends here with its toast (audit 2026-10-17 ACC-3). |
 | Title | `screenTitle`, header semantics | "Enter the code". |
 | Lead | `emptyBody` | "We sent a 6-digit code to", then the email on its own line in the same style at `on-surface`, weight 600 (`emptyBodyStrong`), so a typo shows. TalkBack reads the lead and the address as one stop (`MergeSemantics`, DEV-168). |
 | Code | `MxTextField` (code), `section` (24) under the lead | Six slots over one hidden field (DESIGN.md Inputs): numeric keyboard, one-time-code autofill, TalkBack "Code, 6 digits". Autofocused when the screen opens. Six digits check at once. A wrong code clears the field (plan ruling 11). |
@@ -39,7 +39,7 @@ The images are the goldens.
 |---|---|---|---|
 | waiting | ![](../../../../test/features/account/presentation/goldens/code_waiting_light.png) | ![](../../../../test/features/account/presentation/goldens/code_waiting_dark.png) | Golden `code_waiting_*`. |
 | wrong | ![](../../../../test/features/account/presentation/goldens/code_wrong_light.png) | ![](../../../../test/features/account/presentation/goldens/code_wrong_dark.png) | Golden `code_wrong_*`. |
-| verifying | — | — | The field read-only, the digits at full strength; `MxSpinner` in the status line. |
+| verifying | — | — | The field read-only, the digits at full strength; `MxSpinner` in the status line. Back is held (app bar disabled, `PopScope`). |
 
 ## Rulings
 
