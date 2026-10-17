@@ -182,6 +182,7 @@ class MxListRow extends StatelessWidget {
           child: Align(
             alignment: AlignmentDirectional.centerStart,
             widthFactor: 1,
+            heightFactor: 1,
             child: lead,
           ),
         )

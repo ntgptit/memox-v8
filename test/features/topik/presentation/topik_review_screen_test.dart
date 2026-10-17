@@ -10,9 +10,11 @@ import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_review_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_audio_bar_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_review_question_widget.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_attempt_screen_fixtures.dart';
@@ -214,6 +216,34 @@ void main() {
       find.text('This test was updated after this attempt'),
       findsOneWidget,
     );
+  });
+
+  libraryTest('a question taller than its pane fades the pane\'s bottom edge, '
+      'and the fade goes at the end of the scroll (owner 2026-10-17)', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id);
+
+    final fade = find.descendant(
+      of: find.byType(TopikReviewQuestionWidget),
+      matching: find.byKey(MxScrollFade.trailingKey),
+    );
+    expect(fade, findsOneWidget);
+    await tester.drag(
+      find.descendant(
+        of: find.byType(TopikReviewQuestionWidget),
+        matching: find.byType(Scrollable),
+      ),
+      const Offset(0, -5000),
+    );
+    await tester.pumpAndSettle();
+    expect(fade, findsNothing);
   });
 
   libraryTest('the test gone: Review is unavailable, Back to summary '
