@@ -198,7 +198,8 @@ there.
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - TOPIK Master Data (ADR-024) is reached through `topik_admin_*` (an admin),
-  `topik_catalog` and `topik_test_content` (everyone). Its media sits in the
+  `topik_catalog` and `topik_test_content` (admins only for now: the read gate
+  `private.topik_can_read_content()`, ADR-025 #5). Its media sits in the
   private bucket `topik-media`; Storage authorises through four policies on
   `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
   each calling `topik_media_can_read` / `topik_media_can_write` /
@@ -206,7 +207,9 @@ there.
   those policies. A published version's `media` lists each file as `{path, size, eTag}`
   (from Storage at publish). An object it lists cannot be
   updated or deleted, even by an admin, and a media path must name the version
-  being published or an existing one.
+  being published or an existing one. Its file is named by its SHA-256
+  (`{test_id}/{version}/{sha256}.{ext}`, ADR-025 #4); the bucket accepts audio/mpeg and
+  image/jpeg, png, webp up to 50 MiB. `topik_admin_check` is the publish dry run.
 - A new synced entity type changes four functions in one migration:
   `private.push_one` (its accepted list), `private.apply_operation` (upsert,
   and delete unless the type is never deleted), `private.current_change` and
