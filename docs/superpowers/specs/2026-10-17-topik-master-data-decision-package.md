@@ -1,8 +1,8 @@
 # TOPIK Master Data Architecture: Decision Package
 
-Date: 2026-10-17 · Status: **decision package for owner review; nothing here is approved or built** · Baseline: `master` = `b420592f` (merge of pull request 306 of `ntgptit/memox-v8`); branch `ccr-b0d5b7c9-mlvno2` · Linear: epic DEV-394.
+Date: 2026-10-17 · Status: **reviewed by the owner 2026-10-17; rulings recorded in §12 and §15; nothing is built** · Baseline: `master` = `b420592f` (merge of pull request 306 of `ntgptit/memox-v8`); branch `ccr-b0d5b7c9-mlvno2` · Linear: epic DEV-394.
 
-This document is design only. It creates no migration, runs nothing against Supabase, changes no production Dart, Drift or SQL, deploys nothing and uploads no content. Every SQL, DDL and RPC contract below is a **candidate**, written as documentation. The one companion document is the **draft** [ADR-025](../../shared/decisions/ADR-025-ghim-luot-dang-lam-vao-phien-ban-noi-dung-topik.md), which stays `draft` until the owner rules. [ADR-023](../../shared/decisions/ADR-023-luyen-de-topik.md) and [ADR-024](../../shared/decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md) stay `active`, and nothing here supersedes them.
+This document is design only. It creates no migration, runs nothing against Supabase, changes no production Dart, Drift or SQL, deploys nothing and uploads no content. Every SQL, DDL and RPC contract below is a **candidate**, written as documentation. The one companion document is [ADR-025](../../shared/decisions/ADR-025-ghim-luot-dang-lam-vao-phien-ban-noi-dung-topik.md), made `active` by the owner's rulings of 2026-10-17 (§12). The business rules it amends (BR-TOPIK-013, BR-TOPIK-019, BR-TOPIK-008) and UC-TOPIK-002/003 change in the PR that changes their code (§11), so documents and code never disagree. [ADR-023](../../shared/decisions/ADR-023-luyen-de-topik.md) and [ADR-024](../../shared/decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md) stay `active`. ADR-025 amends ADR-024 #4, #5 and #7 and supersedes neither.
 
 The package builds on the approved design [2026-10-16 Master Data and Admin Web](2026-10-16-topik-master-data-admin-web-design.md) (called **the spec** below) and does not repeat it. Where the package proposes a different answer, the proposal has an ID in the [decision register](#12-decision-register). The spec's text stays the authority until the owner approves the proposal.
 
@@ -75,9 +75,13 @@ On that baseline the package proposes targeted, additive amendments. Each can be
 4. **The workflow's drift check covers `public,private` only**, so a dashboard change to the bucket or its policies goes unnoticed (DR-15).
 5. **Storage behaviour is proven only on the real stack.** The local pgTAP stub mirrors `protect_delete` alone.
 
-### 1.5 Decisions the owner must make
+### 1.5 Owner rulings (2026-10-17)
 
-The owner must rule on DR-03 (pinning), DR-07 (validator artifact), DR-11 (screen 36), DR-14 (redistribution) and DR-12 (Q-A-8, standing). Each has a recommended answer in §15.
+- **DR-03:** pin an in-progress attempt to its starting revision. Approved.
+- **DR-07:** the Admin UI's validator is the Dart code compiled to JS. Approved.
+- **DR-14:** published content is readable by **admins only, for now**. This is a stricter answer than the package's options assumed; §6.5 S1 and §7.3 give the design: one gate function, an empty catalog page for everyone else, lifted by one migration.
+- **Every other recommendation is approved:** DR-11 (screen 36 History), DR-18 (CLI first), DR-24 (`crypto` dependency) and every `PROPOSED` entry.
+- **Still open:** DR-12 (Q-A-8), and when to lift the DR-14 gate (§15).
 
 ## 2. Current-state assessment (Deliverable A)
 
@@ -867,19 +871,19 @@ Shipped unless marked **(P)**. "Own" means rows whose `user_id = auth.uid()`.
 
 | # | Scenario | Outcome | Status |
 |---|---|---|---|
-| S1 | An anonymous-sign-in user scripts downloads of every paper and audio | Allowed today (`authenticated`). Whether that is acceptable is **DR-14**. If not: add `coalesce((auth.jwt()->>'is_anonymous')::boolean, false) = false`, or an `is_admin()`-only read until clarified, to `topik_catalog`, `topik_test_content` and `topik_media_can_read`, in one migration | `BLOCKED` on the owner |
+| S1 | An anonymous-sign-in user scripts downloads of every paper and audio | **Closed by the owner's DR-14 ruling (2026-10-17): published content is readable by admins only, for now.** PR-02 adds `private.topik_can_read_content()`, which returns `private.is_admin()`. `topik_catalog` returns an empty page (`entries = []`, `next = since`, `more = false`) when it is false, so a learner's device stores nothing, logs nothing and keeps its cursor at 0. `topik_test_content` answers `NOT_FOUND`, and `topik_media_can_read` requires the gate. Lifting it later (to every non-anonymous user, or to all) is one migration replacing the function body; devices then pull everything from cursor 0 on their next refresh | `APPROVED` (owner 2026-10-17) |
 | S2 | Correct answers are readable on the client | Unavoidable for offline grading; the server never grades (BR-TOPIK-028). The papers and keys are public NIIED material. No obfuscation | Accepted (ADR-023 #4) |
 | S3 | `topik_media_can_*` called as RPCs | They return booleans. `can_modify(name)` reveals whether a revision lists a path, for paths the caller may often read anyway | Accepted, documented in the README |
-| S4 | An admin uploads an executable or a huge file | **(P)** bucket MIME and size limits (DR-09) | `PROPOSED` |
-| S5 | A dashboard edit changes the bucket or its policies | The drift check ignores `storage`. **(P)** a post-push check of the bucket row and the four policy names (DR-15) | `PROPOSED` |
+| S4 | An admin uploads an executable or a huge file | **(P)** bucket MIME and size limits (DR-09) | `APPROVED` (owner 2026-10-17) |
+| S5 | A dashboard edit changes the bucket or its policies | The drift check ignores `storage`. **(P)** a post-push check of the bucket row and the four policy names (DR-15) | `APPROVED` (owner 2026-10-17) |
 | S6 | A deleted user's live JWT | Refused by `require_current_profile()` and by `can_read` | Done |
 | S7 | A demoted admin keeps a Vercel session | The next RPC returns `FORBIDDEN` | Done |
 | S8 | Two admins publish the same test at once | One wins; the other gets `VERSION_MISMATCH` or waits on lock 7101. No two-session test exists in pgTAP | Accepted; noted in the verification matrix |
 | S9 | An admin uploads outside the path contract | Harmless: unreadable by learners, and refused at publish. **(P)** the CLI and Admin Web upload only under the next version's prefix | Accepted |
-| S10 | Admin RPCs reached with no profile or no uid | Untested today (only the client RPCs are). **(P)** add asserts | `PROPOSED` |
-| S11 | Unbounded document size | **(P)** 4 MiB CHECK | `PROPOSED` |
+| S10 | Admin RPCs reached with no profile or no uid | Untested today (only the client RPCs are). **(P)** add asserts | `APPROVED` (owner 2026-10-17) |
+| S11 | Unbounded document size | **(P)** 4 MiB CHECK | `APPROVED` (owner 2026-10-17) |
 | S12 | A service key in a client | M7: the Admin Web env holds the URL and publishable key only. The CLI signs in with email OTP. **(P)** the CI of both greps for `service_role` and `sb_secret_` | `APPROVED_DIRECTION` |
-| S13 | A tampered byte on the CDN path or on disk | **(P)** SHA-256 per file and per document on the device (DR-06, DR-21) | `PROPOSED` |
+| S13 | A tampered byte on the CDN path or on disk | **(P)** SHA-256 per file and per document on the device (DR-06, DR-21) | `APPROVED` (owner 2026-10-17) |
 
 ### 6.6 pgTAP security matrix
 
@@ -962,7 +966,7 @@ The catalog entry is its **manifest**. It lists identity, `schemaVersion`, docum
 | Anonymous access | `anon` has no policy. Anonymous **sign-ins** are `authenticated` and can read: see S1 / DR-14 |
 | Offline reuse | Once installed, nothing is fetched. No credential is needed per question or per play |
 | CDN caching | Supabase Storage sits behind its CDN; private objects are authorised per request. Egress on the Free plan is 5 GB a month (O8). One round is tens of MB, downloaded once per device per changed file |
-| Media licensing | NIIED publishes past papers for study (ADR-023 #4). Nothing in the repository grants redistribution to third parties. **Explicit dependency DR-14**: confirm that serving the files to every authenticated user of this personal app is acceptable, before PR-06 publishes round 96 |
+| Media licensing | NIIED publishes past papers for study (ADR-023 #4). Nothing in the repository grants redistribution to third parties. **The owner ruled (DR-14, 2026-10-17): admins only, for now** (S1). Widening the audience is a separate owner decision |
 | Correct answers on the client | S2: accepted |
 
 ### 7.4 Flutter components
@@ -1204,11 +1208,11 @@ Each PR gets a plan through `writing-plans` after the owner approves this packag
 | PR | Repo | Scope | Depends on | Acceptance criteria | Verification gate | Tier |
 |---|---|---|---|---|---|---|
 | **PR-01** Architecture and ADR | memox-v8 | This package; draft ADR-025; two stale lines fixed | — | Owner rules on the register | `tools/docs/check.py` | 0 |
-| **PR-02** Master schema additions, privileges, database tests | memox-v8 `supabase/` | DR-05, DR-06 (catalog and content RPC), DR-09 (bucket, size CHECKs), DR-10 (`topik_admin_check`), DR-21 (media name rule), DR-22 (draft compare-and-set), S10 asserts, stale comment M16:382-383, spec §6 text, `supabase/README.md`; the owner runs the workflow after merge | PR-01 | Every ＋ row of §6.6 is green | `image_pgtap.sh`; workflow run (pgTAP real stack, push, drift check) | 1 |
+| **PR-02** Master schema additions, privileges, database tests | memox-v8 `supabase/` | DR-05, DR-06 (catalog and content RPC), DR-09 (bucket, size CHECKs), DR-10 (`topik_admin_check`), DR-21 (media name rule), DR-22 (draft compare-and-set), DR-14 read gate (`private.topik_can_read_content()`), S10 asserts, stale comment M16:382-383, spec §6 text, `supabase/README.md`; the owner runs the workflow after merge | PR-01 | Every ＋ row of §6.6 is green | `image_pgtap.sh`; workflow run (pgTAP real stack, push, drift check) | 1 |
 | **PR-03** Admin backend tool and publishing workflow (CLI) | memox-v8 `tools/topik/` | Dart CLI: OTP sign-in as admin; import, save, check, hash, upload, publish, retire, rollback, versions, audit; uses `checkTopikTest` natively; `http` only, no service key | PR-02 pushed | Synthetic fixtures publish end to end on a local stack; a broken fixture is refused with its rule | unit tests with a fake HTTP server; a run against the local stack; grep for secrets | 1 |
 | **PR-04** Flutter offline cache, distribution and media | memox-v8 | Drift v18; remote data source; installer, verifier, sweeper; refresh use case; `watchCatalog()`; `TopikMediaRef` + audio door + images; removal of `assets/topik/` and the asset data source; screen 34 hint; IT scenarios | PR-02 pushed; DR-04, DR-23, DR-24 | §13 Flutter rows green | `dod_check.sh`; goldens; host IT; Impeccable on screen 34 state | 2 |
-| **PR-05** Attempt pinning and screen 36 | memox-v8 | `revision()`; pinned use cases; `content_version` kept; retention; BR-TOPIK-013/019, UC-TOPIK-003, spec wording; screen 36 History (DR-11) | PR-04; **DR-03, DR-11 approved** | §13 Attempt rows green | `dod_check.sh`; goldens; Impeccable on 36/37 states | 2 |
-| **PR-06** Official content import and end-to-end verification | content + CLI | Round 96 through the CLI; checked against the official 정답·배점표; installed on a device; a known-answer attempt scores per the official table (epic condition) | PR-03, PR-04 released; NIIED files; **DR-14 ruled** | Score of the known-answer attempt equals the official table | runbook + device run | runbook |
+| **PR-05** Attempt pinning and screen 36 | memox-v8 | `revision()`; pinned use cases; `content_version` kept; retention; BR-TOPIK-013/019, UC-TOPIK-003, spec wording; screen 36 History (DR-11) | PR-04; DR-03 and DR-11 approved 2026-10-17 | §13 Attempt rows green | `dod_check.sh`; goldens; Impeccable on 36/37 states | 2 |
+| **PR-06** Official content import and end-to-end verification | content + CLI | Round 96 through the CLI; checked against the official 정답·배점표; installed on a device; a known-answer attempt scores per the official table (epic condition) | PR-03, PR-04 released; NIIED files; DR-14 ruled (admins only): the known-answer run uses an admin account | Score of the known-answer attempt equals the official table | runbook + device run | runbook |
 | **PR-07** Admin UI (when separately approved) | memox-topik-admin | Spec §9 screens; validator artifact (DR-07) or TS port; generated types; CI contract test; no secret | PR-02; owner approval of the UI work | Spec §9 acceptance; fixture contract in CI | its CI; Vercel preview | external |
 | **PR-08** Documents and governance | memox-v8 | ADR-025 → `active` if approved; ADR-024 amended; spec 2026-10-15 annotations; UC "API" lines; README; `PRODUCT.md:52`; `schema.md` v18; BR-007/008 summaries; IT catalogue; DR-15 workflow storage check | each PR carries its own docs; PR-08 is the final sweep | `tools/docs/check.py` clean; no stale "bundled" statement (`rg -n "bundled\|đóng gói" docs PRODUCT.md`) | docs check | 0 |
 
@@ -1227,34 +1231,35 @@ Statuses are defined as follows:
 - `PROPOSED`: new and within the approved direction.
 - `REQUIRES_OWNER_APPROVAL`: changes an approved document, an active BR, a screen, or a dependency.
 - `BLOCKED`: needs an input only the owner has.
+- `APPROVED`: ruled on by the owner on 2026-10-17, after review of this package.
 
 | ID | Problem | Options evaluated | Recommendation | Evidence | Trade-offs | Compatibility impact | Status |
 |---|---|---|---|---|---|---|---|
 | DR-01 | Physical model of Master Data | document per revision; normalized tables; files in Storage; registry table; separate schema | Document per revision in `public.topik_*` | M16; spec §5; §4.4–§4.6 | No FK-level question integrity; validators cover it | none (shipped) | `APPROVED_DIRECTION` |
 | DR-02 | Unit of offline distribution | revision files; zip per revision; media on demand | Revision = document + files listed in `media` | §7.2 | More HTTP requests than a zip | none | `APPROVED_DIRECTION` |
-| DR-03 | v2 published while a v1 attempt is in progress | grade on latest; pin strict; pin with fallback; freeze key at start | Pin strict | `topik_attempt_repository_impl.dart:170-196`; BR-TOPIK-013; §5.6 | One retained package per open attempt | BR-TOPIK-013 ¶3, BR-TOPIK-019, UC-TOPIK-003, spec 2026-10-15 §5.3, spec §8.4/§12, one submit test | `REQUIRES_OWNER_APPROVAL` |
-| DR-04 | Device cache identity and states | `test_id` key (spec §8.2); revision key with states | `(test_id, content_version)` + `pending/current/retained/failed`; `failed` terminal for the cursor | §7.6–§7.8 | One more column and index | amends spec §8.2/§8.3 before they are built | `PROPOSED` (ADR-025 #2) |
-| DR-05 | Old apps vs new content | no signal; `minAppVersion`; `schemaVersion` | `schemaVersion` (+ `sha256`, `bytes`) in catalog entries | mapper rejects unknown enum codes; §5.1 | none | additive keys | `PROPOSED` |
-| DR-06 | Document integrity | md5 `checksum` (shipped); SHA-256 column; SHA-256 on serve | SHA-256 over the served text, computed on serve; content RPC returns the text | M16:486; `accounts.sql:225` uses `pg_catalog.sha256` | Hash computed per read (cheap) | content RPC return shape changes (no consumer) | `PROPOSED` (ADR-025 #4) |
-| DR-07 | Third validator gate | TypeScript port; Dart → JS artifact; server-side Dart | Dart compiled to JS | ADR-024 #5; BR-TOPIK-008; `topik_content_check_model.dart` | Build step and JS artifact | ADR-024 #5, spec §7, BR-TOPIK-008 wording | `REQUIRES_OWNER_APPROVAL` (ADR-025 #3) |
+| DR-03 | v2 published while a v1 attempt is in progress | grade on latest; pin strict; pin with fallback; freeze key at start | Pin strict | `topik_attempt_repository_impl.dart:170-196`; BR-TOPIK-013; §5.6 | One retained package per open attempt | BR-TOPIK-013 ¶3, BR-TOPIK-019, UC-TOPIK-003, spec 2026-10-15 §5.3, spec §8.4/§12, one submit test | `APPROVED` (owner 2026-10-17) |
+| DR-04 | Device cache identity and states | `test_id` key (spec §8.2); revision key with states | `(test_id, content_version)` + `pending/current/retained/failed`; `failed` terminal for the cursor | §7.6–§7.8 | One more column and index | amends spec §8.2/§8.3 before they are built | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-05 | Old apps vs new content | no signal; `minAppVersion`; `schemaVersion` | `schemaVersion` (+ `sha256`, `bytes`) in catalog entries | mapper rejects unknown enum codes; §5.1 | none | additive keys | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-06 | Document integrity | md5 `checksum` (shipped); SHA-256 column; SHA-256 on serve | SHA-256 over the served text, computed on serve; content RPC returns the text | M16:486; `accounts.sql:225` uses `pg_catalog.sha256` | Hash computed per read (cheap) | content RPC return shape changes (no consumer) | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-07 | Third validator gate | TypeScript port; Dart → JS artifact; server-side Dart | Dart compiled to JS | ADR-024 #5; BR-TOPIK-008; `topik_content_check_model.dart` | Build step and JS artifact | ADR-024 #5, spec §7, BR-TOPIK-008 wording | `APPROVED` (owner 2026-10-17) |
 | DR-08 | Authorization architecture | RLS direct; RPCs; Edge Functions; hybrid | RPCs for tables + Storage policies for the bucket | ADR-015 #5; O1; §6.3 | Hand-written paging | none | `APPROVED_DIRECTION` |
-| DR-09 | Unbounded uploads and documents | none; bucket limits; CHECKs | Bucket 50 MiB + MIME list; 4 MiB document CHECK | M16:733-735 | A new media type needs a migration | additive | `PROPOSED` |
-| DR-10 | Validate before publish without writing | publish and see; dry-run RPC | `topik_admin_check` | §5.7 step 6 | One more RPC to pin | additive (04 list) | `PROPOSED` |
-| DR-11 | History disappears when a test is gone | keep `testMissing`; History without Start | History and Summary/Review links, no Start | `topik_test_detail_screen.dart:86-96` | One more screen look | screen 36 detail file, UC-TOPIK-002 E1 | `REQUIRES_OWNER_APPROVAL` |
+| DR-09 | Unbounded uploads and documents | none; bucket limits; CHECKs | Bucket 50 MiB + MIME list; 4 MiB document CHECK | M16:733-735 | A new media type needs a migration | additive | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-10 | Validate before publish without writing | publish and see; dry-run RPC | `topik_admin_check` | §5.7 step 6 | One more RPC to pin | additive (04 list) | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-11 | History disappears when a test is gone | keep `testMissing`; History without Start | History and Summary/Review links, no Start | `topik_test_detail_screen.dart:86-96` | One more screen look | screen 36 detail file, UC-TOPIK-002 E1 | `APPROVED` (owner 2026-10-17) |
 | DR-12 | Which option Review marks after a key change | snapshot `correct_idx`; current `answerIdx` | Owner's (Q-A-8) | screen 39 line 86 | — | — | `BLOCKED` |
 | DR-13 | Eager or on-demand download | eager; on-demand media | Eager now; revisit at ~200 MB or a second user | spec §8.3 | Bytes for unopened papers | none | `APPROVED_DIRECTION` |
-| DR-14 | NIIED redistribution to every authenticated user | allow (personal app); non-anonymous only; admins only | Owner's ruling before PR-06 | ADR-023 #4; `config.toml:177`; no licence text in the repo | Restricting excludes anonymous learners | one migration if restricted | `BLOCKED` |
-| DR-15 | Bucket and policies not drift-checked | accept; post-push query; usage workflow row | Post-push query of the bucket row and policy names | workflow `:67-82` | One more CI step | none | `PROPOSED` |
+| DR-14 | NIIED redistribution to every authenticated user | allow (personal app); non-anonymous only; admins only | **Admins only, for now** (owner): gate function `private.topik_can_read_content()` = `is_admin()`; empty catalog page for others | ADR-023 #4; `config.toml:177`; no licence text in the repo | Learners other than admins see no tests until the gate is lifted | one gate function in PR-02; lifting is one migration | `APPROVED` (owner 2026-10-17) |
+| DR-15 | Bucket and policies not drift-checked | accept; post-push query; usage workflow row | Post-push query of the bucket row and policy names | workflow `:67-82` | One more CI step | none | `APPROVED` (owner 2026-10-17, as recommended) |
 | DR-16 | In-progress attempts | device-local; synced | Device-local | ADR-023 #6; BR-TOPIK-026/027 | Lost on switch | none | `APPROVED_DIRECTION` |
-| DR-17 | Phase B ownership | TOPIK tables; existing deck/card | Learner rows keyed on `(test_id, question_no)` + version; vocabulary through deck/card | §8.4 | — | none now | `PROPOSED` (conceptual) |
-| DR-18 | Admin surface for the first rounds | Admin UI first; CLI first | CLI in `tools/topik/` first (Dart, `http`, OTP, no secret); Admin UI later | spec §9–§10; `pubspec.yaml:30` (`http`) | Terminal editing for early rounds | reorders spec §10 plans 3–4 | `PROPOSED` |
-| DR-19 | `contentMismatch` only in code and screens | leave; write into BR/UC | Write into BR-TOPIK-019 and UC-TOPIK-003 with DR-03 | C6 | — | docs | `PROPOSED` |
-| DR-20 | Progress tracking | keep on DEV-394; new epic | New epic once the package is approved (one spec, one epic) | CLAUDE.md | — | Linear | `PROPOSED` |
-| DR-21 | Media integrity and immutability | size + eTag (shipped); SHA-256 column; SHA-256 as file name | File name = SHA-256 within the shipped path contract | spec §6.4; multipart eTags are not hashes | Admin tools hash before upload | publish gains a name rule (no published content yet) | `PROPOSED` (ADR-025 #4) |
-| DR-22 | Two editors overwrite a draft | last write wins; compare-and-set | `p_expected_updated_at` on `_draft_save` | M16:310-330 | Editors must resend `updated_at` | signature change (no consumer yet) | `PROPOSED` |
-| DR-23 | Audio door assumes assets | file-only; asset-or-file ref | `TopikMediaRef.asset \| .file`, one door | `plugin_topik_audio_player_data_source.dart:305` | One sealed type | door interface | `PROPOSED` |
-| DR-24 | SHA-256 on device and CLI; storage errors | `package:crypto` direct dependency; hand-rolled; `ENOSPC` catch vs a disk-space plugin | `crypto` as a direct dependency (already in `pubspec.lock` transitively); catch `ENOSPC`, no plugin | `pubspec.lock:260` | One declared dependency | `pubspec.yaml` | `REQUIRES_OWNER_APPROVAL` (CLAUDE.md: dependency) |
-| DR-25 | Legal or integrity withdrawal of bytes | retire only; purge runbook | Retire first; purge runbook (one-off migration + local Storage script) only on a legal need | §5.4 Q11 | Offline devices keep their copy | none until used | `PROPOSED` |
+| DR-17 | Phase B ownership | TOPIK tables; existing deck/card | Learner rows keyed on `(test_id, question_no)` + version; vocabulary through deck/card | §8.4 | — | none now | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-18 | Admin surface for the first rounds | Admin UI first; CLI first | CLI in `tools/topik/` first (Dart, `http`, OTP, no secret); Admin UI later | spec §9–§10; `pubspec.yaml:30` (`http`) | Terminal editing for early rounds | reorders spec §10 plans 3–4 | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-19 | `contentMismatch` only in code and screens | leave; write into BR/UC | Write into BR-TOPIK-019 and UC-TOPIK-003 with DR-03 | C6 | — | docs | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-20 | Progress tracking | keep on DEV-394; new epic | New epic once the package is approved (one spec, one epic) | CLAUDE.md | — | Linear | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-21 | Media integrity and immutability | size + eTag (shipped); SHA-256 column; SHA-256 as file name | File name = SHA-256 within the shipped path contract | spec §6.4; multipart eTags are not hashes | Admin tools hash before upload | publish gains a name rule (no published content yet) | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-22 | Two editors overwrite a draft | last write wins; compare-and-set | `p_expected_updated_at` on `_draft_save` | M16:310-330 | Editors must resend `updated_at` | signature change (no consumer yet) | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-23 | Audio door assumes assets | file-only; asset-or-file ref | `TopikMediaRef.asset \| .file`, one door | `plugin_topik_audio_player_data_source.dart:305` | One sealed type | door interface | `APPROVED` (owner 2026-10-17, as recommended) |
+| DR-24 | SHA-256 on device and CLI; storage errors | `package:crypto` direct dependency; hand-rolled; `ENOSPC` catch vs a disk-space plugin | `crypto` as a direct dependency (already in `pubspec.lock` transitively); catch `ENOSPC`, no plugin | `pubspec.lock:260` | One declared dependency | `pubspec.yaml` | `APPROVED` (owner 2026-10-17) |
+| DR-25 | Legal or integrity withdrawal of bytes | retire only; purge runbook | Retire first; purge runbook (one-off migration + local Storage script) only on a legal need | §5.4 Q11 | Offline devices keep their copy | none until used | `APPROVED` (owner 2026-10-17, as recommended) |
 
 ## 13. Verification and acceptance matrix (Deliverable K)
 
@@ -1348,17 +1353,14 @@ Nothing proposed has run. "✓" means shipped and green at `b420592f`.
 
 ## 15. Open questions for the owner
 
-1. **DR-03.** Pin in-progress attempts to their starting revision (recommended), or keep "the content at submit scores"?
-2. **DR-03 variant.** When a test is retired while this device has an open attempt on it, should the retained package be deleted, giving Delete only (recommended, consistent with "gone")? Or should the attempt be allowed to finish on the retained copy?
-3. **DR-07.** Should the Admin UI's validator be the Dart code compiled to JS (recommended), or the TypeScript port of ADR-024 #5?
-4. **DR-11.** Should screen 36 keep History when the test is gone (recommended), or keep the single `testMissing` state?
-5. **DR-14.** May the published papers and audio be served to every authenticated user of this project, anonymous sign-ins included? Or should reads be restricted to non-anonymous users, or to admins until clarified? This gates PR-06.
-6. **DR-24.** Add `crypto` as a direct dependency for SHA-256 in the app and the CLI?
-7. **DR-18.** Is the CLI first for round 96, with the Admin UI after a separate approval, acceptable? It reorders spec §10.
-8. **Q-A-8** (standing). Should Review mark the snapshot's `correct_idx` or the current revision's `answerIdx`?
+The owner ruled on 2026-10-17 (§1.5). These remain:
+
+1. **Q-A-8** (DR-12, standing). Should Review mark the snapshot's `correct_idx` or the current revision's `answerIdx`? It is needed before Review changes, and blocks no PR in §11.
+2. **DR-14, lifting the gate.** When, and to whom (every non-anonymous user, or everyone), is the admin-only read gate lifted? Nothing waits on it: the owner, as admin, can practise and run PR-06.
+3. **DR-03 variant.** When a test is retired while a device has an open attempt on it, is the retained package deleted, giving Delete only? This is the recommended reading of "gone", and it was approved with the rest. Record a different choice before PR-05 if the owner wants the attempt to finish instead.
 
 The items below are recorded only and need no decision now:
 
 - Q-A-1…7 on screens 34–37;
-- the pulled attempt with an unknown level, section or mode that is skipped and never retried (`topik_attempt_sync_dao.dart:79-86`);
-- epic DEV-394 is Done. Per CLAUDE.md, the app-side work gets a new epic when this package is approved (DR-20).
+- the pulled attempt with an unknown level, section or mode that is skipped and never retried (`lib/features/topik/data/datasources/topik_attempt_sync_dao.dart:79-86`);
+- epic DEV-394 is Done. Per CLAUDE.md, the app-side work gets a new epic once the plans start (DR-20).
