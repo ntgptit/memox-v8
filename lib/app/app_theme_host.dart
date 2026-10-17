@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:material_ui/material_ui.dart' as forui_material;
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// The brightness [mode] resolves to: `system` follows the platform's as it
 /// changes.
@@ -22,7 +23,9 @@ Brightness resolveBrightness(BuildContext context, ThemeMode mode) =>
 /// - The `material_ui` Theme is ForUI's own bridge (`toApproximateMaterialTheme`)
 ///   for the few `material_ui` pieces ForUI builds on, such as a text field's
 ///   selection toolbar; derived one way, nothing reads it back.
-/// - [FToaster] hosts the toasts `showMxSnackbar` shows, above every route.
+/// - [MxToastHost] holds the toasts `showMxSnackbar` shows, above every route.
+/// - A glyph with no colour of its own reads `mutedForeground` (DESIGN.md),
+///   not the accent the `material_ui` Theme gives icons.
 class AppThemeHost extends StatelessWidget {
   const AppThemeHost({
     super.key,
@@ -40,7 +43,10 @@ class AppThemeHost extends StatelessWidget {
       data: theme,
       child: forui_material.Theme(
         data: theme.toApproximateMaterialTheme(),
-        child: FToaster(child: child),
+        child: IconTheme.merge(
+          data: IconThemeData(color: theme.colors.mutedForeground),
+          child: MxToastHost(child: child),
+        ),
       ),
     );
   }

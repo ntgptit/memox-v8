@@ -4,9 +4,18 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
+/// [control], an interactive ForUI control drawn for a parent that owns its
+/// tap, focus and semantics (a row's radio, a card's checkbox, a search
+/// trigger's field): it takes no pointer, no focus and no semantics node of
+/// its own, so the parent stays the one target and the one tab stop.
+Widget mxPaintedOnly(Widget control) => ExcludeSemantics(
+  child: ExcludeFocus(child: IgnorePointer(child: control)),
+);
+
 /// [base], a ForUI button style, kept on a 48 touch target: a painted height
 /// under 48 (a 40 small button, a 32 chip) is drawn centred inside the
-/// target, and [isLoading] keeps the resting decoration in every state.
+/// target, and [isLoading] keeps the resting decoration and foreground in
+/// every state, a disabled one included (SW-REV-003).
 /// [horizontal] replaces ForUI's side padding.
 FButtonStyle mxTargetStyle(
   BuildContext context,
@@ -38,6 +47,22 @@ FButtonStyle mxTargetStyle(
   return base.copyWith(
     decoration: decoration,
     contentStyle: FButtonContentStyleDelta.delta(
+      textStyle: isLoading
+          ? FVariants<
+              FTappableVariantConstraint,
+              FTappableVariant,
+              TextStyle,
+              TextStyleDelta
+            >.all(base.contentStyle.textStyle.base)
+          : null,
+      iconStyle: isLoading
+          ? FVariants<
+              FTappableVariantConstraint,
+              FTappableVariant,
+              IconThemeData,
+              IconThemeDataDelta
+            >.all(base.contentStyle.iconStyle.base)
+          : null,
       constraints: BoxConstraints(minWidth: target, minHeight: target),
       padding: EdgeInsetsGeometryDelta.value(
         EdgeInsetsDirectional.symmetric(

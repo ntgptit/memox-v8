@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
@@ -10,9 +10,9 @@ import '../../support/widget_harness.dart';
 const _rule = 'Changes apply to future sessions.';
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
-  testWidgets('muted fill, ghost hairline, radius 12, padding 10 12', (
+  testWidgets('muted fill, hairline border, medium radius, padding 10 12', (
     tester,
   ) async {
     await pumpMx(
@@ -31,15 +31,19 @@ void main() {
             as BoxDecoration;
     final note = tester.getTopLeft(find.byType(MxNote));
 
-    expect(box.color, scheme.surfaceContainerLow);
-    expect(box.border, Border.all(color: scheme.outlineVariant));
-    expect(box.borderRadius, BorderRadius.circular(12));
+    expect(box.color, colors.muted);
+    final element = tester.element(find.byType(MxNote));
+    expect(
+      box.border,
+      Border.all(color: colors.border, width: element.hairline),
+    );
+    expect(box.borderRadius, element.radii.md);
     expect(tester.getTopLeft(find.byType(Icon)).dx - note.dx, 13);
     expect(tester.getTopLeft(find.text(_rule)) - note, const Offset(37, 11));
     expect(tester.widget<Icon>(find.byType(Icon)).size, 16);
     expect(
       tester.widget<Text>(find.text(_rule)).style!.color,
-      scheme.onSurfaceVariant,
+      colors.mutedForeground,
     );
   });
 
@@ -71,13 +75,14 @@ void main() {
     expect(boxes, isEmpty);
     expect(
       tester.widget<Text>(find.text(_rule)).style!.color,
-      scheme.onSurfaceVariant,
+      colors.mutedForeground,
     );
     expect(tester.widget<MxNote>(find.byType(MxNote)).isHint, isTrue);
   });
 
   testWidgets('a dismissible note ends in a close button named by its label, '
       'and a tap dismisses it (critique 2026-09-30)', (tester) async {
+    final handle = tester.ensureSemantics();
     var dismissed = 0;
     await pumpMx(
       tester,
@@ -91,8 +96,11 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Hide this note'));
+    expect(find.bySemanticsLabel('Hide this note'), findsOneWidget);
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
     expect(dismissed, 1);
+    handle.dispose();
   });
 
   testWidgets('a note without onDismiss has no close button', (tester) async {

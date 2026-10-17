@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/forui_expect.dart';
 
 // Screen 09's Save in edit: it waits for a change (critique 2026-09-30 part
 // 3d-1). Split from card_editor_screen_test.dart, which holds the rest of
@@ -69,9 +70,10 @@ void main() {
     await pumpLibraryScreen(tester, env, _edit(card.id));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.pump();
     expect(saveChanges(tester).onPressed, isNotNull);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   Future<int> flagOf(LibraryEnv env, String cardId) async =>
@@ -95,7 +97,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _edit(card.id));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.pump();
     await tester.tap(_footerSave(_en.cardSaveChanges));
     await tester.pumpAndSettle();

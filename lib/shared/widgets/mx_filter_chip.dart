@@ -57,7 +57,16 @@ class MxFilterChip extends StatelessWidget {
       suffix: switch (count) {
         // The count keeps the label's foreground: a dimmed one falls under
         // 4.5:1, so the meta role alone makes it quieter (M3F-03).
-        final value? => Text(value.toString(), style: context.texts.meta),
+        // The role's own colour would override the chip's ink, so the count
+        // takes the ink the button gives its content.
+        final value? => Builder(
+          builder: (context) => Text(
+            value.toString(),
+            style: context.texts.meta.copyWith(
+              color: DefaultTextStyle.of(context).style.color,
+            ),
+          ),
+        ),
         null => null,
       },
     );

@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_slider.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_fakes.dart';
+import '../../../support/forui_expect.dart';
 
 const _clip = TopikAudioClip(asset: 'a.mp3', startMs: 0, endMs: 30000);
 
@@ -32,7 +33,7 @@ void main() {
     final player = await pump(tester, env);
 
     expect(player.calls, ['load 0']);
-    expect(find.byTooltip('Play'), findsOneWidget);
+    expect(byControlLabel('Play'), findsOneWidget);
     expect(find.text('0:00 / 0:30'), findsOneWidget);
   });
 
@@ -42,14 +43,14 @@ void main() {
   ) async {
     final player = await pump(tester, env);
 
-    await tester.tap(find.byTooltip('Play'));
+    await tester.tap(byControlLabel('Play'));
     await tester.pump();
-    expect(find.byTooltip('Pause'), findsOneWidget);
+    expect(byControlLabel('Pause'), findsOneWidget);
     player.emit(player.state.copyWith(positionMs: 12500));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('0:12 / 0:30'), findsOneWidget);
-    await tester.tap(find.byTooltip('Pause'));
-    await tester.pump();
+    await tester.tap(byControlLabel('Pause'));
+    await tester.pump(const Duration(milliseconds: 200));
     expect(player.calls, ['load 0', 'play', 'pause']);
   });
 

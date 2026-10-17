@@ -45,11 +45,16 @@ class MxToggle extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: FSwitch(
-              value: isOn,
-              onChange: onChanged,
-              enabled: onChanged != null,
-              semanticsLabel: semanticLabel,
+            // A disabled switch gives up focus, and with it ForUI's outline:
+            // the Cupertino switch inside stays focusable otherwise.
+            child: ExcludeFocus(
+              excluding: onChanged == null,
+              child: FSwitch(
+                value: isOn,
+                onChange: onChanged,
+                enabled: onChanged != null,
+                semanticsLabel: semanticLabel,
+              ),
             ),
           ),
         ),

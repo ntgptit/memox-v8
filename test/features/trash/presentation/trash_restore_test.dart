@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -17,7 +18,7 @@ Finder _inSheet(String text) => find.descendant(
 );
 
 Future<void> _openRestore(WidgetTester tester, String name) async {
-  await tester.tap(find.byTooltip(_en.trashEntryActions(name)));
+  await tester.tap(byControlLabel(_en.trashEntryActions(name)));
   await tester.pumpAndSettle();
   await tester.tap(find.text(_en.trashRestore));
   await tester.pumpAndSettle();

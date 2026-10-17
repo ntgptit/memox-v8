@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 enum _Range { week, month }
@@ -16,98 +17,105 @@ const _segments = [
   MxSegment(value: _Range.month, label: '30d'),
 ];
 
+const _long = [
+  MxSegment(value: _Range.week, label: 'Every day of the week'),
+  MxSegment(value: _Range.month, label: 'Every day of the month'),
+];
+
 const _dimens = AppDimens();
 
-Finder _segment(String label) => find.widgetWithText(TextButton, label);
-
-Color? _labelColor(WidgetTester tester, String label) =>
-    DefaultTextStyle.of(tester.element(find.text(label))).style.color;
+/// The option labelled [label]: its tappable.
+Finder _segment(String label) =>
+    find.ancestor(of: find.text(label), matching: find.byType(FTappable)).first;
 
 Finder _check(String label) =>
     find.descendant(of: _segment(label), matching: find.byIcon(AppIcons.check));
 
-SegmentedButton<_Range> _button(WidgetTester tester) => tester
-    .widget<SegmentedButton<_Range>>(find.byType(SegmentedButton<_Range>));
+Finder _tray() => find.byType(MxSegmentedTray<_Range>);
 
-Widget _tray({
+/// The fill the option paints behind its label, if any.
+Color? _fill(WidgetTester tester, String label) {
+  final boxes = find.descendant(
+    of: _segment(label),
+    matching: find.byType(DecoratedBox),
+  );
+  for (final box in boxes.evaluate()) {
+    final decoration = (box.widget as DecoratedBox).decoration;
+    if (decoration is BoxDecoration && decoration.borderRadius != null) {
+      return decoration.color;
+    }
+  }
+  return null;
+}
+
+Widget _trayWidget({
   _Range? selected = _Range.week,
   ValueChanged<_Range>? onSelected,
   List<MxSegment<_Range>> segments = _segments,
+  bool isWide = false,
 }) => MxSegmentedTray<_Range>(
   segments: segments,
   selected: selected,
   onSelected: onSelected,
+  isWide: isWide,
 );
 
 void main() {
-  final scheme = lightColorScheme;
-
-  testWidgets('the chosen option shows a check and the accent label, no fill', (
-    tester,
-  ) async {
-    await pumpMx(tester, _tray(onSelected: (_) {}));
-
-    expect(_check('7d'), findsOneWidget);
-    expect(_check('30d'), findsNothing);
-    expect(_labelColor(tester, '7d'), scheme.primary);
-    expect(_labelColor(tester, '30d'), scheme.onSurface);
-    expect(tester.getSize(_check('7d')).width, _dimens.sizeIconButton);
-  });
-
-  // What the segment paints, not what the theme declares: a slot left null
-  // falls back to the SDK default, which fills the chosen segment with
-  // secondaryContainer (tokens: never a button background).
-  Color? paintedFill(WidgetTester tester, String label) => tester
-      .widget<Material>(
-        find
-            .descendant(of: _segment(label), matching: find.byType(Material))
-            .first,
-      )
-      .color;
-
-  bool isUnfilled(Color? color) => color == null || color.a == 0;
-
   for (final brightness in Brightness.values) {
-    testWidgets(
-      'no segment paints a fill, chosen or not (${brightness.name})',
-      (tester) async {
-        await pumpMx(tester, _tray(onSelected: (_) {}), brightness: brightness);
+    final colors = brightness == Brightness.light
+        ? appLightColors
+        : appDarkColors;
 
-        final scheme = brightness == Brightness.light
-            ? lightColorScheme
-            : darkColorScheme;
-        expect(paintedFill(tester, '7d'), isNot(scheme.secondaryContainer));
-        expect(isUnfilled(paintedFill(tester, '7d')), isTrue);
-        expect(isUnfilled(paintedFill(tester, '30d')), isTrue);
-      },
-    );
+    testWidgets('the chosen option is raised on the background with a check '
+        'and the foreground label; the rest are bare, muted '
+        '(${brightness.name})', (tester) async {
+      await pumpMx(
+        tester,
+        _trayWidget(onSelected: (_) {}),
+        brightness: brightness,
+      );
 
-    testWidgets('a disabled tray paints no fill either (${brightness.name})', (
-      tester,
-    ) async {
-      await pumpMx(tester, _tray(), brightness: brightness);
-
-      expect(isUnfilled(paintedFill(tester, '7d')), isTrue);
-      expect(isUnfilled(paintedFill(tester, '30d')), isTrue);
+      expect(_check('7d'), findsOneWidget);
+      expect(_check('30d'), findsNothing);
+      expect(textColor(tester, find.text('7d')), colors.foreground);
+      expect(textColor(tester, find.text('30d')), colors.mutedForeground);
+      expect(iconColor(tester, find.byIcon(AppIcons.check)), colors.foreground);
+      expect(
+        tester.getSize(find.byIcon(AppIcons.check)).width,
+        _dimens.sizeIconInline,
+      );
+      expect(_fill(tester, '7d'), colors.background);
+      expect(_fill(tester, '30d'), isNull);
     });
 
-    testWidgets('the stacked tray paints no fill (${brightness.name})', (
+    testWidgets('the tray sits on the muted ground (${brightness.name})', (
       tester,
     ) async {
       await pumpMx(
         tester,
-        _tray(
-          onSelected: (_) {},
-          segments: const [
-            MxSegment(value: _Range.week, label: 'Every day of the week'),
-            MxSegment(value: _Range.month, label: 'Every day of the month'),
-          ],
-        ),
+        _trayWidget(onSelected: (_) {}),
         brightness: brightness,
       );
+      final ground = tester.widget<DecoratedBox>(
+        find.descendant(of: _tray(), matching: find.byType(DecoratedBox)).first,
+      );
 
-      expect(isUnfilled(paintedFill(tester, 'Every day of the week')), isTrue);
-      expect(isUnfilled(paintedFill(tester, 'Every day of the month')), isTrue);
+      expect((ground.decoration as BoxDecoration).color, colors.muted);
+    });
+
+    testWidgets('a disabled tray dims its labels and fills nothing but the '
+        'chosen option (${brightness.name})', (tester) async {
+      await pumpMx(tester, _trayWidget(), brightness: brightness);
+
+      expect(
+        textColor(tester, find.text('7d')),
+        colors.disable(colors.mutedForeground),
+      );
+      expect(
+        textColor(tester, find.text('30d')),
+        colors.disable(colors.mutedForeground),
+      );
+      expect(_fill(tester, '30d'), isNull);
     });
   }
 
@@ -115,75 +123,94 @@ void main() {
     tester,
   ) async {
     _Range? picked;
-    await pumpMx(tester, _tray(selected: null, onSelected: (v) => picked = v));
+    await pumpMx(
+      tester,
+      _trayWidget(selected: null, onSelected: (v) => picked = v),
+    );
 
     expect(find.byIcon(AppIcons.check), findsNothing);
     await tester.tap(find.text('30d'));
+    await tester.pumpAndSettle();
     expect(picked, _Range.month);
   });
 
-  testWidgets('a tap reports the option; 40 tall in a 48 target band', (
+  testWidgets('a tap reports the option; every option is a 48 target', (
     tester,
   ) async {
     _Range? picked;
-    await pumpMx(tester, _tray(onSelected: (v) => picked = v));
+    await pumpMx(tester, _trayWidget(onSelected: (v) => picked = v));
     await tester.tap(find.text('30d'));
+    await tester.pumpAndSettle();
 
     expect(picked, _Range.month);
-    final size = tester.getSize(find.byType(MxSegmentedTray<_Range>));
-    expect(size.height, 48);
-    expect(tester.getSize(find.byType(TextButton).first).height, 48);
-    // The edge is a stadium 40 tall, centred in the band, 1 wide inside.
+    for (final label in ['7d', '30d']) {
+      expect(
+        tester.getSize(_segment(label)).height,
+        greaterThanOrEqualTo(_dimens.sizeControl),
+        reason: label,
+      );
+    }
+    // The tray hugs its options by the 4 inset on each side.
     expect(
-      tester.renderObject(find.byType(SegmentedButton<_Range>)),
-      paints..rrect(
-        rrect: RRect.fromLTRBR(
-          0.5,
-          4.5,
-          size.width - 0.5,
-          43.5,
-          const Radius.circular(19.5),
-        ),
-        color: scheme.outline,
-        strokeWidth: _dimens.strokeHairline,
-      ),
+      tester.getSize(_tray()).height,
+      tester.getSize(_segment('7d')).height + 2 * _dimens.space4,
     );
     await expectAccessibleTargets(tester);
   });
 
   testWidgets('tapping the chosen option reports it again', (tester) async {
     final picked = <_Range>[];
-    await pumpMx(tester, _tray(onSelected: picked.add));
+    await pumpMx(tester, _trayWidget(onSelected: picked.add));
     await tester.tap(find.text('7d'));
+    await tester.pumpAndSettle();
 
     expect(picked, [_Range.week]);
   });
 
-  testWidgets('a 1 outline edge round and between the segments', (
-    tester,
-  ) async {
-    await pumpMx(tester, _tray(onSelected: (_) {}));
+  testWidgets('the options split the tray evenly with a 4 gap', (tester) async {
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}));
+    final first = tester.getRect(_segment('7d'));
+    final second = tester.getRect(_segment('30d'));
+    final tray = tester.getRect(_tray());
 
-    final theme = SegmentedButtonTheme.of(tester.element(_segment('7d')));
-    final side = theme.style!.side!.resolve({});
-    expect(side?.color, scheme.outline);
-    expect(side?.width, _dimens.strokeHairline);
-    final shape = theme.style!.shape!.resolve({});
-    expect(shape, isA<MxFocusRingBorder>());
-    expect((shape as MxFocusRingBorder).base, isA<StadiumBorder>());
+    expect(first.width, second.width);
+    expect(second.left - first.right, _dimens.space4);
+    expect(first.left - tray.left, _dimens.space4);
+    expect(tray.right - second.right, _dimens.space4);
   });
 
   testWidgets('announced as a selected exclusive option', (tester) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(tester, _tray(onSelected: (_) {}));
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}));
 
     expect(
-      tester.getSemantics(find.text('7d')),
-      isSemantics(
+      tester.getSemantics(find.bySemanticsLabel('7d')),
+      matchesSemantics(
         label: '7d',
         isSelected: true,
+        hasSelectedState: true,
         isButton: true,
         isInMutuallyExclusiveGroup: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasFocusAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('30d')),
+      matchesSemantics(
+        label: '30d',
+        isSelected: false,
+        hasSelectedState: true,
+        isButton: true,
+        isInMutuallyExclusiveGroup: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasFocusAction: true,
       ),
     );
     handle.dispose();
@@ -200,94 +227,98 @@ void main() {
     );
   });
 
-  testWidgets('a null onSelected disables every option, M3 disabled colours', (
-    tester,
-  ) async {
+  testWidgets('a null onSelected disables every option: no tap, and it says '
+      'so', (tester) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(tester, _tray());
+    await pumpMx(tester, _trayWidget());
 
     expect(
-      tester.getSemantics(find.text('30d')),
-      isSemantics(hasEnabledState: true, isEnabled: false),
+      tester.getSemantics(find.bySemanticsLabel('30d')),
+      matchesSemantics(
+        label: '30d',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
+        hasSelectedState: true,
+        isInMutuallyExclusiveGroup: true,
+      ),
     );
-    expect(
-      _labelColor(tester, '30d'),
-      scheme.onSurface.withValues(alpha: _dimens.opacityDisabledContent),
-    );
-    final theme = SegmentedButtonTheme.of(tester.element(_segment('7d')));
-    expect(
-      theme.style!.side!.resolve({WidgetState.disabled})?.color,
-      scheme.onSurface.withValues(alpha: _dimens.opacityDisabledContainer),
-    );
+    await tester.tap(find.text('30d'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
     handle.dispose();
   });
 
   testWidgets('a long label stacks the options, one per 48 tall line', (
     tester,
   ) async {
+    _Range? picked;
     await pumpMx(
       tester,
-      _tray(
-        onSelected: (_) {},
-        segments: const [
-          MxSegment(value: _Range.week, label: 'Every day of the week'),
-          MxSegment(value: _Range.month, label: 'Every day of the month'),
-        ],
-      ),
+      _trayWidget(onSelected: (v) => picked = v, segments: _long),
     );
+    final week = tester.getRect(_segment('Every day of the week'));
+    final month = tester.getRect(_segment('Every day of the month'));
 
-    expect(_button(tester).direction, Axis.vertical);
-    expect(tester.getSize(_segment('Every day of the week')).height, 48);
-    expect(
-      tester.getTopLeft(_segment('Every day of the month')).dy,
-      tester.getBottomLeft(_segment('Every day of the week')).dy,
-    );
+    expect(week.height, greaterThanOrEqualTo(_dimens.sizeControl));
+    expect(week.left, month.left);
+    expect(week.width, month.width);
+    expect(month.top - week.bottom, _dimens.space4);
     await tester.tap(find.text('Every day of the month'));
+    await tester.pumpAndSettle();
+    expect(picked, _Range.month);
+    await expectAccessibleTargets(tester);
   });
 
   testWidgets('isWide widens the option padding to 16', (tester) async {
-    await pumpMx(
-      tester,
-      MxSegmentedTray<_Range>(
-        segments: _segments,
-        selected: _Range.week,
-        onSelected: (_) {},
-        isWide: true,
-      ),
-    );
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}));
+    final narrow = tester.getSize(_tray()).width;
 
-    expect(
-      _button(tester).style?.padding?.resolve({}),
-      EdgeInsets.symmetric(horizontal: _dimens.space16),
-    );
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}, isWide: true));
+    final wide = tester.getSize(_tray()).width;
+
+    // 12 to 16 on both sides of each of the two options.
+    expect(wide - narrow, 2 * 2 * (_dimens.space16 - _dimens.space12));
   });
 
   testWidgets('short labels stay on one line, also with the check', (
     tester,
   ) async {
-    await pumpMx(tester, _tray(onSelected: (_) {}));
-    expect(_button(tester).direction, Axis.horizontal);
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}));
+    expect(
+      tester.getTopLeft(_segment('7d')).dy,
+      tester.getTopLeft(_segment('30d')).dy,
+    );
 
-    await pumpMx(tester, _tray(selected: _Range.month, onSelected: (_) {}));
-    expect(_button(tester).direction, Axis.horizontal);
+    await pumpMx(
+      tester,
+      _trayWidget(selected: _Range.month, onSelected: (_) {}),
+    );
+    expect(
+      tester.getTopLeft(_segment('7d')).dy,
+      tester.getTopLeft(_segment('30d')).dy,
+    );
   });
 
-  testWidgets('keyboard focus draws the offset ring round the control', (
-    tester,
-  ) async {
-    await pumpMx(tester, _tray(onSelected: (_) {}));
-    final box = tester.renderObject(find.byType(SegmentedButton<_Range>));
+  testWidgets("keyboard focus draws ForUI's focus outline round the focused "
+      'option', (tester) async {
+    await pumpMx(tester, _trayWidget(onSelected: (_) {}));
+    useKeyboardFocusHighlight();
+    final outline = forUiTheme(tester, _tray()).style.focusedOutlineStyle;
+    final ring = find.descendant(
+      of: _segment('7d'),
+      matching: find.byType(FFocusedOutline),
+    );
+    expect(
+      tester.renderObject(ring),
+      isNot(paintsFocusRing(outline.color, width: outline.width)),
+    );
 
-    bool isRing(Symbol method, List<dynamic> arguments) =>
-        method == #drawPath &&
-        // A canvas paint keeps the colour as 8-bit channels.
-        (arguments[1] as Paint).color.toARGB32() == scheme.primary.toARGB32() &&
-        (arguments[1] as Paint).strokeWidth == _dimens.strokeFocus;
+    await tabTo(tester, find.text('7d'));
 
-    expect(box, isNot(paints..something(isRing)));
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pump();
-
-    expect(box, paints..something(isRing));
+    expect(
+      tester.renderObject(ring),
+      paintsFocusRing(outline.color, width: outline.width),
+    );
   });
 }

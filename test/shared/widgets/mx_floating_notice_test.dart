@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
-import 'package:memox/core/theme/app_dimens.dart';
-import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _message = '2 changes are kept only on this device';
@@ -17,24 +18,34 @@ Widget _width(Widget child) => SizedBox(width: 328, child: child);
 MxButton _action(String label) =>
     MxButton(label: label, size: MxButtonSize.small, onPressed: () {});
 
+BoxDecoration _ground(WidgetTester tester) =>
+    tester
+            .widget<DecoratedBox>(
+              find
+                  .descendant(
+                    of: find.byType(MxFloatingNotice),
+                    matching: find.byType(DecoratedBox),
+                  )
+                  .first,
+            )
+            .decoration
+        as BoxDecoration;
+
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
   const mx = MxStatusColors.light;
 
   testWidgets('the warning card, lifted by the overlay shadow', (tester) async {
     await pumpMx(tester, _width(const MxFloatingNotice(message: _message)));
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-    final ground = tester.widget<Material>(
-      find
-          .descendant(
-            of: find.byType(MxFloatingNotice),
-            matching: find.byType(Material),
-          )
-          .first,
+    final ground = _ground(tester);
+    expect(ground.color, mx.warning.tintOver(colors.background));
+    expect(
+      ground.boxShadow,
+      forUiTheme(tester, find.byType(MxFloatingNotice)).style.shadow,
     );
-    expect(ground.color, mx.warning.tintOver(scheme.surface));
-    expect(ground.elevation, greaterThan(0));
+    expect(ground.boxShadow, isNotEmpty);
     // A glyph takes the text colour, never the amber fill (SW-REV-001).
     expect(
       (glyph.size, glyph.color),
@@ -52,14 +63,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     const night = MxStatusColors.dark;
-    final ground = tester.widget<Material>(
-      find
-          .descendant(
-            of: find.byType(MxFloatingNotice),
-            matching: find.byType(Material),
-          )
-          .first,
-    );
+    final ground = _ground(tester);
 
     expect(ground.color, night.warning.tintOver(appDarkColors.background));
     expect(
@@ -69,6 +73,10 @@ void main() {
     expect(
       tester.widget<Text>(find.text(_message)).style!.color,
       appDarkColors.foreground,
+    );
+    expect(
+      forUiTheme(tester, find.byType(MxFloatingNotice)).style.shadow,
+      ground.boxShadow,
     );
   });
 

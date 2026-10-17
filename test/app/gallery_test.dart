@@ -76,10 +76,12 @@ void main() {
   testWidgets('the theme switch flips the gallery to dark', (tester) async {
     await _pumpGallery(tester);
     await tester.tap(byControlLabel('Dark theme'));
+    // ForUI eases the theme over: one frame starts it, the next ends it.
     await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(
-      Theme.of(tester.element(find.byType(MxAppBar).first)).brightness,
+      FTheme.of(tester.element(find.byType(MxAppBar).first)).colors.brightness,
       Brightness.dark,
     );
   });

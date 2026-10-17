@@ -2,142 +2,229 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_dimens.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_slider.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-// Spec §13.8, DSD-23: Material 3's Slider under the theme's sliderTheme,
-// inactive track surfaceContainerHighest (owner 2026-10-15).
+// Spec §13.8, DSD-23: ForUI's slider under the theme's slider style.
 void main() {
-  final scheme = lightColorScheme;
-  const dimens = AppDimens();
-  Finder slider() => find.byType(Slider);
+  final colors = appLightColors;
+  Finder slider() => find.byType(FSlider);
 
-  testWidgets('is a Material slider read from the theme', (tester) async {
-    await pumpMx(
-      tester,
-      MxSlider(
-        value: 3000,
-        max: 10000,
-        onChanged: (_) {},
-        semanticLabel: 'Audio position',
-      ),
-    );
-    final widget = tester.widget<Slider>(slider());
-    expect(widget.value, 3000);
-    expect(widget.max, 10000);
-    expect(widget.activeColor, isNull);
-    expect(widget.inactiveColor, isNull);
-    expect(widget.thumbColor, isNull);
-    final theme = SliderTheme.of(tester.element(slider()));
-    expect(theme.activeTrackColor, scheme.primary);
-    expect(theme.inactiveTrackColor, scheme.surfaceContainerHighest);
-    expect(theme.thumbColor, scheme.primary);
+  /// What TalkBack reads as the slider's value, in seconds.
+  String valueOf(WidgetTester tester) =>
+      tester.getSemantics(find.byType(MxSlider)).getSemanticsData().value;
+
+  Widget seek({
+    double value = 3000,
+    double max = 10000,
+    ValueChanged<double>? onChanged,
+    ValueChanged<double>? onChangeEnd,
+  }) => SizedBox(
+    width: 300,
+    child: MxSlider(
+      value: value,
+      max: max,
+      onChanged: onChanged,
+      onChangeEnd: onChangeEnd,
+      semanticLabel: 'Audio position',
+      semanticFormatter: (value) => '${(value / 1000).round()}s',
+    ),
+  );
+
+  testWidgets('is a ForUI slider read from the theme, one unit with max', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, seek(onChanged: (_) {}));
+
+    expect(slider(), findsOneWidget);
+    // Without a formatter the value is read as a share of the track.
+    final bare = tester.getSemantics(find.byType(MxSlider));
+    expect(bare.getSemanticsData().value, isNotEmpty);
+    final style = forUiTheme(tester, slider()).sliderStyles.horizontal;
+    expect(style.activeColor.resolve({}), colors.primary);
+    expect(style.inactiveColor.resolve({}), colors.secondary);
+    handle.dispose();
+  });
+
+  testWidgets('semanticFormatter: TalkBack reads the value in the '
+      "caller's unit", (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, seek(onChanged: (_) {}));
+
+    expect(valueOf(tester), '3s');
+    handle.dispose();
   });
 
   testWidgets('drags report the new value and its end', (tester) async {
+    final value = ValueNotifier<double>(0);
+    addTearDown(value.dispose);
     double? changed;
     double? ended;
+    await pumpMx(
+      tester,
+      ValueListenableBuilder(
+        valueListenable: value,
+        builder: (_, current, _) => seek(
+          value: current,
+          onChanged: (next) {
+            changed = next;
+            value.value = next;
+          },
+          onChangeEnd: (next) => ended = next,
+        ),
+      ),
+    );
+    final rect = tester.getRect(slider());
+    final drag = await tester.startGesture(
+      Offset(rect.left + 8, rect.center.dy),
+    );
+    for (var i = 0; i < 10; i++) {
+      await drag.moveBy(const Offset(15, 0));
+      await tester.pump();
+    }
+    await drag.up();
+    await tester.pumpAndSettle();
+
+    expect(changed, greaterThan(0));
+    expect(changed, lessThanOrEqualTo(10000));
+    expect(ended, changed);
+  });
+
+  testWidgets('a tap on the track reports a value along it', (tester) async {
+    double? changed;
+    await pumpMx(tester, seek(value: 0, onChanged: (v) => changed = v));
+    final rect = tester.getRect(slider());
+    await tester.tapAt(Offset(rect.center.dx, rect.center.dy));
+    await tester.pumpAndSettle();
+
+    expect(changed, closeTo(5000, 1500));
+  });
+
+  testWidgets('a value past max is drawn at max', (tester) async {
+    final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
       SizedBox(
         width: 300,
         child: MxSlider(
-          value: 0,
+          value: 12000,
           max: 10000,
-          onChanged: (value) => changed = value,
-          onChangeEnd: (value) => ended = value,
+          onChanged: (_) {},
           semanticLabel: 'Audio position',
         ),
       ),
     );
-    await tester.drag(slider(), const Offset(150, 0));
-    await tester.pumpAndSettle();
-    expect(changed, greaterThan(0));
-    expect(ended, changed);
-  });
 
-  testWidgets('a value past max is drawn at max', (tester) async {
-    await pumpMx(
-      tester,
-      MxSlider(
-        value: 12000,
-        max: 10000,
-        onChanged: (_) {},
-        semanticLabel: 'Audio position',
-      ),
-    );
-    expect(tester.widget<Slider>(slider()).value, 10000);
+    expect(valueOf(tester), '100%');
+    handle.dispose();
   });
 
   testWidgets('max 0 is a disabled slider, never an assertion', (tester) async {
+    final handle = tester.ensureSemantics();
+    double? changed;
     await pumpMx(
       tester,
-      MxSlider(
-        value: 0,
-        max: 0,
-        onChanged: (_) {},
-        semanticLabel: 'Audio position',
-      ),
+      seek(value: 0, max: 0, onChanged: (value) => changed = value),
     );
-    final widget = tester.widget<Slider>(slider());
-    expect(widget.onChanged, isNull);
-    final theme = SliderTheme.of(tester.element(slider()));
-    expect(
-      theme.disabledActiveTrackColor,
-      scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
-    );
+
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<FSlider>(slider()).enabled, isFalse);
+    await tester.drag(slider(), const Offset(100, 0), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(changed, isNull);
+    handle.dispose();
   });
 
-  testWidgets('keyboard focus draws the primary overlay round the handle', (
+  testWidgets('a null onChanged is a disabled slider', (tester) async {
+    await pumpMx(tester, seek());
+
+    expect(tester.widget<FSlider>(slider()).enabled, isFalse);
+  });
+
+  testWidgets("keyboard focus draws ForUI's focus outline round the handle", (
     tester,
   ) async {
-    await pumpMx(
+    await pumpMx(tester, seek(value: 5000, onChanged: (_) {}));
+    useKeyboardFocusHighlight();
+    final outline = forUiTheme(
       tester,
-      MxSlider(
-        value: 5000,
-        max: 10000,
-        onChanged: (_) {},
-        semanticLabel: 'Audio position',
-      ),
+      slider(),
+    ).sliderStyles.horizontal.thumbStyle.focusedOutlineStyle;
+    final ring = find.descendant(
+      of: slider(),
+      matching: find.byType(FFocusedOutline),
     );
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
+    expect(
+      tester.renderObject(ring.first),
+      isNot(paintsFocusRing(outline.color, width: outline.width)),
     );
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
     expect(
-      tester.renderObject(slider()),
-      paints
-        ..circle(color: scheme.primary.withValues(alpha: dimens.opacityFocus)),
+      tester.renderObject(ring.first),
+      paintsFocusRing(outline.color, width: outline.width),
     );
+  });
+
+  testWidgets('arrow keys move the handle and report', (tester) async {
+    final changes = <double>[];
+    await pumpMx(tester, seek(value: 5000, onChanged: changes.add));
+    useKeyboardFocusHighlight();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pumpAndSettle();
+
+    expect(changes, isNotEmpty);
+    expect(changes.last, greaterThan(5000));
   });
 
   testWidgets('announced with its label and value', (tester) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      MxSlider(
-        value: 5000,
-        max: 10000,
-        onChanged: (_) {},
-        semanticLabel: 'Audio position',
-        semanticFormatter: (value) => '${(value / 1000).round()}s',
-      ),
-    );
+    await pumpMx(tester, seek(value: 5000, onChanged: (_) {}));
     expect(find.bySemanticsLabel('Audio position'), findsOneWidget);
     final data = tester.getSemantics(find.byType(MxSlider)).getSemanticsData();
     expect(data.label, 'Audio position');
-    expect(data.value, '5s');
     expect(data.flagsCollection.isSlider, isTrue);
     expect(data.hasAction(SemanticsAction.increase), isTrue);
     expect(data.hasAction(SemanticsAction.decrease), isTrue);
     handle.dispose();
+  });
+
+  testWidgets('the handle is a 48 target', (tester) async {
+    await pumpMx(tester, seek(value: 5000, onChanged: (_) {}));
+
+    expect(
+      tester.getSize(find.byType(MxSlider)).height,
+      greaterThanOrEqualTo(48),
+    );
+    await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('the whole 48 target seeks: a tap above the thin track moves '
+      'the value and ends the seek', (tester) async {
+    final changes = <double>[];
+    final ends = <double>[];
+    await pumpMx(
+      tester,
+      seek(value: 0, onChanged: changes.add, onChangeEnd: ends.add),
+    );
+    final target = tester.getRect(find.byType(MxSlider));
+    final thumb = tester.getRect(slider());
+    // Above ForUI's own slider box, inside the target, at the track's end.
+    expect(thumb.top, greaterThan(target.top));
+    await tester.tapAt(Offset(target.right - 1, target.top + 1));
+    await tester.pumpAndSettle();
+
+    expect(changes.single, 10000);
+    expect(ends.single, 10000);
   });
 }

@@ -198,6 +198,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('meaning 1'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a double tap on Show answer grades nothing: the grades settle '

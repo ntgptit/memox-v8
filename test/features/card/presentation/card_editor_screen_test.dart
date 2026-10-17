@@ -25,6 +25,9 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -163,7 +166,8 @@ void main() {
     await tester.enterText(_field(1), 'x');
     await tester.enterText(_field(1), '');
     await tester.enterText(_field(0), 'a' * (CardDraft.maxFrontLength + 1));
-    await tester.pump();
+    // ForUI's field eases its message in.
+    await tester.pumpAndSettle();
 
     expect(find.text(_en.cardBackBlank), findsOneWidget);
     expect(find.text(_en.cardFrontTooLong), findsOneWidget);
@@ -185,6 +189,7 @@ void main() {
     ]) {
       expect(find.text(hint), findsOneWidget);
     }
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Back on a changed form asks; Keep editing keeps it (RF2)', (
@@ -263,7 +268,7 @@ void main() {
 
     expect(find.text('bap'), findsOneWidget);
     expect(find.textContaining(_en.cardSummaryAnswers(0)), findsOneWidget);
-    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.enterText(_field(1), 'cooked rice');
     await tester.pump();
     await tester.tap(_footerSave(_en.cardSaveChanges));
@@ -332,16 +337,17 @@ void main() {
     await pumpLibraryScreen(tester, env, _edit(card.id));
     await tester.pumpAndSettle();
     expect(
-      tester.getSemantics(find.byTooltip(_en.cardFlagLabel)),
+      tester.getSemantics(byControlLabel(_en.cardFlagLabel)),
       isSemantics(hasToggledState: true, isToggled: false),
     );
 
-    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.pump();
     expect(
-      tester.getSemantics(find.byTooltip(_en.cardFlagClear)),
+      tester.getSemantics(byControlLabel(_en.cardFlagClear)),
       isSemantics(hasToggledState: true, isToggled: true),
     );
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a tag typed but not added still asks before leaving', (
@@ -411,7 +417,7 @@ void main() {
     expect(size(_en.commonCancel).width, size(_en.cardSaveCard).width);
   });
 
-  libraryTest('the front and back of a card sit on the form field\'s 56 '
+  libraryTest('the front and back of a card sit on the form field\'s box '
       '(DEV-169)', (tester, env) async {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId));
@@ -419,8 +425,12 @@ void main() {
     await tester.enterText(_field(1), 'thank you');
     await tester.pump();
 
-    expect(tester.getSize(find.byType(TextField).at(0)).height, 56);
-    expect(tester.getSize(find.byType(TextField).at(1)).height, 56);
+    final box = tester
+        .element(find.byType(FTextField).first)
+        .dimens
+        .sizeControl;
+    expect(fieldBoxSize(tester, find.byType(FTextField).at(0)).height, box);
+    expect(fieldBoxSize(tester, find.byType(FTextField).at(1)).height, box);
   });
 
   libraryTest('the editor saves from the footer only and marks the required '

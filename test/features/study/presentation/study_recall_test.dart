@@ -2,7 +2,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -120,6 +120,7 @@ void main() {
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('remembered', null));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Forgot records a wrong answer and moves on', (
@@ -138,6 +139,7 @@ void main() {
 
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('forgotten', null));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('at zero the turn counts as forgot, is announced, and waits for '
@@ -169,6 +171,7 @@ void main() {
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the clock stops in the background and saves its time; it '
@@ -268,10 +271,10 @@ void main() {
       matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
     );
 
-    expect(fill.color, lightColorScheme.primary);
+    expect(fill.color, appLightColors.primary);
     expect(
       tester.widget<Text>(chip).style?.color,
-      tester.element(chip).accentColor,
+      tester.element(chip).colors.primary,
     );
   });
 
@@ -291,6 +294,7 @@ void main() {
         reason: label,
       );
     }
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a double tap on Show the meaning answers nothing: Forgot and '
@@ -316,6 +320,7 @@ void main() {
     await tester.tap(find.text(_en.studyRecallRemembered));
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a tap in the instant the clock runs out does not skip the '

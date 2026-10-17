@@ -116,54 +116,19 @@ void main() {
     );
   });
 
-  testWidgets('MxSnackbarContent on its inverse surface', (tester) async {
-    await expectThemedGoldens(
+  testWidgets('MxSnackbar: a toast with an action, from showMxSnackbar', (
+    tester,
+  ) async {
+    await expectThemedOverlayGoldens(
       tester,
       'mx_snackbar',
-      Builder(
-        builder: (context) {
-          // The SnackBar buildMxSnackBar builds, as the Scaffold shows it:
-          // the theme's surface and radius, and the content in the SDK's
-          // Expanded. The board's own 16 stands in for the theme's side
-          // inset, so a toast is as wide as on a phone.
-          final theme = Theme.of(context);
-          final boardTheme = theme.copyWith(
-            snackBarTheme: theme.snackBarTheme.copyWith(
-              insetPadding: EdgeInsets.zero,
-            ),
-          );
-          Widget toast({
-            required String message,
-            String? actionLabel,
-            VoidCallback? onAction,
-          }) => Theme(
-            data: boardTheme,
-            child: buildMxSnackBar(
-              context,
-              message: message,
-              actionLabel: actionLabel,
-              onAction: onAction,
-            ).withAnimation(kAlwaysCompleteAnimation),
-          );
-          return Column(
-            spacing: 16,
-            children: [
-              toast(message: 'Deck saved'),
-              toast(
-                message: 'Moved to Trash',
-                actionLabel: 'Undo',
-                onAction: () {},
-              ),
-              toast(
-                message:
-                    'The export was saved to Downloads and is ready to '
-                    'share with another device.',
-                actionLabel: 'Open',
-                onAction: () {},
-              ),
-            ],
-          );
-        },
+      open: (context) => showMxSnackbar(
+        context,
+        message:
+            'The export was saved to Downloads and is ready to share with '
+            'another device.',
+        actionLabel: 'Open',
+        onAction: () {},
       ),
     );
   });

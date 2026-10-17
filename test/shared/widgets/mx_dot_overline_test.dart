@@ -18,7 +18,7 @@ void main() {
 
     expect(tester.getSize(dot), const Size.square(6));
     expect(decoration.shape, BoxShape.circle);
-    expect(decoration.color, Theme.of(context).colorScheme.primary);
+    expect(decoration.color, context.colors.primary);
     expect(
       tester.getTopLeft(find.text('HÔM NAY')).dx - tester.getTopRight(dot).dx,
       4,
@@ -40,8 +40,8 @@ void main() {
       tester
           .element(label)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(label).colors.mutedForeground),
+          .meta
+          .copyWith(color: tester.element(label).colors.mutedForeground),
     );
   });
 }

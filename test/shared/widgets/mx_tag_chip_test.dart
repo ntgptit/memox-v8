@@ -3,33 +3,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
-  testWidgets('22 default, 18 dense; surfaceContainer, muted label', (
+  testWidgets('22 default, 18 dense; secondary ground, muted label', (
     tester,
   ) async {
     await pumpMx(tester, const MxTagChip(label: 'verbs'));
-    final box =
-        tester
-                .widget<DecoratedBox>(
-                  find.descendant(
-                    of: find.byType(MxTagChip),
-                    matching: find.byType(DecoratedBox),
-                  ),
-                )
-                .decoration
-            as ShapeDecoration;
+    final box = paintedDecoration(tester, find.byType(MxTagChip));
 
     expect(tester.getSize(find.byType(MxTagChip)).height, 22);
-    expect(box.color, scheme.surfaceContainer);
-    expect(box.shape, isA<StadiumBorder>());
+    expect(box.color, colors.secondary);
     expect(
-      tester.widget<Text>(find.text('verbs')).style!.color,
-      scheme.onSurfaceVariant,
+      box.shape,
+      RoundedSuperellipseBorder(
+        borderRadius: forUiTheme(
+          tester,
+          find.byType(MxTagChip),
+        ).style.borderRadius.pill,
+      ),
     );
+    expect(textColor(tester, find.text('verbs')), colors.mutedForeground);
     expect(
       tester.getTopLeft(find.text('verbs')).dx -
           tester.getTopLeft(find.byType(MxTagChip)).dx,

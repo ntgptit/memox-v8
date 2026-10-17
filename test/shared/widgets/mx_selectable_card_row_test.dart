@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
@@ -37,7 +38,9 @@ void main() {
     var holds = 0;
     await pumpMx(tester, _row(onTap: () => taps++, onLongPress: () => holds++));
     await tester.tap(find.text('Korean'));
+    await tester.pumpAndSettle();
     await tester.longPress(find.text('Korean'));
+    await tester.pumpAndSettle();
 
     expect((taps, holds), (1, 1));
     final card = tester.getTopLeft(find.byType(MxCard));
@@ -107,7 +110,8 @@ void main() {
       ),
     );
     expect(find.text('Korean'), findsOneWidget);
-    await tester.tap(find.byTooltip('More'));
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
     expect(more, 1);
     handle.dispose();
   });
@@ -128,9 +132,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('disabled: dimmed to 0.38, no tap, no long-press', (
-    tester,
-  ) async {
+  testWidgets('disabled: dimmed, no tap, no long-press', (tester) async {
     var taps = 0;
     await pumpMx(
       tester,
@@ -141,7 +143,7 @@ void main() {
     expect(taps, 0);
     expect(
       tester.widget<Opacity>(find.byType(Opacity).first).opacity,
-      closeTo(0.38, 0.001),
+      closeTo(appLightColors.disabledOpacity, 0.001),
     );
   });
 
@@ -164,12 +166,12 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byTooltip('More'), warnIfMissed: false);
+      await tester.tap(find.byType(MxIconButton), warnIfMissed: false);
       await tester.tap(find.text('Korean'), warnIfMissed: false);
       expect((taps, menu), (0, 0));
       expect(
-        tester.getSemantics(find.byTooltip('More')),
-        isSemantics(tooltip: 'More', hasTapAction: false),
+        tester.getSemantics(find.bySemanticsLabel('More')),
+        isSemantics(label: 'More', hasTapAction: false),
       );
       expect(
         tester.getSemantics(find.text('Korean')),

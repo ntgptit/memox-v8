@@ -40,7 +40,7 @@ Color _lastStop(WidgetTester tester, Key key) {
 }
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('content that fits shows no fade', (tester) async {
     await pumpMx(tester, _horizontal(content: 100));
@@ -98,10 +98,7 @@ void main() {
     await pumpMx(tester, _vertical(ground: MxScrollFadeGround.recessed));
     await tester.pump();
 
-    expect(
-      _lastStop(tester, MxScrollFade.trailingKey),
-      scheme.surfaceContainerLow,
-    );
+    expect(_lastStop(tester, MxScrollFade.trailingKey), colors.muted);
     expect(
       find.descendant(
         of: find.byKey(MxScrollFade.trailingKey),

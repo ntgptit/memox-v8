@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
+  const dimens = AppDimens();
 
   testWidgets('the code variant asks for digits and offers the one-time '
       'code', (tester) async {
@@ -20,7 +19,7 @@ void main() {
       tester,
       const MxTextField(label: 'Code', variant: MxTextFieldVariant.code),
     );
-    final field = tester.widget<TextField>(find.byType(TextField));
+    final field = tester.widget<EditableText>(find.byType(EditableText));
 
     expect(field.keyboardType, TextInputType.number);
     expect(field.autofillHints, [AutofillHints.oneTimeCode]);
@@ -51,7 +50,7 @@ void main() {
     expect(tester.getSize(find.byKey(MxCodeField.slotKey(0))).width, 48);
     expect(
       tester.getSize(find.byKey(MxCodeField.slotKey(0))).height,
-      greaterThanOrEqualTo(56),
+      greaterThanOrEqualTo(dimens.sizeControl),
     );
   });
 
@@ -63,7 +62,7 @@ void main() {
       MxTextField(controller: controller, variant: MxTextFieldVariant.code),
     );
 
-    await tester.enterText(find.byType(TextField), '123 456');
+    await tester.enterText(find.byType(EditableText), '123 456');
     await tester.pump();
 
     expect(controller.text, '123456');
@@ -102,9 +101,13 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(edgeOf(2).top.color, accentOf(scheme));
-    expect(edgeOf(2).top.width, 2);
-    expect(edgeOf(3).top.color, scheme.outline);
+    final hairline = tester
+        .element(find.byKey(MxCodeField.slotKey(2)))
+        .hairline;
+    expect(edgeOf(2).top.color, colors.primary);
+    expect(edgeOf(2).top.width, 2 * hairline);
+    expect(edgeOf(3).top.color, colors.border);
+    expect(edgeOf(3).top.width, hairline);
 
     await pumpMx(
       tester,
@@ -114,8 +117,8 @@ void main() {
         errorText: 'Wrong',
       ),
     );
-    expect(edgeOf(0).top.color, scheme.error);
-    expect(edgeOf(5).top.color, scheme.error);
+    expect(edgeOf(0).top.color, colors.error);
+    expect(edgeOf(5).top.color, colors.error);
   });
 
   testWidgets('a wrong code keeps the next-slot cue: every slot in error, '
@@ -143,10 +146,13 @@ void main() {
     );
     await tester.pump();
 
-    expect(edgeOf(0).top.color, scheme.error);
-    expect(edgeOf(0).top.width, 2);
-    expect(edgeOf(1).top.color, scheme.error);
-    expect(edgeOf(1).top.width, 1);
+    final hairline = tester
+        .element(find.byKey(MxCodeField.slotKey(0)))
+        .hairline;
+    expect(edgeOf(0).top.color, colors.error);
+    expect(edgeOf(0).top.width, 2 * hairline);
+    expect(edgeOf(1).top.color, colors.error);
+    expect(edgeOf(1).top.width, hairline);
   });
 
   testWidgets('a read-only code keeps its digits at full strength', (
@@ -163,23 +169,24 @@ void main() {
       ),
     );
 
-    expect(tester.widget<TextField>(find.byType(TextField)).readOnly, isTrue);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).readOnly,
+      isTrue,
+    );
     expect(
       find.ancestor(
         of: find.byKey(MxCodeField.slotKey(0)),
         matching: find.byWidgetPredicate(
-          (w) =>
-              w is Opacity &&
-              w.opacity == const AppDimens().opacityDisabledContent,
+          (w) => w is Opacity && w.opacity == colors.disabledOpacity,
         ),
       ),
       findsNothing,
     );
   });
 
-  testWidgets('a disabled code takes the M3 disabled values once: a 12% '
-      'edge and 38% digits, with no wrapper dimming them again (DEV-166, '
-      'DEV-372 R2)', (tester) async {
+  testWidgets('a disabled code takes the ForUI disabled values once: the '
+      'disabled edge and digits, with no wrapper dimming them again '
+      '(DEV-166, DEV-372 R2)', (tester) async {
     final controller = TextEditingController(text: '4');
     addTearDown(controller.dispose);
     await pumpMx(
@@ -200,10 +207,7 @@ void main() {
                 )
                 .decoration
             as BoxDecoration;
-    expect(
-      (slot.border! as Border).top.color,
-      scheme.onSurface.withValues(alpha: 0.12),
-    );
+    expect((slot.border! as Border).top.color, colors.disable(colors.border));
     expect(
       tester
           .widget<Text>(
@@ -214,7 +218,7 @@ void main() {
           )
           .style!
           .color,
-      scheme.onSurface.withValues(alpha: 0.38),
+      colors.disable(colors.foreground),
     );
     expect(
       find.ancestor(
@@ -332,7 +336,7 @@ void main() {
       MxTextField(controller: controller, variant: MxTextFieldVariant.code),
     );
 
-    await tester.enterText(find.byType(TextField), '12a3456789');
+    await tester.enterText(find.byType(EditableText), '12a3456789');
 
     expect(controller.text, '123456');
     expect(MxTextField.codeLength, 6);
@@ -346,7 +350,7 @@ void main() {
       tester,
       MxTextField(controller: controller, variant: MxTextFieldVariant.code),
     );
-    await tester.enterText(find.byType(TextField), '123');
+    await tester.enterText(find.byType(EditableText), '123');
     await tester.pump();
 
     tester.testTextInput.updateEditingValue(
@@ -367,7 +371,7 @@ void main() {
       tester,
       MxTextField(controller: controller, variant: MxTextFieldVariant.code),
     );
-    await tester.enterText(find.byType(TextField), '12345');
+    await tester.enterText(find.byType(EditableText), '12345');
     await tester.pump();
 
     tester.testTextInput.updateEditingValue(

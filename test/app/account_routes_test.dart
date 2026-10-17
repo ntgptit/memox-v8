@@ -33,6 +33,8 @@ import '../support/users_fakes.dart';
 
 import 'package:forui/forui.dart';
 
+import '../support/forui_expect.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _settle(WidgetTester tester) async {
@@ -150,7 +152,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AccountScreen), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -315,7 +317,7 @@ void main() {
     expect(find.byType(AccountScreen), findsOneWidget);
     expect(find.text(_en.accountOfflineNote), findsNothing);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -450,10 +452,10 @@ void main() {
     expect(find.byType(UsersScreen), findsOneWidget);
     expect(find.text('ann@example.com'), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -485,7 +487,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.monitoringTitle), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });

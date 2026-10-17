@@ -14,11 +14,12 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _openSheet(WidgetTester tester) async {
-  await tester.tap(find.byTooltip(_en.deckActions));
+  await tester.tap(byControlLabel(_en.deckActions));
   await tester.pumpAndSettle();
 }
 
@@ -229,7 +230,7 @@ void main() {
     final words = await env.decks.sub(korean.id, 'Words');
     await env.decks.sub(words.id, 'Verbs');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Words')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Words')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
@@ -250,7 +251,7 @@ void main() {
     final words = await env.decks.sub(korean.id, 'Words');
     final verbs = await env.decks.sub(words.id, 'Verbs');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: words.id));
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Verbs')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Verbs')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
@@ -274,7 +275,7 @@ void main() {
     final korean = await env.decks.root('Korean');
     await env.decks.sub(korean.id, 'Words');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Words')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Words')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
@@ -406,7 +407,7 @@ void main() {
     await env.decks.root('Kanji');
     await pumpLibraryScreen(tester, env, deckScreen());
 
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Kanji')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Kanji')));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckOpen), findsOneWidget);
@@ -420,7 +421,7 @@ void main() {
 
     // Deleted elsewhere; the row is still on screen until the next frame.
     await env.decks.deleteDeck(deckId: kanji.id);
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Kanji')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Kanji')));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckOpen), findsNothing);

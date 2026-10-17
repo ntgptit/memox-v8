@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 List<MxBreadcrumbSegment> _path(int depth, {void Function(int)? onTap}) => [
@@ -16,7 +17,7 @@ List<MxBreadcrumbSegment> _path(int depth, {void Function(int)? onTap}) => [
 ];
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('ancestors are tappable, the current level is not', (
     tester,
@@ -24,13 +25,16 @@ void main() {
     final tapped = <int>[];
     await pumpMx(tester, MxBreadcrumb(segments: _path(3, onTap: tapped.add)));
     await tester.tap(find.text('Level 1'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Level 3'), warnIfMissed: false);
+    await tester.pumpAndSettle();
 
     expect(tapped, [1]);
   });
 
   testWidgets(
-    'ancestor labelMedium onSurfaceVariant, current titleSmall onSurface',
+    'ancestor label role in the muted ink, current item-title role in the '
+    'foreground',
     (tester) async {
       await pumpMx(tester, MxBreadcrumb(segments: _path(2)));
 
@@ -38,18 +42,20 @@ void main() {
       final current = tester.widget<Text>(find.text('Level 2')).style!;
       final texts = tester.element(find.text('Level 1')).texts;
       expect(ancestor.fontWeight, texts.label.fontWeight);
-      expect(ancestor.color, scheme.onSurfaceVariant);
+      expect(ancestor.color, colors.mutedForeground);
       expect(current.fontWeight, texts.itemTitle.fontWeight);
-      expect(current.color, scheme.onSurface);
+      expect(current.color, colors.foreground);
     },
   );
 
-  testWidgets('one outline chevron at 16 between each pair', (tester) async {
+  testWidgets('one border-coloured chevron at 16 between each pair', (
+    tester,
+  ) async {
     await pumpMx(tester, MxBreadcrumb(segments: _path(4)));
     final chevrons = find.byIcon(AppIcons.chevronRight);
 
     expect(chevrons, findsNWidgets(3));
-    expect(tester.widget<Icon>(chevrons.first).color, scheme.outline);
+    expect(tester.widget<Icon>(chevrons.first).color, colors.border);
     expect(tester.getSize(chevrons.first).width, 16);
   });
 
@@ -115,10 +121,7 @@ void main() {
   // M3F-05: an ancestor was a bare InkWell, so keyboard focus showed only the
   // theme's focus layer. MxRowInk draws the shared 2px primary ring.
   for (final brightness in Brightness.values) {
-    final focusScheme = brightness == Brightness.light
-        ? lightColorScheme
-        : darkColorScheme;
-    testWidgets('M3F-05: a focused ancestor draws the 2px primary ring '
+    testWidgets('M3F-05: a focused ancestor draws the theme focus ring '
         '(${brightness.name})', (tester) async {
       final tapped = <int>[];
       await pumpMx(
@@ -127,14 +130,21 @@ void main() {
         brightness: brightness,
       );
       useKeyboardFocusHighlight();
+      final ring = forUiTheme(
+        tester,
+        find.byType(MxBreadcrumb),
+      ).style.focusedOutlineStyle;
       expect(
         tester.renderObject(find.byType(MxBreadcrumb)),
-        isNot(paintsFocusRing(focusScheme.primary)),
+        isNot(paintsFocusRing(ring.color, width: ring.width)),
       );
 
       await tabTo(tester, find.text('Level 2'));
 
-      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+      expect(
+        focusRingRender(tester),
+        paintsFocusRing(ring.color, width: ring.width),
+      );
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       expect(tapped, [2]);
     });

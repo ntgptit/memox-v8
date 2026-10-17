@@ -21,6 +21,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 // The session route's screen: spec D2–D8 (D8 as the owner ruled it);
 // UC-STUDY-001 A3, A5, E2, E4.
@@ -143,7 +144,7 @@ void main() {
     await _pumpScreen(tester, env, id);
     await _swipeLeft(tester);
 
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
     expect(find.text(_en.studyExitTitle), findsOneWidget);
     await tester.tap(find.text(_en.studyExitStop));
@@ -161,7 +162,7 @@ void main() {
     await _pumpScreen(tester, env, id);
     final front = _front(tester);
 
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.studyExitKeep));
     await tester.pumpAndSettle();

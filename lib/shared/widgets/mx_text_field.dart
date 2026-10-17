@@ -123,9 +123,28 @@ class MxTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     if (variant == MxTextFieldVariant.code) return MxCodeField(field: this);
     final edits = MxUserEdits(onChanged);
-    final isBare = variant == MxTextFieldVariant.study;
+    return _HintWhileEmpty(
+      controller: controller,
+      builder: (context, controller, isEmpty) =>
+          _field(context, controller, edits, isEmpty),
+    );
+  }
+
+  Widget _field(
+    BuildContext context,
+    TextEditingController controller,
+    MxUserEdits edits,
+    bool isEmpty,
+  ) {
     final hasError = errorText != null;
+    final name = label;
+    final isBare = variant == MxTextFieldVariant.study;
     final field = FTextField(
+      // The name goes on the input itself, the node TalkBack focuses, so the
+      // field reads as its name with its value; ForUI's own label sits
+      // outside the input's node.
+      builder: (context, style, variants, input) =>
+          name == null ? input : Semantics(label: name, child: input),
       // Autofocus is read once, on mount: a field that was disabled when
       // first built takes the focus when it is enabled, so the flip remounts.
       key: ValueKey(isEnabled),
@@ -138,7 +157,9 @@ class MxTextField extends StatelessWidget {
           ? _bareStyle(context)
           : const FTextFieldStyleDelta.context(),
       label: isBare ? null : _paintedLabel(context, hasError),
-      hint: hintText,
+      // Only while empty: the decorator keeps an unseen hint's room, so a
+      // hint that wraps would hold a filled box open.
+      hint: isEmpty ? hintText : null,
       description: hasError || isBare ? null : _supportingRow(context, null),
       error: hasError ? _supportingRow(context, errorText) : null,
       focusNode: focusNode,
@@ -181,7 +202,6 @@ class MxTextField extends StatelessWidget {
             child: Center(child: field),
           )
         : field;
-    if (label case final name?) return Semantics(label: name, child: target);
     return target;
   }
 
@@ -223,7 +243,10 @@ class MxTextField extends StatelessWidget {
             children: [
               // The field carries the name, so TalkBack reads it once.
               ExcludeSemantics(child: Text(name)),
-              ?labelTrailing,
+              // Its own node, so a marker ("Required") is not read as part
+              // of the field's name.
+              if (labelTrailing case final marker?)
+                Semantics(container: true, child: marker),
             ],
           ),
         ),
@@ -255,4 +278,63 @@ class MxTextField extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Gives [builder] the field's controller, the caller's or one of its own,
+/// and whether it is empty, rebuilding only when that flips.
+class _HintWhileEmpty extends StatefulWidget {
+  const _HintWhileEmpty({required this.controller, required this.builder});
+
+  final TextEditingController? controller;
+  final Widget Function(
+    BuildContext context,
+    TextEditingController controller,
+    bool isEmpty,
+  )
+  builder;
+
+  @override
+  State<_HintWhileEmpty> createState() => _HintWhileEmptyState();
+}
+
+class _HintWhileEmptyState extends State<_HintWhileEmpty> {
+  TextEditingController? _own;
+  late bool _isEmpty;
+
+  TextEditingController get _controller =>
+      widget.controller ?? (_own ??= TextEditingController());
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onText);
+    _isEmpty = _controller.text.isEmpty;
+  }
+
+  @override
+  void didUpdateWidget(_HintWhileEmpty oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final old = oldWidget.controller ?? _own;
+    if (identical(old, _controller)) return;
+    old?.removeListener(_onText);
+    _controller.addListener(_onText);
+    _isEmpty = _controller.text.isEmpty;
+  }
+
+  void _onText() {
+    final isEmpty = _controller.text.isEmpty;
+    if (isEmpty == _isEmpty) return;
+    setState(() => _isEmpty = isEmpty);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onText);
+    _own?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      widget.builder(context, _controller, _isEmpty);
 }

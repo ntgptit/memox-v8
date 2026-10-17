@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -26,9 +25,12 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
+import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/wrap_rule.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -102,16 +104,15 @@ void main() {
     final count = find.text(_en.cardFieldCount(61, 60));
     expect(
       tester.getTopLeft(count).dy,
-      greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+      greaterThanOrEqualTo(
+        tester.getBottomLeft(fieldBox(find.byType(FTextField))).dy,
+      ),
     );
     expect(
       tester.getTopRight(count).dx,
-      tester.getTopRight(find.byType(TextField)).dx - 16,
+      tester.getTopRight(find.byType(FTextField)).dx,
     );
-    expect(
-      tester.widget<Text>(count).style!.color,
-      tester.element(count).colors.error,
-    );
+    expect(textColor(tester, count), tester.element(count).colors.error);
   });
 
   libraryTest('an optional field shows its count once typed', (
@@ -169,6 +170,7 @@ void main() {
       await tester.tap(find.bySemanticsLabel(_en.cardTagRemove('Verb')));
       await tester.pump();
       expect(find.text(_en.cardTagLimit), findsNothing);
+      await tester.pump(const Duration(milliseconds: 200));
     },
   );
 
@@ -196,6 +198,7 @@ void main() {
     expect(find.text(_en.cardSaveFailedTitle), findsOneWidget);
     await tester.tap(find.widgetWithText(MxButton, _en.cardRetrySave));
     expect(saves, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the discard dialog answers Discard or Keep editing', (
@@ -266,6 +269,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the deck context holds its place while the deck loads', (
@@ -344,7 +348,7 @@ void main() {
       find.descendant(of: disclosure, matching: find.byIcon(AppIcons.add)),
       findsOneWidget,
     );
-    expect(find.byIcon(Icons.auto_awesome_outlined), findsNothing);
+    expect(find.byIcon(FLucideIcons.sparkles), findsNothing);
     expect(
       tester.getSize(find.byType(CardAddDetailsWidget)).height,
       greaterThanOrEqualTo(48),
@@ -363,6 +367,7 @@ void main() {
     await tester.tap(find.byType(CardAddDetailsWidget));
     expect(opened, 1);
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the details disclosure is edged in the control edge, as the '
@@ -418,14 +423,15 @@ void main() {
       final label = find.text(text);
       final element = tester.element(label);
       final texts = element.texts;
-      // A field paints its own label in onSurfaceVariant; the section
-      // header's stays on the default ink.
+      // A field's label is ForUI's form-field label; the section header's
+      // stays in the label role.
+      if (role == 'paintedLabel') {
+        expectForUiFieldLabel(tester, label);
+        continue;
+      }
       expect(tester.widget<Text>(label).style, switch (role) {
-        'paintedLabel' => texts.label.copyWith(
-          color: element.colors.mutedForeground,
-        ),
         'fieldLabel' => texts.label,
-        _ => texts.body.copyWith(color: element.accentColor),
+        _ => texts.body.copyWith(color: element.colors.primary),
       }, reason: text);
     }
     expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);

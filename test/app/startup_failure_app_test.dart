@@ -60,6 +60,7 @@ void main() {
     await tester.pumpWidget(app(isReportQueued: true));
     expect(find.text(_en.startupReportQueued), findsOneWidget);
     expect(find.text(_en.startupSendReport), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   testWidgets('an open that stopped inside an upgrade step names it', (

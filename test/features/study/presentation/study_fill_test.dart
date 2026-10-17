@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
@@ -14,6 +13,8 @@ import 'package:memox/features/study/presentation/widgets/support/study_settle_g
 
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
+
+import 'package:forui/forui.dart';
 
 // Screen 20, Fill (UC-STUDY-008): BR-STUDY-026 to BR-STUDY-030, BR-STUDY-059,
 // BR-STUDY-063, BR-STUDY-064; FE-A6 P4 rulings F1–F4, V1, V4, V6, V7, V10.
@@ -45,7 +46,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 Future<void> _type(WidgetTester tester, String text) async {
-  await tester.enterText(find.byType(TextField), text);
+  await tester.enterText(find.byType(FTextField), text);
   await tester.pump();
 }
 
@@ -95,6 +96,7 @@ void main() {
 
     expect(find.text('banana'), findsOneWidget);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('IME Done checks (F2)', (tester, env) async {
@@ -126,7 +128,7 @@ void main() {
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
     expect(find.textContaining(_en.studyFillHintWrong), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
+    expect(find.byType(FTextField), findsNothing);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
       contains(_en.studyFillAnnounceWrong('term 1')),
@@ -137,6 +139,7 @@ void main() {
     await _settle(tester);
     expect(find.text('banana'), findsOneWidget);
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('accents count: "tèrm 1" does not match "term 1" '
@@ -149,6 +152,7 @@ void main() {
     await _settle(tester);
 
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest("Show hint shows the card's hint once and keeps what was typed "
@@ -164,9 +168,18 @@ void main() {
     expect(find.text(_en.studyFillShowHint), findsNothing);
     expect(find.textContaining(_en.studyFillHintUsed), findsOneWidget);
     expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byType(FTextField),
+              matching: find.byType(EditableText),
+            ),
+          )
+          .controller
+          .text,
       'ter',
     );
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a card with no hint offers no Show hint (F4)', (
@@ -202,10 +215,10 @@ void main() {
       matching: find.text(_en.studyMode(StudyMode.fill).toUpperCase()),
     );
 
-    expect(fill.color, lightColorScheme.primary);
+    expect(fill.color, appLightColors.primary);
     expect(
       tester.widget<Text>(chip).style?.color,
-      tester.element(chip).accentColor,
+      tester.element(chip).colors.primary,
     );
   });
 
@@ -232,6 +245,7 @@ void main() {
     final struck = tester.widget<Text>(find.text('term 9'));
     expect(struck.style!.decoration, TextDecoration.lineThrough);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a double tap on Check does not skip the wrong answer: '
@@ -255,6 +269,7 @@ void main() {
     await tester.tap(find.text(_en.studyContinue));
     await _settle(tester);
     expect(find.text('banana'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Show hint moves nothing: the hint line is reserved, at the '
@@ -265,13 +280,13 @@ void main() {
     final handle = tester.ensureSemantics();
     final id = await _fill(env);
     await pumpLibraryScreen(tester, env, _screen(id));
-    final before = tester.getTopLeft(find.byType(TextField)).dy;
+    final before = tester.getTopLeft(find.byType(FTextField)).dy;
     expect(find.bySemanticsLabel(_en.studyFillHintRow('hint 1')), findsNothing);
 
     await tester.tap(find.text(_en.studyFillShowHint));
     await _settle(tester);
 
-    expect(tester.getTopLeft(find.byType(TextField)).dy, before);
+    expect(tester.getTopLeft(find.byType(FTextField)).dy, before);
     expect(
       find.bySemanticsLabel(_en.studyFillHintRow('hint 1')),
       findsOneWidget,
@@ -282,10 +297,11 @@ void main() {
       tester
           .element(hint)
           .texts
-          .bodyMedium
-          ?.copyWith(color: tester.element(hint).colors.mutedForeground),
+          .body
+          .copyWith(color: tester.element(hint).colors.mutedForeground),
     );
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a hint that wraps is reserved whole too (R4)', (
@@ -298,12 +314,13 @@ void main() {
       "syllables, the second one a number' WHERE id = 'ST-01'",
     );
     await pumpLibraryScreen(tester, env, _screen(id));
-    final before = tester.getTopLeft(find.byType(TextField)).dy;
+    final before = tester.getTopLeft(find.byType(FTextField)).dy;
 
     await tester.tap(find.text(_en.studyFillShowHint));
     await _settle(tester);
 
-    expect(tester.getTopLeft(find.byType(TextField)).dy, before);
+    expect(tester.getTopLeft(find.byType(FTextField)).dy, before);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a double tap on Show hint does not check a half-typed '
@@ -320,8 +337,17 @@ void main() {
 
     expect(await _loggedTurns(env), 0);
     expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byType(FTextField),
+              matching: find.byType(EditableText),
+            ),
+          )
+          .controller
+          .text,
       'te',
     );
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

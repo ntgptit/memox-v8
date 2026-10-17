@@ -48,8 +48,7 @@ MaterialApp.router(theme, darkTheme, themeMode, builder: …)
   └─ AppThemeHost(brightness: resolveBrightness(context, themeMode))
        └─ FTheme(data: themeFor(brightness))
             └─ material_ui Theme(data: theme.toApproximateMaterialTheme())
-                 └─ FToaster
-                      └─ Navigator (routes, dialogs, sheets, toasts)
+                 └─ Navigator (routes, dialogs, sheets; toasts in its overlay)
 ```
 
 Every route and overlay pushed on the root navigator is a descendant of the
@@ -85,7 +84,7 @@ reverse, and nothing in `lib/` reads `Theme.of(context)` for a colour.
 |---|---|---|---|
 | `showMxDialog` / `MxDialog` | `FDialogRoute` subclass with `MxHeldRoute` | `FColors.barrier` | A held popup ignores barrier taps and Back |
 | `showMxBottomSheet` / `MxBottomSheet` | `FModalSheetRoute` subclass with `MxHeldRoute` | `FColors.barrier` | Also absorbs the drag |
-| `showMxSnackbar` | `showFToast` | none | Returns `MxSnackbarController`; one toast at a time; stays while TalkBack is on and it has an action |
+| `showMxSnackbar` | ForUI's `FToast` in the root overlay (not ForUI's toaster, whose tap-to-pause lands on the screen's root semantics node unlabelled) | none | Returns `MxSnackbarController`; one toast at a time; a live region; swipe down dismisses; stays while TalkBack is on and it has an action |
 
 ## Targets and accessibility
 

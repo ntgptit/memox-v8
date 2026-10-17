@@ -72,6 +72,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(MxButton, _en.cardEditAction));
     expect(edits, [card.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a card deleted while open shows it is gone (E2)', (

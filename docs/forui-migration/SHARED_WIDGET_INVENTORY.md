@@ -18,7 +18,7 @@ Each file has exactly one class.
 | Class | Meaning |
 |---|---|
 | DIRECT_FORUI | A thin facade that renders one ForUI component with little or no restyling (for example `MxToggle` over `FSwitch`). |
-| FORUI_ADAPTER | Wraps a ForUI component and adapts behaviour or contract: style deltas, 48 dp target insets, held-route behaviour, API reshaping (for example `MxSnackbarController` over `showFToast`). |
+| FORUI_ADAPTER | Wraps a ForUI component and adapts behaviour or contract: style deltas, 48 dp target insets, held-route behaviour, API reshaping (for example `MxSnackbarController` over ForUI's `FToast`). |
 | FORUI_COMPOSITION | Composes several ForUI components and/or Mx widgets into an app pattern. A file counts here when it instantiates, or is typed on, an Mx widget that renders a ForUI component. |
 | CUSTOM_FLUTTER | Built from Flutter widget primitives only, with no ForUI component. The reason is given where the file states one. |
 | INFRASTRUCTURE | Theme, host or plumbing with no visible component of its own, or Material used only as infrastructure (`MxAppShell` over `Scaffold`). |
@@ -101,7 +101,7 @@ total (80) equals the number of Dart files listed: 69 from
 | `lib/shared/widgets/mx_sheet_actions.dart` | `MxSheetActions` (named `.single`, `.custom`) | FORUI_COMPOSITION | via `MxButton`, `MxActionPair` | none | Footer of every dialog and sheet: Cancel and confirm 1 : 1, stacked when a label does not fit. Confirm has one tone (destructive xor warning, asserted); null `onConfirm` disables it. |
 | `lib/shared/widgets/mx_skeleton.dart` | `MxSkeleton`, `MxSkeletonRow`, `MxSkeletonPulse`, `MxSkeletonList` | CUSTOM_FLUTTER | none | none | Pulsing placeholder (0.45 to 0.75 opacity), one shared ticker per list, rests at 0.5 under reduced motion. `MxSkeletonList` is read once as `semanticLabel`. |
 | `lib/shared/widgets/mx_slider.dart` | `MxSlider` | FORUI_ADAPTER | `FSlider`, `FSliderControl.liftedContinuous`, `FSliderValue` | none | Maps the caller's unit (`value`, `max`, for example milliseconds) to ForUI's fraction and back. `max` of 0 or null `onChanged` disables. One merged TalkBack node. `semanticFormatter` is `String Function(double value)?`. |
-| `lib/shared/widgets/mx_snackbar.dart` | `showMxSnackbar`, `MxSnackbarController`, `mxUndoWindow` | FORUI_ADAPTER | `showFToast` (renders `FToast`), `FToasterEntry`, `FToasterState`, `FButton` (outline, small) | none | Toasts come from the app's `FToaster` (`AppThemeHost`). A new toast replaces the one on screen. A toast with an action persists while TalkBack is on. Returns `MxSnackbarController` with `close()` and `closed`. |
+| `lib/shared/widgets/mx_snackbar.dart` | `showMxSnackbar`, `MxSnackbarController`, `mxUndoWindow` | FORUI_ADAPTER | `FToast` (in the root `Overlay`), `MxButton` (outline, small) for the action | `Durations`, `Easing` | Not ForUI's toaster: its tap-to-pause gesture lands on the screen's root semantics node as an unlabelled action. The toast is a live region; a swipe down dismisses it. A new toast replaces the one on screen. A toast with an action persists while TalkBack is on. Returns `MxSnackbarController` with `close()` and `closed`. |
 | `lib/shared/widgets/mx_spinner.dart` | `MxSpinner`, `MxSpinnerSize` | CUSTOM_FLUTTER | none | none | The file states it keeps turning under reduced motion because it is the only sign that work is in flight, and that ForUI's `FCircularProgress` stops under reduced motion. Silent unless `semanticLabel` is set. |
 | `lib/shared/widgets/mx_stacked_day_bars.dart` | `MxDayBar`, `MxStackedDayBars` | CUSTOM_FLUTTER | none | none | Week of stacked bars. Each bar is one TalkBack node (`semanticLabel`); the drawing and legend say nothing more. |
 | `lib/shared/widgets/mx_stat_tile.dart` | `MxStatTile`, `MxStatTileEmphasis`, `MxStatTileLayout` | CUSTOM_FLUTTER | none | none | Figure over label, one node reading label then value. `semanticValue` replaces the figure when it reads wrongly aloud. |
@@ -137,7 +137,7 @@ total (80) equals the number of Dart files listed: 69 from
 
 | File | Exports | Class | ForUI components | Material kept | Notes |
 |---|---|---|---|---|---|
-| `lib/app/app_theme_host.dart` | `AppThemeHost`, `resolveBrightness` | INFRASTRUCTURE | `FTheme`, `FToaster` | `ThemeMode` from `package:flutter/material.dart`; `package:material_ui` as `forui_material` for `Theme` | Sits in `MaterialApp.builder`, above the Navigator, so every route, dialog, sheet and overlay inherits one theme. The `material_ui` `Theme` is ForUI's `toApproximateMaterialTheme()` bridge for the few `material_ui` pieces ForUI builds on (the comment names a text field's selection toolbar); nothing reads it back. `FToaster` hosts the toasts `showMxSnackbar` shows. |
+| `lib/app/app_theme_host.dart` | `AppThemeHost`, `resolveBrightness` | INFRASTRUCTURE | `FTheme` | `ThemeMode` from `package:flutter/material.dart`; `package:material_ui` as `forui_material` for `Theme` | Sits in `MaterialApp.builder`, above the Navigator, so every route, dialog, sheet and overlay inherits one theme. The `material_ui` `Theme` is ForUI's `toApproximateMaterialTheme()` bridge for the few `material_ui` pieces ForUI builds on (the comment names a text field's selection toolbar); nothing reads it back. |
 
 ## Breaking public API changes
 

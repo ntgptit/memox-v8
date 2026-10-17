@@ -23,7 +23,7 @@ system Material riêng.
   `FThemeData` là theme chính của app; các widget `Mx*` trong `lib/shared/widgets/`
   là facade của app, dựng trên component ForUI (`FButton`, `FTappable`, `FCard`,
   `FTextField`, `FSwitch`, `FSlider`, `FCheckbox`, `FRadio`, `FBadge`, `FDialog`,
-  route sheet của ForUI, `showFToast`, `FTooltip`, `FDivider`,
+  route sheet của ForUI, `FToast`, `FTooltip`, `FDivider`,
   `FBottomNavigationBar`). Không dùng Mix, Remix hay Fortal.
 - **Feature chỉ dùng `Mx*`.** `package:forui` chỉ được import trong
   `lib/core/theme/`, `lib/shared/` và `lib/app/` (`tools/ui_lint` UIL06, guard
@@ -46,7 +46,7 @@ system Material riêng.
   `ThemeContext` chỉ có `colors`, `texts`, `status`, `dimens`, `radii`, `hairline`.
 - **Phạm vi theme.** `MaterialApp.router` (giữ vì go_router dựng page route theo
   `MaterialApp`) nhận theme host. `builder` đặt `AppThemeHost`: `FTheme` →
-  `Theme` của `material_ui` (ForUI tự đọc) → `FToaster`, bọc Navigator, nên mọi route
+  `Theme` của `material_ui` (ForUI tự đọc), bọc Navigator, nên mọi route
   và overlay của root navigator kế thừa cùng một theme. Light/Dark/System đổi bằng
   `themeMode` và `resolveBrightness`, không dựng lại router (BR-SETTINGS-005).
 - **Material chỉ là hạ tầng, một chiều.** `package:flutter/material.dart` chỉ được

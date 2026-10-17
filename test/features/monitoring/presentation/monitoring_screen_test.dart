@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
@@ -16,6 +17,8 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
+
+import 'package:forui/forui.dart';
 
 // Monitoring spec §3.2, §3.4, §5: the Server tab.
 /// The status pills a row shows; a row without one keeps an invisible pill
@@ -127,6 +130,7 @@ void main() {
     await tester.tap(find.byType(MxListRow));
 
     expect(opened, 'a');
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('while the first page loads the list is a skeleton', (
@@ -153,7 +157,7 @@ void main() {
   ) async {
     final repository = FakeMonitoringRepository()..autoPage = pageOf(0);
     await pumpMonitoring(tester, env, repository);
-    await tester.enterText(find.byType(TextField).first, 'nothing');
+    await tester.enterText(find.byType(FTextField).first, 'nothing');
     await tester.pump(const Duration(milliseconds: 400));
     await settleMonitoring(tester);
 
@@ -164,9 +168,18 @@ void main() {
     expect(find.text('No open problems'), findsOneWidget);
     expect(repository.lastQuery.filter.isDefault, isTrue);
     expect(
-      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byType(FTextField).first,
+              matching: find.byType(EditableText),
+            ),
+          )
+          .controller
+          .text,
       isEmpty,
     );
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('offline says so and points at Not sent, with a Retry', (
@@ -216,6 +229,7 @@ void main() {
     expect(find.byType(MxErrorState), findsNothing);
     expect(find.text('r0'), findsNothing);
     expect(find.text('sync.push_failed'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('FORBIDDEN says only an admin can see this', (tester, env) async {
@@ -277,6 +291,7 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pump();
     expect(repository.queries, hasLength(3));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('pull to refresh asks the first page again', (tester, env) async {
@@ -298,7 +313,7 @@ void main() {
     final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
     await pumpMonitoring(tester, env, repository);
 
-    await tester.enterText(find.byType(TextField).first, 'push');
+    await tester.enterText(find.byType(FTextField).first, 'push');
     await tester.pump(const Duration(milliseconds: 399));
     expect(repository.queries, hasLength(1));
     await tester.pump(const Duration(milliseconds: 1));
@@ -322,8 +337,8 @@ void main() {
     await pumpMonitoring(tester, env, repository);
 
     expect(find.widgetWithText(MxBadge, 'Fixed'), findsOneWidget);
-    expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.info_outline), findsOneWidget);
+    expect(find.byIcon(AppIcons.levelDebug), findsOneWidget);
+    expect(find.byIcon(AppIcons.info), findsOneWidget);
   });
 
   // Impeccable 2026-09-29 F5: the time column reads at one height.

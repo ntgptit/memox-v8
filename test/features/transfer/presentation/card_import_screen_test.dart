@@ -21,6 +21,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/forui_expect.dart';
 
 // The import screen over the real backend and a fake picker (UC-TRANSFER-001,
 // IT-NAV-012, IT-CARD-014).
@@ -331,7 +332,7 @@ void main() {
     await _pump(tester, env, deck.id);
     expect(find.text(_en.importHelperBody), findsOneWidget);
 
-    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.tap(byControlLabel(_en.commonDismissNote));
     await tester.pumpAndSettle();
     expect(find.text(_en.importHelperBody), findsNothing);
 

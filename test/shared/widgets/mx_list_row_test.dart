@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
-import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -21,7 +18,7 @@ const _second = ValueKey('row-2');
 Widget _width(Widget child) => SizedBox(width: 360, child: child);
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('one-line title and sub; 16 inset; 72 two-line floor', (
     tester,
@@ -41,8 +38,11 @@ void main() {
 
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
     expect((sub.maxLines, sub.overflow), (1, TextOverflow.ellipsis));
-    expect(title.style!.fontSize, 14);
-    expect(sub.style!.color, scheme.onSurfaceVariant);
+    expect(
+      title.style!.fontSize,
+      tester.element(find.text('Kanji N5')).texts.itemTitle.fontSize,
+    );
+    expect(sub.style!.color, colors.mutedForeground);
     expect(
       tester.getTopLeft(find.byType(MxIconTile)).dx -
           tester.getTopLeft(find.byType(MxListRow)).dx,
@@ -69,7 +69,14 @@ void main() {
 
     await pumpMx(
       tester,
-      _width(const MxListRow(title: 'Kanji N5', meta: Text('42 cards'))),
+      _width(
+        MxListRow(
+          title: 'Kanji N5',
+          meta: Builder(
+            builder: (context) => Text('42 cards', style: context.texts.body),
+          ),
+        ),
+      ),
     );
     expect(tester.getSize(find.byType(MxListRow)).height, 72);
   });
@@ -121,15 +128,17 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.byTooltip('Deck actions'));
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
     expect((rowTaps, menuTaps), (0, 1));
     await tester.tap(find.text('Kanji N5'));
+    await tester.pumpAndSettle();
     expect(rowTaps, 1);
 
     final row = tester.getSemantics(find.text('Kanji N5'));
     expect(row, isSemantics(label: 'Kanji N5\n42 cards', isButton: true));
     expect(
-      tester.getSemantics(find.byTooltip('Deck actions')).id,
+      tester.getSemantics(find.bySemanticsLabel('Deck actions')).id,
       isNot(row.id),
     );
     handle.dispose();
@@ -180,7 +189,7 @@ void main() {
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.chevronRight)).color,
-      scheme.onSurfaceVariant,
+      colors.mutedForeground,
     );
 
     await pumpMx(
@@ -222,7 +231,7 @@ void main() {
             ),
           )
           .opacity,
-      0.38,
+      colors.disabledOpacity,
     );
   });
 
@@ -259,7 +268,7 @@ void main() {
               find.ancestor(of: dimmed, matching: find.byType(Opacity)),
             )
             .opacity,
-        0.38,
+        appLightColors.disabledOpacity,
       );
     }
   });
@@ -317,7 +326,7 @@ void main() {
       spans[1].style!.fontWeight,
       tester.element(find.text('Academic words')).texts.itemTitle.fontWeight,
     );
-    expect(spans[1].style!.color, accentOf(scheme));
+    expect(spans[1].style!.color, colors.primary);
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
   });
 

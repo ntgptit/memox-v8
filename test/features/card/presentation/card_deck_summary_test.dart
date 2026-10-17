@@ -63,12 +63,12 @@ void main() {
       tester
           .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
           .texts
-          .labelSmall
-          ?.copyWith(
+          .meta
+          .copyWith(
             color: tester
                 .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
                 .colors
-                .onSurfaceVariant,
+                .mutedForeground,
           ),
     );
     expect(find.text(_en.cardMasteredOf(80, 420)), findsOneWidget);
@@ -100,6 +100,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(40)));
     expect(studied, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('with only new cards Study this deck names no count; with '
@@ -191,7 +192,7 @@ void main() {
     final role = tester
         .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
         .texts
-        .labelSmall!;
+        .meta;
     expect(label.style!.fontSize, role.fontSize);
     expect(label.style!.fontWeight, role.fontWeight);
   });

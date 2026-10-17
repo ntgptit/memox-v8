@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_question_bar_chart_widget.dart';
@@ -58,7 +59,7 @@ void main() {
       expect(find.text('$no'), findsOneWidget);
     }
     // A second channel besides colour, in the text role of the bar's status.
-    final theme = Theme.of(tester.element(find.byType(MxChartLegend)));
+    final context = tester.element(find.byType(MxChartLegend));
     final glyphs = tester
         .widgetList<Icon>(
           find.descendant(
@@ -74,11 +75,12 @@ void main() {
     // The ink and size come from the glyph's own IconTheme.
     IconThemeData themeOf(int i) =>
         IconTheme.of(tester.element(find.byWidget(glyphs[i])));
-    expect(themeOf(1).color, theme.colorScheme.error);
-    expect(themeOf(2).color, theme.colorScheme.onSurfaceVariant);
-    expect(themeOf(1).size, 18);
+    expect(themeOf(1).color, context.colors.error);
+    expect(themeOf(2).color, context.colors.mutedForeground);
+    expect(themeOf(1).size, context.dimens.sizeIconCompact);
     await tester.tap(find.text('32'));
     expect(opened, [32]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the chart is one TalkBack node; its bars are hidden from the '

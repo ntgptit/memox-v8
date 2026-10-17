@@ -21,6 +21,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -106,7 +107,7 @@ Future<void> _dragPastNext(WidgetTester tester, String name) async {
 
 /// Reorder starts from a row's action sheet (ruling C-L4).
 Finder get _anyRowMore =>
-    find.byTooltip(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}')).first;
+    byControlLabel(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}')).first;
 
 Future<void> _openRowSheet(WidgetTester tester) async {
   await tester.tap(_anyRowMore);

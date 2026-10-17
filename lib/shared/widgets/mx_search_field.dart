@@ -7,7 +7,9 @@ import 'package:material_ui/material_ui.dart'
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/shared/widgets/mx_user_edits.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// The library search input, on ForUI's [FTextField]: a leading glyph, a
 /// single-line query on the muted ground in a pill, and a clear button that
@@ -21,6 +23,7 @@ class MxSearchField extends StatefulWidget {
     required String this.clearLabel,
     this.onChanged,
     this.focusNode,
+    this.isRouteName = false,
   }) : onTap = null;
 
   /// A read-only field that opens the search elsewhere (screen 01's root
@@ -33,7 +36,8 @@ class MxSearchField extends StatefulWidget {
   }) : controller = null,
        clearLabel = null,
        onChanged = null,
-       focusNode = null;
+       focusNode = null,
+       isRouteName = false;
 
   final TextEditingController? controller;
   final String hintText;
@@ -48,6 +52,10 @@ class MxSearchField extends StatefulWidget {
   /// Set by [MxSearchField.trigger]: the field stands for a search that
   /// opens elsewhere.
   final VoidCallback? onTap;
+
+  /// The field names its route (screen 04), as an app bar title does: the
+  /// field's own node, which reads the hint, carries the name (DEV-393).
+  final bool isRouteName;
 
   @override
   State<MxSearchField> createState() => _MxSearchFieldState();
@@ -91,7 +99,6 @@ class _MxSearchFieldState extends State<MxSearchField> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final hasQuery = _controller.text.isNotEmpty;
     final pill = context.radii.pill;
     final edits = MxUserEdits(widget.onChanged);
     final edge = OutlineInputBorder(
@@ -99,7 +106,20 @@ class _MxSearchFieldState extends State<MxSearchField> {
       borderRadius: pill,
       borderSide: BorderSide.none,
     );
+    final hasQuery = _controller.text.isNotEmpty;
     final field = FTextField(
+      // The input's own node is the field's name: the decorator labels it
+      // with the hint while empty, and the hint stays its name once it holds
+      // a query, so it never reads only as its value.
+      builder: (context, style, variants, input) {
+        // Always this Semantics, labelled or not, so a query that comes or
+        // goes never remounts the input (and drops its focus).
+        final named = Semantics(
+          label: hasQuery ? widget.hintText : null,
+          child: input,
+        );
+        return widget.isRouteName ? MxRouteName(child: named) : named;
+      },
       control: FTextFieldControl.managed(
         controller: _controller,
         onChange: edits.onChange,
@@ -157,12 +177,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
       ),
     );
     final onTap = widget.onTap;
-    // An empty field is named by its hint; one holding a query keeps that
-    // name, or it reads only as its value (and names its route with nothing
-    // on screen 04, DEV-393).
-    if (onTap == null) {
-      return Semantics(label: hasQuery ? widget.hintText : null, child: field);
-    }
+    if (onTap == null) return field;
     return Semantics(
       button: true,
       label: widget.hintText,
@@ -173,7 +188,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
         focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
           borderRadius: pill,
         ),
-        child: IgnorePointer(child: field),
+        child: mxPaintedOnly(field),
       ),
     );
   }

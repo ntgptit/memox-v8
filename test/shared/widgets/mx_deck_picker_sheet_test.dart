@@ -27,7 +27,7 @@ MxDeckPickerSheet _picker(
 
 void main() {
   testWidgets(
-    'head: a titleSmall title and a bodyMedium rule, space24 in and 20 down',
+    'head: an item-title title and a body rule, space24 in and 52 down',
     (tester) async {
       await pumpMx(
         tester,
@@ -80,6 +80,7 @@ void main() {
       expect(rows.last.subtitle, 'Holds other decks');
       expect(find.byType(MxDividedColumn), findsOneWidget);
       await tester.tap(find.text('Kana'));
+      await tester.pumpAndSettle();
       expect(picked, 'Kana');
       expect(
         tester.widget<MxButton>(find.byType(MxButton)).tone,
@@ -119,6 +120,7 @@ void main() {
       lessThanOrEqualTo(800 * 0.85),
     );
     await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
     expect(dismissed, 1);
   });
   testWidgets('loading keeps the head where the loaded sheet draws it', (
@@ -200,7 +202,9 @@ void main() {
       MxButtonTone.outline,
     );
     await tester.tap(find.widgetWithText(MxButton, 'Retry'));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
+    await tester.pumpAndSettle();
     expect((retries, dismissed), (1, 1));
   });
 }

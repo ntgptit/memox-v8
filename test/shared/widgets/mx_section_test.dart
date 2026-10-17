@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -53,7 +54,7 @@ void main() {
     await pumpMx(tester, _width(MxSection(children: _rows(3))));
     final dividers = find.descendant(
       of: find.byType(MxCard),
-      matching: find.byType(Divider),
+      matching: find.byType(FDivider),
     );
 
     expect(dividers, findsNWidgets(2));

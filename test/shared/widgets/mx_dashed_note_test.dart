@@ -13,7 +13,7 @@ void main() {
   testWidgets('a centred note line on the muted fill, padded 24 16', (
     tester,
   ) async {
-    final scheme = lightColorScheme;
+    final colors = appLightColors;
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxDashedNote(text: _line)),
@@ -31,8 +31,8 @@ void main() {
             as BoxDecoration;
 
     expect(text.textAlign, TextAlign.center);
-    expect(text.style!.color, scheme.onSurfaceVariant);
-    expect(box.color, scheme.surfaceContainerLow);
+    expect(text.style!.color, colors.mutedForeground);
+    expect(box.color, colors.muted);
     expect(
       tester.getTopLeft(find.text(_line)).dy -
           tester.getTopLeft(find.byType(MxDashedNote)).dy,

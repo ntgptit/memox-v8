@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
@@ -215,7 +216,7 @@ void main() {
           brightness: brightness,
           textScale: scale,
         );
-        await tester.enterText(find.byType(TextField), 'term 9');
+        await tester.enterText(find.byType(FTextField), 'term 9');
         await tester.pump();
         await tester.tap(find.text(_en.studyFillCheck));
         await tester.pump();

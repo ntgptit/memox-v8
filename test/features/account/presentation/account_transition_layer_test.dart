@@ -22,6 +22,8 @@ import '../../../support/library_harness.dart';
 import '../../../support/app_harness.dart';
 import '../../../support/sync_fakes.dart';
 
+import 'package:forui/forui.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _settle(WidgetTester tester) async {
@@ -176,7 +178,7 @@ void main() {
     await tester.enterText(
       find.descendant(
         of: find.byType(CodeFormWidget),
-        matching: find.byType(TextField),
+        matching: find.byType(FTextField),
       ),
       FakeAuthGateway.code,
     );

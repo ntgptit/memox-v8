@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
-import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
@@ -28,11 +28,11 @@ BoxDecoration _ground(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
   const mx = MxStatusColors.light;
 
   testWidgets(
-    'warning: amber ground, no border, 8 corner, warning text colour 16 '
+    'warning: amber ground, no border, small corner, warning text colour 16 '
     'glyph (FE-C1)',
     (tester) async {
       await pumpMx(
@@ -43,9 +43,12 @@ void main() {
       );
       final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-      expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
+      expect(_ground(tester).color, mx.warning.tintOver(colors.background));
       expect(_ground(tester).border, isNull);
-      expect(_ground(tester).borderRadius, BorderRadius.circular(8));
+      expect(
+        _ground(tester).borderRadius,
+        tester.element(find.byType(MxInlineBanner)).radii.sm,
+      );
       expect((glyph.size, glyph.color), (16, mx.warning));
     },
   );
@@ -58,16 +61,16 @@ void main() {
       ),
     );
 
-    expect(_ground(tester).color, scheme.error.tintOver(scheme.surface));
+    expect(_ground(tester).color, colors.error.tintOver(colors.background));
     expect(_ground(tester).border, isNull);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      scheme.error,
+      colors.error,
     );
   });
 
   testWidgets(
-    'titled: a labelMedium title 2 above the detail; untitled: the lead',
+    'titled: a label-role title 2 above the detail; untitled: the lead',
     (tester) async {
       await pumpMx(
         tester,
@@ -81,15 +84,11 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
-        tester
-            .element(find.text('Export failed'))
-            .texts
-            .labelMedium!
-            .fontWeight,
+        tester.element(find.text('Export failed')).texts.label.fontWeight,
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        scheme.onSurfaceVariant,
+        colors.mutedForeground,
       );
       expect(
         tester.getTopLeft(find.text(_message)).dy -
@@ -105,7 +104,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        scheme.onSurface,
+        colors.foreground,
       );
     },
   );
@@ -213,7 +212,7 @@ void main() {
       'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
     for (final (tone, ink) in [
       (MxBannerTone.warning, mx.warning),
-      (MxBannerTone.danger, scheme.error),
+      (MxBannerTone.danger, colors.error),
     ]) {
       await pumpMx(
         tester,
@@ -230,7 +229,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        scheme.onSurface,
+        colors.foreground,
         reason: '$tone untitled',
       );
     }

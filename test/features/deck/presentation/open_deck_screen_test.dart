@@ -25,6 +25,8 @@ import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/wrap_rule.dart';
 
+import 'package:forui/forui.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 const _path = ['Korean', 'Words', 'Verbs'];
@@ -79,6 +81,7 @@ void main() {
     await tester.tap(_crumb(_en.navLibrary));
 
     expect(levels, [chain.first.id, null]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a deck of decks lists its sub-decks; a row opens its deck', (
@@ -101,6 +104,7 @@ void main() {
     expect(find.byType(MxListSectionHeader), findsOneWidget);
     await tester.tap(find.text('Words'));
     expect(opened, [words.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('an empty sub-deck offers a card or a sub-deck (P4a-L9)', (
@@ -163,6 +167,7 @@ void main() {
 
     await tapVisible(tester, _unsetButton(_en.deckUnsetImport));
     expect(imported, [words.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a top-level deck offers sub-decks only (BR-DECK-005)', (
@@ -213,6 +218,7 @@ void main() {
     expect(_unsetButton(_en.deckNewSubDeck), findsNothing);
     await tester.tap(_unsetButton(_en.deckNewCard));
     expect(added, [chain.last.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a deck of cards takes its FAB from the card feature', (
@@ -275,12 +281,13 @@ void main() {
       tester.widget<MxEmptyState>(find.byType(MxEmptyState)).tone,
       MxEmptyStateTone.neutral,
     );
-    expect(find.byType(SnackBar), findsNothing);
+    expect(find.byType(FToast), findsNothing);
     expect(find.byType(MxButton), findsNWidgets(2));
     await tester.tap(find.text(_en.commonOpenTrash));
     expect(trashOpened, 1);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a deck of decks leads with its summary and its Study (FE-A6 '
@@ -331,6 +338,7 @@ void main() {
     expect(breakdown.overflow, isNot(TextOverflow.ellipsis));
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
     expect(studied, [korean.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the scheduled count is a whole term of the breakdown: it '
@@ -394,12 +402,12 @@ void main() {
       tester
           .element(find.text(overline.toUpperCase()))
           .texts
-          .labelSmall
-          ?.copyWith(
+          .meta
+          .copyWith(
             color: tester
                 .element(find.text(overline.toUpperCase()))
                 .colors
-                .onSurfaceVariant,
+                .mutedForeground,
           ),
     );
   });

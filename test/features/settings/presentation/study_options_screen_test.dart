@@ -31,6 +31,9 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -116,7 +119,7 @@ void main() {
     await tester.tap(find.byType(MxToggle));
     await tester.pump();
     expect(find.text(_en.studyOptionsThisDeck.toUpperCase()), findsOneWidget);
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump();
     await tester.tap(find.text(_en.settingsOrderRandom));
     await tester.pump();
@@ -159,13 +162,14 @@ void main() {
 
     await tester.tap(find.byKey(_valueKey));
     await tester.pump();
-    await tester.enterText(find.byType(TextField), '250');
+    await tester.enterText(find.byType(FTextField), '250');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
     expect(find.text(_en.settingsCardLimitInvalid(1, 200)), findsOneWidget);
     expect(find.text(_en.studyOptionsFixLimit), findsOneWidget);
     expect(_save(tester).onPressed, isNull);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a failed save names what the deck still uses; Retry save '
@@ -181,7 +185,7 @@ void main() {
     );
     await tester.tap(find.byType(MxToggle));
     await tester.pump();
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump();
     await tester.tap(find.text(_en.cardSave));
     await tester.pumpAndSettle();
@@ -274,7 +278,7 @@ void main() {
     );
     await tester.tap(find.byType(MxToggle));
     await tester.pump();
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump();
     await tester.tap(find.text(_en.cardSave));
     await tester.pumpAndSettle();
@@ -298,7 +302,7 @@ void main() {
 
     // An edit keeps it; a save that lands clears it (critique 2026-09-30
     // part 3d-2, E13; Review Focus 4).
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump();
     expect(banner, findsOneWidget);
     expect(find.text(_en.cardRetrySave), findsOneWidget);

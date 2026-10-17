@@ -20,6 +20,7 @@ import '../../../support/fake_reminder_platform.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/reminder_screen_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/forui_expect.dart';
 
 // Screen 24, Daily reminder: UC-REMINDER-001; FE-B5 spec §5.1.
 
@@ -323,7 +324,7 @@ void main() {
 
       await tester.tap(find.text('20:00'));
       await settleReminderScreen(tester);
-      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.tap(byControlLabel(_en.reminderLaterHour));
       await tester.pump();
       await tester.tap(find.text(_en.commonCancel));
       await settleReminderScreen(tester);
@@ -332,7 +333,7 @@ void main() {
 
       await tester.tap(find.text('20:00'));
       await settleReminderScreen(tester);
-      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.tap(byControlLabel(_en.reminderLaterHour));
       await tester.pump();
       expect(
         find.text('21:00'),
@@ -361,6 +362,7 @@ void main() {
 
     final save = find.widgetWithText(MxButton, _en.reminderTimeSave);
     expect(tester.widget<MxButton>(save).onPressed, isNull);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest(
@@ -372,7 +374,7 @@ void main() {
 
       await tester.tap(find.text('20:00'));
       await settleReminderScreen(tester);
-      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.tap(byControlLabel(_en.reminderLaterHour));
       await tester.tap(find.text(_en.reminderTimeSave));
       await settleReminderScreen(tester);
 
@@ -392,17 +394,10 @@ void main() {
       matching: find.text('20:00'),
     );
     final context = tester.element(time);
-    final style = tester
-        .widget<TextButton>(
-          find.ancestor(of: time, matching: find.byType(TextButton)),
-        )
-        .style!;
-    // The button's own style dims it, once; no Opacity wraps it as well.
+    // ForUI's own disabled paint dims it, once; no Opacity wraps it as well.
     expect(
-      style.foregroundColor!.resolve({WidgetState.disabled}),
-      context.colors.foreground.withValues(
-        alpha: context.colors.disabledOpacity,
-      ),
+      textColor(tester, time),
+      context.colors.disable(context.colors.secondaryForeground),
     );
     expect(
       find.ancestor(of: time, matching: find.byType(Opacity)),

@@ -25,6 +25,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/forui_expect.dart';
 
 // UC-STUDY-001 steps 1–4 on screen 14; IT-STUDY-001, IT-STUDY-004.
 
@@ -69,8 +70,9 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip(_en.deckStudyOptions));
+    await tester.tap(byControlLabel(_en.deckStudyOptions));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('New and Due are two figures, never one sum, and the overdue '
@@ -291,6 +293,7 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(reads, before + 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a deck deleted while its entry is open leaves with a message '
@@ -337,8 +340,8 @@ void main() {
       tester
           .element(overline)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(overline).colors.mutedForeground),
+          .meta
+          .copyWith(color: tester.element(overline).colors.mutedForeground),
     );
   });
 

@@ -92,6 +92,7 @@ void main() {
     expect(find.text(_en.importDeckExisting), findsNothing);
     await tester.tap(find.text(_en.importDeckAddToExisting));
     expect(chosen, [(1, ImportSectionChoice.addToExisting)]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a clash with a deck of decks shows its note and no tray '
@@ -202,6 +203,7 @@ void main() {
     expect(find.text(_en.importDecksTakenNames(2)), findsOneWidget);
     await tester.tap(find.text(_en.importDeckAddAll));
     expect(all, [ImportSectionChoice.addToExisting]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('one clash adds no row for all', (tester, env) async {

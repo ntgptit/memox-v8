@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import '../../support/widget_harness.dart';
@@ -71,7 +68,7 @@ void main() {
           matching: find.byType(ColoredBox),
         ),
       );
-      expect(fill.color, accentOf(lightColorScheme));
+      expect(fill.color, appLightColors.primary);
     });
 
     testWidgets('any mastery shows, and a deck short of 100% never looks '

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -14,7 +14,7 @@ const _title = 'Could not load decks';
 const _body = 'Nothing was lost. Try again in a moment.';
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('a 52 danger-soft tile with a 24 error glyph, 40 from the top', (
     tester,
@@ -25,8 +25,9 @@ void main() {
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is DecoratedBox &&
+            widget.decoration is BoxDecoration &&
             (widget.decoration as BoxDecoration).color ==
-                scheme.error.tintOver(scheme.surface),
+                colors.error.tintOver(colors.card),
       ),
     );
 
@@ -34,10 +35,10 @@ void main() {
     expect(
       (tester.widget<DecoratedBox>(tile).decoration as BoxDecoration)
           .borderRadius,
-      BorderRadius.circular(16),
+      tester.element(tile).radii.lg,
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-    expect((glyph.size, glyph.color), (24, lightColorScheme.error));
+    expect((glyph.size, glyph.color), (24, colors.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
       40,
@@ -45,7 +46,7 @@ void main() {
   });
 
   testWidgets(
-    'titleSmall title, 4 above a bodyMedium body; no Retry by default',
+    'item-title title, 4 above a body-role body; no Retry by default',
     (tester) async {
       await pumpMx(tester, const MxErrorState(title: _title, body: _body));
       final title = tester.widget<Text>(find.text(_title)).style!;
@@ -56,12 +57,12 @@ void main() {
         (title.fontSize, title.fontWeight),
         (texts.itemTitle.fontSize, texts.itemTitle.fontWeight),
       );
-      expect(title.color, scheme.onSurface);
+      expect(title.color, colors.foreground);
       expect(
         (body.fontSize, body.height),
         (texts.body.fontSize, texts.body.height),
       );
-      expect(body.color, scheme.onSurfaceVariant);
+      expect(body.color, colors.mutedForeground);
       expect(
         tester.getTopLeft(find.text(_body)).dy -
             tester.getBottomLeft(find.text(_title)).dy,
@@ -93,6 +94,7 @@ void main() {
       16,
     );
     await tester.tap(find.byType(MxButton));
+    await tester.pumpAndSettle();
     expect(retries, 1);
   });
 
@@ -109,6 +111,8 @@ void main() {
     );
 
     expect(tester.widget<MxButton>(find.byType(MxButton)).isLoading, isTrue);
+    // The spinner keeps turning; take it off before the test ends.
+    await tester.pumpWidget(const SizedBox());
   });
 
   test('retryLabel and onRetry come together', () {

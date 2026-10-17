@@ -17,6 +17,19 @@ class MxTintBase extends InheritedWidget {
       context.dependOnInheritedWidgetOfExactType<MxTintBase>()?.color ??
       context.colors.background;
 
+  /// One tonal step off the ground under [context], for a bar drawn on it (a
+  /// skeleton, a hidden study bar): `muted` on the page and on a card of the
+  /// page's colour; on any other ground, where `muted` may be the ground
+  /// itself, the stronger `border`.
+  static Color stepOf(BuildContext context) {
+    final colors = context.colors;
+    final ground = of(context);
+    if (ground == colors.background || ground == colors.card) {
+      return colors.muted;
+    }
+    return colors.border;
+  }
+
   @override
   bool updateShouldNotify(MxTintBase oldWidget) => color != oldWidget.color;
 }

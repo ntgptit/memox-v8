@@ -90,6 +90,7 @@ void main() {
       tester.widget<MxButton>(_button(_en.cardTagConfirm)).onPressed,
       isNull,
     );
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('edit: Save keeps the tag still in the field', (

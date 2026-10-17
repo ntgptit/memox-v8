@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
@@ -26,7 +27,7 @@ void main() {
     );
   });
 
-  testWidgets('titleLarge title, screen margin', (tester) async {
+  testWidgets('screen-title role, screen margin', (tester) async {
     await pumpMx(tester, const MxAppBar(title: 'Library'));
     final context = tester.element(find.text('Library'));
 
@@ -41,7 +42,7 @@ void main() {
     );
   });
 
-  testWidgets('titleLarge title after the leading control', (tester) async {
+  testWidgets('screen-title role after the leading control', (tester) async {
     await pumpMx(
       tester,
       MxAppBar(
@@ -112,8 +113,8 @@ void main() {
         ),
       );
       final slot = tester.getRect(find.byKey(const Key('slot')));
-      final back = tester.getRect(find.byTooltip('Back'));
-      final more = tester.getRect(find.byTooltip('More'));
+      final back = tester.getRect(find.byType(MxIconButton).first);
+      final more = tester.getRect(find.byType(MxIconButton).last);
 
       expect(slot.left, greaterThanOrEqualTo(back.right));
       expect(slot.right, lessThanOrEqualTo(more.left));
@@ -282,18 +283,20 @@ void main() {
       });
     }
 
-    testWidgets('the leading icon is onSurface, the trailing ones '
-        'onSurfaceVariant', (tester) async {
+    testWidgets('the leading and trailing icons are in ForUI\'s ghost icon '
+        'colour', (tester) async {
       await pumpMx(tester, bar());
-      Color? glyph(IconData icon) =>
-          IconTheme.of(tester.element(find.byIcon(icon))).color;
+      final ink = forUiTheme(
+        tester,
+        find.byType(MxAppBar),
+      ).buttonStyles.ghost.lg.iconContentStyle.iconStyle.resolve({}).color;
 
-      expect(glyph(AppIcons.back), appLightColors.foreground);
-      expect(glyph(AppIcons.search), appLightColors.mutedForeground);
-      expect(glyph(AppIcons.more), appLightColors.mutedForeground);
+      for (final icon in [AppIcons.back, AppIcons.search, AppIcons.more]) {
+        expect(iconColor(tester, find.byIcon(icon)), ink);
+      }
     });
 
-    testWidgets('a disabled trailing icon dims onSurfaceVariant', (
+    testWidgets('a disabled trailing icon takes ForUI\'s disabled ink', (
       tester,
     ) async {
       await pumpMx(
@@ -309,12 +312,18 @@ void main() {
           ],
         ),
       );
+      final style = forUiTheme(
+        tester,
+        find.byType(MxAppBar),
+      ).buttonStyles.ghost.lg.iconContentStyle.iconStyle;
 
       expect(
-        IconTheme.of(tester.element(find.byIcon(AppIcons.search))).color,
-        appLightColors.mutedForeground.withValues(
-          alpha: const AppDimens().opacityDisabledContent,
-        ),
+        iconColor(tester, find.byIcon(AppIcons.search)),
+        style.resolve({FTappableVariant.disabled}).color,
+      );
+      expect(
+        style.resolve({FTappableVariant.disabled}).color,
+        isNot(style.resolve({}).color),
       );
     });
 

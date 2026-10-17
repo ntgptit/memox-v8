@@ -23,6 +23,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));
@@ -294,9 +295,10 @@ void main() {
       _en.libraryTags,
       _en.libraryTrash,
     ]) {
-      await tester.tap(find.byTooltip(label));
+      await tester.tap(byControlLabel(label));
     }
     expect(opened, ['starter', 'tags', 'trash']);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the search field opens the search', (tester, env) async {
@@ -381,5 +383,6 @@ void main() {
       isSemantics(isButton: true, hasTapAction: true),
     );
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

@@ -23,6 +23,7 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));
@@ -94,6 +95,7 @@ void main() {
     expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
     await tester.tap(find.text(_en.libraryBrowseStarterDecks));
     expect(starters, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the FAB waits for a first deck; the empty state offers it', (
@@ -132,14 +134,14 @@ void main() {
   libraryTest('scenario C: the first deck brings the search field, Tags and '
       'the FAB in the same frame as its row', (tester, env) async {
     await pumpLibraryScreen(tester, env, deckScreen());
-    expect(find.byTooltip(_en.libraryTags), findsNothing);
+    expect(byControlLabel(_en.libraryTags), findsNothing);
 
     await env.decks.root('Korean');
     await tester.pumpAndSettle();
 
     expect(find.text('Korean'), findsOneWidget);
     expect(find.text(_en.searchFieldHint), findsOneWidget);
-    expect(find.byTooltip(_en.libraryTags), findsOneWidget);
+    expect(byControlLabel(_en.libraryTags), findsOneWidget);
     expect(find.byType(MxFab), findsOneWidget);
   });
 
@@ -147,13 +149,13 @@ void main() {
       'field, no FAB (critique 2026-09-30 part 3d-2)', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckReorder));
     await tester.pumpAndSettle();
 
     expect(find.byType(DeckReorderDoneWidget), findsOneWidget);
-    expect(find.byTooltip(_en.libraryTags), findsNothing);
+    expect(byControlLabel(_en.libraryTags), findsNothing);
     expect(find.text(_en.searchFieldHint), findsNothing);
     expect(find.byType(MxFab), findsNothing);
   });
@@ -162,7 +164,7 @@ void main() {
       'action in the bar', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckReorder));
     await tester.pumpAndSettle();
@@ -180,9 +182,9 @@ void main() {
     (tester, env) async {
       await env.decks.root('Korean');
       await pumpLibraryScreen(tester, env, deckScreen());
-      expect(find.byTooltip(_en.libraryTags), findsOneWidget);
+      expect(byControlLabel(_en.libraryTags), findsOneWidget);
 
-      await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+      await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
       await tester.pumpAndSettle();
       await tester.tap(find.text(_en.deckDelete));
       await tester.pumpAndSettle();
@@ -192,9 +194,9 @@ void main() {
 
       expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
       expect(find.text(_en.searchFieldHint), findsNothing);
-      expect(find.byTooltip(_en.libraryTags), findsNothing);
+      expect(byControlLabel(_en.libraryTags), findsNothing);
       expect(find.byType(MxFab), findsNothing);
-      expect(find.byTooltip(_en.libraryTrash), findsOneWidget);
+      expect(byControlLabel(_en.libraryTrash), findsOneWidget);
       expect(find.text(_en.commonUndo), findsOneWidget);
     },
   );
@@ -237,7 +239,7 @@ void main() {
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
     expect(find.text(_en.libraryNothingDueTitle), findsNothing);
     expect(find.text(_en.searchFieldHint), findsNothing);
-    expect(find.byTooltip(_en.libraryTags), findsNothing);
+    expect(byControlLabel(_en.libraryTags), findsNothing);
     expect(find.byType(MxFab), findsNothing);
   });
 

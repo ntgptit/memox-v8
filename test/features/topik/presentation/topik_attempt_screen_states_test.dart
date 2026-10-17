@@ -19,6 +19,7 @@ import '../../../support/topik_attempt_screen_fixtures.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_fakes.dart';
 import '../../../support/topik_screen_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 // Screen 37 (UC-TOPIK-003 E2, A4; BR-TOPIK-017, -019): listening, the
 // attempt or its test gone, a read that fails, the language; each test is a
@@ -111,6 +112,7 @@ void main() {
     expect(find.text('Next'), findsNothing);
     await tester.tap(find.text('Back to the test'));
     expect(exits.closes, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the clock runs only while a question is on screen: the time '
@@ -152,7 +154,7 @@ void main() {
     expect(find.text('① 보기 1'), findsOneWidget);
 
     topikWait(env, 3);
-    await tester.tap(find.byTooltip('Close'));
+    await tester.tap(byControlLabel('Close'));
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
@@ -174,7 +176,7 @@ void main() {
     );
 
     topikWait(env, 5);
-    await tester.tap(find.byTooltip('Close'));
+    await tester.tap(byControlLabel('Close'));
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
@@ -229,6 +231,7 @@ void main() {
     expect(find.text('This attempt was submitted'), findsOneWidget);
     await tester.tap(find.text('See summary'));
     expect(exits.submitted, [done.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a read that fails: Retry reads again; Close stays', (
@@ -254,7 +257,7 @@ void main() {
     );
 
     expect(find.byType(MxErrorState), findsOneWidget);
-    expect(find.byTooltip('Close'), findsOneWidget);
+    expect(byControlLabel('Close'), findsOneWidget);
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
     expect(find.text("This attempt isn't here any more"), findsOneWidget);
@@ -307,6 +310,6 @@ void main() {
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.text('Next'), findsNothing);
     expect(find.text('Questions'), findsNothing);
-    expect(find.byTooltip('Close'), findsOneWidget);
+    expect(byControlLabel('Close'), findsOneWidget);
   });
 }

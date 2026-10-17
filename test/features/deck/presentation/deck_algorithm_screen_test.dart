@@ -288,6 +288,7 @@ void main() {
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a sub-deck has no algorithm screen (BR-DECK-025)', (
@@ -322,6 +323,7 @@ void main() {
     await tester.tap(crumb(_en.navLibrary));
 
     expect(opened, [korean.id, null]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('on a 360 phone the locked screen meets the target guidelines', (

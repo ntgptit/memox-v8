@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../support/widget_harness.dart';
@@ -35,7 +32,7 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('four sizes off the icon scale; 16 by default', (tester) async {
     for (final (size, box) in [
@@ -53,21 +50,21 @@ void main() {
   });
 
   testWidgets(
-    'a 2px ring: the accent by default, the given colour when one is passed',
+    'a 2px ring: the primary by default, the given colour when one is passed',
     (tester) async {
       await pumpMx(tester, const MxSpinner());
       expect(
         _ring(tester),
         paints..arc(
-          color: accentOf(scheme),
+          color: colors.primary,
           strokeWidth: 2,
           style: PaintingStyle.stroke,
         ),
       );
 
       // M3F-02 (owner 2026-10-15) replaced the isOnFill flag with a colour.
-      await pumpMx(tester, MxSpinner(color: scheme.onError));
-      expect(_ring(tester), paints..arc(color: scheme.onError));
+      await pumpMx(tester, MxSpinner(color: colors.errorForeground));
+      expect(_ring(tester), paints..arc(color: colors.errorForeground));
     },
   );
 

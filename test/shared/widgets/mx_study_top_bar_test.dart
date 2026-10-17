@@ -1,13 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/app_icons.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/route_naming.dart';
+import '../../support/theme_harness.dart';
 import '../../support/widget_harness.dart';
 
 MxStudyTopBar _bar({int current = 3, int total = 10, bool isClosable = true}) =>
@@ -75,11 +80,11 @@ void main() {
           .color;
 
       await pumpMx(tester, _bar());
-      expect(fillColor(), lightColorScheme.primary);
+      expect(fillColor(), appLightColors.primary);
     },
   );
 
-  testWidgets('the track is progress-track (R6)', (tester) async {
+  testWidgets('the track is the ramp\'s progress track (R6)', (tester) async {
     await pumpMx(tester, _bar());
     final track = tester.widget<ColoredBox>(
       find
@@ -90,7 +95,7 @@ void main() {
           .first,
     );
 
-    expect(track.color, appLightColors.secondary);
+    expect(track.color, MasteryRamp.track(appLightColors));
   });
 
   testWidgets('the fill animates over 200ms unless motion is reduced', (
@@ -103,6 +108,8 @@ void main() {
     await tester.pumpAndSettle();
 
     Widget reduced(int current) => MaterialApp(
+      theme: materialHostTheme(buildLightTheme()),
+      builder: mxThemeBuilder(buildLightTheme()),
       home: MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: Scaffold(body: _bar(current: current)),
@@ -129,7 +136,8 @@ void main() {
         onClose: () => closed++,
       ),
     );
-    await tester.tap(find.byTooltip('Close session'));
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
 
     expect(closed, 1);
     await expectAccessibleTargets(tester);
@@ -142,12 +150,13 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     await pumpMx(tester, _bar(isClosable: false));
-    await tester.tap(find.byTooltip('Close session'));
+    await tester.tap(find.byType(MxIconButton), warnIfMissed: false);
+    await tester.pumpAndSettle();
 
     expect(
-      tester.getSemantics(find.byTooltip('Close session')),
+      tester.getSemantics(find.bySemanticsLabel('Close session')),
       isSemantics(
-        tooltip: 'Close session',
+        label: 'Close session',
         isButton: true,
         hasEnabledState: true,
         isEnabled: false,
@@ -195,18 +204,10 @@ void main() {
     await pumpMx(
       tester,
       Builder(
-        builder: (context) {
-          final theme = Theme.of(context);
-          return Theme(
-            data: theme.copyWith(
-              extensions: [
-                ...theme.extensions.values.where((e) => e is! AppDimens),
-                const AppDimens(sizeTrack: 10),
-              ],
-            ),
-            child: _bar(),
-          );
-        },
+        builder: (context) => FTheme(
+          data: FTheme.of(context).copyWith(extensions: [const _TallTrack()]),
+          child: _bar(),
+        ),
       ),
     );
     expect(tester.getSize(track()).height, 10);
@@ -221,4 +222,13 @@ void main() {
     expect(() => _bar(current: 11), throwsAssertionError);
     expect(() => _bar(current: 1, total: 0), throwsAssertionError);
   });
+}
+
+/// The app's dimensions with a taller progress track, to prove the bar reads
+/// its track height from the theme.
+class _TallTrack extends AppDimens {
+  const _TallTrack();
+
+  @override
+  double get sizeTrack => 10;
 }

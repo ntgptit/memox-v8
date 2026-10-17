@@ -1,52 +1,61 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
-import 'package:memox/core/theme/app_palette.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
+final _button = find.byType(FButton);
+
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
+  const dimens = AppDimens();
 
   Future<void> pumpFab(WidgetTester tester) => pumpMx(
     tester,
     MxFab(icon: AppIcons.add, semanticLabel: 'New deck', onPressed: () {}),
   );
 
-  Material fabMaterial(WidgetTester tester) => tester.widget<Material>(
-    find
-        .descendant(of: find.byType(MxFab), matching: find.byType(Material))
-        .first,
-  );
-
-  testWidgets('a square 56 primary box, radius 16, 24 onPrimary glyph', (
-    tester,
-  ) async {
+  testWidgets("a square sizeFab ForUI primary icon button, in ForUI's "
+      'primary foreground', (tester) async {
     await pumpFab(tester);
-    final material = fabMaterial(tester);
 
-    expect(tester.getSize(find.byType(MxFab)), const Size.square(56));
-    expect(material.color, scheme.primary);
+    expect(tester.getSize(find.byType(MxFab)), Size.square(dimens.sizeFab));
+    expect(paintedDecoration(tester, _button).color, colors.primary);
     expect(
-      (material.shape! as MxFocusRingBorder).base,
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      iconColor(tester, find.byIcon(AppIcons.add)),
+      colors.primaryForeground,
     );
     expect(
-      IconTheme.of(tester.element(find.byIcon(AppIcons.add))).color,
-      scheme.onPrimary,
+      tester.getSize(find.byIcon(AppIcons.add)).width,
+      forUiTheme(
+        tester,
+        _button,
+      ).buttonStyles.primary.lg.iconContentStyle.iconStyle.resolve({}).size,
     );
-    expect(tester.getSize(find.byIcon(AppIcons.add)).width, 24);
   });
 
-  testWidgets('rests at elevation 6 and lifts to 8 under a mouse', (
+  testWidgets("rests on ForUI's shadow, lifting it over the scroll", (
     tester,
   ) async {
     await pumpFab(tester);
-    expect(fabMaterial(tester).elevation, 6);
+    final shadow = forUiTheme(tester, _button).style.shadow;
+
+    expect(shadow, isNotEmpty);
+    expect(paintedDecoration(tester, _button).shadows, shadow);
+  });
+
+  testWidgets('the hover state layer is the primary hover colour', (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    final resting = paintedDecoration(tester, _button).color;
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: Offset.zero);
@@ -54,42 +63,40 @@ void main() {
     await mouse.moveTo(tester.getCenter(find.byType(MxFab)));
     await tester.pumpAndSettle();
 
-    expect(fabMaterial(tester).elevation, 8);
-  });
-
-  testWidgets('state layers are onPrimary at hover 8%, focus 10%, press 10%', (
-    tester,
-  ) async {
-    await pumpFab(tester);
-    final ink = tester.widget<InkWell>(
-      find.descendant(of: find.byType(MxFab), matching: find.byType(InkWell)),
-    );
-
-    expect(ink.hoverColor, scheme.onPrimary.withValues(alpha: 0.08));
-    expect(ink.focusColor, scheme.onPrimary.withValues(alpha: 0.1));
-    expect(ink.splashColor, scheme.onPrimary.withValues(alpha: 0.1));
-  });
-
-  testWidgets('keyboard focus draws a primary ring 2 outside the box', (
-    tester,
-  ) async {
-    await pumpFab(tester);
     expect(
-      (fabMaterial(tester).shape! as MxFocusRingBorder).ring.style,
-      BorderStyle.none,
+      paintedDecoration(tester, _button).color,
+      colors.hover(colors.primary),
+    );
+    expect(resting, colors.primary);
+    // The tooltip a hover brings comes and goes.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets("keyboard focus draws ForUI's focus outline round the box", (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    useKeyboardFocusHighlight();
+    final outline = forUiTheme(tester, _button).style.focusedOutlineStyle;
+    final ring = find.descendant(
+      of: _button,
+      matching: find.byType(FFocusedOutline),
+    );
+    expect(
+      tester.renderObject(ring.first),
+      isNot(paintsFocusRing(outline.color, width: outline.width)),
     );
 
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
-    final shape = fabMaterial(tester).shape! as MxFocusRingBorder;
 
-    expect(shape.ring.color, scheme.primary);
-    expect(shape.ring.width, 2);
-    expect(shape.gap, 2);
     expect(
-      shape.base,
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      focusRingRender(tester),
+      paintsFocusRing(outline.color, width: outline.width),
     );
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('the label is its accessible name, never painted', (
@@ -106,25 +113,33 @@ void main() {
       ),
     );
     await tester.tap(find.bySemanticsLabel('New deck'));
+    await tester.pumpAndSettle();
 
     expect(find.text('New deck'), findsNothing);
     expect(taps, 1);
     handle.dispose();
     await expectAccessibleTargets(tester);
   });
-  // M3F-11: the SDK slot `tooltip` shows the name on hover and long-press; the
-  // outer `excludeSemantics` keeps the name on one node.
+
+  // M3F-11: the label is also the long-press tooltip, and one node names it.
   testWidgets('M3F-11: the label is also the tooltip, and one node names it', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
     await pumpFab(tester);
 
-    expect(find.byTooltip('New deck'), findsOneWidget);
     expect(find.bySemanticsLabel('New deck'), findsOneWidget);
     expect(
-      tester.getSemantics(find.byTooltip('New deck')),
-      isSemantics(label: 'New deck', isButton: true, hasTapAction: true),
+      tester.getSemantics(find.bySemanticsLabel('New deck')),
+      matchesSemantics(
+        label: 'New deck',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+        hasLongPressAction: true,
+      ),
     );
     handle.dispose();
   });
@@ -134,9 +149,11 @@ void main() {
   ) async {
     await pumpFab(tester);
     expect(find.text('New deck'), findsNothing);
-    await tester.longPress(find.byType(FloatingActionButton));
+    await tester.longPress(_button);
     await tester.pumpAndSettle();
 
     expect(find.text('New deck'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 }

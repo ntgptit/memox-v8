@@ -237,6 +237,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Correct'));
     expect(picks, [TopikAnswerFilter.correct]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('an answer row: yours, the right one and the time; the eye '
@@ -287,6 +288,7 @@ void main() {
     );
     await tester.tap(find.text('Question 32'));
     expect(opens, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('by type: each with its share; the weakest marked '

@@ -103,18 +103,6 @@ class _MxSkeletonState extends State<MxSkeleton>
     super.dispose();
   }
 
-  /// One tonal step off the ground the bar sits on: ForUI's `muted` on the
-  /// page and on a card of the page's colour; on any other ground, where
-  /// `muted` may be the ground itself, the stronger `border`.
-  Color _barColor(BuildContext context) {
-    final colors = context.colors;
-    final ground = MxTintBase.of(context);
-    if (ground == colors.background || ground == colors.card) {
-      return colors.muted;
-    }
-    return colors.border;
-  }
-
   @override
   Widget build(BuildContext context) {
     final shape = SizedBox(
@@ -122,7 +110,7 @@ class _MxSkeletonState extends State<MxSkeleton>
       height: widget.height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: _barColor(context),
+          color: MxTintBase.stepOf(context),
           borderRadius: widget.isCircle
               ? BorderRadius.circular(widget.height / 2)
               : context.radii.sm,

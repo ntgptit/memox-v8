@@ -17,6 +17,7 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/deck_screen_harness.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -80,7 +81,7 @@ void main() {
         deleteDeckUseCaseProvider.overrideWithValue(DeleteDeckUseCase(decks)),
       ],
     );
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Words')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Words')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// The selection-mode box on a card row: ForUI's [FCheckbox], painted only
 /// (ruling I6): the caller's row is the tap target and carries the checked
@@ -10,9 +11,6 @@ class MxSelectionCheckbox extends StatelessWidget {
   final bool isChecked;
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-    child: IgnorePointer(
-      child: FCheckbox(value: isChecked, onChange: (_) {}),
-    ),
-  );
+  Widget build(BuildContext context) =>
+      mxPaintedOnly(FCheckbox(value: isChecked, onChange: (_) {}));
 }

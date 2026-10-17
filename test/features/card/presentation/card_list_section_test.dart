@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
@@ -23,6 +23,9 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+
+import '../../../support/forui_expect.dart';
+
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
@@ -235,6 +238,7 @@ void main() {
       tester.element(find.byType(CardListSectionWidget)),
     ).read(cardListRequestProvider(words.id));
     expect(request.windowSize, cardListWindowStep * 2);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('search hides the deck summary and keeps the filters '
@@ -256,11 +260,11 @@ void main() {
     final chip = find
         .descendant(
           of: find.widgetWithText(MxFilterChip, _en.cardFilterAll),
-          matching: find.byType(Material),
+          matching: find.byType(FButton),
         )
         .first;
-    const dimens = AppDimens();
-    final reach = dimens.strokeFocusGap + dimens.strokeFocus;
+    final outline = forUiTheme(tester, chip).style.focusedOutlineStyle;
+    final reach = outline.spacing + outline.width;
 
     expect(
       clipsAway(tester, chip, tester.getRect(chip).inflate(reach)),
@@ -417,6 +421,7 @@ void main() {
     await tester.longPress(find.byType(CardRowWidget).first);
     await tester.pump();
     expect(find.byType(MxFab), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest(
@@ -445,6 +450,7 @@ void main() {
       await tester.tap(find.byType(CardRowWidget).first);
       await tester.pump();
       expect(opened, hasLength(1));
+      await tester.pump(const Duration(milliseconds: 200));
     },
   );
 
@@ -464,5 +470,6 @@ void main() {
     await tester.longPress(find.byType(CardRowWidget).first);
     await tester.pump();
     expect(clearance(), MxScrollClearance.base);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

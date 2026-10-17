@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_dimens.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _valueKey = ValueKey('mx-stepper-value');
@@ -30,6 +32,15 @@ MxStepper _stepper({
   isEnabled: isEnabled,
 );
 
+/// The step button named [label]: ForUI's icon button, found by its name.
+Finder _button(String label) => find.byWidgetPredicate(
+  (widget) => widget is FButton && widget.semanticsLabel == label,
+  description: 'FButton named $label',
+);
+
+FButtonStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, find.byType(MxStepper)).buttonStyles.secondary.xs;
+
 /// The product of every [Opacity] above [finder], the dim a widget paints
 /// under.
 double _opacityAbove(WidgetTester tester, Finder finder) {
@@ -42,7 +53,7 @@ double _opacityAbove(WidgetTester tester, Finder finder) {
 }
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('minus and plus fire; the value reads in onSurface', (
     tester,
@@ -55,26 +66,36 @@ void main() {
         onIncrement: () => calls.add('+'),
       ),
     );
-    await tester.tap(find.byTooltip('Fewer cards'));
-    await tester.tap(find.byTooltip('More cards'));
+    await tester.tap(_button('Fewer cards'));
+    await tester.pumpAndSettle();
+    await tester.tap(_button('More cards'));
+    await tester.pumpAndSettle();
 
     expect(calls, ['-', '+']);
-    expect(tester.widget<Text>(find.text('20')).style!.color, scheme.onSurface);
+    expect(
+      tester.widget<Text>(find.text('20')).style!.color,
+      colors.foreground,
+    );
   });
 
   testWidgets(
-    'small buttons with 48 targets; the value column is at least 48',
+    'small buttons painted in a 48 target; the value column is at least 48',
     (tester) async {
       await pumpMx(tester, _stepper(value: 1));
-      final painted = find.descendant(
-        of: find.byType(TextButton),
-        matching: find.byType(Material),
-      );
+      final painted = _style(tester).iconContentStyle.constraints;
 
-      expect(
-        tester.getSize(painted.first),
-        Size.square(const AppDimens().sizeButtonSmall),
-      );
+      for (final label in ['Fewer cards', 'More cards']) {
+        expect(
+          paintedRect(tester, _button(label)).size,
+          Size.square(painted.minHeight),
+          reason: label,
+        );
+        expect(
+          tester.getSize(_button(label)),
+          const Size.square(48),
+          reason: label,
+        );
+      }
       expect(
         tester.getSize(find.byKey(_valueKey)).width,
         greaterThanOrEqualTo(48),
@@ -90,8 +111,10 @@ void main() {
                 as BoxDecoration)
             .border!;
 
-    expect(tester.widget<Text>(find.text('250')).style!.color, scheme.error);
-    expect(ring, Border.all(color: scheme.error));
+    final hairline = tester.element(find.byKey(_valueKey)).hairline;
+
+    expect(tester.widget<Text>(find.text('250')).style!.color, colors.error);
+    expect(ring, Border.all(color: colors.error, width: hairline));
   });
 
   testWidgets('valid carries no ring, so turning invalid moves nothing', (
@@ -123,7 +146,6 @@ void main() {
   });
 
   testWidgets('at a bound the button stops without dimming', (tester) async {
-    var taps = 0;
     await pumpMx(
       tester,
       MxStepper(
@@ -134,9 +156,9 @@ void main() {
         onIncrement: null,
       ),
     );
-    await tester.tap(find.byTooltip('More cards'), warnIfMissed: false);
+    await tester.tap(_button('More cards'), warnIfMissed: false);
+    await tester.pumpAndSettle();
 
-    expect(taps, 0);
     expect(
       find.ancestor(of: find.byKey(_valueKey), matching: find.byType(Opacity)),
       findsNothing,
@@ -146,10 +168,14 @@ void main() {
   testWidgets('disabled ignores taps and dims the value once', (tester) async {
     var taps = 0;
     await pumpMx(tester, _stepper(isEnabled: false, onIncrement: () => taps++));
-    await tester.tap(find.byTooltip('More cards'), warnIfMissed: false);
+    await tester.tap(_button('More cards'), warnIfMissed: false);
+    await tester.pumpAndSettle();
 
     expect(taps, 0);
-    expect(_opacityAbove(tester, find.byKey(_valueKey)), 0.38);
+    expect(
+      _opacityAbove(tester, find.byKey(_valueKey)),
+      colors.disabledOpacity,
+    );
   });
 
   // DEV-372: the step buttons resolve their own disabled colours, so no
@@ -159,19 +185,26 @@ void main() {
   ) async {
     await pumpMx(tester, _stepper(isEnabled: false));
 
-    final buttons = find.byType(TextButton);
+    final style = _style(tester);
+    final buttons = find.byType(FButton);
     expect(buttons, findsNWidgets(2));
-    for (final button in buttons.evaluate()) {
-      final target = find.byElementPredicate((element) => element == button);
-      expect(_opacityAbove(tester, target), 1);
-      final material = tester.widget<Material>(
-        find.descendant(of: target, matching: find.byType(Material)).first,
-      );
-      expect(material.color, scheme.onSurface.withValues(alpha: 0.12));
-      final icon = find.descendant(of: target, matching: find.byType(Icon));
+    for (var i = 0; i < 2; i++) {
+      final button = buttons.at(i);
+      expect(_opacityAbove(tester, button), 1);
       expect(
-        IconTheme.of(tester.element(icon)).color,
-        scheme.onSurface.withValues(alpha: 0.38),
+        paintedDecoration(tester, button).color,
+        (style.decoration.resolve({
+          FTappableVariant.disabled,
+        }) as ShapeDecoration).color,
+      );
+      expect(
+        iconColor(
+          tester,
+          find.descendant(of: button, matching: find.byType(Icon)),
+        ),
+        style.iconContentStyle.iconStyle.resolve({
+          FTappableVariant.disabled,
+        }).color,
       );
     }
   });
@@ -181,7 +214,7 @@ void main() {
 
     expect(_opacityAbove(tester, find.byType(MxStepper)), 1);
     expect(_opacityAbove(tester, find.byKey(_valueKey)), 1);
-    expect(_opacityAbove(tester, find.byType(TextButton).first), 1);
+    expect(_opacityAbove(tester, find.byType(FButton).first), 1);
   });
 
   testWidgets('minDigits pads the value and what it reads as (critique '
@@ -221,6 +254,30 @@ void main() {
         validationResult: SemanticsValidationResult.none,
       ),
     );
+    handle.dispose();
+  });
+
+  testWidgets('each step button is one labelled node that keeps its tap and '
+      'its long press', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _stepper());
+
+    for (final label in ['Fewer cards', 'More cards']) {
+      expect(find.bySemanticsLabel(label), findsOneWidget, reason: label);
+      expect(
+        tester.getSemantics(find.bySemanticsLabel(label)),
+        matchesSemantics(
+          label: label,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasSelectedState: true,
+          hasTapAction: true,
+          hasLongPressAction: true,
+        ),
+        reason: label,
+      );
+    }
     handle.dispose();
   });
 }

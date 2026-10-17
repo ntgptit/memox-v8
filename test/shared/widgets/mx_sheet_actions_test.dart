@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -59,7 +59,10 @@ void main() {
 
       expect(tester.widget<MxButton>(_button('Preparing')).isLoading, isTrue);
       await tester.tap(_button('Cancel'));
+      await tester.pump(const Duration(milliseconds: 200));
       expect(cancelled, 1);
+      // The spinner keeps turning; take it off before the test ends.
+      await tester.pumpWidget(const SizedBox());
     },
   );
 
@@ -139,6 +142,7 @@ void main() {
 
     expect(tester.widget<MxButton>(_button('Move')).onPressed, isNull);
     await tester.tap(_button('Cancel'));
+    await tester.pumpAndSettle();
     expect(cancels, 1);
   });
 
@@ -297,6 +301,7 @@ void main() {
       const Offset(16, 8),
     );
     await tester.tap(_button('Done'));
+    await tester.pumpAndSettle();
     expect(taps, 1);
 
     await pumpMx(

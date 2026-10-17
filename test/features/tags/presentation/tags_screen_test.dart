@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -20,6 +19,9 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/tag_fixtures.dart';
 import '../../../support/tag_screen_fixtures.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 // Screen 05 (FE-B2, UC-TAG-001): the twelve kit states and the read error.
 
@@ -48,9 +50,9 @@ Future<TagRepositoryFake> _pump(
 }
 
 Future<void> _actions(WidgetTester tester, String tag) async {
-  await tester.ensureVisible(find.byTooltip(_en.tagsRowActions(tag)));
+  await tester.ensureVisible(byControlLabel(_en.tagsRowActions(tag)));
   await tester.pumpAndSettle();
-  await tester.tap(find.byTooltip(_en.tagsRowActions(tag)));
+  await tester.tap(byControlLabel(_en.tagsRowActions(tag)));
   await tester.pumpAndSettle();
 }
 
@@ -62,7 +64,7 @@ Future<void> _openRename(WidgetTester tester, String tag) async {
 
 /// Types [name] into the rename field and lets its plan settle.
 Future<void> _type(WidgetTester tester, String name) async {
-  await tester.enterText(find.byType(TextField).last, name);
+  await tester.enterText(find.byType(FTextField).last, name);
   await tester.pump(tagRenameSettle);
   await tester.pumpAndSettle();
 }
@@ -85,7 +87,7 @@ void main() {
   libraryTest('search uses the catalog\'s fold: ĐỘNG TỪ finds động từ '
       '(BR-TAG-003)', (tester, env) async {
     await _pump(tester, env);
-    await tester.enterText(find.byType(TextField), 'ĐỘNG TỪ');
+    await tester.enterText(find.byType(FTextField), 'ĐỘNG TỪ');
     await tester.pump();
 
     expect(find.text(_en.tagsCount(1).toUpperCase()), findsOneWidget);
@@ -98,7 +100,7 @@ void main() {
     env,
   ) async {
     await _pump(tester, env);
-    await tester.enterText(find.byType(TextField), 'phras');
+    await tester.enterText(find.byType(FTextField), 'phras');
     await tester.pump();
 
     expect(find.text(_en.tagsNoMatches.toUpperCase()), findsOneWidget);
@@ -301,7 +303,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(MxSpinner), findsOneWidget);
-    expect(find.byTooltip(_en.tagsRowActions('tạm')), findsNothing);
+    expect(byControlLabel(_en.tagsRowActions('tạm')), findsNothing);
 
     store.hold!.complete();
     await tester.pumpAndSettle();
@@ -350,15 +352,8 @@ void main() {
     await _openRename(tester, 'động từ');
 
     final label = find.text(_en.tagsNewName);
-    // The field paints its label: the field-label role in onSurfaceVariant.
-    expect(
-      tester.widget<Text>(label).style,
-      tester
-          .element(label)
-          .texts
-          .labelMedium
-          ?.copyWith(color: tester.element(label).colors.mutedForeground),
-    );
+    // The field paints its label in ForUI's form-field label style.
+    expectForUiFieldLabel(tester, label);
     expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });
 }

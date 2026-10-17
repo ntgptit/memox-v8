@@ -1,4 +1,5 @@
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 /// A modal route whose barrier can be held: while held, a tap on the scrim
@@ -9,20 +10,57 @@ import 'package:flutter/widgets.dart';
 mixin MxHeldRoute<T> on ModalRoute<T> {
   bool _isHeld = false;
 
-  set isHeld(bool value) {
+  /// Holds or releases the route at once: the barrier refuses taps from now
+  /// on, read when the tap lands. Its semantics follow after the frame, since
+  /// a route cannot rebuild its barrier while its page builds.
+  void hold(bool value) {
     if (value == _isHeld) return;
     _isHeld = value;
-    // Rebuilds the barrier, which reads [barrierDismissible].
-    changedInternalState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (isActive) changedInternalState();
+    });
   }
 
   @override
   bool get barrierDismissible => !_isHeld && super.barrierDismissible;
+
+  @override
+  Widget buildModalBarrier() =>
+      _HeldGate(isHeld: () => _isHeld, child: super.buildModalBarrier());
 }
 
-/// Keeps the [MxHeldRoute] that shows [child] held while [isHeld]. The flag
-/// reaches the route after the frame, since a route cannot rebuild its
-/// barrier while its page builds.
+/// Takes every pointer on [child] while [isHeld] answers true, asked when the
+/// pointer lands rather than when [child] was built.
+class _HeldGate extends SingleChildRenderObjectWidget {
+  const _HeldGate({required this.isHeld, required super.child});
+
+  final bool Function() isHeld;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderHeldGate(isHeld);
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderHeldGate renderObject) {
+    renderObject.isHeld = isHeld;
+  }
+}
+
+class _RenderHeldGate extends RenderProxyBox {
+  _RenderHeldGate(this.isHeld);
+
+  bool Function() isHeld;
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    // Held: the pointer stops here, as on an absorbing barrier.
+    if (isHeld()) return size.contains(position);
+    return super.hitTest(result, position: position);
+  }
+}
+
+/// Keeps the [MxHeldRoute] that shows [child] held while [isHeld], from the
+/// build that holds it.
 class MxHoldRoute extends StatefulWidget {
   const MxHoldRoute({super.key, required this.isHeld, required this.child});
 
@@ -48,11 +86,7 @@ class _MxHoldRouteState extends State<MxHoldRoute> {
 
   void _sync() {
     final route = ModalRoute.of(context);
-    if (route is! MxHeldRoute) return;
-    final isHeld = widget.isHeld;
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (route.isActive) route.isHeld = isHeld;
-    });
+    if (route is MxHeldRoute) route.hold(widget.isHeld);
   }
 
   @override

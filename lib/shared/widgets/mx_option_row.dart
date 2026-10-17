@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is
 /// ForUI's [FRadio], painted only: the whole row is the target, which keeps
@@ -124,10 +125,8 @@ class _Radio extends StatelessWidget {
   final bool isSelected;
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
+  Widget build(BuildContext context) => KeyedSubtree(
     key: const ValueKey('mx-option-radio'),
-    child: IgnorePointer(
-      child: FRadio(value: isSelected, onChange: (_) {}),
-    ),
+    child: mxPaintedOnly(FRadio(value: isSelected, onChange: (_) {})),
   );
 }

@@ -116,5 +116,6 @@ void main() {
     await tester.tap(find.text('File'));
 
     expect(taps, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

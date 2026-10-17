@@ -36,6 +36,7 @@ void main() {
     await _settle(tester);
     expect(commands.syncs, 1);
     expect(find.text('Synced'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a failed Sync now says nothing was lost', (tester, env) async {
@@ -49,6 +50,7 @@ void main() {
     await tester.tap(find.text('Sync now'));
     await _settle(tester);
     expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('refused rows offer Try again and Keep on device', (
@@ -66,6 +68,7 @@ void main() {
     await tester.tap(find.text('Try again'));
     await _settle(tester);
     expect(commands.retries, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a failure shows its sentence and no code', (tester, env) async {
@@ -116,6 +119,7 @@ void main() {
       matching: find.byType(MxButton),
     );
     expect(tester.widget<MxButton>(retry).isLoading, isTrue);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a second command waits for the first', (tester, env) async {
@@ -133,6 +137,7 @@ void main() {
     expect(commands.retries, 0);
     commands.hold!.complete(true);
     await _settle(tester);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Sync now steps back when nothing waits (critique 2026-09-30)', (
@@ -245,6 +250,7 @@ void main() {
     await _settle(tester);
     expect(commands.keeps, 1);
     expect(find.text('Kept on this device'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('dismissing the Keep dialog keeps the refused rows', (
@@ -323,7 +329,7 @@ void main() {
     expect(syncCheck(), findsOneWidget);
     expect(
       tester.widget<Icon>(syncCheck()).color,
-      tester.element(syncCheck()).context.status.success,
+      tester.element(syncCheck()).status.success,
     );
   });
 
@@ -362,6 +368,7 @@ void main() {
     await _settle(tester);
     expect(find.text('Sync now'), findsOneWidget);
     expect(find.text('Syncing…'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a sync that fails while Syncing… shows brings the button and '
@@ -381,5 +388,6 @@ void main() {
     expect(find.text('Sync now'), findsOneWidget);
     expect(find.text('Syncing…'), findsNothing);
     expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

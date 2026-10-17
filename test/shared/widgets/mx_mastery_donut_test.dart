@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
 import '../../support/widget_harness.dart';
@@ -20,15 +17,15 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 );
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
   const mx = MxStatusColors.light;
 
   testWidgets('56 box; the arc in the ramp fill, the label in its band\'s '
       'text colour (SW-REV-001)', (tester) async {
     for (final (fraction, text, color, label) in [
-      (0.2, '20%', mx.warning, mx.warning),
-      (0.42, '42%', accentOf(scheme), accentOf(scheme)),
-      (0.9, '90%', mx.successContainer, mx.success),
+      (0.2, '20%', mx.warningFill, mx.warning),
+      (0.42, '42%', colors.primary, colors.primary),
+      (0.9, '90%', mx.successFill, mx.success),
     ]) {
       await pumpMx(tester, MxMasteryDonut(fraction: fraction));
 
@@ -41,7 +38,7 @@ void main() {
         _ring(tester),
         paints
           ..circle(
-            color: scheme.surfaceContainerHighest,
+            color: MasteryRamp.track(colors),
             style: PaintingStyle.stroke,
           )
           ..arc(color: color, strokeCap: StrokeCap.round),
@@ -52,8 +49,8 @@ void main() {
   testWidgets('the track is the ramp\'s progress track in both themes (token: '
       'progress and countdown ring track)', (tester) async {
     for (final (brightness, colors) in [
-      (Brightness.light, lightColorScheme),
-      (Brightness.dark, darkColorScheme),
+      (Brightness.light, appLightColors),
+      (Brightness.dark, appDarkColors),
     ]) {
       await pumpMx(
         tester,
@@ -76,10 +73,7 @@ void main() {
     await pumpMx(tester, const MxMasteryDonut(fraction: 0));
 
     expect(tester.widget<Text>(find.text('0%')).style!.color, mx.warning);
-    expect(
-      _ring(tester),
-      paints..circle(color: scheme.surfaceContainerHighest),
-    );
+    expect(_ring(tester), paints..circle(color: MasteryRamp.track(colors)));
     expect(_ring(tester), isNot(paints..arc()));
   });
 
@@ -88,7 +82,7 @@ void main() {
     await pumpMx(tester, const MxMasteryDonut(fraction: 1));
 
     expect(tester.widget<Text>(find.text('100%')).style!.color, mx.success);
-    expect(_ring(tester), paints..arc(color: mx.successContainer));
+    expect(_ring(tester), paints..arc(color: mx.successFill));
   });
 
   testWidgets('the label never rounds to a lie: 99.6% reads 99%, 0.4% reads '

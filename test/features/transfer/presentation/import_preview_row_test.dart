@@ -99,7 +99,7 @@ void main() {
     // The mark takes its colour from an IconTheme around the glyph.
     expect(
       IconTheme.of(tester.element(mark)).color,
-      tester.element(mark).context.status.success,
+      tester.element(mark).status.success,
     );
   });
 }

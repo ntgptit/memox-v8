@@ -20,6 +20,7 @@ import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_fakes.dart';
+import '../../../support/forui_expect.dart';
 
 const _clip = TopikAudioClip(asset: 'a.mp3', startMs: 0, endMs: 30000);
 
@@ -146,11 +147,11 @@ void main() {
     expect(find.text(group.passage!.textKo!), findsOneWidget);
     // Q-P6b-4 (owner, 2026-10-16): a chevron, named for TalkBack (F5).
     expect(find.byIcon(AppIcons.chevronUp), findsOneWidget);
-    await tester.tap(find.byTooltip('Hide passage'));
+    await tester.tap(byControlLabel('Hide passage'));
     await tester.pumpAndSettle();
     expect(find.text(group.passage!.textKo!), findsNothing);
     expect(tester.widget<Text>(find.text(group.instructionKo)).maxLines, 1);
-    expect(find.byTooltip('Show passage'), findsOneWidget);
+    expect(byControlLabel('Show passage'), findsOneWidget);
     expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
   });
 
@@ -297,6 +298,7 @@ void main() {
     await tester.tap(find.text('Submit'));
     expect(submits, 1);
     expect(find.text('Questions'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the grid: a cell per question that says if it is answered, '
@@ -370,6 +372,6 @@ void main() {
       tester.widget<Text>(find.text(group.instructionKo)).maxLines,
       isNull,
     );
-    expect(find.byTooltip('Show passage'), findsNothing);
+    expect(byControlLabel('Show passage'), findsNothing);
   });
 }

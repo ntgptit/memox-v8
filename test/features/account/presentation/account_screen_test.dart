@@ -120,6 +120,7 @@ void main() {
     expect(_row(tester, _en.accountDelete).isEnabled, isFalse);
     await tester.tap(find.widgetWithText(MxButton, _en.accountSignIn));
     expect(signIns, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   accountTest('Switch account asks, then starts the switch', (

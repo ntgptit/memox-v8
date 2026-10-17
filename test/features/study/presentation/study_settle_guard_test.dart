@@ -38,6 +38,7 @@ void main() {
 
     expect(taps, 1);
     expect(_opacity(tester), 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   testWidgets('after a swap the row takes no tap for 400 ms and eases in '
@@ -58,6 +59,7 @@ void main() {
     await tester.tap(find.text('Go'));
     expect(taps, 1);
     expect(_opacity(tester), 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   testWidgets('under Remove animations the row shows at full opacity and is '
@@ -93,5 +95,6 @@ void main() {
 
     await tester.tap(find.text('Go'));
     expect(taps, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

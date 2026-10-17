@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
@@ -16,7 +17,20 @@ void main() {
       const MxRowInk(onTap: null, child: SizedBox(width: 200, height: 48)),
     );
 
-    expect(find.byType(InkWell), findsNothing);
+    expect(find.byType(FTappable), findsNothing);
+    // Nothing in it takes the keyboard focus.
+    useKeyboardFocusHighlight();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      find.descendant(
+        of: find.byType(MxRowInk),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Focus && widget.focusNode?.hasFocus == true,
+        ),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('a border radius shapes the ink and the focus ring', (
@@ -32,7 +46,20 @@ void main() {
       ),
     );
 
-    expect(tester.widget<InkWell>(find.byType(InkWell)).borderRadius, radius);
+    final outline = tester.widget<FFocusedOutline>(
+      find.descendant(
+        of: find.byType(MxRowInk),
+        matching: find.byType(FFocusedOutline),
+      ),
+    );
+    expect(
+      outline
+          .style(
+            forUiTheme(tester, find.byType(MxRowInk)).style.focusedOutlineStyle,
+          )
+          .borderRadius,
+      radius,
+    );
     expect(
       (tester
                   .widget<DecoratedBox>(
@@ -48,7 +75,7 @@ void main() {
     );
   });
 
-  testWidgets('tappable: fires, and focus draws the 2px focus ring', (
+  testWidgets('tappable: fires, and focus draws the theme focus ring', (
     tester,
   ) async {
     var taps = 0;
@@ -60,34 +87,28 @@ void main() {
       ),
     );
     await tester.tap(find.byType(MxRowInk));
+    await tester.pumpAndSettle();
     expect(taps, 1);
 
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
+    useKeyboardFocusHighlight();
+    final ring = forUiTheme(
+      tester,
+      find.byType(MxRowInk),
+    ).style.focusedOutlineStyle;
+    expect(
+      tester.renderObject(find.byType(FFocusedOutline)),
+      isNot(paintsFocusRing(ring.color, width: ring.width)),
     );
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
-    final ring =
-        tester
-                .widget<DecoratedBox>(
-                  find.descendant(
-                    of: find.byType(MxRowInk),
-                    matching: find.byType(DecoratedBox),
-                  ),
-                )
-                .decoration
-            as BoxDecoration;
 
     expect(
-      ring.border,
-      Border.all(color: accentOf(lightColorScheme), width: 2),
+      focusRingRender(tester),
+      paintsFocusRing(ring.color, width: ring.width),
     );
   });
 
-  testWidgets('disabled: 0.38, no tap, a disabled button', (tester) async {
+  testWidgets('disabled: dimmed, no tap, a disabled button', (tester) async {
     final handle = tester.ensureSemantics();
     var taps = 0;
     await pumpMx(
@@ -110,7 +131,7 @@ void main() {
             ),
           )
           .opacity,
-      0.38,
+      appLightColors.disabledOpacity,
     );
     expect(
       tester.getSemantics(find.text('Move here')),
@@ -119,6 +140,8 @@ void main() {
         isButton: true,
         hasEnabledState: true,
         isEnabled: false,
+        // ForUI's tappable always reports a selected state, never selected.
+        hasSelectedState: true,
       ),
     );
     handle.dispose();
@@ -134,7 +157,11 @@ void main() {
         MxRowInk(
           onTap: onTap,
           isEnabled: false,
-          child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+          child: MxButton(
+            label: 'Go',
+            tone: MxButtonTone.text,
+            onPressed: () => inner++,
+          ),
         ),
       );
       await tester.tap(find.text('Go'), warnIfMissed: false);
@@ -155,10 +182,15 @@ void main() {
       tester,
       MxRowInk(
         onTap: null,
-        child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+        child: MxButton(
+          label: 'Go',
+          tone: MxButtonTone.text,
+          onPressed: () => inner++,
+        ),
       ),
     );
     await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
     expect(inner, 1);
   });
 
@@ -200,6 +232,7 @@ void main() {
       ),
     );
     await tester.longPress(find.text('Row'));
+    await tester.pumpAndSettle();
 
     expect(held, 1);
     expect(
@@ -282,18 +315,26 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('M3F-10: no isSelected means no selected state', (tester) async {
+  testWidgets('M3F-10: no isSelected means never selected', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(tester, MxRowInk(onTap: () {}, child: const Text('Row')));
 
+    // ForUI's tappable reports a selected state on every button: never
+    // selected here.
     expect(
       tester.getSemantics(find.text('Row')),
       isSemantics(
         label: 'Row',
         isButton: true,
-        hasSelectedState: false,
+        isSelected: false,
+        hasSelectedState: true,
         hasTapAction: true,
       ),
+    );
+    await pumpMx(tester, const MxRowInk(onTap: null, child: Text('Static')));
+    expect(
+      tester.getSemantics(find.text('Static')),
+      isSemantics(label: 'Static', hasSelectedState: false),
     );
     handle.dispose();
   });

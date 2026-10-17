@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
@@ -200,14 +201,9 @@ void main() {
       env,
       Builder(
         builder: (context) {
-          final theme = Theme.of(context);
-          return Theme(
-            data: theme.copyWith(
-              extensions: [
-                ...theme.extensions.values.where((e) => e is! AppDimens),
-                const AppDimens(sizeTrack: 10),
-              ],
-            ),
+          final theme = FTheme.of(context);
+          return FTheme(
+            data: theme.copyWith(extensions: [const _TallTrackDimens()]),
             child: _host(
               const RecallCountdownBarWidget(
                 caption: 'c',
@@ -373,8 +369,8 @@ void main() {
         tester
             .element(label)
             .texts
-            .labelSmall
-            ?.copyWith(color: tester.element(label).colors.mutedForeground),
+            .meta
+            .copyWith(color: tester.element(label).colors.mutedForeground),
         reason: text,
       );
     }
@@ -431,4 +427,13 @@ void main() {
       }
     });
   }
+}
+
+/// The app's dimensions with a taller progress track, to prove the clock bar
+/// reads its height from the theme.
+class _TallTrackDimens extends AppDimens {
+  const _TallTrackDimens();
+
+  @override
+  double get sizeTrack => 10;
 }

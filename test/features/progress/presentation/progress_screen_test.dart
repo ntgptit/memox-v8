@@ -88,12 +88,12 @@ void main() {
       tester
           .element(find.text(_en.progressToday.toUpperCase()))
           .texts
-          .labelSmall
-          ?.copyWith(
+          .meta
+          .copyWith(
             color: tester
                 .element(find.text(_en.progressToday.toUpperCase()))
                 .colors
-                .onSurfaceVariant,
+                .mutedForeground,
           ),
     );
     // M3-D3: every section gap on the overview is context.dimens.space16.
@@ -195,6 +195,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.byWidgetPredicate((w) => w is Opacity), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a new answer updates the numbers with no skeleton (D8, '
@@ -333,6 +334,7 @@ void main() {
     expect(taps.study, 1);
     expect(find.text(_en.progressAllDecks), findsNothing);
     expect(find.text('IELTS Academic Word List'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a quiet week says so and points to 30 days; at 30 days only '
@@ -351,6 +353,7 @@ void main() {
 
     expect(find.text(_en.progressQuietWeek), findsNothing);
     expect(find.text(_en.progressQuietMonth), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('no deck: only the empty state, no range, no total '
@@ -379,6 +382,7 @@ void main() {
     await tester.tap(await _row(tester, _en.progressAllDecks));
 
     expect(taps.decks, hasLength(1));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a failed read shows the error; Retry reads again '

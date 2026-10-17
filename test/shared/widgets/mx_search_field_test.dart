@@ -1,21 +1,39 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_dimens.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
+final _field = find.byType(FTextField);
+
+FTextFieldStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _field).textFieldStyles.lg;
+
+/// What the field's decorator paints behind the text.
+mu.InputDecoration _decoration(WidgetTester tester) =>
+    tester.widget<mu.InputDecorator>(find.byType(mu.InputDecorator)).decoration;
+
+/// The edge the field draws in [states].
+BorderSide _edge(
+  WidgetTester tester, [
+  Set<mu.WidgetState> states = const {},
+]) => (_decoration(tester).border! as mu.WidgetStateProperty<mu.InputBorder>)
+    .resolve(states)
+    .borderSide;
+
+Finder _clear() => find.bySemanticsLabel('Clear search');
+
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
   late TextEditingController controller;
 
   setUp(() => controller = TextEditingController());
@@ -35,35 +53,37 @@ void main() {
         ),
       );
 
-  testWidgets(
-    'sizeSearch tall, labelMedium value, search surface and muted glyph',
-    (tester) async {
-      await pump(tester);
-      final field = tester.widget<TextField>(find.byType(TextField));
+  testWidgets('a large ForUI field tall, the value in the content style, '
+      'the muted surface and a muted glyph', (tester) async {
+    await pump(tester);
+    final style = _style(tester);
 
-      expect(
-        tester.getSize(find.byType(TextField)).height,
-        const AppDimens().sizeSearch,
-      );
-      expect(field.style, tester.element(find.byType(TextField)).texts.label);
-      expect(
-        field.decoration!.fillColor,
-        appLightColors.muted,
-      );
-      // The theme's field has no fill: the bar asks for its own.
-      expect(
-        tester
-            .widget<InputDecorator>(find.byType(InputDecorator))
-            .decoration
-            .filled,
-        isTrue,
-      );
-      expect(
-        tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-        scheme.onSurfaceVariant,
-      );
-    },
-  );
+    expect(tester.getSize(_field).height, style.constraints.minHeight);
+    expect(tester.getSize(_field).height, greaterThanOrEqualTo(48));
+    expect(_decoration(tester).filled, isTrue);
+    expect(_decoration(tester).fillColor, colors.muted);
+    expect(_decoration(tester).hintText, 'Search decks and cards');
+    expect(
+      iconColor(tester, find.byIcon(AppIcons.search)),
+      colors.mutedForeground,
+    );
+    await tester.enterText(find.byType(EditableText), 'verbs');
+    await tester.pump();
+    final text = tester.widget<EditableText>(find.byType(EditableText));
+    expect(text.style.fontSize, style.contentTextStyle.resolve({}).fontSize);
+    expect(text.style.color, style.contentTextStyle.resolve({}).color);
+  });
+
+  testWidgets('the surface has no edge, at rest or focused', (tester) async {
+    await pump(tester);
+    expect(_edge(tester), BorderSide.none);
+
+    await tester.tap(_field);
+    await tester.pump();
+
+    expect(_edge(tester, {mu.WidgetState.focused}), BorderSide.none);
+    expect(_decoration(tester).fillColor, colors.muted);
+  });
 
   // DEV-393 review: a field holding a query lost its name (only its value
   // was read), and so did the route it names on screen 04.
@@ -72,85 +92,99 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     await pump(tester);
-    // The text field's own node, where the hint and the value are read.
-    final field = find.byType(EditableText);
-    expect(tester.getSemantics(field).label, 'Search decks and cards');
+    expect(find.bySemanticsLabel('Search decks and cards'), findsOneWidget);
 
     controller.text = 'verbs';
-    // Once the hint has faded out (it adds an empty line while it fades).
+    // Once the hint has faded out.
     await tester.pumpAndSettle();
-    final node = tester.getSemantics(field);
-    expect(node.label, 'Search decks and cards');
-    expect(node.value, 'verbs');
+    expect(find.bySemanticsLabel('Search decks and cards'), findsOneWidget);
+    expect(tester.getSemantics(find.byType(EditableText)).value, 'verbs');
     handle.dispose();
   });
 
   testWidgets('no clear button until there is a query', (tester) async {
+    final handle = tester.ensureSemantics();
     await pump(tester);
-    expect(find.byTooltip('Clear search'), findsNothing);
+    expect(_clear(), findsNothing);
+    final rest = tester.getSize(_field).height;
 
-    await tester.enterText(find.byType(TextField), 'verb');
-    await tester.pump();
-    expect(find.byTooltip('Clear search'), findsOneWidget);
+    await tester.enterText(find.byType(EditableText), 'verb');
+    await tester.pumpAndSettle();
+    expect(_clear(), findsOneWidget);
+    expect(tester.getSize(_field).height, rest);
+    handle.dispose();
+  });
+
+  testWidgets('the clear button is a 48 target at the end of the field', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester);
+    await tester.enterText(find.byType(EditableText), 'verb');
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxIconButton), findsOneWidget);
+    expect(tester.getSize(_clear()).width, greaterThanOrEqualTo(48));
+    expect(tester.getSize(_clear()).height, greaterThanOrEqualTo(48));
     expect(
-      tester.getSize(find.byType(TextField)).height,
-      const AppDimens().sizeSearch,
+      tester.getRect(_field).right - tester.getRect(_clear()).right,
+      lessThanOrEqualTo(8),
     );
+    handle.dispose();
+    await expectAccessibleTargets(tester);
   });
 
   testWidgets('clear empties the query and reports it', (tester) async {
+    final handle = tester.ensureSemantics();
     final reported = <String>[];
     await pump(tester, onChanged: reported.add);
-    await tester.enterText(find.byType(TextField), 'verb');
+    await tester.enterText(find.byType(EditableText), 'verb');
     await tester.pump();
-    await tester.tap(find.byTooltip('Clear search'));
-    await tester.pump();
+    await tester.tap(_clear());
+    await tester.pumpAndSettle();
 
     expect(controller.text, isEmpty);
     expect(reported.last, isEmpty);
-    expect(find.byTooltip('Clear search'), findsNothing);
+    expect(_clear(), findsNothing);
+    handle.dispose();
   });
 
   testWidgets('clear keeps the field focused', (tester) async {
+    final handle = tester.ensureSemantics();
     await pump(tester);
-    await tester.tap(find.byType(TextField));
-    await tester.enterText(find.byType(TextField), 'kanji');
+    await tester.tap(_field);
+    await tester.enterText(find.byType(EditableText), 'kanji');
     await tester.pump();
-    await tester.tap(find.byTooltip('Clear search'));
-    await tester.pump();
+    await tester.tap(_clear());
+    await tester.pumpAndSettle();
 
     expect(controller.text, isEmpty);
     expect(
       tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
       isTrue,
     );
+    handle.dispose();
   }, variant: TargetPlatformVariant.all());
 
   testWidgets('focus keeps the search surface and tints the glyph', (
     tester,
   ) async {
     await pump(tester);
-    await tester.tap(find.byType(TextField));
+    await tester.tap(_field);
     await tester.pump();
-    final field = tester.widget<TextField>(find.byType(TextField));
 
-    expect(field.decoration!.fillColor, appLightColors.muted);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      accentOf(scheme),
-    );
+    expect(_decoration(tester).fillColor, colors.muted);
+    expect(iconColor(tester, find.byIcon(AppIcons.search)), colors.primary);
   });
 
   testWidgets('a long query stays on one line', (tester) async {
     await pump(tester);
-    await tester.enterText(find.byType(TextField), 'a very long query ' * 8);
+    final rest = tester.getSize(_field).height;
+    await tester.enterText(find.byType(EditableText), 'a very long query ' * 8);
     await tester.pump();
 
-    expect(tester.widget<TextField>(find.byType(TextField)).maxLines, 1);
-    expect(
-      tester.getSize(find.byType(TextField)).height,
-      const AppDimens().sizeSearch,
-    );
+    expect(tester.widget<EditableText>(find.byType(EditableText)).maxLines, 1);
+    expect(tester.getSize(_field).height, rest);
   });
 
   group('trigger', () {
@@ -162,30 +196,25 @@ void main() {
       ),
     );
 
-    testWidgets(
-      'looks like the resting field: sizeSearch tall, search surface, hint',
-      (tester) async {
-        await pumpTrigger(tester, () {});
-        final field = tester.widget<TextField>(find.byType(TextField));
+    testWidgets('looks like the resting field: as tall, muted surface, hint', (
+      tester,
+    ) async {
+      await pump(tester);
+      final rest = tester.getSize(_field).height;
+      await pumpTrigger(tester, () {});
 
-        expect(
-          tester.getSize(find.byType(TextField)).height,
-          const AppDimens().sizeSearch,
-        );
-        expect(
-          field.decoration!.fillColor,
-          appLightColors.muted,
-        );
-        expect(find.text('Search decks'), findsOneWidget);
-      },
-    );
+      expect(tester.getSize(_field).height, rest);
+      expect(_decoration(tester).fillColor, colors.muted);
+      expect(_edge(tester), BorderSide.none);
+      expect(find.text('Search decks'), findsOneWidget);
+    });
 
     testWidgets('a tap calls onTap once and takes no focus', (tester) async {
       var taps = 0;
       await pumpTrigger(tester, () => taps++);
 
       await tester.tap(find.byType(MxSearchField));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(taps, 1);
       expect(tester.testTextInput.hasAnyClients, isFalse);
@@ -198,59 +227,39 @@ void main() {
       );
     });
 
-    testWidgets('a press ripples over the field, clipped to its stadium', (
-      tester,
-    ) async {
-      await pumpTrigger(tester, () {});
-      final field = tester.getRect(find.byType(TextField));
-      final inks = find.byWidgetPredicate(
-        (widget) => widget.runtimeType.toString() == '_InkFeatures',
-      );
-
-      final gesture = await tester.startGesture(field.center);
-      await tester.pump(const Duration(milliseconds: 100));
-
-      expect(
-        tester.renderObject(inks.last),
-        paints..clipRRect(
-          rrect: RRect.fromRectAndRadius(
-            Offset.zero & field.size,
-            Radius.circular(const AppDimens().sizeSearch / 2),
-          ),
-        ),
-      );
-      await gesture.up();
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('hovering lays the hover state over the field', (tester) async {
+    testWidgets('hovering leaves the search surface as it is', (tester) async {
       await pumpTrigger(tester, () {});
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
 
-      await mouse.moveTo(tester.getCenter(find.byType(TextField)));
+      await mouse.moveTo(tester.getCenter(_field));
       await tester.pumpAndSettle();
-      final inks = find.byWidgetPredicate(
-        (widget) => widget.runtimeType.toString() == '_InkFeatures',
-      );
 
-      expect(
-        tester.renderObject(inks.last),
-        paints..rrect(
-          color: Theme.of(tester.element(find.byType(MxSearchField)))
-              .hoverColor,
-        ),
-      );
+      expect(_decoration(tester).fillColor, colors.muted);
+      expect(_edge(tester), BorderSide.none);
     });
 
-    testWidgets('the keyboard reaches it at one tab stop', (tester) async {
+    testWidgets('the keyboard reaches it at one tab stop, with the outline '
+        'round the pill', (tester) async {
       await pumpTrigger(tester, () {});
       final scope = FocusScope.of(tester.element(find.byType(MxSearchField)));
 
       expect(
         scope.traversalDescendants.where((n) => n.canRequestFocus),
         hasLength(1),
+      );
+      useKeyboardFocusHighlight();
+      final outline = forUiTheme(
+        tester,
+        find.byType(MxSearchField),
+      ).style.focusedOutlineStyle;
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      expect(
+        focusRingRender(tester),
+        paintsFocusRing(outline.color, width: outline.width),
       );
     });
 
@@ -261,7 +270,7 @@ void main() {
       await pumpTrigger(tester, () {});
 
       expect(
-        tester.getSemantics(find.byType(MxSearchField)),
+        tester.getSemantics(find.bySemanticsLabel('Search decks')),
         isSemantics(label: 'Search decks', isButton: true, hasTapAction: true),
       );
       expect(find.byType(MxIconButton), findsNothing);
@@ -269,11 +278,12 @@ void main() {
     });
   });
 
-  // M3F-13: a filled enabled decorator blends ThemeData.hoverColor into its
-  // fill, so the search surface now hovers at the token layer.
+  // M3F-13 asked the filled field to hover at the token layer; the ForUI
+  // search surface paints the one muted ground in every state, in both
+  // themes.
   for (final brightness in Brightness.values) {
-    testWidgets('M3F-13: a hovered search field blends onSurface at '
-        'opacityHover over the search surface ($brightness)', (tester) async {
+    testWidgets('a hovered search field keeps the muted surface '
+        '($brightness)', (tester) async {
       await pumpMx(
         tester,
         SizedBox(
@@ -286,42 +296,17 @@ void main() {
         ),
         brightness: brightness,
       );
-      final context = tester.element(find.byType(MxSearchField));
-      // The decorator paints its fill with the hover colour blended in.
-      PaintPattern paintsFill(Color color) =>
-          paints..something((name, arguments) {
-            if (name != #drawRRect && name != #drawPath) return false;
-            final paint = arguments.whereType<Paint>().first;
-            return paint.style == PaintingStyle.fill &&
-                paint.color.toARGB32() == color.toARGB32();
-          });
-      final painter = tester.renderObject(
-        find
-            .descendant(
-              of: find.byType(InputDecorator),
-              matching: find.byType(CustomPaint),
-            )
-            .first,
-      );
-
-      expect(painter, paintsFill(context.colors.muted));
+      final muted = brightness == Brightness.light
+          ? appLightColors.muted
+          : appDarkColors.muted;
+      expect(_decoration(tester).fillColor, muted);
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
-      await mouse.moveTo(tester.getCenter(find.byType(TextField)));
+      await mouse.moveTo(tester.getCenter(_field));
       await tester.pumpAndSettle();
 
-      expect(
-        painter,
-        paintsFill(
-          Color.alphaBlend(
-            context.colors.foreground.withValues(
-              alpha: context.dimens.opacityHover,
-            ),
-            context.colors.muted,
-          ),
-        ),
-      );
+      expect(_decoration(tester).fillColor, muted);
     });
   }
 }

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
-
-import '../../../support/theme_expect.dart';
 
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
 import '../../../support/library_harness.dart';
 
-// A glyph reads in the accent colour; the tag chip is the Material 3 input chip.
+// A glyph reads in the accent colour; the tag chip is the shared ForUI chip.
 void main() {
-  final accent = accentOf(darkColorScheme);
+  final accent = appDarkColors.primary;
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(
@@ -31,10 +30,10 @@ void main() {
     expect(glyphColor(tester, CardAddDetailsWidget), accent);
   });
 
-  // Material 3 unselected input chip: no fill, onSurfaceVariant label and
-  // remove glyph.
+  // The removable tag is the shared chip at rest: ForUI's extra-small outline
+  // button, its fill, label and glyph.
   libraryTest(
-    'a removable tag chip: no fill, onSurfaceVariant label and glyph',
+    'a removable tag chip: the outline chip\'s fill, label and glyph',
     (tester, env) async {
       await pumpLibraryScreen(
         tester,
@@ -44,12 +43,14 @@ void main() {
         ),
         brightness: Brightness.dark,
       );
+      final chip = find.byType(CardRemovableTagChipWidget);
+      final style = _chipStyle(tester, chip);
       final fill =
           tester
                   .widget<DecoratedBox>(
                     find
                         .descendant(
-                          of: find.byType(CardRemovableTagChipWidget),
+                          of: chip,
                           matching: find.byType(DecoratedBox),
                         )
                         .first,
@@ -57,14 +58,14 @@ void main() {
                   .decoration
               as ShapeDecoration;
 
-      expect(fill.color, isNull);
+      expect(fill.color, (style.decoration.base as ShapeDecoration).color);
       expect(
         glyphColor(tester, CardRemovableTagChipWidget),
-        appDarkColors.mutedForeground,
+        style.contentStyle.iconStyle.base.color,
       );
       expect(
         tester.widget<Text>(find.text('verb')).style!.color,
-        appDarkColors.mutedForeground,
+        style.contentStyle.textStyle.base.color,
       );
     },
   );
@@ -94,12 +95,9 @@ void main() {
     handle.dispose();
   });
 
-  // Material 3 input chip: 32 tall, an 8 corner with a 1dp outlineVariant
-  // edge, an 18 remove glyph, and the whole 48 area removes the tag.
-  libraryTest('a removable tag chip: the M3 input chip geometry', (
-    tester,
-    env,
-  ) async {
+  // The shared chip: 32 tall with ForUI's outline edge and glyph, and the
+  // whole 48 area removes the tag.
+  libraryTest('a removable tag chip: the chip geometry', (tester, env) async {
     var removed = 0;
     await pumpLibraryScreen(
       tester,
@@ -120,14 +118,10 @@ void main() {
     final decoration =
         tester.widget<DecoratedBox>(chip.first).decoration as ShapeDecoration;
 
+    final style = _chipStyle(tester, find.byType(CardRemovableTagChipWidget));
+
     expect(tester.getSize(chip.first).height, 32);
-    expect(
-      decoration.shape,
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: appLightColors.border),
-      ),
-    );
+    expect(decoration.shape, (style.decoration.base as ShapeDecoration).shape);
     expect(
       tester
           .getSize(
@@ -137,7 +131,7 @@ void main() {
             ),
           )
           .width,
-      18,
+      style.contentStyle.iconStyle.base.size,
     );
     expect(
       tester.getSize(find.byType(CardRemovableTagChipWidget)).height,
@@ -148,4 +142,11 @@ void main() {
     await tester.tapAt(tester.getTopLeft(chip.first) + const Offset(20, -6));
     expect(removed, 1);
   });
+}
+
+/// The style ForUI gives the extra-small outline button the chip is drawn in.
+FButtonStyle _chipStyle(WidgetTester tester, Finder chip) {
+  final context = tester.element(chip);
+  return FTheme.of(context).buttonStyles.outline
+      .resolve({context.platformVariant, FButtonSizeVariant.xs});
 }

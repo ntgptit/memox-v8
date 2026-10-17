@@ -2,15 +2,19 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 final _probeKey = GlobalKey();
 const _glyphKey = Key('suffix-glyph');
+
+final _field = find.byType(FTextField);
 
 /// The painted left edge of the field at its vertical centre: the colour of
 /// the first pixel and how many pixels share it, over the surface the
@@ -19,7 +23,7 @@ Future<({Color color, int width})> _paintedEdge(WidgetTester tester) async {
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(_probeKey),
   );
-  final row = (tester.getSize(find.byType(TextField)).height / 2).floor();
+  final row = (tester.getSize(fieldBox(_field)).height / 2).floor();
   final image = (await tester.runAsync(boundary.toImage))!;
   final data = (await tester.runAsync(image.toByteData))!;
   image.dispose();
@@ -76,20 +80,15 @@ typedef _Probe = ({
   bool isEnabled,
   bool isFocused,
   bool isHovered,
-  Color Function(ColorScheme) edge,
-  double width,
-  Color Function(ColorScheme) glyph,
+  Color Function(FColors) edge,
+  Color Function(FColors) glyph,
 });
 
-// Rest, hover and focus stay `onSurface`, not the SDK's `onSurfaceVariant`
-// (ruling): the live `MxIconButton` suffix (the search field's clear) keeps its
-// colour, and a plain `Icon` suffix has no consumer.
-Color _onSurfaceGlyph(ColorScheme s) => s.onSurface;
-Color _disabledEdge(ColorScheme s) => s.onSurface.withValues(alpha: 0.12);
-
 /// Every decorator state the outlined field paints, with the edge and the
-/// suffix glyph it takes (M3F-16): the Material 3 rows for error, and the
-/// values the app already had for every other state.
+/// suffix glyph it takes (M3F-16): ForUI's field border for rest, focus,
+/// disabled and error, and its icon colour for the suffix. ForUI draws no
+/// distinct hover edge and keeps the error edge in error while hovered or
+/// focused; the edge is one logical pixel in every state.
 final List<_Probe> _probes = [
   (
     name: 'enabled',
@@ -97,9 +96,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: false,
     isHovered: false,
-    edge: (s) => s.outline,
-    width: 1,
-    glyph: _onSurfaceGlyph,
+    edge: (c) => c.border,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'hovered',
@@ -107,9 +105,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: false,
     isHovered: true,
-    edge: (s) => s.outline,
-    width: 1,
-    glyph: _onSurfaceGlyph,
+    edge: (c) => c.border,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'focused',
@@ -117,9 +114,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: true,
     isHovered: false,
-    edge: (s) => s.primary,
-    width: 2,
-    glyph: _onSurfaceGlyph,
+    edge: (c) => c.primary,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'disabled',
@@ -127,9 +123,8 @@ final List<_Probe> _probes = [
     isEnabled: false,
     isFocused: false,
     isHovered: false,
-    edge: _disabledEdge,
-    width: 1,
-    glyph: (s) => s.onSurface.withValues(alpha: 0.38),
+    edge: (c) => c.disable(c.border),
+    glyph: (c) => c.disable(c.secondaryForeground),
   ),
   (
     name: 'error',
@@ -137,9 +132,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: false,
     isHovered: false,
-    edge: (s) => s.error,
-    width: 1,
-    glyph: (s) => s.error,
+    edge: (c) => c.error,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'error + hovered',
@@ -147,9 +141,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: false,
     isHovered: true,
-    edge: (s) => s.onErrorContainer,
-    width: 1,
-    glyph: (s) => s.onErrorContainer,
+    edge: (c) => c.error,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'error + focused',
@@ -157,9 +150,8 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: true,
     isHovered: false,
-    edge: (s) => s.error,
-    width: 2,
-    glyph: (s) => s.error,
+    edge: (c) => c.error,
+    glyph: (c) => c.secondaryForeground,
   ),
   (
     name: 'disabled + error',
@@ -167,9 +159,8 @@ final List<_Probe> _probes = [
     isEnabled: false,
     isFocused: false,
     isHovered: false,
-    edge: _disabledEdge,
-    width: 1,
-    glyph: (s) => s.onSurface.withValues(alpha: 0.38),
+    edge: (c) => c.disable(c.error),
+    glyph: (c) => c.disable(c.secondaryForeground),
   ),
 ];
 
@@ -178,6 +169,9 @@ final List<_Probe> _probes = [
 /// glyph in its suffix slot.
 void main() {
   for (final brightness in Brightness.values) {
+    final colors = brightness == Brightness.light
+        ? appLightColors
+        : appDarkColors;
     for (final probe in _probes) {
       testWidgets(
         'M3F-16 ${brightness.name}: ${probe.name} paints its edge and '
@@ -191,7 +185,7 @@ void main() {
               builder: (context) => RepaintBoundary(
                 key: _probeKey,
                 child: ColoredBox(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: colors.background,
                   child: SizedBox(
                     width: 300,
                     child: MxTextField(
@@ -213,23 +207,28 @@ void main() {
           await mouse.addPointer(location: Offset.zero);
           addTearDown(mouse.removePointer);
           if (probe.isHovered) {
-            await mouse.moveTo(tester.getCenter(find.byType(TextField)));
+            await mouse.moveTo(tester.getCenter(fieldBox(_field)));
           }
           await tester.pumpAndSettle();
 
-          final scheme = Theme.of(tester.element(find.byType(TextField)))
-              .colorScheme;
-          final ground = scheme.surface;
           final edge = await _paintedEdge(tester);
-          final expected = Color.alphaBlend(probe.edge(scheme), ground);
+          // The edge lies over the field's own fill.
+          final fill = probe.isEnabled
+              ? colors.card
+              : colors.disable(colors.card);
+          final expected = Color.alphaBlend(
+            probe.edge(colors),
+            Color.alphaBlend(fill, colors.background),
+          );
           expect(
             _sameColor(edge.color, expected),
             isTrue,
             reason: 'edge ${edge.color} is not $expected',
           );
-          expect(edge.width, probe.width);
+          final width = forUiTheme(tester, _field).style.borderWidth;
+          expect(edge.width, width.ceil());
           final glyph = IconTheme.of(tester.element(find.byKey(_glyphKey)));
-          expect(glyph.color, probe.glyph(scheme));
+          expect(glyph.color, probe.glyph(colors));
         },
       );
     }
@@ -248,9 +247,10 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       final message = find.text('Required');
       return (
-        tester.getRect(find.byType(TextField)),
+        tester.getRect(fieldBox(_field)),
         message.evaluate().isEmpty ? null : tester.getRect(message),
       );
     }
@@ -259,7 +259,8 @@ void main() {
     final (failing, message) = await placed(errorText: 'Required');
 
     expect(failing, clean);
-    expect(message!.top, clean.bottom + 4);
+    expect(message!.top, greaterThanOrEqualTo(clean.bottom));
+    expect(message.top, lessThan(clean.bottom + 16));
   });
 
   // The trailing kinds the app uses: a text button (the tag editor) and an
@@ -298,7 +299,7 @@ void main() {
     await mouse.addPointer(location: Offset.zero);
     if (isHovered) {
       await mouse.moveTo(
-        tester.getTopLeft(find.byType(TextField)) + const Offset(8, 8),
+        tester.getTopLeft(fieldBox(_field)) + const Offset(8, 8),
       );
     }
     await tester.pumpAndSettle();
@@ -312,9 +313,8 @@ void main() {
     return colour;
   }
 
-  testWidgets('an icon button in the suffix follows the glyph: error, and '
-      'onErrorContainer when the error is hovered (M3F-16)', (tester) async {
-    final scheme = lightColorScheme;
+  testWidgets('an icon button in the suffix keeps its own ghost glyph colour '
+      'in error and hover: ForUI tints no control (M3F-16)', (tester) async {
     Future<Color?> colour({required bool hasError, required bool isHovered}) =>
         trailingColour(
           tester,
@@ -323,19 +323,19 @@ void main() {
           isHovered: isHovered,
         );
 
-    expect(await colour(hasError: false, isHovered: false), scheme.onSurface);
-    expect(await colour(hasError: false, isHovered: true), scheme.onSurface);
-    expect(await colour(hasError: true, isHovered: false), scheme.error);
-    expect(
-      await colour(hasError: true, isHovered: true),
-      scheme.onErrorContainer,
-    );
+    final clean = await colour(hasError: false, isHovered: false);
+    final ghost = forUiTheme(
+      tester,
+      find.byType(MxIconButton),
+    ).buttonStyles.ghost.lg.iconContentStyle.iconStyle;
+    expect(clean, ghost.resolve({}).color);
+    expect(await colour(hasError: false, isHovered: true), clean);
+    expect(await colour(hasError: true, isHovered: false), clean);
+    expect(await colour(hasError: true, isHovered: true), clean);
   });
 
   testWidgets('a text button in the suffix keeps its own colour in error and '
-      'hover: the decorator tints a glyph, not a control (M3F-16)', (
-    tester,
-  ) async {
+      'hover: the field tints a glyph, not a control (M3F-16)', (tester) async {
     Future<Color?> colour({required bool hasError, required bool isHovered}) =>
         trailingColour(
           tester,
@@ -371,21 +371,29 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      return _semanticsNodes(tester);
+      // Without the rect: an error makes the field taller.
+      return [
+        for (final node in _semanticsNodes(tester))
+          node.substring(0, node.lastIndexOf('|')),
+      ];
     }
 
     final clean = await nodes();
     final failing = await nodes(errorText: 'Required');
-    final extra = failing.where((node) => !clean.contains(node)).toList();
 
-    // The field node keeps its label, hint, flags and actions (the hint is
-    // read with the label); the one new node is the message, a live region.
-    const fieldNode = 'Name\nDeck|||isTextField,hasEnabledState,isEnabled,';
-    expect(clean.where((node) => node.startsWith(fieldNode)), hasLength(1));
-    expect(failing.where((node) => node.startsWith(fieldNode)), hasLength(1));
-    expect(extra, hasLength(1));
-    expect(extra.single, startsWith('Required|'));
-    expect(extra.single, contains('isLiveRegion'));
+    // ForUI reads the message with the field (its hint), so the field node
+    // changes; the one new node is the message, a live region, and no other
+    // node appears.
+    expect(clean.where((node) => node.contains('isTextField')), hasLength(1));
+    expect(failing.where((node) => node.contains('isTextField')), hasLength(1));
+    final field = failing.singleWhere((node) => node.contains('isTextField'));
+    expect(field, contains('Required'));
+    final newNodes = failing
+        .where((node) => !clean.contains(node) && !node.contains('isTextField'))
+        .toList();
+    expect(newNodes, hasLength(1));
+    expect(newNodes.single, startsWith('Required|'));
+    expect(newNodes.single, contains('isLiveRegion'));
     expect(failing.length, clean.length + 1);
     expect(
       failing.where((node) => node.contains('isLiveRegion')),

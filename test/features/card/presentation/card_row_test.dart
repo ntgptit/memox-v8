@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
@@ -67,10 +68,10 @@ void main() {
     expect(find.text('dong tu'), findsNothing);
     expect(find.text(_en.cardMoreTags(2)), findsOneWidget);
     expect(find.text(_en.cardDueOverdue(30)), findsOneWidget);
-    expect(find.byIcon(Icons.flag), findsOneWidget);
+    expect(find.byIcon(AppIcons.flagged), findsOneWidget);
     // The flag is plain foreground, as in the editor and the detail; the filled
     // glyph carries the state (critique 2026-10-02, F6).
-    final flag = tester.element(find.byIcon(Icons.flag));
+    final flag = tester.element(find.byIcon(AppIcons.flagged));
     expect(IconTheme.of(flag).color, flag.colors.foreground);
     // M3-D1: the row pads 16 across and 12 down, as every MxListRow.
     expect(

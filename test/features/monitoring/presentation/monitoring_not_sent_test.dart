@@ -82,6 +82,7 @@ void main() {
     expect(shown, isEmpty, reason: 'no status');
     await tester.tap(find.text('sync.failed'));
     expect(opened, 'p1');
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Not sent works while the server tab is offline', (

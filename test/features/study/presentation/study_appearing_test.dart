@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
@@ -20,14 +19,11 @@ Color? _hiddenBar(WidgetTester tester) {
 void main() {
   testWidgets('the hidden bar is one step off the face it sits on, on the '
       'raised and the recessed ground, light and dark', (tester) async {
-    for (final (brightness, scheme, mx) in [
-      (Brightness.light, lightColorScheme, MxStatusColors.light),
-      (Brightness.dark, darkColorScheme, MxStatusColors.dark),
+    for (final (brightness, colors) in [
+      (Brightness.light, appLightColors),
+      (Brightness.dark, appDarkColors),
     ]) {
-      final grounds = {
-        'raised': mx.cardSurface,
-        'recessed': scheme.surfaceContainerLow,
-      };
+      final grounds = {'raised': colors.card, 'recessed': colors.muted};
       for (final MapEntry(key: name, value: ground) in grounds.entries) {
         await pumpMx(
           tester,
@@ -45,9 +41,10 @@ void main() {
         );
         await tester.pump(const Duration(milliseconds: 400));
 
+        // Muted on the card; the stronger border on the muted face.
         expect(
           _hiddenBar(tester),
-          scheme.surfaceContainerHighest,
+          name == 'recessed' ? colors.border : colors.muted,
           reason: '$brightness $name',
         );
         expect(_hiddenBar(tester), isNot(ground), reason: '$brightness $name');

@@ -21,5 +21,6 @@ void main() {
     expect(find.text('7 tests'), findsOneWidget);
     await tester.tap(find.text('TOPIK past papers'));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 }

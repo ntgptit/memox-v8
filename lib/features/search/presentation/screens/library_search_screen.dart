@@ -70,10 +70,10 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
         isTitleField: true,
-        // The field names the route, as the SDK AppBar names any title
-        // (DEV-393): TalkBack announces the search on arrival.
-        isTitleWidgetRouteName: true,
         titleWidget: MxSearchField(
+          // The field names the route, as the SDK AppBar names any title
+          // (DEV-393): TalkBack announces the search on arrival.
+          isRouteName: true,
           controller: _query,
           focusNode: _focus,
           hintText: l10n.searchFieldHint,

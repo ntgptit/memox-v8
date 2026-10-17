@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
@@ -134,15 +133,12 @@ void main() {
               (box.decoration! as BoxDecoration).color == color,
         )
         .length;
-    final scheme = darkColorScheme;
+    final colors = appDarkColors;
 
-    expect(
-      appDarkColors.card,
-      isNot(MasteryRamp.track(scheme)),
-    );
+    expect(colors.card, isNot(MasteryRamp.track(colors)));
     // Boxes 1-3 are filled; 4-8 are the track.
-    expect(bars(scheme.primary), 3);
-    expect(bars(MasteryRamp.track(scheme)), 5);
+    expect(bars(colors.primary), 3);
+    expect(bars(MasteryRamp.track(colors)), 5);
   });
 
   libraryTest('an eight-box card shows its box on the ramp and its facts', (
@@ -174,12 +170,12 @@ void main() {
       tester
           .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
           .texts
-          .labelSmall
-          ?.copyWith(
+          .meta
+          .copyWith(
             color: tester
                 .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
                 .colors
-                .onSurfaceVariant,
+                .mutedForeground,
           ),
     );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);

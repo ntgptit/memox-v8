@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/app_dimens.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
-import 'package:memox/core/theme/app_palette.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -20,7 +17,7 @@ Finder _tile(IconData icon) => find
     .first;
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('title, body and a block primary action', (tester) async {
     var taps = 0;
@@ -35,6 +32,7 @@ void main() {
       ),
     );
     await tester.tap(find.byType(MxButton));
+    await tester.pumpAndSettle();
 
     expect(find.text('No decks yet'), findsOneWidget);
     expect(find.text('Create one to start.'), findsOneWidget);
@@ -60,15 +58,13 @@ void main() {
     );
   });
 
-  testWidgets('tone tints the tile at 10% and paints the glyph', (
-    tester,
-  ) async {
+  testWidgets('tone tints the tile and paints the glyph', (tester) async {
     final tones = {
-      MxEmptyStateTone.primary: scheme.primary,
-      MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
+      MxEmptyStateTone.primary: colors.primary,
+      MxEmptyStateTone.neutral: colors.mutedForeground,
       MxEmptyStateTone.success: MxStatusColors.light.success,
       MxEmptyStateTone.warning: MxStatusColors.light.warningFill,
-      MxEmptyStateTone.danger: scheme.error,
+      MxEmptyStateTone.danger: colors.error,
     };
     for (final MapEntry(key: tone, value: color) in tones.entries) {
       await pumpMx(
@@ -77,7 +73,7 @@ void main() {
       );
       final tile = tester.widget<DecoratedBox>(_tile(AppIcons.inbox));
 
-      // The tile sits in the state's card: its tint is over cardSurface.
+      // The tile sits in the state's card: its tint is over the card ground.
       expect(
         (tile.decoration as BoxDecoration).color,
         color.tintOver(appLightColors.card),
@@ -86,7 +82,7 @@ void main() {
       // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
       // success glyph in its ink (critique 2026-09-30 tone pass, T7).
       final glyph = switch (tone) {
-        MxEmptyStateTone.primary => accentOf(scheme),
+        MxEmptyStateTone.primary => colors.primary,
         MxEmptyStateTone.success => MxStatusColors.light.success,
         // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
         MxEmptyStateTone.warning => MxStatusColors.light.warning,
@@ -207,6 +203,7 @@ void main() {
       8,
     );
     await tester.tap(find.text('Import cards'));
+    await tester.pumpAndSettle();
     expect(taps, 1);
   });
 
@@ -236,7 +233,7 @@ void main() {
       );
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-        tester.element(find.byIcon(AppIcons.inbox)).context.status.warning,
+        tester.element(find.byIcon(AppIcons.inbox)).status.warning,
       );
     },
   );

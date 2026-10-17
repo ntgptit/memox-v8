@@ -148,15 +148,17 @@ class MxBottomSheet extends StatelessWidget {
     );
     return MxHoldRoute(
       isHeld: isHeld,
-      // Inside the route's drag detector, so it wins the vertical drag.
-      child: isHeld
-          ? GestureDetector(
-              onVerticalDragStart: (_) {},
-              onVerticalDragUpdate: (_) {},
-              onVerticalDragEnd: (_) {},
-              child: sheet,
-            )
-          : sheet,
+      // Inside the route's drag detector, so a held sheet's absorber wins the
+      // vertical drag. Opaque: a drag that starts on a locked row (which
+      // ignores pointers) still reaches it. Always present, so a hold that
+      // comes or goes never remounts the sheet's content.
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragStart: isHeld ? (_) {} : null,
+        onVerticalDragUpdate: isHeld ? (_) {} : null,
+        onVerticalDragEnd: isHeld ? (_) {} : null,
+        child: sheet,
+      ),
     );
   }
 

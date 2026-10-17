@@ -101,19 +101,19 @@ void main() {
     await tester.pumpWidget(_host(_tile(tone: MxChoiceTone.selected)));
     await tester.pumpAndSettle();
 
-    final colors = buildLightTheme().colorScheme;
+    final colors = buildLightTheme().colors;
     expect(_decoration(tester).color, colors.primary);
     final text = tester.widget<Text>(find.text('① 보기 1'));
     expect(text.style?.color, colors.primaryForeground);
   });
 
-  testWidgets('idle is the card ground with the content on surface', (
+  testWidgets('idle is the card ground with the content on the foreground', (
     tester,
   ) async {
     await tester.pumpWidget(_host(_tile()));
     await tester.pumpAndSettle();
 
     final text = tester.widget<Text>(find.text('① 보기 1'));
-    expect(text.style?.color, buildLightTheme().colorScheme.onSurface);
+    expect(text.style?.color, buildLightTheme().colors.foreground);
   });
 }

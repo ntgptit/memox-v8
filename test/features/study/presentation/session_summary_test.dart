@@ -87,6 +87,7 @@ void main() {
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     await tester.tap(find.widgetWithText(MxButton, _en.summaryStudyAgain));
     expect((done, again), (1, 1));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Night: a finished session is a tint over the Night surface, so '
@@ -405,8 +406,8 @@ void main() {
       tester
           .element(overline)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(overline).colors.mutedForeground),
+          .meta
+          .copyWith(color: tester.element(overline).colors.mutedForeground),
     );
     expect(
       text.semanticsLabel,

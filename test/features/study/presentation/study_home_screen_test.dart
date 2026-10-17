@@ -230,6 +230,7 @@ void main() {
     expect(taps.starterDecks, 1);
     await tester.tap(find.text(_en.studyHomeGoToLibrary));
     expect(taps.library, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('roots with no card: no number anywhere (BR-STUDY-077)', (
@@ -304,6 +305,7 @@ void main() {
       isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
     );
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest("Resume takes today's session up and opens it (H3)", (
@@ -434,8 +436,8 @@ void main() {
       tester
           .element(waiting)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(waiting).colors.mutedForeground),
+          .meta
+          .copyWith(color: tester.element(waiting).colors.mutedForeground),
     );
     // The glyph follows the eyebrow, not the Required foreground.
     final glyph = find

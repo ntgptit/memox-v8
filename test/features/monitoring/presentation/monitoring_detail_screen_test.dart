@@ -21,6 +21,9 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 // Monitoring spec §3.3, §3.4, §5: the detail page and its triage.
 
@@ -58,7 +61,7 @@ Future<void> _markFixed(WidgetTester tester, {String note = ''}) async {
   await tester.tap(find.widgetWithText(MxButton, 'Mark fixed'));
   await tester.pumpAndSettle();
   if (note.isNotEmpty) {
-    await tester.enterText(find.byType(TextField), note);
+    await tester.enterText(find.byType(FTextField), note);
   }
   await tester.tap(find.widgetWithText(MxButton, 'Save'));
   await _settle(tester);
@@ -196,9 +199,9 @@ void main() {
     );
     await _pump(tester, env, repository);
 
-    await tester.tap(find.byTooltip('Copy device ID'));
+    await tester.tap(byControlLabel('Copy device ID'));
     await _settle(tester);
-    await tester.tap(find.byTooltip('Copy user ID'));
+    await tester.tap(byControlLabel('Copy user ID'));
     await _settle(tester);
 
     expect(copied, ['device-1', '00000000-0000-0000-0000-00000000dead']);
@@ -393,7 +396,7 @@ void main() {
     );
     await _pump(tester, env, repository);
 
-    await tester.tap(find.byTooltip('Copy log'));
+    await tester.tap(byControlLabel('Copy log'));
     await _settle(tester);
 
     expect(copied, contains('"event": "sync.push_failed"'));
@@ -413,7 +416,7 @@ void main() {
     await _pump(tester, env, repository);
 
     expect(find.byType(MxSkeletonList), findsOneWidget);
-    expect(find.byTooltip('Copy log'), findsNothing);
+    expect(byControlLabel('Copy log'), findsNothing);
     expect(find.byType(MxFooterBar), findsNothing);
     repository.readGate!.complete();
     await _settle(tester);
