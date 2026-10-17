@@ -56,6 +56,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 | list | tap Hide this note | noteDismissed | VERIFIED `::the fixture note can be hidden, and stays hidden (critique 2026-09-30)` |
 | list | tap "Add to library" (no copy yet) | choose | VERIFIED `::choose: the sheet preselects the suggested scheduler; the one picked is the copy's, and the toast opens it (added)` |
 | list | tap "Add another copy" (a copy exists) | secondCopy; Cancel returns to list, nothing copied; Add opens choose | VERIFIED `::secondCopy: a template in the library asks first; Cancel copies nothing, confirming adds a deck of its own` |
+| choose | TalkBack opens the scheduler sheet | the sheet's title "{template}" is read as its heading and names the route | VERIFIED `starter_library_screen_test.dart::choose: the sheet preselects the suggested scheduler; the one picked is the copy's, and the toast opens it (added)` (it asserts `isHeader` and `namesRoute`) |
 | choose | Cancel | list, nothing copied | `UNVERIFIED (code read)`: `starter_algorithm_sheet_widget.dart` pops with null; the screen then does nothing |
 | choose | Add | adding, then added: the sheet closes and the toast carries Open | VERIFIED `::choose: ...` above |
 | added | tap Open on the toast | that copy's root deck in the Library | VERIFIED same test |

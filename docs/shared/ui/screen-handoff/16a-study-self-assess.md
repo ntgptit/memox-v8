@@ -77,6 +77,7 @@ node TalkBack reads. Goldens:
 | From | Event | To | Evidence |
 |---|---|---|---|
 | prompt | tap Show answer, or the prompt card | revealed; nothing is written | VERIFIED `study_self_assess_test.dart::the prompt shows first, the answer waits for Show answer, and revealing writes nothing (IT-MODE-012, BR-MODE-006)`, `::tapping the prompt card reveals, as Show answer does` |
+| prompt | tap Show answer, with TalkBack on | the reveal is announced: "The answer is {answer}." (the meaning when the card is term-first, the term when meaning-first), since Show answer takes the focus with it | VERIFIED `study_self_assess_test.dart::the reveal is announced: the answer is read, term-first and meaning-first alike (TalkBack)`, `::a meaning-first reveal announces the term` |
 | prompt | a double tap on Show answer | revealed only; the grades take no tap for 400 ms | VERIFIED `::a double tap on Show answer grades nothing: the grades settle first (critique 2026-09-30 part 3c-2, R1)` |
 | prompt | the card is meaning-first | the meaning is the prompt; the term and the example wait for the reveal | VERIFIED `::a meaning-first card prompts with the meaning; the term and the example wait for the reveal (BR-MODE-014)` |
 | revealed | tap a grade (scheduled turn) | saving, then the next card, unrevealed | VERIFIED `::Good records one scheduled turn and the next card follows, unrevealed`; the previews and label: `::a scheduled turn shows each grade with its interval, and reads "Good, next in 6 days" (16a)` |
@@ -102,7 +103,7 @@ node TalkBack reads. Goldens:
 
 ## Accessibility
 
-- TalkBack reads the prompt, then "Show answer". After the reveal, focus moves to the answer card, then to the grades. Each grade reads "Good, next in 6 days", or just "Again" on a relearning turn.
+- TalkBack reads the prompt, then "Show answer". The reveal is announced ("The answer is {answer}."), because Show answer, the focused button, goes. After the reveal, focus moves to the answer card, then to the grades. Each grade reads "Good, next in 6 days", or just "Again" on a relearning turn.
 - Stacked diacritics in either card follow the single-line rule where a line is ellipsized (spec §9 row 102). Card faces wrap and never ellipsize.
 - Touch targets are at least 48 × 48, with 8 between the grades.
 

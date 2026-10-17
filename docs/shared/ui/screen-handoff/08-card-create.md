@@ -32,8 +32,8 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | frontTooLong | no golden | no golden | Shown once the front field is touched. |
 | tagLimit | no golden | no golden | At 10 tags Add tag is withdrawn and "A card can carry 10 tags. Remove one to add another." shows (BR-TAG-002). Code read: `card_tag_editor_widget.dart`. |
 | deckRejects | no golden | no golden | Caption "This deck can't take cards now." and banner "It now holds sub-decks."; no path exists here to choose another deck (see Rulings). |
-| saving | no golden | no golden | The button shows only its spinner in place of the label — no "Saving…" text inside the button (see Rulings). |
-| saveFailed | no golden | no golden | A write failure keeps the form and everything typed; the footer shows the danger banner "Couldn't save card." · "Nothing was lost. Tap Save to try again." and the button reads "Retry save". `card_editor_screen_test.dart::a failed save keeps the form and offers Retry save (RF4)`. |
+| saving | no golden | no golden | The button shows only its spinner in place of the label — no "Saving…" text inside the button (see Rulings). Cancel, ✕ and system Back are held, and every field is read-only, until the write answers: it lands either way, so a discard question would say something untrue and nothing typed meanwhile can be lost to the form clearing for the next card. |
+| saveFailed | no golden | no golden | A write failure keeps the form and everything typed; the footer shows the danger banner "Couldn't save card." · "Nothing was lost. Tap Retry save to try again." (the body names the button as it reads) and the button reads "Retry save". `card_editor_screen_test.dart::a failed save keeps the form and offers Retry save (RF4)`. |
 | saved | no golden | no golden | A valid save writes the card, clears every field and the tags, returns the focus to Front and shows the toast "Card added"; the screen stays open for the next card (UC-CARD-001 A4). `card_editor_screen_test.dart::Save adds the card, clears the form and refocuses (RF1)`. |
 | pendingTag | no golden | no golden | A tag typed but not added is part of the card: Save adds it first (a refused tag stops the save, takes the focus and shows its error), and leaving asks first. `card_tag_input_test.dart::create: Save adds the pending tag, and the next card starts with none and an empty field (Review Focus 2)`, `::create: a refused tag stops Save and takes the focus, so its error is in view (final review)`. |
 | discardNew | no golden | no golden | Back, Close or Cancel on a changed form: "Discard this card?" · "What you typed is not saved." · Keep editing / Discard; an unchanged form closes at once. `card_editor_screen_test.dart::Back on a changed form asks; Keep editing keeps it (RF2)`, `card_editor_blocks_test.dart::the discard dialog answers Discard or Keep editing`. |
@@ -55,6 +55,8 @@ card?") when leaving a dirty new-card form without saving.
 | valid | Add details | details | VERIFIED `::Add details opens the optional fields` |
 | valid | Add tag, up to 10 | tagLimit at 10 | `UNVERIFIED (code read)` for the limit; adding is VERIFIED `card_tag_input_test.dart::Add adds the typed tag and keeps the field open` |
 | valid | Save | saving, then saved (the form stays open and empty) | VERIFIED `card_editor_screen_test.dart::Save adds the card, clears the form and refocuses (RF1)` |
+| saving | Cancel, ✕ or system Back in the same instant | ignored (`_close` returns while `_isSaving`; `PopScope` does not ask); the save lands and the toast "Card added" shows; no discard dialog | VERIFIED `card_editor_save_test.dart::create: Cancel, close and Back are held while the card saves; the save lands and says so, with no discard dialog` (Cancel is driven; ✕ and Back share `_close` and the `PopScope`: `UNVERIFIED (code read)`) |
+| saving | the fields while the write runs | read-only (`isReadOnly: _isSaving`) | `UNVERIFIED (code read)`: `card_editor_form_widget.dart`, `card_field_widget.dart`, `card_optional_fields_widget.dart` |
 | saving | a second tap on Save | one card | VERIFIED `::a double tap on Save adds one card` |
 | saving | the write fails | saveFailed, the typed content kept | VERIFIED `::a failed save keeps the form and offers Retry save (RF4)` |
 | saveFailed | Retry save | saving, then saved | `UNVERIFIED (code read)`: `card_editor_form_widget.dart` (`_save` clears `_hasFailed`) |
@@ -86,7 +88,7 @@ card?") when leaving a dirty new-card form without saving.
 - Errors: "Add the term to remember." · "The term can be at most 60 characters. Move the rest into the meaning or an example." · "Add a meaning so this card can be answered." · "The meaning can be at most 240 characters." · "Keep this to 240 characters."
 - Deck rejects: "This deck no longer accepts cards." · "It now holds sub-decks."
 - Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Add" · "Remove {tag}" · "A card can carry 10 tags. Remove one to add another."
-- Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothing was lost. Tap Save to try again."
+- Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothing was lost. Tap Retry save to try again."
 - Discard: "Discard this card?" · "What you typed is not saved." · "Keep editing" · "Discard".
 - Gone: "This deck is no longer here" · "It was moved to Trash or deleted while you were adding cards. This card was not saved." · "Back to deck" · "Open Trash".
 - Toast: "Card added".

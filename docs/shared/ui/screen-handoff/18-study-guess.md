@@ -46,8 +46,10 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 | right / wrong | a tap anywhere | the next question at once | VERIFIED the wrong-pick test above |
 | right / wrong | a second tap on an option while the turn is held | nothing is written (BR-STUDY-042) | VERIFIED `::a second tap while the turn is held writes nothing (BR-STUDY-042)` |
 | right / wrong | TalkBack is on | no auto-advance; a "Next" button continues | VERIFIED `::with TalkBack on nothing advances by itself; Next does (C6)` |
-| default | a tap while the write runs | dropped (BR-STUDY-004) | `UNVERIFIED (code read)`: `onTap` is null while `isBusy` |
-| default | the busy database refuses the pick | the unsaved-answer banner with Retry; the options stay idle and tappable | the banner path is VERIFIED from Browse (16); suspect, `UNVERIFIED (code read)`: `onTap` is enabled again once `isBusy` clears and `unsaved` is dropped by the next `answer`, so a tap on another option would be written as the first pick, beside a Retry for the first; no test pins it |
+| default | a tap while the write runs | dropped (BR-STUDY-004) | `UNVERIFIED (code read)`: `onTap` is null while `isBusy` (the screen passes `turn.isLocked`) |
+| default | the busy database refuses the pick | the unsaved-answer banner with Retry; the options are locked (`StudyTurnState.isLocked`) and the first pick stays the answer (BR-STUDY-041) | VERIFIED `study_guess_test.dart::an answer a busy database kept stays the first pick: the options wait for Retry, which saves it (BR-STUDY-041 first pick; audit 2026-10-17)`; the banner path from Browse is VERIFIED in 16 |
+| default (refused) | tap another option | ignored; the first pick stays | VERIFIED the same test |
+| default (refused) | Retry | the first pick is saved; right / wrong follows as above | VERIFIED the same test (it ends on "Correct" announced) |
 | default | the question cannot be built (blocked) | blocked: the notice with Close | VERIFIED `::a blocked question shows the notice, and Close ends the session (BR-STUDY-040, G3, C2)` |
 | blocked | tap Close | the exit dialog; Stop ends the session as `user_exit`, nothing written for the question | VERIFIED same test |
 | right / wrong | leave the screen before the 1200 ms end | the timer is cancelled with the widget | `UNVERIFIED (code read)`: `dispose` cancels `_timer` |

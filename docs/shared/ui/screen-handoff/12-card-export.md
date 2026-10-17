@@ -19,7 +19,7 @@ sheet as a CSV, TSV or XLSX file. UC-TRANSFER-002; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| Header | `MxBottomSheet` header | "Export all {n} cards" and "Every card in {deck}, whatever filter or search is active."; for a selection, "Export {n} selected cards" and "Only the cards you selected." |
+| Header | `MxBottomSheet` header | "Export all {n} cards" and "Every card in {deck}, whatever filter or search is active."; for a selection, "Export {n} selected cards" and "Only the cards you selected." The sheet draws its own head, so the title is marked as the sheet's heading (`header` and `namesRoute`) as `MxBottomSheet`'s own title is. |
 | Problem | `MxInlineBanner` | One banner per problem, above the formats. Danger for a file that could not be prepared, warning otherwise. |
 | Formats | `MxListSectionHeader` + `MxOptionRow` × 3 | CSV (default, "Recommended" badge), TSV, XLSX, each with what it is for. Locked while a file is prepared. |
 | Content note | `MxNote` (file icon) | The six columns; no schedule, no history. |
@@ -51,6 +51,7 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 |---|---|---|---|
 | (deck ⋮) | Export cards | the deck is counted, then wholeDeck (or nothingToExport at 0); a failed count is countFailed | VERIFIED `test/app/library_routes_test.dart::Export opens its sheet from the deck and from a selection (UC-TRANSFER-002)`, `card_export_sheet_test.dart::an empty deck opens on nothing to export (E5)`; the failed count `UNVERIFIED (code read)` |
 | (card list bulk bar) | Export | selection; the selection stays after the sheet | VERIFIED `test/app/library_routes_test.dart::Export opens its sheet from the deck and from a selection (UC-TRANSFER-002)`; that the selection stays is `UNVERIFIED (code read)` |
+| wholeDeck | TalkBack opens the sheet | the title "Export all {n} cards" is read as the sheet's heading and names the route | VERIFIED `card_export_sheet_test.dart::the whole deck is counted, then handed over; the toast says so (steps 1–7)` (it asserts `isHeader` and `namesRoute`) |
 | wholeDeck / selection | choose a format | the same state with that format | VERIFIED `card_export_controller_test.dart::the chosen format is the one written (A2)` |
 | wholeDeck / selection | Export | preparing, then handedOver (the sheet closes, the toast shows) | VERIFIED `card_export_sheet_test.dart::the whole deck is counted, then handed over; the toast says so (steps 1–7)` |
 | preparing | a second tap on Export | one file | VERIFIED `card_export_controller_test.dart::a second tap while the file is prepared makes no second file (A4)` |

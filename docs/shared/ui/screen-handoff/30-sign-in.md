@@ -61,7 +61,7 @@ the whole page.
 
 | Region | Widget | Design |
 |---|---|---|
-| Title | `texts.itemTitle` (the sheet's title) | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
+| Title | `texts.itemTitle` (the sheet's title), marked as the sheet's heading (`header` and `namesRoute`, as `MxBottomSheet`'s own title is) | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
 | Choices | `MxOptionRow` × 2 | "Merge into the account" (selected) · "Your {n} decks and {m} cards join it." (or "This phone's decks and cards join it." when the count failed); "Discard this phone's data" · "They're removed from this phone. The account's decks come down instead." |
 | Warning | `MxInlineBanner` (danger) | "This phone's decks and progress go for good." Only while Discard is chosen (plan ruling 14). |
 | Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Footer Pair Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |
@@ -139,7 +139,8 @@ The images are the goldens.
 | Google running | the Google account belongs to another account | the merge sheet, or the switch at once on an empty phone | VERIFIED `sign_in_google_switch_test.dart::Google whose account is another account's signs in to it at once on an empty phone (owner 2026-10-08)` |
 | merge sheet | Cancel | ready; nothing started; a Google pick is forgotten | VERIFIED `merge_choice_sheet_test.dart::Cancel starts nothing`; `welcome_screen_test.dart::Cancel on the merge sheet forgets the picked Google account: the next press shows the picker again` |
 | merge sheet | Continue with Merge or Discard | the switch begins; the transition layer takes over; Discard first shows the danger banner and a destructive confirm | VERIFIED `merge_choice_sheet_test.dart::a phone with decks asks, and merge is the default`, `::discarding is its own choice, confirmed in the destructive tone` |
-| merge sheet | the switch cannot begin | the sheet is gone, a toast with the failure, the form stays | `UNVERIFIED (code read)`: `startLinkSwitch` catches `Failure` and `StateError` |
+| merge sheet | the switch cannot begin | the sheet is gone, a toast with the failure, the form stays; for a Google switch the picked Google account is forgotten too, so the next press shows the picker | `UNVERIFIED (code read)`: `startLinkSwitch` catches `Failure` and `StateError` and calls `_forgetPickedGoogle` |
+| merge sheet | TalkBack opens the sheet | the title is read as the sheet's heading and names the route | VERIFIED `merge_choice_sheet_test.dart::a phone with decks asks, and merge is the default` (it asserts `isHeader` and `namesRoute` on the title) |
 | merge sheet | the count of decks fails | the sheet still asks, without numbers | VERIFIED `merge_choice_sheet_test.dart::Google's title, and a failed count still asks, without numbers` |
 | (email switch) | the layer's form opens | it sends the code to the address already asked for, once, and opens on the code | owner 2026-10-08. VERIFIED `test/app/account_routes_test.dart::an email that already has an account gets its sign-in code at once, and the layer opens on the code (owner 2026-10-08)` |
 | ready | the keyboard comes up | the footer keeps Send code alone; Google returns when it goes | VERIFIED `sign_in_layout_test.dart::while the keyboard is up the footer keeps Send code alone (DEV-168)`, `::a Google pick in flight keeps its spinning button while typing (final review M2)` |

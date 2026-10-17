@@ -23,7 +23,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 | App bar | `MxAppBar` | Back, deck name, `⋮` (the deck's action sheet). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
 | Summary card | `MxCard` (hero) | For a deck holding sub-decks: `MxMasteryDonut` of the level (BR-DECK-026) beside "MASTERED · {algorithm}", "N sub-decks · N cards", overdue · today · new · N scheduled. "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the subtree holds no card to study. |
-| List | as root | Header "Sub-decks" with the sort pill: the summary card states the count (critique 2026-09-30 part 3b). |
+| List | as root | Header "Sub-decks" with the sort pill: the summary card states the count (critique 2026-09-30 part 3b). TalkBack names the pill as a sort with the order shown, "Sort decks, {order}" (the chip's visible text alone would not say what it does). |
 | FAB | `MxFab` | "New sub-deck"; none at level 10 (BR-DECK-001), and none on an `unset` deck, whose empty state offers both choices (R9, critique 2026-09-30 part 1). |
 | By content type | — | `unset`: empty state with the two create choices (BR-DECK-007) and "Import cards from a file" (screen 11), all text-only block actions, Import as the outline third. `card`: the card list, screen 07. |
 
@@ -155,6 +155,9 @@ Transitions added by the audit of 2026-10-17:
 |---|---|---|---|
 | reorder mode (root or open deck) | system Back | the list in browse mode, still on the screen (`PopScope` in `DeckLevelBodyWidget`, LIB-7) | `deck_reorder_test.dart` |
 | a row's or the open deck's `⋮` | the deck's view fails to read | the failure's sentence as a toast, no sheet (LIB-9) | `deck_level_screen_test.dart` |
+| rootLoaded / deckLoaded | TalkBack reaches the sort pill | named "Sort decks, {order}" (e.g. "Sort decks, Manual order") | VERIFIED `open_deck_screen_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
+| rootCreate | Create is tapped, and the write runs | the dialog is held: Cancel is off, Back and the scrim wait, Create spins; it closes when the write answers | VERIFIED `create_root_deck_dialog_widget_test.dart::while Create writes, the dialog is held, Cancel is off and Create spins (M3 B2: every async confirm)` |
+| rootRename / subDeckCreate | the confirm is tapped, and the write runs | the same hold: Cancel off, the confirm spins | rename VERIFIED `deck_name_dialog_widget_test.dart::while the name saves, the dialog is held, Cancel is off and the confirm spins (M3 B2: every async confirm)`; the new sub-deck dialog is the same `DeckNameDialogWidget` with another submit: `UNVERIFIED (code read)` for its own run |
 
 ## Rulings
 

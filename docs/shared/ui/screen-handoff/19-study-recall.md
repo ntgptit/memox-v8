@@ -46,6 +46,7 @@ Continue (spec D5). Goldens:
 |---|---|---|---|
 | countingDown | the turn opens | the clock drains from 20 s (from the saved time on a resumed turn) | VERIFIED `study_recall_test.dart::the term shows, the meaning is hidden, and the clock counts down from 20 (19 countingDown)`, `::a turn resumed with saved time starts from it (BR-STUDY-036)` |
 | countingDown | tap Show the meaning | the clock stops at once, the reveal is written, then revealed (nothing recorded) | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)` |
+| revealed | the reveal commits (TalkBack) | announced "The meaning is {meaning}.": Show the meaning held the focus and goes | VERIFIED `study_recall_test.dart::the reveal is announced: the focused button goes, the meaning is read (TalkBack)` |
 | countingDown | a double tap on Show the meaning | revealed only; Forgot and Remembered take no tap for 400 ms | VERIFIED `::a double tap on Show the meaning answers nothing: Forgot and Remembered settle first (critique 2026-09-30 part 3c-2, R1)` |
 | countingDown | the database refuses the reveal | the clock counts down again from where it stopped; the turn is as it was | `UNVERIFIED (code read)`: `didUpdateWidget` (`isRefused`) in `study_recall_widget.dart`; the controller leaves the turn as it was |
 | revealed | tap Remembered / Forgot | the answer is written and the next card follows at once, no held frame | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)`, `::Forgot records a wrong answer and moves on` |
@@ -53,6 +54,8 @@ Continue (spec D5). Goldens:
 | countingDown | a tap on Show the meaning in the instant the clock runs out | the timed-out turn is not skipped | VERIFIED `::a tap in the instant the clock runs out does not skip the timed-out turn (Review Focus 2)` |
 | timedOut | tap Continue | the next card; nothing more is recorded (BR-STUDY-066) | VERIFIED in the zero test above |
 | countingDown | the app goes to the background | the clock stops; the time left is saved on pause; it resumes where it stopped (BR-STUDY-036) | VERIFIED `::the clock stops in the background and saves its time; it resumes where it stopped (D12, BR-STUDY-036)` |
+| countingDown | tap ✕ or system Back: the exit dialog opens | the clock stops while the dialog asks (`isPaused`) | VERIFIED `::the clock stops while the exit dialog asks, and Keep going takes it up where it stopped (BR-STUDY-036)` |
+| countingDown (dialog open) | Keep going | the clock resumes where it stopped; the turn does not time out behind the dialog | VERIFIED the same test (15 s left before, 12 s after 3 s more) |
 | countingDown | leave the screen mid-turn (✕ then Stop, Back) | the time left is saved when the widget goes | VERIFIED `::closing the screen mid-turn saves the time left (D12)` |
 | session reopened | the turn had been revealed | revealed with its clock stopped; Forgot or Remembered | VERIFIED `::a turn resumed after a reveal opens revealed, its clock stopped, and asks Forgot or Remembered (BR-STUDY-036)` |
 | revealed / timedOut | the answer write is refused by a busy database | the unsaved-answer banner with Retry; the buttons are disabled while a write runs | the banner path is VERIFIED from Browse (16); this screen's frame is `UNVERIFIED (code read)` |
@@ -72,6 +75,7 @@ Continue (spec D5). Goldens:
 
 - The clock is one node: its caption, with "{n} seconds left" as its value. It is never announced per tick (P4 rulings V3, V5).
 - A timeout is announced when its write commits: "Time is up. Counted as forgot. The meaning is {meaning}."
+- Show the meaning removes the focused button, so the reveal is announced too: "The meaning is {meaning}."
 - Under Remove animations the clock's fill steps once a second and the meaning appears with no fade; the time runs the same (V9).
 - At large text the faces scroll inside and the two self-check buttons stack (C4).
 - **Open for the owner:** the 20-second turn (BR-STUDY-031) is the same for TalkBack users, who read the chrome before they can recall. Changing it is a business-rule decision, not a UI one (V3).

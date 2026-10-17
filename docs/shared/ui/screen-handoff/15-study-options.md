@@ -25,7 +25,7 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 | App bar | `MxAppBar` (content) | Back and "Study options". |
 | Breadcrumb | `MxBreadcrumb` | Library › the deck's path › the deck › "Study options". |
 | Note | `MxNote` (layers) | The screen's one note (critique 2026-09-30): "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options." |
-| Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." |
+| Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." Both banners on this screen (this one and "Not saved") keep one 16 gap beneath them: the spacer, not the banner's own bottom margin as well (`hasBottomMargin: false`). |
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
 | Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry; the number is a keyboard-focusable target that opens the typed entry on Enter, M3F-06); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("In order" · "Random"; critique 2026-09-30 part 3a, R2), as screen 23 draws it; each row carries its icon, as on screen 23. While the toggle is on, the two rows show their values as plain text at full contrast, with no stepper or tray (critique 2026-09-30); turning it off brings the controls back with the same values. |
 | Speech language | `MxSettingsRow` (voice icon), tap opens the speech language sheet | "Speech language" / "{language} · The language the term is read in", the value first in the subtitle at full contrast, as the two rows above; inert and without the chevron while the toggle is on, a row with a chevron when off (study speech spec §6, BR-SETTINGS-009; critique 2026-10-07). |
@@ -50,7 +50,8 @@ saves the root's options otherwise. A second Save while one runs is ignored (A4)
 | loading | `study_options_loading_light.png` | `study_options_loading_dark.png` | Skeleton rows, no footer (UI-base row 125). |
 | unreadableOverride | — | — | The warning `MxInlineBanner` "This deck's options could not be read. Saving replaces them." above the toggle; Save is enabled with no edit (any save replaces the unreadable override, `StudyOptionsForm.isChanged`). No golden; VERIFIED `study_options_screen_test.dart::an override that cannot be read is named, and Save replaces it`. |
 | gone | — | — | (spec §6) a deck gone to the Trash shows "This deck is no longer here" with Back, in the neutral tone (UI-base row 129; owner 2026-10-08). No golden; VERIFIED `study_options_screen_test.dart::a deck gone to the Trash shows the gone state with Back (spec §6)`. |
-| read error | — | — | `MxErrorState` with Retry and no invented value. No golden; VERIFIED `study_options_screen_test.dart::a failed read shows the error with Retry and no invented value`. |
+| read error | — | — | `MxErrorState` "Couldn't open Study options" with Retry and no invented value; it shows when the deck's options or the app defaults they follow cannot be read, never an endless skeleton. No golden; VERIFIED `study_options_screen_test.dart::a failed read shows the error with Retry and no invented value`, `::the app defaults that cannot be read show the error with Retry, never an endless skeleton (audit 2026-10-17)`. |
+| discardAsk | — | — | Back with unsaved changes asks "Discard your changes?" ("The deck keeps the options it had.") with Keep editing and Discard (`showMxConfirm`). No golden; VERIFIED `study_options_screen_test.dart::Back with unsaved changes asks first; Keep editing keeps them, Discard leaves (audit 2026-10-17)`. |
 
 Goldens: `test/features/settings/presentation/goldens/study_options_{override,defaults,invalid,saving,saved,save_failed,loading}_{light,dark}.png`.
 
@@ -60,7 +61,13 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 |---|---|---|---|
 | loading | the read lands | override or defaults, by whether the root has its own options; a sub-deck shows its root's | VERIFIED `study_options_screen_test.dart::a sub-deck shows its root's options, following Settings, with nothing to save (kit defaults, D9)`; the skeleton: `::before the first read the screen shows skeleton rows and no Save (loading)` |
 | loading | the options read fails | read error | VERIFIED `::a failed read shows the error with Retry and no invented value` |
-| read error | Retry | loading, then the state the read gives | `UNVERIFIED (code read)`: `ref.invalidate(studyOptionsProvider)` in `study_options_screen.dart`; the Retry tap is not driven by a test |
+| read error | Retry | loading, then the state the read gives; both the options read and the app defaults read (`appSettingsProvider`) are invalidated | `UNVERIFIED (code read)`: the `onRetry` in `study_options_screen.dart`; the Retry tap is not driven by a test |
+| loading | the app defaults cannot be read | read error "Couldn't open Study options" with Retry | VERIFIED `::the app defaults that cannot be read show the error with Retry, never an endless skeleton (audit 2026-10-17)` |
+| override / defaults (changed) | Back (the app bar arrow, or system Back) | discardAsk | VERIFIED `::Back with unsaved changes asks first; Keep editing keeps them, Discard leaves (audit 2026-10-17)` |
+| override / defaults (unchanged) | Back | leaves at once, no question (`canPop`) | `UNVERIFIED (code read)`: `PopScope.canPop` in `study_options_screen.dart` |
+| discardAsk | Keep editing | back on the form with the draft as it was | VERIFIED the same test |
+| discardAsk | Discard | the screen leaves; the draft is dropped with its controller | VERIFIED the same test (the screen is gone) |
+| saving | Back | nothing: Back waits while a save runs, as the save lands either way | `UNVERIFIED (code read)`: `PopScope` with `draft.isSaving` |
 | loading | the root is gone (a `Rejected` read) | gone | VERIFIED `::a deck gone to the Trash shows the gone state with Back (spec §6)` |
 | gone | tap Back | the previous screen | `UNVERIFIED (code read)`: `maybePop` in `_gone` |
 | loaded | the deck goes to the Trash while the screen is open | gone, the draft dropped with the form | `UNVERIFIED (code read)`: the stream emits `Rejected`; a Save in flight ends as `idle` (`study_options_controller.dart`, `deckNotFound`), no test |

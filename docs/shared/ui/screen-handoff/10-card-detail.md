@@ -47,6 +47,7 @@ Every state above is built.
 | error | Retry | loading, then loaded | Retry is on screen in the test above; the re-read is `UNVERIFIED (code read)`: `card_detail_screen.dart` invalidates `cardDetailProvider` |
 | loading / loaded | the card does not exist, or is moved to Trash | notFound | VERIFIED `::a link to a card that does not exist shows it is gone (E1)`, `::a card deleted while open shows it is gone (E2)` |
 | notFound | Back to deck / Open Trash | the previous screen / screen 06 | `UNVERIFIED (code read)`: `CardGoneWidget` callbacks |
+| loaded | Edit, and the editor finds the card gone, then Back to deck | the editor pops `true` and the detail closes with it (`_editCard` in `app_router.dart`), so the person lands on the deck instead of this screen's own gone state | VERIFIED `test/app/library_routes_test.dart::a card trashed elsewhere while it is edited: Back to deck returns to the deck, past its detail (audit 2026-10-17)` |
 | loaded | tap Edit | the card editor (screen 09) | VERIFIED `::the detail shows the card under its path; Edit asks for it` |
 | historyLoading | the first page lands | the history, or empty | VERIFIED `card_history_scroll_test.dart::each answer shows the values its row stored (BR-CARD-016)`, `::a card never studied says so (BR-CARD-018)` |
 | historyLoading | the first page fails | historyError | `UNVERIFIED (code read)`: `card_history_scroll_widget.dart`; no test fails the first page |

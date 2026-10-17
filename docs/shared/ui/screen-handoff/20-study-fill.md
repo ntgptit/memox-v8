@@ -20,7 +20,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Answer face | `StudyFaceCard` (`role: answer`); the typed text itself: `MxTextField` (the `study` variant in the study term role; the golden `study_fill_input_*` draws it as a filled box in the page colour, inset on the recessed Term face and as wide as the face, with the typed text centred and a primary caret) — its style is a `context.texts` role, settled in the FE-A6 plan against the no-per-site-text-styling guard | `input`/`hint`: what has been typed so far with a blinking caret. `wrong`: the typed answer struck through, the correct term below it, tagged "Wrong · comes back next round" (see Rulings). |
 | Hint row | inline row inside the answer face, shown only in `hint`, its line reserved from the start (3c-2 R4) | Lightbulb glyph + the card's own hint text; only offered when the card has one (BR-STUDY-028). |
 | CTA row | `StudyCtaRow` | `input`: "Show hint" (only if the card has a hint) + "Check". `hint`: "Check" only. `wrong`: one "Continue" button, as wide as a two-button row (critique 2026-09-30). |
-| Footer hint | `SessionFooterHint` | Varies by state; see Copy. |
+| Footer hint | `SessionFooterHint` | Varies by state; see Copy. The glyph is info for the `input` and `hint` instructions and repeat for `wrong`, as every mode (critique 2026-10-02 F7). |
 
 ## Keyboard / IME
 
@@ -30,7 +30,9 @@ The system keyboard opens for `input`/`hint` and the CTA row sits above it;
 accents — "cong" must not match "công" (BR-STUDY-026). The typed text itself
 is never persisted, only the outcome, the match-policy version and whether a
 hint was used (BR-STUDY-027, BR-STUDY-030). An empty answer after trim
-submits nothing (BR-STUDY-029).
+submits nothing (BR-STUDY-029). The answer field asks the keyboard for no
+suggestions and no autocorrect (the `study` variant of `MxTextField`), so the
+keyboard neither offers the term nor corrects what was typed (BR-STUDY-026).
 
 ## States
 
@@ -58,15 +60,18 @@ until Continue, the typed text struck through in the error colour beside the rig
 |---|---|---|---|
 | input | the turn opens | the field has focus and the keyboard opens; Check is disabled until the answer is non-empty | VERIFIED `study_fill_test.dart::the field has focus when the turn opens (V7)`, `::the meaning asks, the field takes the term, and Check waits for text; Done on nothing does nothing (20 input, F2, V7)` |
 | input | tap Check, or IME Done, with text | answering; the typed answer is written (case and outer spaces ignored, accents count) | VERIFIED `::IME Done checks (F2)`, `::accents count: "tèrm 1" does not match "term 1" (BR-STUDY-026)` |
+| input | the field is drawn with the keyboard open on a short phone (360 × 800, 300 of inset) | the field stays whole on screen, above the keyboard | VERIFIED `study_fill_test.dart::on a short phone with the keyboard open the answer field stays whole on screen (audit 2026-10-17, STUDYB-9)` |
+| input / hint | the keyboard is asked for suggestions or autocorrect | none: the field sets `autocorrect: false` and `enableSuggestions: false` | VERIFIED `test/shared/widgets/mx_text_field_test.dart::a study answer gets no suggestions and no autocorrect; a form field keeps them (BR-STUDY-026, audit 2026-10-17)` |
+| input / hint | the footer hint shows | the info glyph with the instruction | VERIFIED `study_fill_test.dart::the input hint takes the info glyph, as every mode's instruction does (critique 2026-10-02 F7; audit 2026-10-17)` |
 | input | IME Done on an empty answer | nothing | VERIFIED `::the meaning asks, the field takes the term, and Check waits for text; Done on nothing does nothing (20 input, F2, V7)` |
 | answering | the answer is right | the next turn follows at once, with no feedback frame | VERIFIED `::a right answer moves on at once, with no feedback frame (F3, BR-STUDY-064; case and outer spaces ignored)` |
-| answering | the answer is wrong | wrong: the typed text struck through beside the right term, "Wrong · comes back next round", announced, focus leaves the field and the keyboard closes; held | VERIFIED `::a wrong answer is struck through beside the right term, announced, and waits for Continue (F3, V1, V10, BR-STUDY-059)` |
+| answering | the answer is wrong | wrong: the typed text struck through beside the right term, "Wrong · comes back next round", announced, focus leaves the field and the keyboard closes; held | VERIFIED `::a wrong answer is struck through beside the right term, announced, and waits for Continue (F3, V1, V10, BR-STUDY-059)`; the footer glyph is repeat, asserted in the same test |
 | wrong | tap Continue | the next turn; the wrong card is asked again in the next round (BR-STUDY-059) | VERIFIED in the test above for the hold; the next-round enrolment is the domain's |
 | wrong | a double tap on Check | Continue settles for 400 ms, so the wrong answer is not skipped | VERIFIED `::a double tap on Check does not skip the wrong answer: Continue settles first (critique 2026-09-30 part 3c-2, R1)` |
 | input | tap Show hint (a card with a hint) | hint: the hint row appears in its reserved line, what was typed is kept, Show hint is gone, Check remains; the hint is noted and changes no result | VERIFIED `::Show hint shows the card's hint once and keeps what was typed (F4, BR-STUDY-028)`, `::Show hint moves nothing: the hint line is reserved, at the study detail role (critique 2026-09-30 part 3c-2, R4)`, `::a hint that wraps is reserved whole too (R4)` |
 | input | the card has no hint | no Show hint button | VERIFIED `::a card with no hint offers no Show hint (F4)` |
 | input | a double tap on Show hint | the hint only; Check settles first so a half-typed answer is not checked | VERIFIED `::a double tap on Show hint does not check a half-typed answer: Check settles first (critique 2026-09-30 part 3c-2, final review)` |
-| answering | the busy database refuses the answer | the unsaved-answer banner; on Retry the wrong answer shows what was typed | VERIFIED `::a wrong answer the busy database refused shows what was typed once Retry commits it (UC-STUDY-001 E2; P4 final review)` |
+| answering | the busy database refuses the answer | the unsaved-answer banner; the controls are locked while it waits for Retry (`isLocked`); on Retry the wrong answer shows what was typed | VERIFIED `::a wrong answer the busy database refused shows what was typed once Retry commits it (UC-STUDY-001 E2; P4 final review)` |
 | input / hint | ✕ or Back with the keyboard open | the exit dialog of [16](16-study-browse.md#session-route-states); the typed text is dropped, never persisted (BR-STUDY-027) | `UNVERIFIED (code read)`: the controller is the widget's own and is disposed with it |
 | any | deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |
 
