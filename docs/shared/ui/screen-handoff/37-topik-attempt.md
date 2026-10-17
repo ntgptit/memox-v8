@@ -132,3 +132,4 @@ Taking a test in Practice mode (UC-TOPIK-003, BR-TOPIK-010…BR-TOPIK-017, BR-TO
 - Error: "Couldn't load this attempt" · "Nothing was lost. Try again." · "Retry".
 - Loading: "Loading the attempt".
 - Write failure: "Your choice wasn't saved. Try again."
+- **Audit 2026-10-17 (TOPIK-3), the clock follows the state:** `showQuestion` / `hideQuestion` were called from `build`; the screen now drives them from listeners on the attempt and the submit state (`_syncClock`), only when a question comes on screen or goes, so a rebuild has no side effect. The behaviour above is unchanged.

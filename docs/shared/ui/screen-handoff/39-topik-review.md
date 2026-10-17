@@ -15,7 +15,7 @@ Each question of a submitted attempt with the right answer and the supporting co
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | Back in the leading slot; "Review · {no} / {last}" with the real numbers (V6); "Review" in the states without a question. |
-| Filters | `TopikAnswerFilterChipsWidget` above the panes | All · Wrong · Unanswered · Correct, counts in the chip's count slot; a chip with no question is off (`isEmptyDisabled`); picking a filter opens its first question (V5). Previous and Next walk the filtered questions. |
+| Filters | `TopikAnswerFilterChipsWidget` above the panes | All · Wrong · Unanswered · Correct, counts in the chip's count slot; a chip with no question is off (`isEmptyDisabled`); picking a filter opens its first question (V5). Previous and Next walk the filtered questions. The row scrolls sideways at 360 dp inside an `MxScrollFade` (audit 2026-10-17 TOPIK-2). |
 | Shell | `MxAppShell(isSession: true)` | The session column, the same as 37 (The Column Rule): from 600 dp the stacked panes keep 37's line length instead of the wide column's (Impeccable audit 2026-10-17, P2-2). The plain shell of the states without a question has no `isSession`, as 37's. |
 | Panes | `TopikTwoPaneWidget` (screen 37's) | The group pane on top, the question pane below (V1). |
 | Group material | `TopikGroupPaneWidget`, as on 37 | Instruction, passage or picture, collapsible; a listening group's `TopikAudioBarWidget` with its Practice controls (V10, BR-TOPIK-017) and the script with its translation, open by default; the person can hide it, per group. |
