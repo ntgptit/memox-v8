@@ -27,15 +27,30 @@ class StudySessionController extends _$StudySessionController {
   /// until [release] (D5). A busy database keeps the answer for [retry]
   /// (E2); any other failure has already failed the session, whose summary
   /// the stream shows (E3, spec D6). Dropped while a write runs
-  /// (BR-STUDY-004). [cardId] names another card than [item]'s: a `match`
-  /// answer on any pending pair of the board (BR-STUDY-049).
+  /// (BR-STUDY-004), and while a refused answer waits for [retry]: it stays
+  /// the turn's answer. [cardId] names another card than [item]'s: a
+  /// `match` answer on any pending pair of the board (BR-STUDY-049).
   Future<void> answer(
     StudyItem item,
     StudyAnswer answer, {
     bool shouldHoldFeedback = false,
     String? cardId,
   }) async {
-    if (state.isBusy) return;
+    if (state.isLocked) return;
+    await _answer(
+      item,
+      answer,
+      shouldHoldFeedback: shouldHoldFeedback,
+      cardId: cardId,
+    );
+  }
+
+  Future<void> _answer(
+    StudyItem item,
+    StudyAnswer answer, {
+    required bool shouldHoldFeedback,
+    String? cardId,
+  }) async {
     state = const StudyTurnState(isBusy: true);
     final pending = PendingAnswer(
       item,
@@ -70,8 +85,8 @@ class StudySessionController extends _$StudySessionController {
   /// The answer a busy database refused, once more (E2).
   Future<void> retry() async {
     final pending = state.unsaved;
-    if (pending == null) return;
-    await answer(
+    if (pending == null || state.isBusy) return;
+    await _answer(
       pending.item,
       pending.answer,
       shouldHoldFeedback: pending.shouldHoldFeedback,
