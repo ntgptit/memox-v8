@@ -155,9 +155,29 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// Stop abandons, Keep studying changes nothing.
   void _abandon() => unawaited(_confirmAbandon());
 
+  /// The exit dialog is open: a Recall clock stops behind it
+  /// (BR-STUDY-036), and a leave that arrives meanwhile closes it first.
+  var _isAsking = false;
+
+  /// A leave that arrived while the exit dialog was open, carried out once
+  /// it has closed.
+  (String, String?)? _pendingLeave;
+
   Future<void> _confirmAbandon() async {
-    if (!await showStudyExitDialog(context)) return;
-    await _controller.abandon();
+    if (_isAsking) return;
+    setState(() => _isAsking = true);
+    final isSure = await showStudyExitDialog(context);
+    if (!mounted) return;
+    setState(() => _isAsking = false);
+    if (_pendingLeave case (final message, final deckId)) {
+      _pendingLeave = null;
+      _leave(message, deckId);
+      return;
+    }
+    if (!isSure) return;
+    final isEnded = await _controller.abandon();
+    if (isEnded || !mounted) return;
+    showMxSnackbar(context, message: context.l10n.studyExitFailed);
   }
 
   void _advance(StudyItem item) =>
@@ -274,22 +294,34 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   }
 
   void _leave(String message, String? deckId) {
-    if (_hasLeft || !(ModalRoute.of(context)?.isCurrent ?? false)) return;
+    if (_hasLeft) return;
+    if (_isAsking) {
+      // The exit dialog closes first; the leave follows (a blank page is
+      // never left behind it).
+      _pendingLeave = (message, deckId);
+      unawaited(Navigator.of(context, rootNavigator: true).maybePop());
+      return;
+    }
+    if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
     _hasLeft = true;
     showMxSnackbar(context, message: message);
     widget.onLeave(deckId);
   }
 
-  /// System Back: an open session ends (A3); an ended one is Done.
+  /// System Back: an open session ends (A3); an ended one is Done; a
+  /// session not on screen (loading, unreadable) leaves as its ✕ does.
   void _onPop(bool didPop, Object? _) {
     if (didPop) return;
     final current = ref.read(studySessionProvider(widget.sessionId));
-    if (current case AsyncData(value: Ok(:final value))
-        when sessionEndingOf(value) is ShowSummary) {
-      widget.onDone(value.deckId);
+    if (current case AsyncData(value: Ok(:final value))) {
+      if (sessionEndingOf(value) is ShowSummary) {
+        widget.onDone(value.deckId);
+        return;
+      }
+      _abandon();
       return;
     }
-    _abandon();
+    widget.onLeave(null);
   }
 
   @override
@@ -469,6 +501,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       onTimeUp: () => _timeUp(item),
       onContinue: _release,
       speechLanguage: speechLanguage,
+      isPaused: _isAsking,
     ),
     StudyMode.fill => StudyFillWidget(
       key: ValueKey('fill#${item.cardId}#${item.answersInSession}'),

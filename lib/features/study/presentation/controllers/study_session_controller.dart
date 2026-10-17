@@ -140,13 +140,18 @@ class StudySessionController extends _$StudySessionController {
   }
 
   /// ✕ and system Back: the session ends as `user_exit`; its turns stay
-  /// (A3, BR-STUDY-014, BR-STUDY-019). The stream then shows the summary.
-  Future<void> abandon() async {
+  /// (A3, BR-STUDY-014, BR-STUDY-019). The stream then shows the summary,
+  /// so a held turn is dropped: it no longer has a session to continue.
+  /// Returns false when the end could not be written; the session stays
+  /// open and the screen says so (a refusal means it had already ended).
+  Future<bool> abandon() async {
     try {
       await ref.read(abandonStudySessionUseCaseProvider)(sessionId: sessionId);
     } on Failure {
-      // The session stays open; the next start closes it (BR-STUDY-072).
+      return false;
     }
+    if (ref.mounted) state = const StudyTurnState();
+    return true;
   }
 
   /// A stalled round (its cards were deleted) moves on (spec D12). Not

@@ -5261,6 +5261,15 @@
   "@studySelfAssessShowAnswer": {
     "description": "Screen handoff 16a (FE-A6 P2): the reveal button."
   },
+  "studySelfAssessAnnounceRevealed": "The answer is {answer}.",
+  "@studySelfAssessAnnounceRevealed": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 16a: announced when Show answer reveals it (audit 2026-10-17)."
+  },
   "studySelfAssessHintPrompt": "Recall the answer, then show it",
   "@studySelfAssessHintPrompt": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint before the reveal."
@@ -5544,6 +5553,15 @@
       }
     },
     "description": "Screen handoff 19 (FE-A6 P4): announced when the timeout commits."
+  },
+  "studyRecallAnnounceRevealed": "The meaning is {meaning}.",
+  "@studyRecallAnnounceRevealed": {
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 19: announced when Show the meaning reveals it (audit 2026-10-17)."
   },
   "studyFillField": "Your answer",
   "@studyFillField": {
@@ -7038,6 +7056,10 @@
   "studyExitStop": "Stop",
   "@studyExitStop": {
     "description": "The exit confirm dialog: stop the session."
+  },
+  "studyExitFailed": "Everything you answered is kept. Couldn't stop the session, so try again.",
+  "@studyExitFailed": {
+    "description": "Screen handoff 16 (session route): toast when Stop cannot be written (audit 2026-10-17, local-first)."
   },
   "cardCaptionAddMissing": "Add the missing field to enable save.",
   "@cardCaptionAddMissing": {

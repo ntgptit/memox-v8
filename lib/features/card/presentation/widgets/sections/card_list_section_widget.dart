@@ -92,8 +92,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// Ruling P3-L5: the rows stay while a new window, filter or term loads.
   CardListView? _lastView;
 
-  /// The window a growth was asked from, so one end of list asks once.
-  int? _grownFrom;
+  /// The request a growth was asked from, so one end of list asks once.
+  /// Every new request (a filter, a sort, a term, tags) starts back at the
+  /// first window and may grow again.
+  CardListRequestState? _grownFrom;
 
   /// Ruling E-L6: the last Flag failed; the selection stays. Flag's sheet
   /// closes before the write, so the section says so; Move, Tag and Delete
@@ -120,9 +122,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   CardSelection _selection() =>
       ref.read(cardSelectionProvider(widget.deckId).notifier);
 
-  void _growFrom(int windowSize) {
-    if (_grownFrom == windowSize) return;
-    _grownFrom = windowSize;
+  void _growFrom(CardListRequestState request) {
+    if (identical(_grownFrom, request)) return;
+    _grownFrom = request;
     _request().grow();
   }
 
@@ -343,7 +345,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
                 if (canGrow &&
                     notification.depth == 0 &&
                     notification.metrics.extentAfter < _growWithin) {
-                  _growFrom(request.windowSize);
+                  _growFrom(request);
                 }
                 return false;
               },

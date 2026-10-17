@@ -17,7 +17,7 @@ import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
-import '../../../support/forui_expect.dart' show textColor;
+import '../../../support/forui_expect.dart' show byControlLabel, textColor;
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -122,6 +122,45 @@ void main() {
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('remembered', null));
+    await tester.pump(const Duration(milliseconds: 200));
+  });
+
+  libraryTest('the reveal is announced: the focused button goes, the meaning '
+      'is read (TalkBack)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(
+      tester.takeAnnouncements().map((a) => a.message),
+      contains(_en.studyRecallAnnounceRevealed('apple')),
+    );
+    handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
+  });
+
+  libraryTest('the clock stops while the exit dialog asks, and Keep going '
+      'takes it up where it stopped (BR-STUDY-036)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+
+    await tester.tap(byControlLabel(_en.studySessionClose));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    // Longer than the turn: without the pause it would time out behind the
+    // dialog.
+    await tester.pump(const Duration(seconds: 30));
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.text(_en.studyRecallCaptionTimedOut), findsNothing);
+    expect(find.text('15s / 20s'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.text('12s / 20s'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 200));
   });
 

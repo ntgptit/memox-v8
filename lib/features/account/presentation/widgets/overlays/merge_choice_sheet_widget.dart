@@ -51,7 +51,10 @@ Future<bool> startLinkSwitch(
           builder: (_) =>
               MergeChoiceSheetWidget(email: email, library: library),
         );
-  if (choice == null || !context.mounted) return false;
+  if (choice == null || !context.mounted) {
+    _forgetPickedGoogle(accounts, email);
+    return false;
+  }
   final codeRequest = ref.read(switchCodeRequestProvider.notifier);
   // Asked before the switch starts: the layer's form may be built as soon
   // as the switch waits for its target.
@@ -60,12 +63,14 @@ Future<bool> startLinkSwitch(
     await accounts.beginSwitch(choice: choice, targetHint: email);
   } on Failure catch (error) {
     codeRequest.forget();
+    _forgetPickedGoogle(accounts, email);
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failure(error));
     }
     return false;
   } on StateError {
     codeRequest.forget();
+    _forgetPickedGoogle(accounts, email);
     // The account moved on meanwhile: it takes a switch only in Ready.
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failureAccount);
@@ -77,6 +82,14 @@ Future<bool> startLinkSwitch(
     await _signInPickedGoogle(context, ref, accounts);
   }
   return true;
+}
+
+/// A Google switch that does not start drops the account picked for it, so
+/// the next press shows the picker again: Cancel on "this Google account is
+/// already in use" is how the person picks another one.
+void _forgetPickedGoogle(AccountCoordinator accounts, String? email) {
+  if (email != null) return;
+  accounts.forgetPickedGoogle();
 }
 
 /// The switch waits for its target: the Google account picked a moment ago

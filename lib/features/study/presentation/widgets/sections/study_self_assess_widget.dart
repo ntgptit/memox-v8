@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -49,7 +52,19 @@ class StudySelfAssessWidget extends StatefulWidget {
 class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
   var _isRevealed = false;
 
-  void _reveal() => setState(() => _isRevealed = true);
+  /// Show answer removes the focused button: the answer is read, so a
+  /// TalkBack user hears what was revealed before the grades.
+  void _reveal() {
+    setState(() => _isRevealed = true);
+    final answer = _isMeaningFirst ? widget.item.front : widget.item.back;
+    unawaited(
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        context.l10n.studySelfAssessAnnounceRevealed(answer),
+        Directionality.of(context),
+      ),
+    );
+  }
 
   bool get _isMeaningFirst =>
       widget.item.direction == QuestionDirection.meaningToKorean;

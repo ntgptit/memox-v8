@@ -375,6 +375,9 @@ final class LockableSessions implements StudySessionRepository {
   final StudySessionRepository _inner;
   var isLocked = false;
 
+  /// While set, ending a session finds the database busy.
+  var isAbandonLocked = false;
+
   @override
   Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
@@ -438,7 +441,15 @@ final class LockableSessions implements StudySessionRepository {
   Future<Outcome<void, StudyRejection>> abandonSession({
     required String sessionId,
     DateTime? now,
-  }) => _inner.abandonSession(sessionId: sessionId, now: now);
+  }) {
+    if (isAbandonLocked) {
+      return Future.delayed(
+        Duration.zero,
+        () => throw const DatabaseLockedFailure(cause: 'test'),
+      );
+    }
+    return _inner.abandonSession(sessionId: sessionId, now: now);
+  }
 
   @override
   Future<Outcome<void, StudyRejection>> resumeSession({
