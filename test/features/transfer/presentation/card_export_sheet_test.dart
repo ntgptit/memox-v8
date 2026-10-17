@@ -114,6 +114,14 @@ void main() {
       );
 
       expect(find.text(_en.exportTitleDeck(2)), findsOneWidget);
+      // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
+      final headingProbe = tester.ensureSemantics();
+      await tester.pump();
+      expect(
+        tester.getSemantics(find.text(_en.exportTitleDeck(2))),
+        containsSemantics(isHeader: true, namesRoute: true),
+      );
+      headingProbe.dispose();
       expect(find.text(_en.exportBodyDeck('Words')), findsOneWidget);
       expect(find.text(_en.exportRecommended), findsOneWidget);
       final csv = find.widgetWithText(MxOptionRow, _en.exportFormatCsv);

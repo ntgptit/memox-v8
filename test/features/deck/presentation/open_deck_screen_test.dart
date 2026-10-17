@@ -18,6 +18,7 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/forui_expect.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
@@ -483,5 +484,17 @@ void main() {
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
 
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('the sort trigger is named as a sort for TalkBack, with the '
+      'order shown (audit 2026-10-17)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await env.decks.sub(korean.id, 'Words');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    expect(
+      byControlLabel(_en.deckSortTrigger(_en.deckSortManual)),
+      findsOneWidget,
+    );
   });
 }

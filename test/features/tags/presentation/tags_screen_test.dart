@@ -140,6 +140,14 @@ void main() {
     await _actions(tester, 'động từ');
 
     expect(find.text('động từ · 46'), findsOneWidget);
+    // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
+    final headingProbe = tester.ensureSemantics();
+    await tester.pump();
+    expect(
+      tester.getSemantics(find.text('động từ · 46')),
+      containsSemantics(isHeader: true, namesRoute: true),
+    );
+    headingProbe.dispose();
     expect(find.text(_en.tagsFindCardsHint('động từ')), findsOneWidget);
     expect(find.text(metaDots(_en.tagsDeleteHint(46))), findsOneWidget);
     await tester.tap(find.text(_en.tagsFindCards));

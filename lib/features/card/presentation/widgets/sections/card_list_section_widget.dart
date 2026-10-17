@@ -444,6 +444,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           trailing: MxChipTrigger(
             label: l10n.cardSort(request.sort),
             icon: AppIcons.sort,
+            semanticLabel: l10n.cardSortTrigger(l10n.cardSort(request.sort)),
             onPressed: () => _sort(request),
           ),
         ),

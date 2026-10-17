@@ -171,11 +171,16 @@ class _Header extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: context.dimens.space4,
         children: [
-          Text(
-            deckName == null
-                ? l10n.exportTitleSelection(scope.cardCount)
-                : l10n.exportTitleDeck(scope.cardCount),
-            style: context.texts.itemTitle,
+          // The sheet's heading, as MxBottomSheet's own title is.
+          Semantics(
+            header: true,
+            namesRoute: true,
+            child: Text(
+              deckName == null
+                  ? l10n.exportTitleSelection(scope.cardCount)
+                  : l10n.exportTitleDeck(scope.cardCount),
+              style: context.texts.itemTitle,
+            ),
           ),
           Text(
             deckName == null

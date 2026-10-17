@@ -84,9 +84,14 @@ class _StarterAlgorithmSheetWidgetState
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: context.dimens.space4,
           children: [
-            Text(
-              l10n.starterSheetTitle(widget.entry.title),
-              style: context.texts.itemTitle,
+            // The sheet's heading, as MxBottomSheet's own title is.
+            Semantics(
+              header: true,
+              namesRoute: true,
+              child: Text(
+                l10n.starterSheetTitle(widget.entry.title),
+                style: context.texts.itemTitle,
+              ),
             ),
             // The lock, before the choice (BR-SRS-003; critique 2026-09-30
             // part 3d-2, E6). The card above states the counts.

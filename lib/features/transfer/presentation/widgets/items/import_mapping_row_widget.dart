@@ -77,6 +77,10 @@ class ImportMappingRowWidget extends StatelessWidget {
           // one edge.
           MxChipTrigger(
             label: l10n.importField(field),
+            semanticLabel: l10n.importFieldTrigger(
+              letter,
+              l10n.importField(field),
+            ),
             onPressed: () => showImportOptionSheet<TransferField?>(
               context,
               title: l10n.importFieldPickerTitle(letter),

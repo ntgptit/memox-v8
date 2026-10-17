@@ -519,4 +519,17 @@ void main() {
     expect(clearance(), MxScrollClearance.base);
     await tester.pump(const Duration(milliseconds: 200));
   });
+
+  libraryTest('the sort trigger is named as a sort for TalkBack, with the '
+      'order shown (audit 2026-10-17)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
+    await pumpLibraryScreen(tester, env, _section(words.id));
+
+    expect(
+      byControlLabel(_en.cardSortTrigger(_en.cardSortNewest)),
+      findsOneWidget,
+    );
+  });
 }

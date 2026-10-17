@@ -130,6 +130,16 @@ void main() {
     await _addHangul(tester, _en.starterAddToLibrary);
 
     expect(find.text(_en.starterSheetTitle(hangulTemplate.title)), findsOne);
+    // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
+    final headingProbe = tester.ensureSemantics();
+    await tester.pump();
+    expect(
+      tester.getSemantics(
+        find.text(_en.starterSheetTitle(hangulTemplate.title)),
+      ),
+      containsSemantics(isHeader: true, namesRoute: true),
+    );
+    headingProbe.dispose();
     // The lock, not the counts the card already states (critique
     // 2026-09-30 part 3d-2, E6).
     expect(find.text(_en.deckSchedulerNote), findsOneWidget);

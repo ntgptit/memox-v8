@@ -480,6 +480,15 @@
     },
     "description": "Screen 37: what TalkBack reads for the speed chip, its purpose and its current value, as Playback speed, 1× (the speed is formatted by topikSpeed)."
   },
+  "topikSortTrigger": "Sort tests, {order}",
+  "@topikSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 35 (Q-A-2): TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
+  },
   "topikAudioFailed": "Couldn't play this audio",
   "@topikAudioFailed": {
     "description": "Screen 37: the audio banner's title (BR-TOPIK-017)."
@@ -1355,6 +1364,15 @@
   "cardSortTitle": "Sort cards",
   "@cardSortTitle": {
     "description": "Title of the card sort sheet."
+  },
+  "cardSortTrigger": "Sort cards, {order}",
+  "@cardSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 07: TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
   },
   "cardSortNewest": "Newest",
   "@cardSortNewest": {
@@ -2828,6 +2846,15 @@
       }
     },
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortPillDueOnly."
+  },
+  "deckSortTrigger": "Sort decks, {order}",
+  "@deckSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01: TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
   },
   "deckSortFilterTitle": "Sort & filter",
   "@deckSortFilterTitle": {
@@ -4674,6 +4701,18 @@
       }
     },
     "description": "Import mapping: the field picker sheet title."
+  },
+  "importFieldTrigger": "Column {letter} goes to {field}",
+  "@importFieldTrigger": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      },
+      "field": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 11: TalkBack name of a column's field chip (audit 2026-10-17)."
   },
   "importMappingNote": "Known header names were mapped for you. Term and meaning are required; the rest is optional.",
   "@importMappingNote": {

@@ -44,7 +44,12 @@ class TagActionsSheetWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: context.dimens.space4,
           children: [
-            MxTagChip(label: tagWithCount(tag.name, tag.cardCount)),
+            // The sheet's heading, as MxBottomSheet's own title is.
+            Semantics(
+              header: true,
+              namesRoute: true,
+              child: MxTagChip(label: tagWithCount(tag.name, tag.cardCount)),
+            ),
             Text(
               l10n.tagsActionsCaption,
               style: context.texts.body.copyWith(

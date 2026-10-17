@@ -35,6 +35,7 @@ class DeckLevelHeaderWidget extends ConsumerWidget {
             ? l10n.deckSortPillDueOnly(sort)
             : sort,
         icon: AppIcons.sort,
+        semanticLabel: l10n.deckSortTrigger(sort),
         onPressed: () => showDeckSortFilterSheet(context, parentId: parentId),
       ),
     );

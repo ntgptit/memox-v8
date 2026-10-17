@@ -65,6 +65,14 @@ void main() {
     await _settle(tester);
 
     expect(find.text(_en.accountTakenEmail('b@example.com')), findsOneWidget);
+    // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
+    final headingProbe = tester.ensureSemantics();
+    await tester.pump();
+    expect(
+      tester.getSemantics(find.text(_en.accountTakenEmail('b@example.com'))),
+      containsSemantics(isHeader: true, namesRoute: true),
+    );
+    headingProbe.dispose();
     expect(find.text(_en.accountMergeCounts(1, 0)), findsOneWidget);
     expect(find.text(_en.accountDiscardWarning), findsNothing);
 

@@ -158,11 +158,16 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
           context.dimens.space16,
           context.dimens.space12,
         ),
-        child: Text(
-          email == null
-              ? l10n.accountTakenGoogle
-              : l10n.accountTakenEmail(email),
-          style: context.texts.itemTitle,
+        // The sheet's heading, as MxBottomSheet's own title is.
+        child: Semantics(
+          header: true,
+          namesRoute: true,
+          child: Text(
+            email == null
+                ? l10n.accountTakenGoogle
+                : l10n.accountTakenEmail(email),
+            style: context.texts.itemTitle,
+          ),
         ),
       ),
       footer: MxSheetActions(
