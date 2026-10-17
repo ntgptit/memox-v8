@@ -268,8 +268,12 @@ void main() {
       [for (final g in glyphs) g.icon],
       [AppIcons.check, AppIcons.close, AppIcons.remove, AppIcons.check],
     );
-    expect(glyphs[1].color, theme.colorScheme.error);
-    expect(glyphs[2].color, theme.colorScheme.onSurfaceVariant);
+    // The ink and size come from the glyph's own IconTheme.
+    IconThemeData themeOf(int i) =>
+        IconTheme.of(tester.element(find.byWidget(glyphs[i])));
+    expect(themeOf(1).color, theme.colorScheme.error);
+    expect(themeOf(2).color, theme.colorScheme.onSurfaceVariant);
+    expect(themeOf(1).size, 18);
     await tester.tap(find.text('32'));
     expect(opened, [32]);
   });

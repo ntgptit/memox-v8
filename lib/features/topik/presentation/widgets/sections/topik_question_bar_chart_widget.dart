@@ -171,7 +171,13 @@ class _Bar extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(glyph, size: dimens.sizeIconButton, color: glyphColour),
+            IconTheme(
+              data: IconThemeData(
+                color: glyphColour,
+                size: dimens.sizeIconButton,
+              ),
+              child: Icon(glyph),
+            ),
             Text(
               '${answer.questionNo}',
               style: context.texts.labelSmall?.copyWith(

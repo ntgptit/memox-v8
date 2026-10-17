@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/domain/models/topik_audio_model.dart';
+import 'package:memox/features/topik/domain/models/topik_question_group_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/presentation/widgets/overlays/topik_question_grid_sheet_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_attempt_footer_widget.dart';
@@ -14,6 +15,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_questio
 import 'package:memox/features/topik/presentation/widgets/sections/topik_two_pane_widget.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
@@ -150,6 +152,74 @@ void main() {
     expect(tester.widget<Text>(find.text(group.instructionKo)).maxLines, 1);
     expect(find.byTooltip('Show passage'), findsOneWidget);
     expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
+  });
+
+  libraryTest('a passage taller than its pane fades the pane\'s bottom edge '
+      'and stops fading at the end (owner 2026-10-17)', (tester, env) async {
+    final group = TopikQuestionGroup(
+      groupId: 'long',
+      instructionKo: reading.groups.first.instructionKo,
+      questionNos: const [1],
+      passage: TopikPassage(textKo: List.filled(60, '긴 지문입니다.').join('\n')),
+    );
+    await host(
+      tester,
+      env,
+      SizedBox(
+        height: 300,
+        child: TopikGroupPaneWidget(
+          group: group,
+          audio: null,
+          isCollapsed: false,
+          isScriptShown: false,
+          onToggleCollapsed: () {},
+          onToggleScript: () {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(0, -5000),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
+  });
+
+  libraryTest('a short passage shows no fade', (tester, env) async {
+    await host(
+      tester,
+      env,
+      TopikGroupPaneWidget(
+        group: reading.groups.first,
+        audio: null,
+        isCollapsed: false,
+        isScriptShown: false,
+        onToggleCollapsed: () {},
+        onToggleScript: () {},
+      ),
+    );
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
+  });
+
+  libraryTest('a question taller than its pane fades the pane\'s bottom edge '
+      '(owner 2026-10-17)', (tester, env) async {
+    await host(
+      tester,
+      env,
+      SizedBox(
+        height: 240,
+        child: TopikQuestionPaneWidget(
+          question: reading.questions.first,
+          selectedIdx: null,
+          onPick: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
   });
 
   libraryTest('a listening group: the audio stays when collapsed; the script '
