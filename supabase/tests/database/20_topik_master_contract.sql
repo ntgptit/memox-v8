@@ -255,9 +255,9 @@ update public.profiles set role = 'admin' where id = 'eeeeeeee-0000-0000-0000-00
 set local role authenticated;
 select public.t_as('eeeeeeee-0000-0000-0000-000000000005');
 select is(jsonb_typeof(public.topik_admin_list()->'items'), 'array', 'a second admin lists the tests');
-reset role;
-update public.profiles set role = 'user' where id = 'eeeeeeee-0000-0000-0000-000000000005';
-set local role authenticated;
+-- The demotion is the RPC the spec names, called by the first admin; two admins exist, so LAST_ADMIN cannot fire.
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select public.role_set('eeeeeeee-0000-0000-0000-000000000005', 'user');
 select public.t_as('eeeeeeee-0000-0000-0000-000000000005');
 select throws_like($$select public.topik_admin_list()$$, 'FORBIDDEN', 'demoted, the very next call is FORBIDDEN');
 select throws_like($$insert into storage.objects (bucket_id, name)
