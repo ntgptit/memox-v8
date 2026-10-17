@@ -1,7 +1,7 @@
 -- supabase/tests/database/20_topik_master_contract.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(23);
+select plan(48);
 -- ADR-025 (owner 2026-10-17), decision package 2026-10-17 §11 PR-02: the read gate
 -- (admins only for now, #5), the catalog's compatibility and integrity keys and the
 -- content envelope (#4; DR-05, DR-06). 18_topik_master_data.sql runs with the gate open.
@@ -102,6 +102,90 @@ select is((select (e->>'bytes')::bigint from jsonb_array_elements(public.topik_c
            where e->>'testId' = 'topik2-95-listening'),
   octet_length(public.topik_test_content('topik2-95-listening', 1)->>'document')::bigint,
   'a null size adds nothing to bytes');
+
+-- ============================================================================
+-- Media named by their SHA-256 (ADR-025 #4, DR-21)
+-- ============================================================================
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}', '"topik2-97-listening/1/x.mp3"'), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'a file not named by its SHA-256 is refused');
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}',
+    to_jsonb('topik2-97-listening/1/' || repeat('A', 64) || '.mp3')), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'uppercase hex is refused');
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}',
+    to_jsonb('topik2-97-listening/1/' || repeat('a', 64) || '.exe')), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'an extension content does not use is refused');
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}',
+    to_jsonb('topik2-97-listening/1/' || repeat('a', 64) || '.mp3/x')), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'a path with a fourth segment is refused');
+
+-- ============================================================================
+-- The publish dry run (DR-10)
+-- ============================================================================
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select throws_like($$select public.topik_admin_check('topik2-97-listening')$$, 'FORBIDDEN', 'a learner cannot run the check');
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select throws_like($$select public.topik_admin_check('nope')$$, 'NOT_FOUND', 'the check needs a draft');
+-- A well-named file Storage does not hold yet.
+select public.topik_admin_draft_save('topik2-97-listening', public.t_listening('topik2-97-listening'), '{}'::jsonb, false);
+select is(public.topik_admin_check('topik2-97-listening')->'mediaMissing',
+  jsonb_build_array('topik2-97-listening/1/' || repeat('a', 64) || '.mp3'), 'the check lists the missing media');
+select is(public.topik_admin_check('topik2-97-listening')->'mediaInvalid', '[]'::jsonb, 'and nothing badly named');
+select is(public.topik_admin_check('topik2-97-listening')->'issues', '[]'::jsonb, 'and no shape issue');
+select is(public.topik_admin_check('topik2-97-listening')->>'ready', 'false', 'so the draft is not ready');
+select is(public.topik_admin_check('topik2-97-listening')->>'nextContentVersion', '1', 'and would publish as 1');
+select is(public.topik_admin_check('topik2-97-listening')->'status', 'null'::jsonb, 'a test never published has no status');
+select is(public.topik_admin_versions('topik2-97-listening')->'items', '[]'::jsonb, 'the check stored no version');
+select is((select count(*) from jsonb_array_elements(public.topik_admin_audit('topik2-97-listening', 200, null)->'items') i
+           where i->>'action' not like 'draft%'), 0::bigint, 'and wrote no audit row');
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$),
+  'topik2-97-listening/1/' || repeat('a', 64) || '.mp3', 'a well-named file Storage lacks is MEDIA_MISSING, as the check said');
+-- A badly named file.
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}', '"topik2-97-listening/1/x.mp3"'), '{}'::jsonb, false);
+select is(public.topik_admin_check('topik2-97-listening')->'mediaInvalid',
+  '["topik2-97-listening/1/x.mp3"]'::jsonb, 'the check lists a badly named file');
+select is(public.topik_admin_check('topik2-97-listening')->'mediaMissing', '[]'::jsonb, 'and does not also call it missing');
+-- With its media in Storage the draft is ready, and publishes.
+select public.topik_admin_draft_save('topik2-97-listening', public.t_listening('topik2-97-listening'), '{}'::jsonb, false);
+reset role;
+insert into storage.objects (bucket_id, name, metadata) values
+  ('topik-media', 'topik2-97-listening/1/' || repeat('a', 64) || '.mp3', '{"size": 4, "eTag": "\"e\""}');
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select is(public.topik_admin_check('topik2-97-listening')->>'ready', 'true', 'with its media in Storage the draft is ready');
+select is(public.topik_admin_publish('topik2-97-listening', 1, 'one')->>'contentVersion', '1', 'and publishes');
+select is(public.topik_admin_check('topik2-97-listening')->>'ready', 'false',
+  'a draft that still says the published version is not ready');
+select is(public.topik_admin_check('topik2-97-listening')->>'nextContentVersion', '2', 'the next version is 2');
+select is(public.topik_admin_retire('topik2-97-listening', 'gone')->>'status', 'retired', 'retired');
+select is(public.topik_admin_check('topik2-97-listening')->>'status', 'retired', 'the check names a retired test');
+
+-- Review Focus 3: a revision published before the name rule (a direct insert stands in
+-- for it) is refused on rollback, like any publish of a badly named file.
+reset role;
+insert into public.topik_test_version (test_id, content_version, json, media, checksum)
+values ('topik2-94-listening', 1,
+  jsonb_set(public.t_listening('topik2-94-listening'), '{assets,audio}', '"topik2-94-listening/1/a.mp3"'), '[]'::jsonb, 'x');
+insert into public.topik_publication (test_id, status, current_version, catalog_version)
+values ('topik2-94-listening', 'published', 1, private.topik_next_catalog_version());
+insert into storage.objects (bucket_id, name) values
+  ('topik-media', 'topik2-94-listening/1/' || repeat('a', 64) || '.mp3');
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select public.topik_admin_draft_save('topik2-94-listening',
+  jsonb_set(public.t_listening('topik2-94-listening'), '{contentVersion}', '2'), '{}'::jsonb, false);
+select is(public.topik_admin_publish('topik2-94-listening', 2, 'two')->>'contentVersion', '2',
+  'a well-named revision publishes over the old one');
+select is(public.t_detail($$select public.topik_admin_rollback('topik2-94-listening', 1, 'back')$$), 'media',
+  'a rollback to a revision with a non-hash media name is refused');
 
 reset role;
 select ok(not has_function_privilege('authenticated', 'private.topik_can_read_content()', 'execute'),

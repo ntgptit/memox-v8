@@ -116,6 +116,136 @@ revoke all on function public.topik_media_can_read(text) from public, anon, auth
 grant execute on function public.topik_media_can_read(text) to authenticated;
 
 -- ============================================================================
+-- Media named by their SHA-256 (ADR-025 #4, DR-21) and the publish dry run (DR-10)
+-- ============================================================================
+
+-- The media a content names: the section audio and every image, distinct, sorted
+-- (the order publish reports the first missing one in, and the media array's order).
+create function private.topik_media_paths(p_json jsonb) returns text[]
+language sql stable set search_path = '' as $$
+  select coalesce(array_agg(distinct x.path order by x.path), '{}'::text[])
+  from (
+    select p_json->'assets'->>'audio' as path
+    union all
+    select g->'passage'->>'image'
+    from jsonb_array_elements(case when jsonb_typeof(p_json->'groups') = 'array' then p_json->'groups' else '[]'::jsonb end) g
+    union all
+    select o->>'image'
+    from jsonb_array_elements(case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end) q,
+      jsonb_array_elements(case when jsonb_typeof(q->'options') = 'array' then q->'options' else '[]'::jsonb end) o) x
+  where x.path is not null and x.path <> ''
+$$;
+
+-- The path contract {test_id}/{version}/{sha256}.{ext}: the first segment is the test,
+-- the version segment is the version being published or (a rollback carries an old one)
+-- an existing version of the test, and the file is named by the SHA-256 of its bytes in
+-- lowercase hex with an extension content uses, and nothing follows it. A content-
+-- addressed name makes a media file immutable by construction (ADR-025 #4).
+create function private.topik_media_path_ok(p_test_id text, p_next integer, p_path text) returns boolean
+language sql stable set search_path = '' as $$
+  select split_part(p_path, '/', 1) = p_test_id
+    and split_part(p_path, '/', 3) ~ '^[0-9a-f]{64}\.(mp3|jpg|jpeg|png|webp)$'
+    and split_part(p_path, '/', 4) = ''
+    and (split_part(p_path, '/', 2) = p_next::text
+         or exists (select 1 from public.topik_test_version tv
+                    where tv.test_id = p_test_id and tv.content_version::text = split_part(p_path, '/', 2)))
+$$;
+
+-- The one body of publish and rollback of 20261016120000, with its media steps read
+-- from the two helpers above (the publish dry run uses the same ones). Raises, all
+-- before it writes anything, exactly as before: VALIDATION_FAILED (detail = the shape
+-- issues), INVALID_STATE (retired), VALIDATION_FAILED (detail = 'media'), MEDIA_MISSING
+-- (detail = the first missing path, in sorted order).
+create or replace function private.topik_publish_version(p_user uuid, p_test_id text, p_json jsonb, p_note text,
+  p_action text, p_detail jsonb) returns integer
+language plpgsql set search_path = '' as $$
+declare
+  v_next integer := private.topik_next_version(p_test_id);
+  v_json jsonb := jsonb_set(p_json, '{contentVersion}', to_jsonb(v_next));
+  v_paths text[] := private.topik_media_paths(v_json);
+  v_media jsonb;
+  v_catalog bigint;
+  v_status text;
+  v_issues text[] := private.topik_master_shape_issues(v_json);
+  v_missing text;
+begin
+  if cardinality(v_issues) > 0 then
+    raise exception 'VALIDATION_FAILED' using detail = array_to_string(v_issues, ',');
+  end if;
+  select p.status into v_status from public.topik_publication p where p.test_id = p_test_id for update;
+  if v_status = 'retired' then
+    raise exception 'INVALID_STATE';
+  end if;
+  if exists (select 1 from unnest(v_paths) as u(m) where not private.topik_media_path_ok(p_test_id, v_next, u.m)) then
+    raise exception 'VALIDATION_FAILED' using detail = 'media';
+  end if;
+  select u.m into v_missing from unnest(v_paths) with ordinality as u(m, n)
+  where not private.topik_media_exists(u.m) order by u.n limit 1;
+  if v_missing is not null then
+    raise exception 'MEDIA_MISSING' using detail = v_missing;
+  end if;
+  -- Every path exists now: record the size and eTag Storage holds for it.
+  select coalesce(jsonb_agg(jsonb_build_object('path', u.m,
+      'size', case when (o.metadata->>'size') ~ '^[0-9]{1,18}$' then (o.metadata->>'size')::bigint end,
+      'eTag', o.metadata->>'eTag') order by u.m), '[]'::jsonb) into v_media
+  from unnest(v_paths) as u(m)
+  left join storage.objects o on o.bucket_id = 'topik-media' and o.name = u.m;
+  insert into public.topik_test_version (test_id, content_version, json, media, checksum, published_at, published_by, note)
+  values (p_test_id, v_next, v_json, v_media, md5(v_json::text), now(), p_user, p_note);
+  v_catalog := private.topik_next_catalog_version();
+  insert into public.topik_publication (test_id, status, current_version, catalog_version, updated_at, updated_by)
+  values (p_test_id, 'published', v_next, v_catalog, now(), p_user)
+  on conflict (test_id) do update
+    set status = 'published', current_version = excluded.current_version, catalog_version = excluded.catalog_version,
+        updated_at = excluded.updated_at, updated_by = excluded.updated_by;
+  perform private.topik_audit(p_action, p_test_id, v_next,
+    coalesce(p_detail, '{}'::jsonb) || jsonb_build_object('note', p_note, 'catalogVersion', v_catalog));
+  return v_next;
+end
+$$;
+
+-- A dry run of publish for the admin's tools: every check publish makes on the draft,
+-- reported instead of raised, and nothing written. It takes no lock, so a publish that
+-- follows can still meet VERSION_MISMATCH when another admin published in between.
+create function public.topik_admin_check(p_test_id text) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_draft public.topik_test_draft;
+  v_next integer;
+  v_json jsonb;
+  v_paths text[];
+  v_status text;
+  v_issues text[];
+  v_invalid text[];
+  v_missing text[];
+begin
+  perform private.require_topik_admin();
+  select * into v_draft from public.topik_test_draft where test_id = p_test_id;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  v_next := (select coalesce(max(v.content_version), 0) + 1 from public.topik_test_version v where v.test_id = p_test_id);
+  v_json := jsonb_set(v_draft.json, '{contentVersion}', to_jsonb(v_next));
+  v_paths := private.topik_media_paths(v_json);
+  v_issues := private.topik_master_shape_issues(v_json);
+  select p.status into v_status from public.topik_publication p where p.test_id = p_test_id;
+  select coalesce(array_agg(u.m order by u.m), '{}'::text[]) into v_invalid
+  from unnest(v_paths) as u(m) where not private.topik_media_path_ok(p_test_id, v_next, u.m);
+  select coalesce(array_agg(u.m order by u.m), '{}'::text[]) into v_missing
+  from unnest(v_paths) as u(m)
+  where private.topik_media_path_ok(p_test_id, v_next, u.m) and not private.topik_media_exists(u.m);
+  return jsonb_build_object('testId', p_test_id, 'nextContentVersion', v_next,
+    'draftContentVersion', v_draft.json->'contentVersion', 'status', v_status,
+    'issues', to_jsonb(v_issues), 'mediaInvalid', to_jsonb(v_invalid), 'mediaMissing', to_jsonb(v_missing),
+    'ready', cardinality(v_issues) = 0 and cardinality(v_invalid) = 0 and cardinality(v_missing) = 0
+      and v_status is distinct from 'retired'
+      and v_draft.json->>'contentVersion' is not distinct from v_next::text);
+end
+$$;
+revoke all on function public.topik_admin_check(text) from public, anon, authenticated;
+grant execute on function public.topik_admin_check(text) to authenticated;
+
+-- ============================================================================
 -- Function privileges (keep last)
 -- ============================================================================
 
