@@ -5,10 +5,10 @@
 # the Storage tables the storage-api service would create (`storage.buckets`,
 # `storage.objects`, their helpers and grants), applies `supabase/migrations/`
 # as `postgres` and runs every file in `supabase/tests/database/` as pgTAP.
-# `supabase test db` on the full stack stays the reference. storage-api's own
-# triggers and functions on `storage.objects` are absent from the stub, so direct
-# DML on it (an admin's UPDATE or DELETE) is not proven here; the policy predicates
-# are.
+# `supabase test db` on the full stack stays the reference. Of storage-api's own
+# triggers and functions on `storage.objects` only `protect_delete` (refuses direct
+# DELETE) is mirrored; the rest are absent, so a direct UPDATE on it is not proven
+# here; the policy predicates are.
 # Usage: tools/supabase/image_pgtap.sh [test-file…]   (default: every test)
 # Env:   PGTAP_IMAGE (default supabase/postgres:17.11.0.004), PGTAP_PORT (54329)
 set -euo pipefail
@@ -94,6 +94,19 @@ create or replace function auth.jwt() returns jsonb language sql stable as
     nullif(current_setting('request.jwt.claims', true), '')
   )::jsonb $$;
 grant execute on function auth.uid(), auth.role(), auth.jwt() to postgres, anon, authenticated, service_role;
+-- storage-api refuses direct DELETE on its tables (statement-level, so it fires even
+-- when no row matches): mirrored here so a test that deletes directly fails locally too.
+create function storage.protect_delete() returns trigger language plpgsql as $$
+begin
+  if coalesce(current_setting('storage.allow_delete_query', true), '') <> 'true' then
+    raise exception 'Direct deletion from storage tables is not allowed. Use the Storage API instead.'
+      using hint = 'This prevents accidental data loss from orphaned objects.';
+  end if;
+  return null;
+end $$;
+create trigger protect_objects_delete before delete on storage.objects
+  for each statement execute function storage.protect_delete();
+alter function storage.protect_delete() owner to postgres;
 alter type storage.buckettype owner to postgres;
 alter table storage.buckets owner to postgres;
 alter table storage.objects owner to postgres;

@@ -32,10 +32,11 @@ When Docker runs but the CLI cannot pull its service images (Docker Hub answers
 `429 Too Many Requests`), `bash tools/supabase/image_pgtap.sh` runs the migrations
 and the pgTAP suite on the `supabase/postgres` image alone, with a stub of the
 Storage tables and GoTrue's `auth.*` additions (its header lists what the stub
-does not prove; storage-api's own triggers and functions on `storage.objects`
-are absent, so direct DML on it is not proven there). `supabase test db` on the
-full stack stays the reference: the `supabase migrations` workflow runs it
-before `db push`, which is the first proof of the Storage path.
+does not prove; of storage-api's own triggers on `storage.objects` only
+`protect_delete`, which refuses every direct `DELETE` even one matching no row,
+is mirrored, so a direct `UPDATE` on it is not proven there). `supabase test db`
+on the full stack stays the reference: the `supabase migrations` workflow runs
+it before `db push`, which is the first proof of the Storage path.
 
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
