@@ -768,6 +768,7 @@ Migration `20261016120000_topik_master_data.sql`; schema Drift không đổi tro
 - `topik_test_version`: một phiên bản đã publish, bất biến (trigger chặn sửa và xoá), khoá `(test_id, content_version)`, giữ JSON, danh sách media (mỗi file một `{path, size, eTag}`, lấy từ Storage lúc publish) và `md5` của JSON.
 - `topik_publication`: điều client nhìn thấy, một dòng cho mỗi đề: `published` hoặc `retired`, phiên bản hiện hành và `catalog_version` toàn cục để client kéo "mọi thứ sau N".
 - `topik_master_audit`: nhật ký chỉ thêm, ghi trong cùng transaction với mỗi thay đổi Master Data.
+- Migration `20261017120000_topik_master_contract.sql` ([ADR-025](../decisions/ADR-025-ghim-luot-dang-lam-vao-phien-ban-noi-dung-topik.md)) thêm CHECK 4 MiB cho JSON của `topik_test_draft` và `topik_test_version` (cả hai `NOT VALID`: các dòng đã có không bị quét lại, mọi dòng mới đều bị kiểm), và giới hạn MIME và kích thước cho bucket `topik-media`. Nó không thêm cột nào; `sha256` của tài liệu được tính lúc phục vụ.
 
 ## Bất biến — phải kiểm tra được bằng query
 

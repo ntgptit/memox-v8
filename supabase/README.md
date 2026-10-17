@@ -38,6 +38,14 @@ is mirrored, so a direct `UPDATE` on it is not proven there). `supabase test db`
 on the full stack stays the reference: the `supabase migrations` workflow runs
 it before `db push`, which is the first proof of the Storage path.
 
+`bash tools/supabase/topik_concurrency_check.sh` is the two-connection check that pgTAP
+cannot make (one transaction, one connection): on the local Supabase CLI stack
+(`DB_URL`, default `127.0.0.1:54322`) two admin sessions race a publish of the same
+content version and a draft save naming the same `updatedAt`, and the loser must wait
+for the winner's lock and then fail with `VERSION_MISMATCH`. It is run by hand, never by
+the gate or CI, and refuses (exit 2) any `DB_URL` whose host is not `127.0.0.1` or
+`localhost`: it commits rows, and a published version is immutable.
+
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
@@ -198,7 +206,8 @@ there.
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - TOPIK Master Data (ADR-024) is reached through `topik_admin_*` (an admin),
-  `topik_catalog` and `topik_test_content` (everyone). Its media sits in the
+  `topik_catalog` and `topik_test_content` (admins only for now: the read gate
+  `private.topik_can_read_content()`, ADR-025 #5). Its media sits in the
   private bucket `topik-media`; Storage authorises through four policies on
   `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
   each calling `topik_media_can_read` / `topik_media_can_write` /
@@ -206,7 +215,9 @@ there.
   those policies. A published version's `media` lists each file as `{path, size, eTag}`
   (from Storage at publish). An object it lists cannot be
   updated or deleted, even by an admin, and a media path must name the version
-  being published or an existing one.
+  being published or an existing one. Its file is named by its SHA-256
+  (`{test_id}/{version}/{sha256}.{ext}`, ADR-025 #4); the bucket accepts audio/mpeg and
+  image/jpeg, png, webp up to 50 MiB. `topik_admin_check` is the publish dry run.
 - A new synced entity type changes four functions in one migration:
   `private.push_one` (its accepted list), `private.apply_operation` (upsert,
   and delete unless the type is never deleted), `private.current_change` and
