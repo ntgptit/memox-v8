@@ -10,7 +10,8 @@ import 'package:memox/shared/widgets/mx_card.dart';
 class DeckStartOverWidget extends StatelessWidget {
   const DeckStartOverWidget({super.key, required this.onReset});
 
-  final VoidCallback onReset;
+  /// Off while another change to the deck's schedule is running.
+  final VoidCallback? onReset;
 
   @override
   Widget build(BuildContext context) {

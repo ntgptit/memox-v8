@@ -89,7 +89,9 @@ DeckLevelScreen cardDeckScreen(
 DeckAlgorithmScreen deckAlgorithmScreen({
   required String deckId,
   ValueChanged<String?>? onOpenAncestor,
+  VoidCallback? onOpenTrash,
 }) => DeckAlgorithmScreen(
   deckId: deckId,
   onOpenAncestor: onOpenAncestor ?? (_) {},
+  onOpenTrash: onOpenTrash ?? () {},
 );

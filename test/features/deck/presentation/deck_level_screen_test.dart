@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
+import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -386,5 +388,27 @@ void main() {
     );
     handle.dispose();
     await tester.pump(const Duration(milliseconds: 200));
+  });
+
+  libraryTest('a failed deck read under a row\'s ⋮ says so instead of doing '
+      'nothing (audit LIB-9)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(),
+      overrides: [
+        deckViewProvider(korean.id).overrideWith(
+          (ref) => Stream.error(UnknownDatabaseFailure(cause: StateError('x'))),
+        ),
+      ],
+    );
+
+    await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text(_en.failureUnknown), findsOneWidget);
+    await tester.pump(const Duration(seconds: 10));
   });
 }

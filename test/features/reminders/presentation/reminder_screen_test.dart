@@ -302,6 +302,32 @@ void main() {
     expect(find.text(metaDots(_en.reminderOnHint)), findsOneWidget);
   });
 
+  libraryTest('E4: the failed-save toast leaves with the screen, so its Retry '
+      'never reads a disposed one (audit LIB-1, same mechanism)', (
+    tester,
+    env,
+  ) async {
+    final s = await pumpReminderScreen(tester, env);
+    s.store.isFailing = true;
+    await tapReminderToggle(tester);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+
+    unawaited(
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pushReplacement(
+            MaterialPageRoute<void>(builder: (_) => const SizedBox()),
+          ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(ReminderScreen), findsNothing);
+    expect(find.text(_en.commonRetry), findsNothing);
+    await tester.pump(const Duration(seconds: 10));
+  });
+
   libraryTest('loading: the list skeleton', (tester, env) async {
     final never = StreamController<ReminderStatus>();
     addTearDown(never.close);

@@ -42,7 +42,7 @@ not to Tags (plan C4).
 | nameTooLong | `tags_name_too_long_light.png` | `tags_name_too_long_dark.png` | The counter "{len} / 50" in the error colour at the trailing end of the row under the field, beside "A tag name can be at most 50 characters.", Rename off. The field keeps one line. A blank name and a control character show their own messages (E2). |
 | del | `tags_del_light.png` | `tags_del_dark.png` | No glyph over the title; the text is left-aligned; the buttons stay side by side ("Delete tag", The Footer Pair Rule) (UI-base row 139). |
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
-| opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). |
+| opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). The toast outlives the screen, so Retry runs from the app's container and the root navigator, not the screen's `ref`; after leaving Tags it still writes and says how it ended (audit 2026-10-17 LIB-1). |
 | tagGone | `tags_tag_gone_light.png` | `tags_tag_gone_dark.png` | The gone state (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
 | read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. |
 Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag list could not be read).

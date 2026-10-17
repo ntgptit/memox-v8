@@ -44,7 +44,8 @@ final class TrashState {
   final Set<String> selected;
 
   /// The last purge's skipped batches, each with the batches still inside
-  /// it (spec D6). They stay until the next command.
+  /// it (spec D6). They stay through the filter and the selection, until
+  /// the next purge or restore.
   final Map<String, Set<String>> blocked;
 
   /// The kind the selection is locked to, read from [entries]; null while

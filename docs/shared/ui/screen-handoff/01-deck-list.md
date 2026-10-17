@@ -149,6 +149,13 @@ One `MxBottomSheet`, "Sort & filter":
 | deckLoaded | the open deck is deleted elsewhere | deckNotFound; Back to Library or Open Trash | VERIFIED `open_deck_screen_test.dart::a deck deleted while open says it is no longer here and leads back or to the Trash (A8, FE-B1 D11)` |
 | deckLoading | the deck lands, fails or is gone | deckLoaded / deckError / deckNotFound | deckNotFound VERIFIED in the test above; the others `UNVERIFIED (code read)`: `deck_level_screen.dart` |
 
+Transitions added by the audit of 2026-10-17:
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| reorder mode (root or open deck) | system Back | the list in browse mode, still on the screen (`PopScope` in `DeckLevelBodyWidget`, LIB-7) | `deck_reorder_test.dart` |
+| a row's or the open deck's `⋮` | the deck's view fails to read | the failure's sentence as a toast, no sheet (LIB-9) | `deck_level_screen_test.dart` |
+
 ## Rulings
 
 - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB; its empty state already offers New card and New sub-deck. The FAB returns once the deck holds sub-decks.

@@ -71,42 +71,52 @@ class DeckLevelBodyWidget extends ConsumerWidget {
     );
     final isReordering = ref.watch(deckReorderModeProvider(parentId));
     final level = ref.watch(provider);
-    return level.when(
-      data: (level) => isReordering
-          ? DeckReorderListWidget(tiles: level.tiles)
-          : DeckLevelListWidget(
-              level: level,
-              parentId: parentId,
-              onOpenDeck: onOpenDeck,
-              onOpenAlgorithm: onOpenAlgorithm,
-              onOpenStudy: onOpenStudy,
-              onOpenStudyOptions: onOpenStudyOptions,
-              onOpenTrash: onOpenTrash,
-              onOpenStudyHome: onOpenStudyHome,
-              emptyState: emptyState,
-              schedulerType: schedulerType,
-              hasDeepestSubDecks: hasDeepestSubDecks,
+    // Back ends the reorder before it leaves the screen, as it ends a
+    // selection in the Trash and in a deck's cards.
+    return PopScope(
+      canPop: !isReordering,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          ref.read(deckReorderModeProvider(parentId).notifier).finish();
+        }
+      },
+      child: level.when(
+        data: (level) => isReordering
+            ? DeckReorderListWidget(tiles: level.tiles)
+            : DeckLevelListWidget(
+                level: level,
+                parentId: parentId,
+                onOpenDeck: onOpenDeck,
+                onOpenAlgorithm: onOpenAlgorithm,
+                onOpenStudy: onOpenStudy,
+                onOpenStudyOptions: onOpenStudyOptions,
+                onOpenTrash: onOpenTrash,
+                onOpenStudyHome: onOpenStudyHome,
+                emptyState: emptyState,
+                schedulerType: schedulerType,
+                hasDeepestSubDecks: hasDeepestSubDecks,
+              ),
+        loading: () => MxScreenScroll(
+          clearance: MxScrollClearance.fabAboveNav,
+          children: [
+            MxSkeletonList(
+              semanticLabel: context.l10n.commonLoading,
+              rows: _skeletonRows,
             ),
-      loading: () => MxScreenScroll(
-        clearance: MxScrollClearance.fabAboveNav,
-        children: [
-          MxSkeletonList(
-            semanticLabel: context.l10n.commonLoading,
-            rows: _skeletonRows,
-          ),
-        ],
-      ),
-      error: (_, _) => MxScreenScroll(
-        clearance: MxScrollClearance.fabAboveNav,
-        children: [
-          MxErrorState(
-            title: l10n.libraryLoadErrorTitle,
-            body: l10n.libraryLoadErrorBody,
-            retryLabel: l10n.commonRetry,
-            onRetry: () => ref.invalidate(provider),
-            isRetrying: level.isLoading,
-          ),
-        ],
+          ],
+        ),
+        error: (_, _) => MxScreenScroll(
+          clearance: MxScrollClearance.fabAboveNav,
+          children: [
+            MxErrorState(
+              title: l10n.libraryLoadErrorTitle,
+              body: l10n.libraryLoadErrorBody,
+              retryLabel: l10n.commonRetry,
+              onRetry: () => ref.invalidate(provider),
+              isRetrying: level.isLoading,
+            ),
+          ],
+        ),
       ),
     );
   }

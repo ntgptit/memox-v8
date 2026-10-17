@@ -188,6 +188,22 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (await write && mounted) _selection().clear();
   }
 
+  /// Drops the picks of cards that left the deck, deleted or moved from
+  /// elsewhere: a bulk action over one is refused whole (`notFound`). Every
+  /// card [request] lets through is read, not only the loaded window, as
+  /// Select all picks beyond it. A failed read keeps the picks.
+  Future<void> _pruneSelection(CardListRequestState request) async {
+    if (ref.read(cardSelectionProvider(widget.deckId)).ids.isEmpty) return;
+    try {
+      final live = await ref
+          .read(cardActionsControllerProvider.notifier)
+          .selectAll(deckId: widget.deckId, query: request.query);
+      if (mounted) _selection().retain(live);
+    } on Failure {
+      // The next change of the list tries again.
+    }
+  }
+
   /// The one selected card's text, when its row is loaded (kit 07).
   CardTrashPreview? _previewOf(Set<String> selected) {
     if (selected.length != 1) return null;
@@ -302,42 +318,55 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       windowSize: request.windowSize,
     );
     final async = ref.watch(provider);
-    // A failure always says so, even over rows loaded before (spec §5).
-    if (async.hasError) {
-      return MxScreenScroll(
-        clearance: clearance,
-        children: [
-          MxErrorState(
-            title: l10n.cardLoadErrorTitle,
-            body: l10n.libraryLoadErrorBody,
-            retryLabel: l10n.commonRetry,
-            onRetry: () => ref.invalidate(provider),
-            isRetrying: async.isLoading,
-          ),
-        ],
-      );
-    }
-    final view = _lastView = async.value ?? _lastView;
-    if (view == null) {
-      return MxScreenScroll(
-        clearance: clearance,
-        children: [
-          MxSkeletonList(
-            semanticLabel: context.l10n.commonLoading,
-            rows: _skeletonRows,
-          ),
-        ],
-      );
-    }
-    // A larger window is asked for only once the current one has loaded.
-    final canGrow = async.hasValue && view.hasMore;
-    // Back leaves selection before it leaves the deck (IT-ORG-013).
-    return PopScope(
+    // The list changed under a selection: cards that left it leave the
+    // selection (audit CARD-14).
+    ref.listen(provider, (_, next) {
+      if (next.hasValue) unawaited(_pruneSelection(request));
+    });
+    // Back leaves selection before it leaves the deck (IT-ORG-013), whatever
+    // the list shows: the app bar holds the selection in every branch.
+    Widget leavingSelectionFirst(Widget child) => PopScope(
       canPop: !isSelecting,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _selection().clear();
       },
-      child: Column(
+      child: child,
+    );
+    // A failure always says so, even over rows loaded before (spec §5).
+    if (async.hasError) {
+      return leavingSelectionFirst(
+        MxScreenScroll(
+          clearance: clearance,
+          children: [
+            MxErrorState(
+              title: l10n.cardLoadErrorTitle,
+              body: l10n.libraryLoadErrorBody,
+              retryLabel: l10n.commonRetry,
+              onRetry: () => ref.invalidate(provider),
+              isRetrying: async.isLoading,
+            ),
+          ],
+        ),
+      );
+    }
+    final view = _lastView = async.value ?? _lastView;
+    if (view == null) {
+      return leavingSelectionFirst(
+        MxScreenScroll(
+          clearance: clearance,
+          children: [
+            MxSkeletonList(
+              semanticLabel: context.l10n.commonLoading,
+              rows: _skeletonRows,
+            ),
+          ],
+        ),
+      );
+    }
+    // A larger window is asked for only once the current one has loaded.
+    final canGrow = async.hasValue && view.hasMore;
+    return leavingSelectionFirst(
+      Column(
         children: [
           Expanded(
             child: NotificationListener<ScrollNotification>(

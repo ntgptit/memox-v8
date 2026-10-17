@@ -16,7 +16,7 @@ and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-sear
 | More | `MxButton` (secondary, block) | "Load more results" while another page follows (BR-SEARCH-007), busy while it reads. |
 | Footer | caption | "Decks first, then cards · case-insensitive, accents matter". |
 | No results | `MxEmptyState` (neutral, compact) | Search-off glyph; "No matches for “{query}”" / "Accents matter — “hoc” does not find “học”. Search covers deck names, card terms and meanings, and tag names." |
-| Error | `MxErrorState` | "Search didn't run" / "Your library is safe on this device. Try again in a moment." |
+| Error | `MxErrorState` | "Search didn't run" / "Nothing was lost. Try again in a moment." |
 | Load more failed | `MxInlineBanner` (danger) + Retry | The rows stay; the end of the list says "Couldn't load more results. What is shown is still correct." (UC-SEARCH-001 E2). |
 
 ## States

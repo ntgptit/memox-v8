@@ -84,6 +84,13 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     final l10n = context.l10n;
     final entries = ref.watch(trashEntriesProvider);
     final state = ref.watch(trashControllerProvider);
+    // Nothing is left to pick once the last entry has gone: the selection
+    // ends instead of showing the empty state under its bar.
+    ref.listen(trashEntriesProvider, (_, next) {
+      if (next case AsyncData(:final value) when value.isEmpty) {
+        _trash().stopSelecting();
+      }
+    });
     final loaded = entries.value ?? const <TrashEntry>[];
     final selected = [
       for (final entry in loaded)

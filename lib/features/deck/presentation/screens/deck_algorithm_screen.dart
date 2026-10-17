@@ -40,12 +40,16 @@ class DeckAlgorithmScreen extends ConsumerStatefulWidget {
     super.key,
     required this.deckId,
     required this.onOpenAncestor,
+    required this.onOpenTrash,
   });
 
   final String deckId;
 
   /// A breadcrumb tap: the root, or null for the Library.
   final ValueChanged<String?> onOpenAncestor;
+
+  /// The deck-gone state's way to the Trash, where the deck went.
+  final VoidCallback onOpenTrash;
 
   @override
   ConsumerState<DeckAlgorithmScreen> createState() =>
@@ -123,6 +127,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
         ),
         AsyncData() => DeckGoneStateWidget(
           onBackToLibrary: () => widget.onOpenAncestor(null),
+          onOpenTrash: widget.onOpenTrash,
         ),
         AsyncError(:final isLoading) => MxScreenScroll(
           children: [
@@ -210,8 +215,11 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
               SizedBox(height: context.dimens.space12),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),
               DeckStartOverWidget(
-                onReset: () =>
-                    unawaited(showResetLearningDialog(context, view: view)),
+                onReset: _switchingTo == null
+                    ? () => unawaited(
+                        showResetLearningDialog(context, view: view),
+                      )
+                    : null,
               ),
             ],
           ),

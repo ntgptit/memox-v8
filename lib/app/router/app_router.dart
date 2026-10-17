@@ -132,6 +132,7 @@ GoRouter buildAppRouter({
                         builder: (context, state) => DeckAlgorithmScreen(
                           deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                           onOpenAncestor: (id) => _openAncestor(context, id),
+                          onOpenTrash: _openTrash(context),
                         ),
                       ),
                     ],

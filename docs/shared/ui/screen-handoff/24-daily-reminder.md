@@ -45,7 +45,7 @@ UC-REMINDER-001; spec
 Built from UC-REMINDER-001:
 
 - **E4, a save that failed:** snackbar "Couldn't save the reminder. Nothing changed." with
-  Retry; the rows keep the stored values.
+  Retry; the rows keep the stored values. The toast leaves with the screen, as its Retry acts on the screen's controller (audit 2026-10-17 LIB-1).
 - **E7, a read that failed:** `MxErrorState` "Couldn't read the reminder setting" /
   "Nothing was changed. Try reading it again." / Retry, in place of every row. Golden
   `reminder_read_error_*`.

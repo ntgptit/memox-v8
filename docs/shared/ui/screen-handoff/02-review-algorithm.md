@@ -26,7 +26,7 @@ Algorithm descriptions:
 |---|---|---|---|
 | locked | `library_algorithm_locked_light.png` | `library_algorithm_locked_dark.png` | Date from `firstAnsweredAt`, local time. |
 | unlocked | `library_algorithm_unlocked_light.png` | `library_algorithm_unlocked_dark.png` | — |
-| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
+| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). The options and "Reset learning progress…" are off until it ends (audit 2026-10-17 LIB-13). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | no golden | no golden | Danger banner "Couldn't switch." · "The deck still uses {algorithm}." with Retry (UC-DECK-002 E2). `deck_algorithm_screen_test.dart::a switch that fails says the deck kept its algorithm; Retry switches (E2)`. |
 | resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `success` on the success tint (ADR-022); "the open session" only when a session is open. |
@@ -42,7 +42,7 @@ Beyond the states above:
 
 - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" / "Every card's schedule in this tree starts over and any open study session closes. No history is lost." / Cancel · Switch (UC-DECK-002 steps 3–4).
 - **Refused because the tree just locked:** the locked state and the reason (UC-DECK-002 E4).
-- **Loading, load error, not a root or gone:** four skeleton rows; `MxErrorState` "Couldn't open this deck" with Retry; the not-found state of screen 01 (Back to Library only) for a deleted deck and for a sub-deck, which has no algorithm (BR-DECK-025, `deck_algorithm_screen_test.dart::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)`).
+- **Loading, load error, not a root or gone:** four skeleton rows; `MxErrorState` "Couldn't open this deck" with Retry; the not-found state of screen 01, with its "Back to Library" and "Open Trash" (audit 2026-10-17 LIB-4), for a deleted deck and for a sub-deck, which has no algorithm (BR-DECK-025, `deck_algorithm_screen_test.dart::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)`).
 
 ## Reset dialog copy
 
