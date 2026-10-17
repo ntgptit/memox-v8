@@ -51,6 +51,17 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
     return (value, false);
   }
 
+  // A step lands on a valid number, so it clears the mark a typed value left.
+  void _stepHour(int delta) => setState(() {
+    _hour += delta;
+    _isHourInvalid = false;
+  });
+
+  void _stepMinute(int delta) => setState(() {
+    _minute += delta;
+    _isMinuteInvalid = false;
+  });
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -73,10 +84,8 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
               minDigits: 2,
               isInvalid: _isHourInvalid,
-              onDecrement: _hour > 0 ? () => setState(() => _hour--) : null,
-              onIncrement: _hour < _lastHour
-                  ? () => setState(() => _hour++)
-                  : null,
+              onDecrement: _hour > 0 ? () => _stepHour(-1) : null,
+              onIncrement: _hour < _lastHour ? () => _stepHour(1) : null,
               onValueSubmitted: (text) {
                 final (hour, isInvalid) = _typed(text, _hour, _lastHour);
                 setState(() {
@@ -99,9 +108,9 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
               minDigits: 2,
               isInvalid: _isMinuteInvalid,
-              onDecrement: _minute > 0 ? () => setState(() => _minute--) : null,
+              onDecrement: _minute > 0 ? () => _stepMinute(-1) : null,
               onIncrement: _minute < _lastMinute
-                  ? () => setState(() => _minute++)
+                  ? () => _stepMinute(1)
                   : null,
               onValueSubmitted: (text) {
                 final (minute, isInvalid) = _typed(text, _minute, _lastMinute);
