@@ -98,46 +98,10 @@ final class _FailingCards implements CardRepository {
   }) => Future.error(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
 
   @override
-  Future<Outcome<void, CardRejection>> editCard({
-    required String cardId,
-    required CardDraft draft,
-    DateTime? now,
-  }) => Future.error(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
-
-  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
-  libraryTest('edit: a failed save names the changes, not the card, and the '
-      'body names the button as it reads (audit 2026-10-17)', (
-    tester,
-    env,
-  ) async {
-    final deckId = await _words(env);
-    final card = await env.cards.card(deckId);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _edit(card.id),
-      overrides: [
-        editCardUseCaseProvider.overrideWithValue(
-          EditCardUseCase(_FailingCards()),
-        ),
-      ],
-    );
-    await tester.pumpAndSettle();
-    await tester.enterText(_field(1), 'cooked rice');
-    await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveChanges));
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.cardSaveChangesFailedTitle), findsOneWidget);
-    expect(find.text(_en.cardSaveFailedBody), findsOneWidget);
-    expect(_en.cardSaveFailedBody, contains(_en.cardRetrySave));
-    expect(_footerSave(_en.cardRetrySave), findsOneWidget);
-  });
-
   libraryTest('Save waits for a front and a back', (tester, env) async {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId));

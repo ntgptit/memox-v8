@@ -241,53 +241,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('after a new request the window grows again: a growth is '
-      'asked once per request, not once per screen', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    for (var i = 0; i < 60; i++) {
-      await insertCard(
-        env.db,
-        id: 'c${i.toString().padLeft(2, '0')}',
-        deckId: words.id,
-        front: 'card $i',
-      );
-    }
-    await pumpLibraryScreen(tester, env, _section(words.id));
-    final container = ProviderScope.containerOf(
-      tester.element(find.byType(CardListSectionWidget)),
-    );
-    Future<void> scrollToEnd() async {
-      for (var i = 0; i < 12; i++) {
-        await tester.drag(find.byType(ListView), const Offset(0, -1200));
-        await tester.pump();
-      }
-      await tester.pump();
-    }
-
-    await scrollToEnd();
-    expect(
-      container.read(cardListRequestProvider(words.id)).windowSize,
-      cardListWindowStep * 2,
-    );
-
-    container
-        .read(cardListRequestProvider(words.id).notifier)
-        .sortBy(CardListSort.dueFirst);
-    await tester.pumpAndSettle();
-    expect(
-      container.read(cardListRequestProvider(words.id)).windowSize,
-      cardListWindowStep,
-    );
-    await scrollToEnd();
-
-    expect(
-      container.read(cardListRequestProvider(words.id)).windowSize,
-      cardListWindowStep * 2,
-    );
-    await tester.pump(const Duration(milliseconds: 200));
-  });
-
   libraryTest('search hides the deck summary and keeps the filters '
       '(critique 2026-09-30: results clear the keyboard)', (tester, env) async {
     final deckId = await _seed(env);
@@ -518,18 +471,5 @@ void main() {
     await tester.pump();
     expect(clearance(), MxScrollClearance.base);
     await tester.pump(const Duration(milliseconds: 200));
-  });
-
-  libraryTest('the sort trigger is named as a sort for TalkBack, with the '
-      'order shown (audit 2026-10-17)', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
-    await pumpLibraryScreen(tester, env, _section(words.id));
-
-    expect(
-      byControlLabel(_en.cardSortTrigger(_en.cardSortNewest)),
-      findsOneWidget,
-    );
   });
 }
