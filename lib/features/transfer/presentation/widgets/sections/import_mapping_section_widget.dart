@@ -92,6 +92,8 @@ class ImportMappingSectionWidget extends StatelessWidget {
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.importMappingIncomplete,
+            // The spacer below is the one gap (audit 2026-10-17).
+            hasBottomMargin: false,
           ),
           SizedBox(height: context.dimens.space12),
         ],
@@ -105,6 +107,8 @@ class ImportMappingSectionWidget extends StatelessWidget {
             tone: MxBannerTone.warning,
             title: l10n.importProblem(problem).title,
             message: l10n.importProblem(problem).body,
+            // The spacer below is the one gap (audit 2026-10-17).
+            hasBottomMargin: false,
           ),
           SizedBox(height: context.dimens.space12),
         ],

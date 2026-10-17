@@ -70,6 +70,8 @@ class ImportPreviewSectionWidget extends StatelessWidget {
                   onPressed: onPreviewAgain,
                 ),
             ],
+            // The spacer below is the one gap (audit 2026-10-17).
+            hasBottomMargin: false,
           ),
           SizedBox(height: context.dimens.space12),
         ],

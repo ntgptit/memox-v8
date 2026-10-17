@@ -428,10 +428,12 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
                 context.screenMargin,
                 context.dimens.space12,
               ),
+              // The padding's 12 is the one gap (audit 2026-10-17).
               child: MxInlineBanner(
                 tone: MxBannerTone.danger,
                 title: l10n.studyAnswerBusyTitle,
                 message: l10n.studyAnswerBusyBody,
+                hasBottomMargin: false,
                 actions: [
                   MxButton(
                     label: l10n.commonRetry,

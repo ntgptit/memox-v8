@@ -13,6 +13,7 @@ import 'package:memox/features/settings/presentation/widgets/sections/study_opti
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -50,7 +51,8 @@ class StudyOptionsScreen extends ConsumerWidget {
       },
     );
     final draft = ref.watch(studyOptionsControllerProvider(deckId));
-    final appDefaults = ref.watch(appSettingsProvider).value?.studyDefaults;
+    final appSettings = ref.watch(appSettingsProvider);
+    final appDefaults = appSettings.value?.studyDefaults;
     final options = ref.watch(studyOptionsProvider(deckId));
     final loaded = switch ((options, appDefaults)) {
       (AsyncData(value: Ok(:final value)), final defaults?) => (
@@ -59,59 +61,91 @@ class StudyOptionsScreen extends ConsumerWidget {
       ),
       _ => null,
     };
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.deckStudyOptions,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          breadcrumb,
-          Expanded(
-            child: switch (options) {
-              _ when loaded != null => StudyOptionsFormWidget(
-                deckId: deckId,
-                stored: loaded.$1,
-                form: loaded.$2,
-                rootName: loaded.$1.rootDeckName,
-              ),
-              AsyncData(value: Rejected()) => _gone(context),
-              AsyncError(:final isLoading) => MxScreenScroll(
-                children: [
-                  MxErrorState(
-                    title: l10n.settingsLoadErrorTitle,
-                    body: l10n.libraryLoadErrorBody,
-                    retryLabel: l10n.commonRetry,
-                    onRetry: () => ref.invalidate(studyOptionsProvider(deckId)),
-                    isRetrying: isLoading,
-                  ),
-                ],
-              ),
-              _ => MxScreenScroll(
-                children: [
-                  MxSkeletonList(
-                    semanticLabel: l10n.commonLoading,
-                    rows: _skeletonRows,
-                  ),
-                ],
-              ),
-            },
-          ),
-        ],
-      ),
-      footer: switch (loaded) {
-        (_, final StudyOptionsForm form) => StudyOptionsFooterWidget(
-          deckId: deckId,
-          form: form,
-        ),
-        null => null,
+    final isChanged = loaded?.$2.isChanged ?? false;
+    // Back with unsaved options asks first; while a save runs it waits, as
+    // the save lands either way.
+    return PopScope(
+      canPop: !isChanged && !draft.isSaving,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop || draft.isSaving) return;
+        unawaited(_confirmLeave(context));
       },
+      child: MxAppShell(
+        appBar: MxAppBar(
+          title: l10n.deckStudyOptions,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: () => unawaited(Navigator.of(context).maybePop()),
+          ),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            breadcrumb,
+            Expanded(
+              child: switch (options) {
+                _ when loaded != null => StudyOptionsFormWidget(
+                  deckId: deckId,
+                  stored: loaded.$1,
+                  form: loaded.$2,
+                  rootName: loaded.$1.rootDeckName,
+                ),
+                AsyncData(value: Rejected()) => _gone(context),
+                // The deck's options or the app defaults they follow could not
+                // be read: either one leaves nothing to show, so say it with
+                // Retry instead of a skeleton that never ends.
+                _ when options.hasError || appSettings.hasError =>
+                  MxScreenScroll(
+                    children: [
+                      MxErrorState(
+                        title: l10n.studyOptionsLoadErrorTitle,
+                        body: l10n.libraryLoadErrorBody,
+                        retryLabel: l10n.commonRetry,
+                        onRetry: () {
+                          ref
+                            ..invalidate(studyOptionsProvider(deckId))
+                            ..invalidate(appSettingsProvider);
+                        },
+                        isRetrying: options.isLoading || appSettings.isLoading,
+                      ),
+                    ],
+                  ),
+                _ => MxScreenScroll(
+                  children: [
+                    MxSkeletonList(
+                      semanticLabel: l10n.commonLoading,
+                      rows: _skeletonRows,
+                    ),
+                  ],
+                ),
+              },
+            ),
+          ],
+        ),
+        footer: switch (loaded) {
+          (_, final StudyOptionsForm form) => StudyOptionsFooterWidget(
+            deckId: deckId,
+            form: form,
+          ),
+          null => null,
+        },
+      ),
     );
+  }
+
+  Future<void> _confirmLeave(BuildContext context) async {
+    final l10n = context.l10n;
+    final isSure = await showMxConfirm(
+      context,
+      title: l10n.studyOptionsDiscardTitle,
+      body: l10n.studyOptionsDiscardBody,
+      cancelLabel: l10n.deckKeepEditing,
+      confirmLabel: l10n.studyOptionsDiscard,
+    );
+    if (!isSure || !context.mounted) return;
+    // The draft is dropped with the screen: its controller disposes.
+    Navigator.of(context).pop();
   }
 
   /// The deck went to the Trash or no longer exists (spec §6).

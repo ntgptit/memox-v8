@@ -2900,6 +2900,22 @@
   "@deckStudyOptions": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
   },
+  "studyOptionsLoadErrorTitle": "Couldn't open Study options",
+  "@studyOptionsLoadErrorTitle": {
+    "description": "Screen handoff 15: the read error's title, naming this screen (audit 2026-10-17)."
+  },
+  "studyOptionsDiscardTitle": "Discard your changes?",
+  "@studyOptionsDiscardTitle": {
+    "description": "Screen handoff 15: Back with unsaved options asks first (audit 2026-10-17)."
+  },
+  "studyOptionsDiscardBody": "The deck keeps the options it had.",
+  "@studyOptionsDiscardBody": {
+    "description": "Screen handoff 15: the discard question's body (audit 2026-10-17)."
+  },
+  "studyOptionsDiscard": "Discard",
+  "@studyOptionsDiscard": {
+    "description": "Screen handoff 15: the discard question's confirm (audit 2026-10-17)."
+  },
   "deckStudyOptionsHint": "Cards per session · new-card order",
   "@deckStudyOptionsHint": {
     "description": "Screen handoff 01 (FE-A3 D3): the Study options row's sub-line in the deck action sheet."

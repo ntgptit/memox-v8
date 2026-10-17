@@ -83,6 +83,8 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.studyOptionsUnreadable,
+            // The spacer below is the one gap (audit 2026-10-17).
+            hasBottomMargin: false,
           ),
           SizedBox(height: context.dimens.space16),
         ],
@@ -96,6 +98,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               stored.options.cardLimit,
               studyOptionsOrderName(l10n, stored.options.newCardOrder),
             ),
+            hasBottomMargin: false,
           ),
           SizedBox(height: context.dimens.space16),
         ],
