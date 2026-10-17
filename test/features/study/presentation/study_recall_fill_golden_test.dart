@@ -121,14 +121,14 @@ void main() {
 
     libraryTest('fill, input, $theme', (tester, env) async {
       await shoot(tester, env, StudyMode.fill, 'fill_input', () async {
-        await tester.enterText(find.byType(TextField), 'reserv');
+        await tester.enterText(find.byType(EditableText), 'reserv');
         await tester.pump();
       });
     });
 
     libraryTest('fill, hint, $theme', (tester, env) async {
       await shoot(tester, env, StudyMode.fill, 'fill_hint', () async {
-        await tester.enterText(find.byType(TextField), 'reserv');
+        await tester.enterText(find.byType(EditableText), 'reserv');
         await tester.tap(find.text(_en.studyFillShowHint));
         await _frames(tester);
       });
@@ -136,7 +136,7 @@ void main() {
 
     libraryTest('fill, wrong, $theme', (tester, env) async {
       await shoot(tester, env, StudyMode.fill, 'fill_wrong', () async {
-        await tester.enterText(find.byType(TextField), 'reservetion');
+        await tester.enterText(find.byType(EditableText), 'reservetion');
         await tester.pump();
         await tester.tap(find.text(_en.studyFillCheck));
         await _frames(tester);

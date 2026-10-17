@@ -39,7 +39,7 @@ component).
 | Selected level: justified Flutter fallback | 37 |
 | BLOCKED (an owner ruling or a ForUI API limit; fallback kept with evidence) | 8 |
 | Unnecessary reimplementations found | 16 |
-| Defects found that were not reimplementations | 4 |
+| Defects found that were not reimplementations | 5 |
 | Corrections declined with evidence | 3 (one decision) |
 | Corrective actions implemented | 19 records changed in code, plus 2 test-only gaps closed |
 
@@ -79,6 +79,7 @@ them out.
 | `showMxDialog`, `showMxBottomSheet` | ForUI's Vietnamese barrier strings reached TalkBack as "Scrim" and a literal `$modalRouteContentName` | Barrier and grabber strings from `MaterialLocalizations`, the pre-migration source |
 | `MxAppShell` / app root | The status-bar style ForUI's `FScaffold` applies was applied nowhere, because the app keeps Material's `Scaffold` | `AppThemeHost` puts `theme.scaffoldStyle.systemOverlayStyle` in an `AnnotatedRegion` |
 | `MxSlider` | ForUI's tooltip showed a percentage while TalkBack read the caller's unit | `tooltipBuilder` in the caller's unit |
+| `MxChoiceTile` in Match and Guess | Once the tile took keyboard focus, ForUI's outline (drawn outside it) was cut by the scroll view on the edge tiles, by 3.5 dp (screen-level test) | The boards leave `context.focusOutlineReach`, read from ForUI's focused outline style, above and below; `MxChipRow` reads the same value instead of its own 4 |
 
 `showMxBottomSheet` stays on the nearest navigator: owner ruling M3C-52
 (KEEP_EXISTING) decides that, and the ledger records it.

@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -110,7 +112,7 @@ void main() {
           await openHistory(tester);
           await tester.pumpAndSettle();
           await tester.tap(
-            find.byTooltip(RegExp(r'^Delete attempt \d+$')).first,
+            byControlLabel(RegExp(r'^Delete attempt \d+$')).first,
           );
         },
       );

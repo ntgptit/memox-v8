@@ -86,7 +86,7 @@ void main() {
         const UsersScreen(),
         'users_empty_search',
         before: () async {
-          await tester.enterText(find.byType(TextField), 'zz');
+          await tester.enterText(find.byType(EditableText), 'zz');
           await tester.pump(const Duration(milliseconds: 400));
           await _settle(tester);
         },

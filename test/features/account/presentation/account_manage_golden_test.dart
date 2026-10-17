@@ -262,7 +262,7 @@ void main() {
         hasMark: true,
         before: () async {
           await _settle(tester);
-          await tester.enterText(find.byType(TextField), 'b@example.com');
+          await tester.enterText(find.byType(EditableText), 'b@example.com');
           await tapping(tester, _en.accountSendCode)();
         },
       );

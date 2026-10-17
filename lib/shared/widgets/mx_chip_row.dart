@@ -11,14 +11,11 @@ class MxChipRow extends StatelessWidget {
 
   final List<Widget> children;
 
-  /// How far ForUI's focus outline reaches past a chip.
-  static const double _ringReach = 4;
-
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
     return ClipRect(
-      clipper: const _RingReachClipper(_ringReach),
+      clipper: _RingReachClipper(context.focusOutlineReach),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         // The scroll view's own clip is the chip's edge; the clipper above

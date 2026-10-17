@@ -26,6 +26,16 @@ extension ThemeContext on BuildContext {
 
   /// ForUI's border width, the one hairline.
   double get hairline => FTheme.of(this).style.borderWidth;
+
+  /// How far ForUI's focus outline reaches past the control it rings: it is
+  /// stroked around the control's bounds grown by `spacing`; a whole stroke
+  /// width past that covers the stroke and its anti-aliased edge. A clipping
+  /// container leaves this much room around a focusable control, or the ring
+  /// is cut.
+  double get focusOutlineReach {
+    final outline = FTheme.of(this).style.focusedOutlineStyle;
+    return outline.spacing + outline.width;
+  }
 }
 
 /// [read]'s extension, or a message that names the fix: a theme built outside

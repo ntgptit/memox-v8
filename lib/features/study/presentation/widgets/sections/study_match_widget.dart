@@ -140,9 +140,12 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
               slivers: [
                 SliverFillRemaining(
                   hasScrollBody: false,
+                  // The tiles' focus outline reaches past them; the room
+                  // above and below keeps the scroll view's clip off it.
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: context.screenMargin,
+                      vertical: context.focusOutlineReach,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

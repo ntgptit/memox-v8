@@ -74,7 +74,7 @@ then the change, then the component's and every caller's tests.
 | `MxFloatingNotice` | Hand-painted surface | `FCard` |
 | `MxSlider` | Percentage tooltip | Tooltip in the caller's unit |
 | `MxSearchField` | Painted field as a trigger; post-frame focus on the search screen | `FButton` trigger; `FTextField(autofocus:)` |
-| `MxChoiceTile` | `GestureDetector`, no keyboard | `FTappable.static` with ForUI's focus outline |
+| `MxChoiceTile` | `GestureDetector`, no keyboard | `FTappable.static` with ForUI's focus outline; Match and Guess leave the outline's reach (`context.focusOutlineReach`) so their scroll views do not cut it |
 | `MxBreadcrumb` | Own segment row | `FBreadcrumb` |
 | `MxLinearProgress`, `MxStudyTopBar`, `RecallCountdownBarWidget` | Three hand-built tracks and a hand-built chip | `FDeterminateProgress` (value shown at once on mount), `MxToneBadge` |
 | `MxNavRail` | Hand-drawn frame | `FSidebar.raw` |

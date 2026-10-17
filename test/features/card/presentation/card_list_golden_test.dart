@@ -12,6 +12,7 @@ import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.d
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../../../support/forui_expect.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
@@ -107,7 +108,7 @@ void main() {
           cardDeckScreen(deckId),
           brightness,
         );
-        await tester.tap(find.byTooltip(_en.cardSearchOpen));
+        await tester.tap(byControlLabel(_en.cardSearchOpen));
         await _settle(tester);
         await tester.enterText(find.byType(EditableText), 'zzz');
         await _settle(tester);
@@ -129,7 +130,7 @@ void main() {
           cardDeckScreen(deckId),
           brightness,
         );
-        await tester.tap(find.byTooltip(_en.cardSearchOpen));
+        await tester.tap(byControlLabel(_en.cardSearchOpen));
         await _settle(tester);
         await tester.enterText(find.byType(EditableText), 'sa');
         tester.view.viewInsets = const FakeViewPadding(bottom: 900);

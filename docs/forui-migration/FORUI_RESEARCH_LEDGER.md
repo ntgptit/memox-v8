@@ -65,7 +65,7 @@ the old code, then the new); the evidence is in the resolution column and in
 | G2 | MxUserEdits | MIGRATED (test gap listed) | MIGRATED (test gap closed) | `test/shared/widgets/mx_user_edits_test.dart`: typing, pasting and deleting report once; text, selection and clear set by the code report nothing; a rewriting formatter reports its result once. No production change. |
 | G2 | MxSelectionCheckbox | MIGRATED | MIGRATED | As audited. |
 | G2 | MxOptionRow | MIGRATED | MIGRATED | As audited. |
-| G2 | MxChoiceTile | CORRECTION NEEDED | MIGRATED (corrected) | `FTappable.static` with the theme focus outline replaces the `GestureDetector`; Tab and Enter now reach it (DEV-391). Tests: 11 new. |
+| G2 | MxChoiceTile | CORRECTION NEEDED | MIGRATED (corrected) | `FTappable.static` with the theme focus outline replaces the `GestureDetector`; Tab and Enter now reach it (DEV-391). Tests: 11 new. A screen-level check found the outline cut by the scroll view on the edge tiles of Match and Guess; both boards now leave `context.focusOutlineReach` (read from ForUI's focused outline style) above and below, and `MxChipRow` reads the same value. Tests: `study_choice_focus_ring_test.dart` (red before, green after), `topik_attempt_focus_ring_test.dart`. |
 | G2 | MxSegmentedTray | BLOCKED (owner rulings BR-SRS-001 and FE-A3, plus the `FTabs` API limits above) | BLOCKED (justified fallback) | As audited. |
 | G2 | MxFilterChip | MIGRATED | MIGRATED | As audited. |
 | G2 | MxChipTrigger | MIGRATED | MIGRATED | As audited. |

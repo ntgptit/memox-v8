@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -34,7 +36,7 @@ Future<void> _settle(WidgetTester tester) async {
 
 /// One step up, settled into its save.
 Future<void> _stepAndSettle(WidgetTester tester) async {
-  await tester.tap(find.byTooltip(_en.settingsMoreCards));
+  await tester.tap(byControlLabel(_en.settingsMoreCards));
   await tester.pump(cardLimitSettle);
   await _settle(tester);
 }
@@ -83,7 +85,7 @@ void main() {
           brightness,
           overrides: [settingsRepositoryProvider.overrideWithValue(store)],
         );
-        await tester.tap(find.byTooltip(_en.settingsMoreCards));
+        await tester.tap(byControlLabel(_en.settingsMoreCards));
         await tester.pump(cardLimitSettle);
         await tester.pump();
         await expectBoundaryGolden(
@@ -154,7 +156,7 @@ void main() {
         await pumpLibraryGolden(tester, env, _screen, brightness);
         await tester.tap(find.byKey(const ValueKey('mx-stepper-value')));
         await tester.pump();
-        await tester.enterText(find.byType(TextField), '250');
+        await tester.enterText(find.byType(EditableText), '250');
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await _settle(tester);
         await expectBoundaryGolden(

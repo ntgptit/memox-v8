@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ void main() {
     }
 
     Future<void> openActions(WidgetTester tester, String tag) async {
-      await tester.tap(find.byTooltip(_en.tagsRowActions(tag)));
+      await tester.tap(byControlLabel(_en.tagsRowActions(tag)));
       await tester.pumpAndSettle();
     }
 
@@ -56,7 +58,7 @@ void main() {
       await openActions(tester, 'hay nhầm');
       await tester.tap(find.text(_en.tagsRename));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).last, name);
+      await tester.enterText(find.byType(EditableText).last, name);
       await tester.pump(tagRenameSettle);
       await tester.pumpAndSettle();
     }
@@ -92,7 +94,7 @@ void main() {
         env,
         'search_empty',
         before: (_) async {
-          await tester.enterText(find.byType(TextField), 'phras');
+          await tester.enterText(find.byType(EditableText), 'phras');
           await tester.pumpAndSettle();
         },
       );

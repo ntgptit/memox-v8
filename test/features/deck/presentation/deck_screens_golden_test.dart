@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../../../support/forui_expect.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
@@ -98,8 +99,7 @@ void main() {
         await pumpLibraryGolden(tester, env, deckScreen(), brightness);
         // Reorder starts from a row's sheet (ruling C-L4).
         await tester.tap(
-          find
-              .byTooltip(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}'))
+          byControlLabel(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}'))
               .first,
         );
         await _settleOverlay(tester);
@@ -121,7 +121,7 @@ void main() {
           deckScreen(deckId: ids.words),
           brightness,
         );
-        await tester.tap(find.byTooltip(_en.deckActions));
+        await tester.tap(byControlLabel(_en.deckActions));
         await _settleOverlay(tester);
         await expectBoundaryGolden(
           tester,
@@ -139,7 +139,7 @@ void main() {
           deckScreen(deckId: ids.words),
           brightness,
         );
-        await tester.tap(find.byTooltip(_en.deckActions));
+        await tester.tap(byControlLabel(_en.deckActions));
         await _settleOverlay(tester);
         await tester.tap(find.text(_en.deckDelete));
         await _settleOverlay(tester);
@@ -159,7 +159,7 @@ void main() {
           deckScreen(deckId: ids.words),
           brightness,
         );
-        await tester.tap(find.byTooltip(_en.deckActions));
+        await tester.tap(byControlLabel(_en.deckActions));
         await _settleOverlay(tester);
         await tester.tap(find.text(_en.deckDelete));
         await _settleOverlay(tester);

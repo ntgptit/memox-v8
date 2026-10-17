@@ -52,6 +52,7 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 - The board scrolls once it outgrows the screen at large text, and a soft fade over its bottom edge says more is below; each tile is at least 48 tall (C4).
 - A word too wide for its tile is drawn just small enough to stay whole; tiles wrap between words and never ellipsize (FE-A6 D19).
 - A tile eases into its tone, surface and foreground together (standard duration; at once under Remove animations).
+- Keyboard: Tab reaches each tile and Enter presses it; ForUI's focus outline is drawn outside the tile and the board leaves its reach (`focusOutlineReach`) above and below, so the scroll view never cuts it (`study_choice_focus_ring_test.dart::Match: Tab gives each of the ten tiles a whole ring…`).
 
 ## Copy
 

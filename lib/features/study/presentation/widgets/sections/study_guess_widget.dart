@@ -133,8 +133,13 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         slivers: [
           SliverFillRemaining(
             hasScrollBody: false,
+            // The options' focus outline reaches past them; the room above
+            // and below keeps the scroll view's clip off it.
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.screenMargin,
+                vertical: context.focusOutlineReach,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: context.dimens.space8,

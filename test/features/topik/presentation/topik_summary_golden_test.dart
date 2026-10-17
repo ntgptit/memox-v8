@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -128,7 +130,7 @@ void main() {
         'hidden',
         done.id,
         before: () async {
-          await tester.tap(find.byTooltip('Hide answers'));
+          await tester.tap(byControlLabel('Hide answers'));
           await tester.pumpAndSettle();
           await tester.scrollUntilVisible(
             find.text('Question 1'),
