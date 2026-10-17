@@ -39,5 +39,13 @@ class CardSelection extends _$CardSelection {
   void selectAll(Set<String> cardIds) =>
       state = CardSelectionState(isSelecting: true, ids: {...cardIds});
 
+  /// Drops the picks that are not in [liveIds]: cards that left the deck
+  /// while picked. A bulk action over a card that is gone is refused whole.
+  void retain(Set<String> liveIds) {
+    final kept = state.ids.intersection(liveIds);
+    if (!state.isSelecting || kept.length == state.ids.length) return;
+    state = CardSelectionState(isSelecting: true, ids: kept);
+  }
+
   void clear() => state = CardSelectionState.none;
 }

@@ -40,6 +40,22 @@ void main() {
     expect(state().isSelecting, isFalse);
   });
 
+  test('retain drops the picks that are gone and keeps the mode (audit '
+      'CARD-14)', () {
+    notifier().selectAll({'c1', 'c2'});
+    notifier().retain({'c2', 'c3'});
+    expect(state().ids, {'c2'});
+    expect(state().isSelecting, isTrue);
+    notifier().retain({});
+    expect(state().ids, isEmpty);
+    expect(state().isSelecting, isTrue);
+  });
+
+  test('retain does not start a selection', () {
+    notifier().retain({'c1'});
+    expect(state().isSelecting, isFalse);
+  });
+
   test('select all replaces the picks and stays selecting', () {
     notifier().toggle('c1');
     notifier().selectAll({'c2', 'c3'});
