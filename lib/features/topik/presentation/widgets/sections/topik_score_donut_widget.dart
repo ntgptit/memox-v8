@@ -5,7 +5,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
 /// Screen 38's donut (detail file 38, critique S3): the correct answers of
-/// the questions, a `success` arc on the `surfaceContainerHighest` track,
+/// the questions, a `success` arc on the `muted` track (as every track),
 /// "{correct} / {total}" inside. A topik widget, not MxMasteryDonut, which
 /// draws the mastery ramp. A caption under the figure says what it counts,
 /// beside the score. Its row says the figures to TalkBack.
@@ -27,7 +27,7 @@ class TopikScoreDonutWidget extends StatelessWidget {
       child: CustomPaint(
         painter: _DonutPainter(
           fraction: total == 0 ? 0 : correct / total,
-          track: context.colors.secondary,
+          track: context.colors.muted,
           arc: context.status.success,
           width: dimens.space8,
         ),

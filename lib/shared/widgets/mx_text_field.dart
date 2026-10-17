@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+// FTextField's style takes its borders as material_ui's InputBorder.
 import 'package:material_ui/material_ui.dart' show InputBorder;
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';

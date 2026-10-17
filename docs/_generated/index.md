@@ -39,9 +39,10 @@
 | [ADR-019](../shared/decisions/ADR-019-app-la-chuan-ui.md) | App là chuẩn UI; retire kit v3 và design handoff | active | — |
 | [ADR-020](../shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md) | Mọi truy vấn SQLite nằm trong file .drift; DAO là @DriftAccessor | active | — |
 | [ADR-021](../shared/decisions/ADR-021-linear-theo-doi-tien-do.md) | Tiến độ công việc nằm trên Linear, không còn trong file WBS | active | — |
-| [ADR-022](../shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md) | Một nguồn token và theme theo cấu trúc Flutter thông thường | active | — |
+| [ADR-022](../shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md) | Một nguồn token và theme theo cấu trúc Flutter thông thường | deprecated | — |
 | [ADR-023](../shared/decisions/ADR-023-luyen-de-topik.md) | Luyện đề TOPIK trong MemoX | active | — |
 | [ADR-024](../shared/decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md) | Master Data TOPIK trên Supabase và Admin Web | active | — |
+| [ADR-025](../shared/decisions/ADR-025-forui-la-he-component-giao-dien.md) | ForUI là hệ component giao diện; Material chỉ còn là hạ tầng | active | — |
 
 ## [account](../features/account/README.md)
 

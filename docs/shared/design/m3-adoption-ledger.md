@@ -1,5 +1,7 @@
 # Material 3 adoption ledger for memox-v8 (spec v2.6.1)
 
+> **Historical record (2026-10-17).** The app no longer uses Material 3 as its UI system: ForUI draws it ([ADR-025](../decisions/ADR-025-forui-la-he-component-giao-dien.md)). The rules, gates and files this document names (`tools/m3_lint`, the M3 theme files, `design/tokens.json`) were retired; their replacements are in `docs/forui-migration/FORUI_ARCHITECTURE.md`. Kept unedited below as the record of what the Material 3 system was.
+
 This is the project-specific external conflict ledger that spec §11 asks for. It classifies every decision of the canonical spec copy (`docs/shared/design/m3-shared-widget-spec-v2.6.1.md`, status REVIEW CANDIDATE, never edited) against what memox-v8 has approved. Spec rules are inputs. They bind the project only where this ledger says `ADOPT`.
 
 Method and plan: `docs/superpowers/specs/2026-10-15-material3-shared-widgets-skill-design.md` and `docs/superpowers/plans/2026-10-15-material3-shared-widgets.md` (owner-approved 2026-10-15; Linear epic DEV-378).

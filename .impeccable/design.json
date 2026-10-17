@@ -390,13 +390,13 @@
   ],
   "narrative": {
     "northStar": "The Quiet Study Desk",
-    "overview": "MemoX should feel like a quiet, focused study space. One structure ships a light and a dark theme, both generated from design/tokens.json: a calm page, cards raised by tone alone, and one accent that means \"act\". Component philosophy: \"Calm and exact\".",
+    "overview": "MemoX should feel like a quiet, focused study space. It is drawn with ForUI in a light and a dark palette built from one theme in lib/core/theme (ADR-025): a calm neutral page, cards with a hairline edge, and one accent that means \"act\". Component philosophy: \"Calm and exact\".",
     "keyCharacteristics": [
-      "One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve Material roles used as the tokens define them.",
-      "Tonal surfaces: cardSurface, searchSurface and tileSurface sit on surface with no edge and no shadow.",
-      "One accent rule: context.accentColor for accent text and glyphs, primary for fills, edges and indicators.",
+      "One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve text roles on ForUI's type scale.",
+      "Neutral grounds: background for the page, card for cards, muted for recessed grounds, each edge a border hairline.",
+      "One accent: primary for the primary fill, the selected control and accent text, with a value per mode.",
       "Phone first, context.screenMargin at the screen edge, sizeControl touch targets everywhere.",
-      "Every text and edge pair is contrast-tested in both themes; the pairs below AA are recorded in design/contrast_exceptions.json."
+      "Every text and edge pair of both palettes is contrast-tested, with no exception list."
     ],
     "rules": [
       {
@@ -406,32 +406,32 @@
       },
       {
         "name": "The Green Means Progress Rule",
-        "body": "Green is success or successContainer and nothing else; green is never decoration.",
+        "body": "Green is status.success or status.successFill and nothing else; green is never decoration.",
         "section": "colors"
       },
       {
         "name": "The Text Colour Rule",
-        "body": "Text and glyphs read a text role, never a fill; a control edge reads outline, a hairline divider or outlineVariant, focus primary.",
+        "body": "Text and glyphs read a text role (foreground, mutedForeground, primary, a status colour, error, a …Foreground role), never a fill.",
         "section": "colors"
       },
       {
         "name": "The Tint Rule",
-        "body": "A tinted ground is a role tinted over the surface beneath it with tintOver; nothing else lays a colour over a ground at an alpha.",
+        "body": "A tinted ground is a role tinted over the surface directly beneath it, color.tintOver(MxTintBase.of(context)).",
         "section": "colors"
       },
       {
         "name": "The Mode Rule",
-        "body": "A widget never chooses a colour or a size by brightness; theme_rules.dart holds every rule that differs by mode.",
+        "body": "A widget never chooses a colour or a size by brightness; a colour that differs by mode is a palette role the two palettes already differ on.",
         "section": "colors"
       },
       {
         "name": "The Contrast Floor Rule",
-        "body": "Text holds 4.5:1 and non-text 3:1; the pairs below the floor are the entries of design/contrast_exceptions.json.",
+        "body": "Text holds 4.5:1 and non-text 3:1 in both palettes; a failing pair is a palette change, never an exception.",
         "section": "colors"
       },
       {
         "name": "The Twelve Roles Rule",
-        "body": "Screens use the twelve type roles and change only their colour or switch to the mono face.",
+        "body": "Screens use the twelve MxTextRoles; a role changes only its colour or switches to the mono face.",
         "section": "typography"
       },
       {
@@ -450,24 +450,25 @@
         "section": "layout"
       },
       {
-        "name": "The Tone Before Shadow Rule",
-        "body": "Group with tone first; a surface that does not float never casts a shadow and never draws an edge.",
+        "name": "The Hairline Before Shadow Rule",
+        "body": "Group with a ground and a hairline first; a surface that does not float never casts a shadow.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do take every value from design/tokens.json through the generated theme.",
-      "Do use primary for exactly one primary action per decision and context.accentColor for accent text and glyphs.",
-      "Do keep the contrast test green, with every exception recorded.",
+      "Do take every value from the ForUI theme through context.colors, status, texts, dimens, radii and hairline.",
+      "Do use primary for exactly one primary action per decision.",
+      "Do keep the contrast test green; a failing pair is a palette change.",
       "Do guarantee a sizeControl touch area on every interactive element, and let text containers grow.",
       "Do write failure copy in the local-first voice: say first that nothing was lost, then offer the retry.",
       "Do use the spacing scale and context.screenMargin rather than ad-hoc values."
     ],
     "donts": [
-      "Don't write a hex code, a size or a duration in a widget, a test or a document; name the token.",
+      "Don't write a hex code, a size or a duration in a widget, a test or a document; name the role.",
+      "Don't import package:forui or a Material component in a feature; extend an Mx widget.",
+      "Don't open a dialog, a sheet or a toast except through the Mx adapters.",
       "Don't use a fill as text; use its text role.",
       "Don't branch on brightness in a widget or lay a colour over a ground at an alpha.",
-      "Don't give a card or the search field a border or a shadow.",
       "Don't restyle a text role beyond its colour or the mono face.",
       "Don't declare a removed theme name again in any form."
     ]

@@ -10,8 +10,8 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
 /// control, so a row with a toggle never implies a destination. Inside an
-/// MxSection, the section draws the dividers. Its height is the Material 3
-/// list item: 56 with a label alone, 72 with a subtitle.
+/// MxSection, the section draws the dividers. Its height is the list
+/// item's (`sizeListRow`, `sizeListRowTwoLine`): 56 with a label alone, 72 with a subtitle.
 class MxSettingsRow extends StatelessWidget {
   const MxSettingsRow({
     super.key,

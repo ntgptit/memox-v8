@@ -34,10 +34,9 @@ REPO_OWNED_SKILLS = (
     "flutter-ship",
     "flutter-state-riverpod",
     "flutter-testing",
-    "flutter-theme-design",
     "flutter-workflow",
+    "forui-shared-widgets",
     "golden-compare",
-    "material3-shared-widgets",
     "project-documentation",
     "spring-boot-mybatis-review",
 )

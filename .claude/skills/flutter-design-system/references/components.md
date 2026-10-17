@@ -53,23 +53,15 @@ menu nested inside it, which works but makes the menu a hole in the middle of a
 large target."* Both halves of that sentence are true; the conclusion is still
 wrong, because a nested button wins the gesture arena and there was no hole.
 
-**Flutter: the ink goes inside the decoration.**
+**ForUI: the press layer belongs to the tappable.**
 
-`InkWell` paints its splash and its hover highlight *before* it paints its child,
-so an ink layer wrapped **around** an opaque `DecoratedBox` draws every state
-underneath the surface colour — a tappable card with no feedback at all. Nothing
-fails, no golden moves, and it survives until someone happens to press one.
-
-```dart
-// no — the surface colour is painted over the splash
-Material(child: InkWell(onTap: t, child: DecoratedBox(decoration: d, child: body)))
-
-// yes — splash over the surface, under the content
-DecoratedBox(decoration: d, child: Material(child: InkWell(onTap: t, child: body)))
-```
-
-`lib/shared/widgets/mx_card.dart` is the worked example. Only a test of the
-reacting pixels can pin it, since the widget tree is identical either way.
+A tappable surface draws its states from ForUI's `FTappable` (through
+`MxRowInk` or an `FButton`), whose builder receives the current variants
+(pressed, hovered, focused, disabled). A state layer painted by a wrapper
+outside the tappable, or a decoration laid over the tappable's builder, hides
+the feedback: nothing fails and no golden moves until someone presses one.
+`lib/shared/widgets/mx_row_ink.dart` is the worked example; only a test of the
+pressed state can pin it, since the widget tree is identical either way.
 
 ## The base set
 

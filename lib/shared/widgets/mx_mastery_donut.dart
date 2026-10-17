@@ -49,8 +49,7 @@ class MxMasteryDonut extends StatelessWidget {
         painter: _DonutPainter(
           fraction: fraction,
           arc: fill,
-          // The ramp's progress track, as tokens.json names it for the
-          // countdown ring.
+          // The ramp's progress track, the same as the mastery bar's.
           track: MasteryRamp.track(context.colors),
         ),
         child: Center(

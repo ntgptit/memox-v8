@@ -21,7 +21,7 @@ final class MxBreadcrumbSegment {
 /// current level is always in view, and starts at the gutter when it fits.
 /// A deep path fades its start edge while ancestors are scrolled out of
 /// view (DEV-306); each stays a reachable button to TalkBack. An ancestor
-/// is a `MxRowInk`: its ripple and its focus ring are the shared row's.
+/// is a `MxRowInk`: its press layer and its focus outline are the shared row's.
 class MxBreadcrumb extends StatelessWidget {
   const MxBreadcrumb({super.key, required this.segments})
     : assert(segments.length > 0, 'a path has at least the current level');

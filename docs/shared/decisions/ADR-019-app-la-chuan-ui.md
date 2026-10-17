@@ -28,6 +28,11 @@ deviation.
   ưu tiên thành BR/UC > `design/tokens.json` > golden đã duyệt > file chi tiết của màn.
   `DESIGN.md` (frontmatter) và `.impeccable/design.json` được sinh từ `design/tokens.json`
   bằng `tools/design/generate.py`; phần văn xuôi chỉ gọi tên token.
+- **Cập nhật 2026-10-17 ([ADR-025](ADR-025-forui-la-he-component-giao-dien.md)):** ADR-022
+  bị thay. Thứ tự ưu tiên thành BR/UC > theme ForUI production (`lib/core/theme/`)
+  > golden đã duyệt > file chi tiết của màn. Frontmatter của `DESIGN.md` và
+  `.impeccable/design.json` được render từ theme production
+  (`test/tools/design_doc_test.dart`); phần văn xuôi chỉ gọi tên role.
 
 ## Hệ quả
 

@@ -225,7 +225,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
 }
 
 /// The card's hint, shown on request (BR-STUDY-028), at the study detail
-/// role (M3 body-medium; critique 2026-09-30 part 3c-2, R4).
+/// role (the body role; critique 2026-09-30 part 3c-2, R4).
 class _HintRow extends StatelessWidget {
   const _HintRow({required this.hint});
 

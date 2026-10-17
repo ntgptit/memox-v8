@@ -113,9 +113,7 @@ class MxStudyTopBar extends StatelessWidget {
                             semanticsLabel: modeLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.texts.meta.copyWith(
-                              color: accent,
-                            ),
+                            style: context.texts.meta.copyWith(color: accent),
                           ),
                         ),
                       ),

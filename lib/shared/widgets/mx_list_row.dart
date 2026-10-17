@@ -7,7 +7,7 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
 /// ellipsis, so every row in a list is one height. It is not a SettingsRow:
-/// this is a piece of content. Its height is the Material 3 list item: 56
+/// this is a piece of content. Its height is the list item's: 56
 /// with a title alone, 72 with a subtitle or meta.
 ///
 /// A disabled or busy row answers no tap, on its target or its trailing

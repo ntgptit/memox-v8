@@ -57,8 +57,8 @@ rules:
       primitive (`MxCard`, `MxListRow`, `MxIconButton`, `MxFab`, `MxOptionRow`,
       `MxToggle`, dialogs through `showMxDialog`, …) so the component's visual
       grammar has one owner. A widget with no Mx wrapper yet goes through the
-      admission rule in the flutter-theme-design skill first — wrapper, tests,
-      then guard — never raw-first.
+      admission rule in the forui-shared-widgets skill first — an Mx facade on
+      ForUI, its tests, then the feature — never raw-first.
     scopes:
       - presentation_files
     patterns:

@@ -1,6 +1,6 @@
 ---
 name: flutter-design-system
-description: Design tokens, Material 3 theming, the shared component library, responsive layout, localization and accessibility for this Flutter app. Use this skill whenever UI is being built or reviewed — creating or changing a widget, picking a colour/spacing/text style, adding a shared component, wiring light and dark themes, handling small screens or large text scale, adding user-facing strings or ARB entries, or checking semantic labels and contrast. Also use it when reviewing UI code for hardcoded colours, hardcoded padding, or untranslated strings, which are the most common violations in this codebase.
+description: Design tokens, the ForUI theme, the shared component library, responsive layout, localization and accessibility for this Flutter app. Use this skill whenever UI is being built or reviewed — creating or changing a widget, picking a colour/spacing/text style, adding a shared component, wiring light and dark themes, handling small screens or large text scale, adding user-facing strings or ARB entries, or checking semantic labels and contrast. Also use it when reviewing UI code for hardcoded colours, hardcoded padding, or untranslated strings, which are the most common violations in this codebase.
 ---
 
 # Design system, localization and accessibility
@@ -13,40 +13,36 @@ done once.
 ## Tokens come first
 
 Nothing in `features/` may contain a raw colour, text style, padding value,
-radius, elevation, icon size or duration. They come from the theme, whose single
-source is `design/tokens.json` (the Design System export). **No value is written
-in this skill, in code, in a test or in a document:** change the look by following
+radius, elevation, icon size or duration. They come from the ForUI theme, whose
+values live in Dart under `lib/core/theme/` (ADR-025). **No value is written in
+this skill, in code, in a test or in a document:** change the look by following
 `docs/agent/visual-change.md`, never by editing a value in place.
 
-Token names are the Design System's, which are semantic: `primary`, `space16`,
-`radiusMd`, `successContainer`. Read `references/tokens.md` for where each kind of
-token lives and how a widget reads it.
+Names are semantic: `primary`, `mutedForeground`, `status.success`, `space16`,
+`radii.md`. Read `references/tokens.md` for where each kind of value lives and
+how a widget reads it.
 
 A layout that needs a size the scale does not have is telling you a constraint is
-wrong somewhere else; use the neighbouring step. A value the Design System lacks
-is a private constant in its one widget, or an entry in `design/app_tokens.json`
-when several use it; either way it is reported to the owner.
+wrong somewhere else; use the neighbouring step. A value the theme lacks is a
+private constant in its one widget, or a field of `AppDimens` when several use
+it; either way it is reported to the owner.
 
 ## Theme
 
-Material 3 on. The colour scheme is a generated `const ColorScheme` with every
-role written out, never `fromSeed`. `ThemeData` carries the scheme, the twelve
-`TextTheme` roles, two `ThemeExtension`s (`MxColorsExtension`, `AppDimens`) and the
-component themes. Widgets read it through `context.colors`, `context.texts`,
-`context.mxColors` and `context.dimens`; the mode-dependent Design System rules
-are `context.accentColor` and `context.deckIconColor` (`theme_rules.dart`). A
-widget never branches on `brightness` to choose a colour or a size.
+ForUI draws the UI. `FThemeData` carries the palette (`FColors`, with the
+`MxStatusColors` extension), the type scale (`FTypography`, read through the
+twelve `MxTextRoles`), ForUI's style (radii, border width, shadow) and
+`AppDimens`. Widgets read it through `context.colors`, `context.texts`,
+`context.status`, `context.dimens`, `context.radii` and `context.hairline`. A
+widget never branches on `brightness` to choose a colour or a size: the light and
+the dark palettes already differ where the modes differ.
 
-Configure component themes centrally (`app_component_themes.dart`): card, search
-bar, divider, buttons, navigation bar and rail, progress, chip, input, dialog,
-sheet, snack bar, tooltip. Setting these once is what stops every screen
-re-specifying them slightly differently.
+Component looks are ForUI's resolved styles, restyled by style deltas in the
+`Mx*` facades; setting them once there is what stops every screen re-specifying
+them slightly differently.
 
-Light and dark are both first-class and generated from the same tokens; dark is
-authored, not "light with inverted colours".
-
-Accent as text, icon or focus colour is `context.accentColor`; `colors.primary` is
-for fills, edges, indicators and the focus ring.
+Light and dark are both first-class palettes; dark is authored, not "light with
+inverted colours".
 
 Check every interactive component in disabled, pressed, focused and selected
 states. Focused especially: it is invisible to mouse users and essential for
@@ -54,13 +50,12 @@ keyboard and switch-access users, and it is the state most often left unstyled.
 
 ## Components
 
-**The per-component contract lives in `flutter-theme-design`, not here.** This
+**The per-component contract lives in `forui-shared-widgets`, not here.** This
 skill says *that* a component gets tokens, both themes and every state; that
-skill says *which* checklist a specific ThemeData slot and its `Mx*` wrapper
-must clear before the component counts as supported — including the admission
-rule for Material widgets the system does not support yet, and the banned-raw-
-widget list the guard enforces. Load it whenever the work is one component
-deep. One fact, one place: this file deliberately does not restate its lists.
+skill says how an `Mx*` facade is built on ForUI, the admission rule for a
+component the set does not have yet, and the gates that hold it. Load it
+whenever the work is one component deep. One fact, one place: this file
+deliberately does not restate its lists.
 
 Build the base set once, in `shared/widgets/`: app scaffold, app bar, primary
 button, secondary button, icon button, text field, search field, card, list

@@ -20,11 +20,11 @@ Each layer answers one question; none takes over another's.
 - **Impeccable judges UI against `DESIGN.md`, not against its own taste.**
   `DESIGN.md` is the design authority ([UI source of truth](#project-invariants)).
   Impeccable checks the work against it and against the quality floor.
-  `DESIGN.md`'s frontmatter is generated from `design/tokens.json`, so
+  `DESIGN.md`'s frontmatter is rendered from the production ForUI theme, so
   Impeccable grades against the same source the code is built from.
 - **Impeccable does not change tokens.** A finding that asks for a different
-  token value, or that contradicts `design/tokens.json`, is not a bug to fix
-  in code: record it and tell the owner.
+  token value, or that contradicts the theme in `lib/core/theme/`, is not a
+  bug to fix in code: record it and tell the owner.
 - **Repo rules hold project invariants only**, such as the architecture,
   stack, data rules and quality bars. They never restate a workflow.
 - **ECC skills are read on demand** by whoever does the task. They are never
@@ -81,7 +81,7 @@ Tier 2 work on a screen:
 | Knowledge | Home |
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
-| The visual system | `design/tokens.json` (exported from the Design System); `DESIGN.md` is generated from it |
+| The visual system | the ForUI theme in `lib/core/theme/` (palette in `app_palette.dart`); `DESIGN.md`'s frontmatter is rendered from it ([ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)) |
 | How to change the look | [docs/agent/visual-change.md](docs/agent/visual-change.md) |
 | A screen's layout, states, transitions, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
@@ -188,18 +188,22 @@ asked. Without the connector, tell the owner and record progress nowhere else.
   `npx supabase db start` then `npx supabase test db`.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
 - **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md),
-  [ADR-022](docs/shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md)):
-  `design/tokens.json` (exported from the Design System) > the reviewed goldens
-  > a screen's detail file. The "Mobile UI Kit v3" artifact is retired and
-  never read. A BR or UC beats all three. `DESIGN.md` is generated from
-  `tokens.json`; a PR that changes the visual system changes `tokens.json` and
-  runs `tools/design/generate.py`, and one that changes a screen updates its
-  detail file and its row in the screen index.
+  [ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)):
+  the ForUI theme in `lib/core/theme/` > the reviewed goldens > a screen's
+  detail file. The "Mobile UI Kit v3" artifact is retired and never read. A BR
+  or UC beats all three. `DESIGN.md`'s frontmatter is rendered from the theme;
+  a PR that changes the visual system changes `lib/core/theme/` and rewrites it
+  (`MEMOX_WRITE_DESIGN_DOCS=1` on `test/tools/design_doc_test.dart`), and one
+  that changes a screen updates its detail file and its row in the screen index.
+- **ForUI draws the UI** ([ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)):
+  features compose `Mx*` widgets only; `package:forui` stays in
+  `lib/core/theme/`, `lib/shared/` and `lib/app/`; Material is infrastructure,
+  imported by name (`tools/ui_lint`).
 - **Removed theme names stay removed.** Never declare a name listed in
   `tools/design/removed_symbols.json` again, in any form (alias, typedef,
   re-export, forwarding getter, a "compat" or "legacy" class), not even
   temporarily. A compile error after a removal is the work list: fix every
-  use, with `tools/design/codemod.py` for the mechanical renames.
+  use with the replacement the list names.
 - **Stack and layers:** the layer architecture and folder names follow
   [ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md);
   Riverpod and Drift, not BLoC or Freezed, whatever an ECC skill shows.

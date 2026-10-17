@@ -23,7 +23,7 @@ class MxBadge extends StatelessWidget {
     this.icon,
   }) : assert(
          !isSolid || tone == MxBadgeTone.primary,
-         'a solid badge is primary: only onPrimary is guaranteed on its fill',
+         'a solid badge is primary: only primaryForeground is guaranteed on its fill',
        );
 
   final String label;
