@@ -79,6 +79,7 @@ class _TopikAudioBarWidgetState extends ConsumerState<TopikAudioBarWidget> {
     final isPlaying = isOwn && audio.isPlaying;
     final lengthMs = widget.clip.lengthMs;
     final positionMs = _dragMs ?? (isOwn ? audio.positionMs : 0).toDouble();
+    final speed = l10n.topikSpeed(l10n.topikSpeedText(audio.speed));
     String timeOf(double ms) => l10n.topikClockOfTotal(
       topikClockText(ms.round()),
       topikClockText(lengthMs),
@@ -119,7 +120,8 @@ class _TopikAudioBarWidgetState extends ConsumerState<TopikAudioBarWidget> {
               ),
             ),
             MxChipTrigger(
-              label: l10n.topikSpeed(l10n.topikSpeedText(audio.speed)),
+              label: speed,
+              semanticLabel: l10n.topikSpeedTrigger(speed),
               onPressed: () => unawaited(_pickSpeed(audio.speed)),
             ),
           ],

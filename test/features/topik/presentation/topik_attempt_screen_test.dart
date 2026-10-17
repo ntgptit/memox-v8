@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
@@ -277,6 +278,7 @@ void main() {
 
   libraryTest('while submitting, a second tap and Back do nothing '
       '(BR-TOPIK-014)', (tester, env) async {
+    final handle = tester.ensureSemantics();
     final attempt = await topikSeedAttempt(
       env,
       reading,
@@ -312,15 +314,33 @@ void main() {
           .onPressed,
       isNull,
     );
+    // Close is disabled, not a live no-op: the bar's callback is null, and
+    // TalkBack reads it as disabled.
+    final close = find.byTooltip('Close');
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.close),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester.getSemantics(close),
+      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+    );
+    await tester.tap(close, warnIfMissed: false);
     await tester.tap(find.byType(MxSpinner), warnIfMissed: false);
     await tester.binding.handlePopRoute();
     await tester.pump();
+    expect(exits.closes, 0);
     expect(held.calls, 1);
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
 
     held.release.complete();
     await tester.pump(const Duration(seconds: 1));
     expect(exits.submitted, [attempt.id]);
+    handle.dispose();
   });
 
   libraryTest('a choice that is not saved says so and is not shown as '

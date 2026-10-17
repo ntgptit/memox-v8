@@ -39,7 +39,9 @@ class MxStudyTopBar extends StatelessWidget {
   final String closeLabel;
 
   /// Leaving mid-session is the screen's decision; this bar only reports it.
-  final VoidCallback onClose;
+  /// Null disables Close (the theme dims it and TalkBack says disabled): a
+  /// session held while it submits offers no live no-op.
+  final VoidCallback? onClose;
 
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
   static const double _badgeShare = 0.4;
@@ -145,21 +147,7 @@ class MxStudyTopBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // A wide counter shrinks rather than squeeze the track.
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: constraints.maxWidth * _counterShare,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        counterLabel,
-                        style: context.texts.labelSmall?.copyWith(
-                          color: context.colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _counter(context, constraints.maxWidth),
                 ],
               ),
             ),
@@ -168,4 +156,23 @@ class MxStudyTopBar extends StatelessWidget {
       ),
     );
   }
+
+  /// The "n / total" text: a wide counter shrinks rather than squeeze the
+  /// track, and a polite live region so TalkBack announces it when the card
+  /// changes.
+  Widget _counter(BuildContext context, double barWidth) => ConstrainedBox(
+    constraints: BoxConstraints(maxWidth: barWidth * _counterShare),
+    child: Semantics(
+      liveRegion: true,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          counterLabel,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
+      ),
+    ),
+  );
 }

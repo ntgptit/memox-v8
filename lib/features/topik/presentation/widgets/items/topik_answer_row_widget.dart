@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
@@ -34,21 +33,17 @@ class TopikAnswerRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final status = answer.status ?? TopikAnswerStatus.unanswered;
-    final selected = answer.selectedIdx;
     final correct = answer.correctIdx;
-    final meta = metaTerms([
-      if (selected == null)
-        l10n.topikNotAnswered
-      else
-        l10n.topikYourAnswer(topikCircled(selected)),
-      if (!isRightHidden && correct != null)
-        l10n.topikRightAnswer(topikCircled(correct)),
-      l10n.duration(answer.timeSpentMs),
-    ]);
+    final meta = l10n.topikAnswerMeta(
+      selected: answer.selectedIdx,
+      right: isRightHidden ? null : correct,
+      time: l10n.duration(answer.timeSpentMs),
+    );
     return MxListRow(
       title: l10n.topikQuestionTitle(answer.questionNo),
       meta: Text(
-        meta,
+        meta.shown,
+        semanticsLabel: meta.spoken,
         style: context.texts.bodyMedium?.copyWith(
           color: context.colors.onSurfaceVariant,
         ),

@@ -10,9 +10,11 @@ import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_review_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_audio_bar_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_review_question_widget.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_attempt_screen_fixtures.dart';
@@ -121,6 +123,38 @@ void main() {
     expect(exits.backs, 1);
   });
 
+  libraryTest('the question change is announced: the stem is a live region '
+      'whose label follows Next (WCAG 4.1.3)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id);
+
+    final live = find.byWidgetPredicate(
+      (w) => w is Semantics && (w.properties.liveRegion ?? false),
+    );
+    String stemOf() => tester
+        .widget<Text>(find.descendant(of: live, matching: find.byType(Text)))
+        .data!;
+    final first = stemOf();
+    expect(
+      tester.getSemantics(live),
+      isSemantics(label: first, isLiveRegion: true),
+    );
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    final second = stemOf();
+    expect(second, isNot(first));
+    expect(
+      tester.getSemantics(live),
+      isSemantics(label: second, isLiveRegion: true),
+    );
+    handle.dispose();
+  });
+
   libraryTest('a filter opens its first question, even when the one shown is '
       'in it (UC-TOPIK-005 A3)', (tester, env) async {
     final done = await topikSeedSubmitted(
@@ -216,6 +250,34 @@ void main() {
     );
   });
 
+  libraryTest('a question taller than its pane fades the pane\'s bottom edge, '
+      'and the fade goes at the end of the scroll (owner 2026-10-17)', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id);
+
+    final fade = find.descendant(
+      of: find.byType(TopikReviewQuestionWidget),
+      matching: find.byKey(MxScrollFade.trailingKey),
+    );
+    expect(fade, findsOneWidget);
+    await tester.drag(
+      find.descendant(
+        of: find.byType(TopikReviewQuestionWidget),
+        matching: find.byType(Scrollable),
+      ),
+      const Offset(0, -5000),
+    );
+    await tester.pumpAndSettle();
+    expect(fade, findsNothing);
+  });
+
   libraryTest('the test gone: Review is unavailable, Back to summary '
       '(BR-TOPIK-019)', (tester, env) async {
     final done = await topikSeedSubmitted(env, reading);
@@ -223,6 +285,41 @@ void main() {
 
     expect(find.text("Review isn't available for this test"), findsOneWidget);
     expect(find.text('Your score is still in the summary.'), findsOneWidget);
+    await tester.tap(find.text('Back to summary'));
+    expect(exits.summaries, 1);
+  });
+
+  libraryTest('a test whose question set no longer matches the attempt shows '
+      'the unavailable state, not an error (BR-TOPIK-019)', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    // Same id, but question 1, which the attempt answered, is gone.
+    final changed = TopikTest(
+      schemaVersion: reading.schemaVersion,
+      contentVersion: reading.contentVersion,
+      testId: reading.testId,
+      level: reading.level,
+      round: reading.round,
+      section: reading.section,
+      format: reading.format,
+      form: reading.form,
+      titleKo: reading.titleKo,
+      officialTimeLimitSec: reading.officialTimeLimitSec,
+      source: reading.source,
+      groups: reading.groups,
+      questions: reading.questions.skip(1).toList(),
+    );
+    final exits = await pump(tester, env, done.id, catalog: [changed]);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text("Review isn't available for this test"), findsOneWidget);
     await tester.tap(find.text('Back to summary'));
     expect(exits.summaries, 1);
   });

@@ -6,9 +6,10 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
-/// Screen 38's figures (critique S1): accuracy, answered, unanswered and the
-/// longest question, two by two so each fits one line at 360 dp. The
-/// longest names its real number in the label; with no time it is a dash.
+/// Screen 38's figures (critique S1; owner 2026-10-17): the average time per
+/// question, answered, unanswered and the longest question, two by two so
+/// each label fits one line at 360 dp. The longest names its real number in
+/// the label; a time figure with no time is a dash that reads "None".
 class TopikSummaryFiguresWidget extends StatelessWidget {
   const TopikSummaryFiguresWidget({super.key, required this.summary});
 
@@ -20,6 +21,7 @@ class TopikSummaryFiguresWidget extends StatelessWidget {
     final dimens = context.dimens;
     final longest = summary.longest;
     final hasLongest = longest != null && longest.timeSpentMs > 0;
+    final averageMs = summary.averageTimeMs;
     Widget tile(String value, String label, {String? semanticValue}) =>
         Expanded(
           child: MxStatTile(
@@ -37,8 +39,10 @@ class TopikSummaryFiguresWidget extends StatelessWidget {
             spacing: dimens.space16,
             children: [
               tile(
-                l10n.topikPercent(summary.accuracyPercent),
-                l10n.topikAccuracy,
+                averageMs > 0 ? l10n.duration(averageMs) : '–',
+                l10n.topikAveragePerQuestion,
+                // TalkBack reads a bare dash as "en dash" (Q-P6-5).
+                semanticValue: averageMs > 0 ? null : l10n.topikNone,
               ),
               tile('${summary.answeredCount}', l10n.topikAnswered),
             ],

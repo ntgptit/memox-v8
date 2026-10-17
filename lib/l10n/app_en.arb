@@ -471,6 +471,15 @@
   "@topikPlaybackSpeed": {
     "description": "Screen 37: the speed sheet's title and the speed chip's label."
   },
+  "topikSpeedTrigger": "Playback speed, {speed}",
+  "@topikSpeedTrigger": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: what TalkBack reads for the speed chip, its purpose and its current value, as Playback speed, 1× (the speed is formatted by topikSpeed)."
+  },
   "topikAudioFailed": "Couldn't play this audio",
   "@topikAudioFailed": {
     "description": "Screen 37: the audio banner's title (BR-TOPIK-017)."
@@ -727,20 +736,33 @@
   "@topikTimePerQuestion": {
     "description": "Screen 38: the chart's header."
   },
-  "topikBarLabel": "Question {no}, {status}, {duration}",
-  "@topikBarLabel": {
+  "topikChartSummary": "{count, plural, =1{Time per question, 1 question, longest question {no}: {duration}} other{Time per question, {count} questions, longest question {no}: {duration}}}",
+  "@topikChartSummary": {
     "placeholders": {
-      "no": {
+      "count": {
         "type": "int"
       },
-      "status": {
-        "type": "String"
+      "no": {
+        "type": "int"
       },
       "duration": {
         "type": "String"
       }
     },
-    "description": "Screen 38: a bar of the chart to TalkBack."
+    "description": "Screen 38: what a screen reader says for the whole time chart, as one node (the bars are hidden from it; the answer rows below are the way to each question). Names the question that took longest and its time."
+  },
+  "topikChartSummaryNoTime": "{count, plural, =1{Time per question, 1 question, no time recorded} other{Time per question, {count} questions, no time recorded}}",
+  "@topikChartSummaryNoTime": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 38: the chart's single node when no question has a recorded time, so there is no longest question to name."
+  },
+  "topikAveragePerQuestion": "Average per Q",
+  "@topikAveragePerQuestion": {
+    "description": "Screen 38: a figure, the time spent over all questions divided by the number of questions (\"Q\" is a question, as in the Longest figure). Shown in capitals, it must fit one line in a half-width tile on a 360 dp phone: 124 dp, and \"Average per question\" is 160."
   },
   "topikQuestionTitle": "Question {no}",
   "@topikQuestionTitle": {

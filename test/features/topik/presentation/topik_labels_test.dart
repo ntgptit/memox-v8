@@ -110,4 +110,24 @@ void main() {
     );
     expect(en.topikFilterEmpty(TopikAnswerFilter.wrong), 'No wrong answers');
   });
+
+  test('an answer\'s meta line: circled on screen, plain digits spoken, in '
+      'every variant (owner 2026-10-17)', () {
+    final both = en.topikAnswerMeta(selected: 3, right: 1, time: '2m 05s');
+    expect(plain(both.shown), 'Your answer ③ · Right answer ① · 2m 05s');
+    expect(both.spoken, 'Your answer 3, Right answer 1, 2m 05s');
+
+    // The right answer hidden (the eye on 38).
+    final hidden = en.topikAnswerMeta(selected: 3, right: null, time: '1m');
+    expect(plain(hidden.shown), 'Your answer ③ · 1m');
+    expect(hidden.spoken, 'Your answer 3, 1m');
+
+    // Unanswered, the right answer shown.
+    final blank = en.topikAnswerMeta(selected: null, right: 2);
+    expect(plain(blank.shown), 'Not answered · Right answer ②');
+    expect(blank.spoken, 'Not answered, Right answer 2');
+
+    final spokenVi = vi.topikAnswerMeta(selected: 4, right: 2).spoken;
+    expect(spokenVi, 'Bạn chọn 4, Đáp án đúng 2');
+  });
 }

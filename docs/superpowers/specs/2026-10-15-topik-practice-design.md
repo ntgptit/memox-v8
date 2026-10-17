@@ -298,8 +298,9 @@ activity (tests never taken last, then round descending).
 
 ### 6.4 Summary (MVP)
 
-`score / max_score`; a donut of `correct_count / question_count`; Accuracy,
-Answered, Unanswered; Longest (most time; ties to the lower number); filters All,
+`score / max_score`; a donut of `correct_count / question_count`; Average per
+question (total time over the number of questions; owner 2026-10-17, Impeccable
+audit), Answered, Unanswered; Longest (most time; ties to the lower number); filters All,
 Wrong, Unanswered, Correct; a horizontally scrolling bar per question coloured by
 status; a table No · Your · Correct · Time · Status where Your and Correct are
 option numbers (①–④), never option text; an eye toggle that hides Correct. Every

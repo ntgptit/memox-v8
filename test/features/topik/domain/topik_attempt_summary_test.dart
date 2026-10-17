@@ -74,7 +74,6 @@ void main() {
     expect(summary.correctCount, 2);
     expect(summary.answeredCount, 3);
     expect(summary.unansweredCount, 1);
-    expect(summary.accuracyPercent, 50);
     expect(
       summary.longest!.questionNo,
       2,
@@ -100,6 +99,45 @@ void main() {
   test('no time at all names no longest question', () {
     final summary = topikAttemptSummaryOf(_detail([_answer(1), _answer(2)]));
     expect(summary.longest, isNull);
+  });
+
+  test(
+    'the average counts blank questions in the divisor (owner 2026-10-17)',
+    () {
+      final summary = topikAttemptSummaryOf(
+        _detail([
+          _answer(1, selected: 1, timeMs: 1000),
+          _answer(2, selected: 1, timeMs: 2000),
+          _answer(3, selected: 1, timeMs: 3000),
+          _answer(4),
+        ]),
+      );
+      expect(summary.averageTimeMs, 1500);
+      expect(
+        topikAttemptSummaryOf(_detail([_answer(1), _answer(2)])).averageTimeMs,
+        0,
+      );
+    },
+  );
+
+  test('a sub-second average is shown as one second, not "0s"', () {
+    // 45 000 ms over 50 questions: 900 ms.
+    final summary = topikAttemptSummaryOf(
+      _detail([
+        _answer(1, selected: 1, timeMs: 45000),
+        for (var no = 2; no <= 50; no++) _answer(no),
+      ]),
+    );
+    expect(summary.averageTimeMs, Duration.millisecondsPerSecond);
+    // Above a second it is the average, rounded to the millisecond.
+    final longer = topikAttemptSummaryOf(
+      _detail([
+        _answer(1, selected: 1, timeMs: 1000),
+        _answer(2, selected: 1, timeMs: 2000),
+        _answer(3, selected: 1, timeMs: 2000),
+      ]),
+    );
+    expect(longer.averageTimeMs, 1667); // 1666.67
   });
 
   test('per type, and the weakest among types with two questions', () {
@@ -149,29 +187,6 @@ void main() {
         _detail([_answer(1, selected: 1), _answer(2, selected: 1)]),
       ).weakestType,
       isNull,
-    );
-  });
-
-  test('accuracy is a whole percent, rounded half up (BR-TOPIK-023)', () {
-    expect(
-      topikAttemptSummaryOf(
-        _detail([
-          _answer(1, selected: 1),
-          _answer(2, selected: 1),
-          _answer(3, selected: 2),
-        ]),
-      ).accuracyPercent,
-      67, // 66.67
-    );
-    expect(
-      topikAttemptSummaryOf(
-        _detail([
-          _answer(1, selected: 1),
-          _answer(2, selected: 2),
-          _answer(3, selected: 2),
-        ]),
-      ).accuracyPercent,
-      33, // 33.33
     );
   });
 

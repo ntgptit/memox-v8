@@ -29,6 +29,23 @@ final class TopikTestDetail {
       attempts.take(topikRecentAttemptCount).toList();
 }
 
+/// Whether [test] is still the content [detail] was answered on: it exists,
+/// has exactly the questions the attempt stored answers for, and every
+/// question's group is in it, so a screen can look a question and its group up
+/// without a miss (BR-TOPIK-019). The one check screens 37 and 39 share.
+bool topikContentMatchesAttempt(TopikTest? test, TopikAttemptDetail detail) {
+  if (test == null) return false;
+  final stored = {for (final answer in detail.answers) answer.questionNo};
+  final numbers = {for (final question in test.questions) question.no};
+  if (stored.length != numbers.length || !stored.containsAll(numbers)) {
+    return false;
+  }
+  final groupIds = {for (final group in test.groups) group.groupId};
+  return test.questions.every(
+    (question) => groupIds.contains(question.groupId),
+  );
+}
+
 /// The attempt screen's data (screen 37); [test] null when unavailable.
 final class TopikAttemptView {
   const TopikAttemptView({required this.detail, required this.test});
@@ -37,14 +54,9 @@ final class TopikAttemptView {
   final TopikTest? test;
 
   /// The attempt cannot go on: its test is gone, or no longer has exactly the
-  /// attempt's questions (BR-TOPIK-019; the store refuses its submit then).
-  bool get isContentMissing {
-    final current = test;
-    if (current == null) return true;
-    final stored = {for (final answer in detail.answers) answer.questionNo};
-    final numbers = {for (final question in current.questions) question.no};
-    return stored.length != numbers.length || !stored.containsAll(numbers);
-  }
+  /// attempt's questions and their groups (BR-TOPIK-019; the store refuses
+  /// its submit then).
+  bool get isContentMissing => !topikContentMatchesAttempt(test, detail);
 }
 
 /// Summary (screen 38): from the snapshot alone (BR-TOPIK-019). The hero
@@ -64,8 +76,10 @@ final class TopikReviewView {
   final TopikAttemptDetail detail;
   final TopikTest? test;
 
-  /// The test is gone or invalid: Review is unavailable, Summary still is.
-  bool get isUnavailable => test == null;
+  /// The test is gone or no longer fits the attempt (the same check as the
+  /// attempt screen's): Review is unavailable, Summary still is
+  /// (BR-TOPIK-019).
+  bool get isUnavailable => !topikContentMatchesAttempt(test, detail);
 
   /// The content was updated after this attempt was scored.
   bool get isContentChanged =>
