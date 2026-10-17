@@ -246,6 +246,65 @@ revoke all on function public.topik_admin_check(text) from public, anon, authent
 grant execute on function public.topik_admin_check(text) to authenticated;
 
 -- ============================================================================
+-- Draft compare-and-set (DR-22), document size ceiling and bucket limits (DR-09)
+-- ============================================================================
+
+-- The draft save of 20261016120000 with an optional compare-and-set: an editor sends
+-- back the updatedAt it read, and a save over a newer one is VERSION_MISMATCH (nothing
+-- written). Null means no check (an import). updated_at is clock_timestamp(), so two
+-- saves in one transaction still differ. A document over 4 MiB is VALIDATION_FAILED
+-- with detail 'size'; the table's CHECK is the backstop.
+drop function public.topik_admin_draft_save(text, jsonb, jsonb, boolean);
+create function public.topik_admin_draft_save(p_test_id text, p_json jsonb, p_last_check jsonb, p_imported boolean,
+  p_expected_updated_at timestamptz default null)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_topik_admin();
+  v_issues text[];
+  v_at timestamptz := clock_timestamp();
+  v_current timestamptz;
+begin
+  if p_test_id is null or jsonb_typeof(p_json) is distinct from 'object'
+     or p_json->>'testId' is distinct from p_test_id then
+    raise exception 'VALIDATION_FAILED';
+  end if;
+  if octet_length(p_json::text) > 4194304 then
+    raise exception 'VALIDATION_FAILED' using detail = 'size';
+  end if;
+  if p_expected_updated_at is not null then
+    select d.updated_at into v_current from public.topik_test_draft d where d.test_id = p_test_id for update;
+    if v_current is distinct from p_expected_updated_at then
+      raise exception 'VERSION_MISMATCH';
+    end if;
+  end if;
+  v_issues := private.topik_master_shape_issues(p_json);
+  insert into public.topik_test_draft (test_id, json, last_check, updated_at, updated_by)
+  values (p_test_id, p_json, coalesce(p_last_check, '{}'::jsonb), v_at, v_user)
+  on conflict (test_id) do update
+    set json = excluded.json, last_check = excluded.last_check, updated_at = excluded.updated_at,
+        updated_by = excluded.updated_by;
+  perform private.topik_audit(case when p_imported then 'draft_import' else 'draft_save' end, p_test_id, null,
+    jsonb_build_object('issues', to_jsonb(v_issues)));
+  return jsonb_build_object('testId', p_test_id, 'updatedAt', private.wire_time(v_at), 'issues', to_jsonb(v_issues));
+end
+$$;
+revoke all on function public.topik_admin_draft_save(text, jsonb, jsonb, boolean, timestamptz) from public, anon, authenticated;
+grant execute on function public.topik_admin_draft_save(text, jsonb, jsonb, boolean, timestamptz) to authenticated;
+
+-- NOT VALID: rows already there are not rescanned (the version table is immutable);
+-- every new row is checked.
+alter table public.topik_test_draft
+  add constraint topik_test_draft_json_size check (octet_length(json::text) <= 4194304) not valid;
+alter table public.topik_test_version
+  add constraint topik_test_version_json_size check (octet_length(json::text) <= 4194304) not valid;
+
+-- Storage enforces these on upload: a file content uses, never over 50 MiB.
+update storage.buckets
+  set file_size_limit = 52428800,
+      allowed_mime_types = array['audio/mpeg', 'image/jpeg', 'image/png', 'image/webp']
+  where id = 'topik-media';
+
+-- ============================================================================
 -- Function privileges (keep last)
 -- ============================================================================
 

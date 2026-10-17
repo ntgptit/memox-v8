@@ -1,7 +1,7 @@
 -- supabase/tests/database/20_topik_master_contract.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(50);
+select plan(68);
 -- ADR-025 (owner 2026-10-17), decision package 2026-10-17 §11 PR-02: the read gate
 -- (admins only for now, #5), the catalog's compatibility and integrity keys and the
 -- content envelope (#4; DR-05, DR-06). 18_topik_master_data.sql runs with the gate open.
@@ -196,6 +196,73 @@ select is(public.topik_admin_publish('topik2-94-listening', 2, 'two')->>'content
   'a well-named revision publishes over the old one');
 select is(public.t_detail($$select public.topik_admin_rollback('topik2-94-listening', 1, 'back')$$), 'media',
   'a rollback to a revision with a non-hash media name is refused');
+
+-- ============================================================================
+-- A draft save names the updatedAt it read (DR-22); a document over 4 MiB is refused (DR-09)
+-- ============================================================================
+select set_config('t.a', public.topik_admin_draft_save('topik2-98-listening', public.t_listening('topik2-98-listening'),
+  '{}'::jsonb, true)->>'updatedAt', true);
+select set_config('t.b', public.topik_admin_draft_save('topik2-98-listening', public.t_listening('topik2-98-listening'),
+  '{}'::jsonb, false, current_setting('t.a')::timestamptz)->>'updatedAt', true);
+select isnt(current_setting('t.b'), current_setting('t.a'),
+  'a save naming the current updatedAt goes through and gets a new one, even in the same transaction');
+select throws_like($$select public.topik_admin_draft_save('topik2-98-listening', public.t_listening('topik2-98-listening'),
+  '{}'::jsonb, false, current_setting('t.a')::timestamptz)$$, 'VERSION_MISMATCH', 'a save naming a stale updatedAt is refused');
+select is(public.topik_admin_draft_get('topik2-98-listening')->>'updatedAt', current_setting('t.b'),
+  'and leaves the draft as it was');
+select throws_like($$select public.topik_admin_draft_save('topik2-99-listening', public.t_listening('topik2-99-listening'),
+  '{}'::jsonb, false, now())$$, 'VERSION_MISMATCH', 'an expected updatedAt for a draft that does not exist is refused');
+select is(public.topik_admin_draft_save('topik2-99-listening', public.t_listening('topik2-99-listening'),
+  '{}'::jsonb, true, null)->>'testId', 'topik2-99-listening', 'no expected updatedAt saves unconditionally (an import)');
+select is(public.t_detail($$select public.topik_admin_draft_save('topik2-98-listening',
+    jsonb_set(public.t_listening('topik2-98-listening'), '{pad}', to_jsonb(repeat('x', 4194304))), '{}'::jsonb, false)$$),
+  'size', 'a document over 4 MiB is refused with the detail size');
+select throws_like($$select public.topik_admin_draft_save('topik2-98-listening',
+    jsonb_set(public.t_listening('topik2-98-listening'), '{pad}', to_jsonb(repeat('x', 4194304))), '{}'::jsonb, false)$$,
+  'VALIDATION_FAILED', 'as VALIDATION_FAILED');
+reset role;
+select throws_like($$insert into public.topik_test_draft (test_id, json)
+    values ('big', jsonb_build_object('testId', 'big', 'pad', repeat('x', 4194304)))$$,
+  '%topik_test_draft_json_size%', 'the draft table refuses it too');
+select throws_like($$insert into public.topik_test_version (test_id, content_version, json, checksum)
+    values ('big', 1, jsonb_build_object('testId', 'big', 'contentVersion', 1, 'pad', repeat('x', 4194304)), 'x')$$,
+  '%topik_test_version_json_size%', 'and so does the version table');
+
+-- ============================================================================
+-- Bucket limits (DR-09)
+-- ============================================================================
+select is((select file_size_limit from storage.buckets where id = 'topik-media'), 52428800::bigint,
+  'the bucket caps a file at 50 MiB');
+select is((select allowed_mime_types from storage.buckets where id = 'topik-media'),
+  '{audio/mpeg,image/jpeg,image/png,image/webp}'::text[], 'and accepts only the media types content uses');
+
+-- ============================================================================
+-- Refusals at the edge (S10) and a demoted admin
+-- ============================================================================
+set local role anon;
+select throws_like($$select public.topik_admin_list()$$, '%permission denied%', 'anon cannot call an admin RPC');
+select throws_like($$select public.topik_admin_check('topik2-96-listening')$$, '%permission denied%', 'nor the dry run');
+set local role authenticated;
+select public.t_as('cccccccc-0000-0000-0000-000000000003');
+select throws_like($$select public.topik_admin_list()$$, 'UNAUTHORIZED',
+  'a live token without a profile is UNAUTHORIZED on an admin RPC');
+select set_config('request.jwt.claims', '{"role":"authenticated"}', true);
+select throws_like($$select public.topik_admin_list()$$, 'NOT_AUTHENTICATED', 'a request without a user is NOT_AUTHENTICATED');
+reset role;
+insert into auth.users (id, email, is_anonymous) values ('eeeeeeee-0000-0000-0000-000000000005', 'admin2@example.com', false)
+on conflict (id) do nothing;
+update public.profiles set role = 'admin' where id = 'eeeeeeee-0000-0000-0000-000000000005';
+set local role authenticated;
+select public.t_as('eeeeeeee-0000-0000-0000-000000000005');
+select is(jsonb_typeof(public.topik_admin_list()->'items'), 'array', 'a second admin lists the tests');
+reset role;
+update public.profiles set role = 'user' where id = 'eeeeeeee-0000-0000-0000-000000000005';
+set local role authenticated;
+select public.t_as('eeeeeeee-0000-0000-0000-000000000005');
+select throws_like($$select public.topik_admin_list()$$, 'FORBIDDEN', 'demoted, the very next call is FORBIDDEN');
+select throws_like($$insert into storage.objects (bucket_id, name)
+    values ('topik-media', 'topik2-96-listening/2/' || repeat('e', 64) || '.mp3')$$,
+  '%row-level security%', 'and Storage refuses an upload');
 
 reset role;
 select ok(not has_function_privilege('authenticated', 'private.topik_can_read_content()', 'execute'),
