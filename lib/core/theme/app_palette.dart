@@ -5,8 +5,9 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 // The one place colour values are written (ADR-026). ForUI's neutral
 // palette is the base; three values differ from it, each for a reason:
 // - `primary` is MemoX indigo, the brand, instead of near-black. Dark mode
-//   takes the light step, so an accent glyph or label reads on the dark
-//   page without a per-mode rule in the widgets.
+//   keeps the same indigo on the MemoX navy page (#0A082D), as before the
+//   ForUI migration; every other dark value is computed from those two
+//   colours (owner ruling 2026-10-17).
 // - `mutedForeground` is darker (light) and lighter (dark) than ForUI's, so
 //   secondary text keeps 4.5:1 on `muted` as well as on `background`; the
 //   stock value is 4.35:1 on `muted`.
@@ -36,24 +37,29 @@ final FColors appLightColors = FColors(
   extensions: const [MxStatusColors.light],
 );
 
-/// The dark palette, authored on its own rather than as a filter over light.
+/// The dark palette: the MemoX navy page and the brand indigo, as before the
+/// ForUI migration. The other values come from those two: the foreground is
+/// white moved 10% toward the page, `card` and `muted` the page moved 6% and
+/// 12% toward the foreground, `mutedForeground` the foreground moved 30%
+/// toward the page, `border` the foreground at 15% and `barrier` the page at
+/// 48%. Error red and the status hues carry meaning, not brand.
 final FColors appDarkColors = FColors(
   brightness: Brightness.dark,
   systemOverlayStyle: SystemUiOverlayStyle.light,
-  barrier: const Color(0x7A000000),
-  background: const Color(0xFF0A0A0A),
-  foreground: const Color(0xFFFAFAFA),
-  primary: const Color(0xFFC5C0FF),
-  primaryForeground: const Color(0xFF1B1464),
-  secondary: const Color(0xFF262626),
-  secondaryForeground: const Color(0xFFFAFAFA),
-  muted: const Color(0xFF262626),
-  mutedForeground: const Color(0xFFADADAD),
+  barrier: const Color(0x7A0A082D),
+  background: const Color(0xFF0A082D),
+  foreground: const Color(0xFFE6E6EA),
+  primary: const Color(0xFF564BCB),
+  primaryForeground: const Color(0xFFFFFFFF),
+  secondary: const Color(0xFF242344),
+  secondaryForeground: const Color(0xFFE6E6EA),
+  muted: const Color(0xFF242344),
+  mutedForeground: const Color(0xFFA4A3B1),
   destructive: const Color(0xFFFF6467),
-  destructiveForeground: const Color(0xFF0A0A0A),
+  destructiveForeground: const Color(0xFF0A082D),
   error: const Color(0xFFFF6467),
-  errorForeground: const Color(0xFF0A0A0A),
-  card: const Color(0xFF171717),
-  border: const Color(0x26FFFFFF),
+  errorForeground: const Color(0xFF0A082D),
+  card: const Color(0xFF171538),
+  border: const Color(0x26E6E6EA),
   extensions: const [MxStatusColors.dark],
 );

@@ -29,8 +29,11 @@ system Material riêng.
   `lib/core/theme/`, `lib/shared/` và `lib/app/` (`tools/ui_lint` UIL06, guard
   `no_forui_in_features`).
 - **Một nguồn giá trị, viết bằng Dart.** Màu chỉ được viết ở
-  `lib/core/theme/app_palette.dart` (hai `FColors`: nền neutral của ForUI, `primary`
-  indigo MemoX) và `mx_status_colors.dart` (success, warning, info). Thang chữ là
+  `lib/core/theme/app_palette.dart` (hai `FColors`: light là nền neutral của ForUI
+  với `primary` indigo MemoX; dark giữ nền navy `#0A082D` và `primary` `#564BCB` như
+  trước khi migrate, các giá trị dark còn lại tính từ hai màu đó và ghi thẳng mã
+  hex, theo quyết định của chủ sở hữu ngày 2026-10-17) và `mx_status_colors.dart`
+  (success, warning, info). Thang chữ là
   `AppTypography` (`FTypography`, Be Vietnam Pro) với 12 role `MxTextRoles`; khoảng
   cách và kích thước bố cục là `AppDimens`; bo góc, độ dày viền và bóng là của ForUI.
   `design/tokens.json`, `generate.py`, `codemod.py` và `lib/core/theme/generated/`

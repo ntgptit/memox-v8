@@ -8,7 +8,7 @@
         "displayName": "Background",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#0A0A0A",
+        "dark": "#0A082D",
         "tonalRamp": [
           "#FFFFFF"
         ],
@@ -19,7 +19,7 @@
         "displayName": "Foreground",
         "canonical": "#0A0A0A",
         "light": "#0A0A0A",
-        "dark": "#FAFAFA",
+        "dark": "#E6E6EA",
         "tonalRamp": [
           "#0A0A0A"
         ],
@@ -30,7 +30,7 @@
         "displayName": "Primary",
         "canonical": "#564BCB",
         "light": "#564BCB",
-        "dark": "#C5C0FF",
+        "dark": "#564BCB",
         "tonalRamp": [
           "#564BCB"
         ],
@@ -41,7 +41,7 @@
         "displayName": "Primary Foreground",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#1B1464",
+        "dark": "#FFFFFF",
         "tonalRamp": [
           "#FFFFFF"
         ],
@@ -52,7 +52,7 @@
         "displayName": "Secondary",
         "canonical": "#F5F5F5",
         "light": "#F5F5F5",
-        "dark": "#262626",
+        "dark": "#242344",
         "tonalRamp": [
           "#F5F5F5"
         ],
@@ -63,7 +63,7 @@
         "displayName": "Secondary Foreground",
         "canonical": "#171717",
         "light": "#171717",
-        "dark": "#FAFAFA",
+        "dark": "#E6E6EA",
         "tonalRamp": [
           "#171717"
         ],
@@ -74,7 +74,7 @@
         "displayName": "Muted",
         "canonical": "#F5F5F5",
         "light": "#F5F5F5",
-        "dark": "#262626",
+        "dark": "#242344",
         "tonalRamp": [
           "#F5F5F5"
         ],
@@ -85,7 +85,7 @@
         "displayName": "Muted Foreground",
         "canonical": "#616161",
         "light": "#616161",
-        "dark": "#ADADAD",
+        "dark": "#A4A3B1",
         "tonalRamp": [
           "#616161"
         ],
@@ -107,7 +107,7 @@
         "displayName": "Destructive Foreground",
         "canonical": "#FAFAFA",
         "light": "#FAFAFA",
-        "dark": "#0A0A0A",
+        "dark": "#0A082D",
         "tonalRamp": [
           "#FAFAFA"
         ],
@@ -129,7 +129,7 @@
         "displayName": "Error Foreground",
         "canonical": "#FAFAFA",
         "light": "#FAFAFA",
-        "dark": "#0A0A0A",
+        "dark": "#0A082D",
         "tonalRamp": [
           "#FAFAFA"
         ],
@@ -140,7 +140,7 @@
         "displayName": "Card",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#171717",
+        "dark": "#171538",
         "tonalRamp": [
           "#FFFFFF"
         ],
@@ -151,7 +151,7 @@
         "displayName": "Border",
         "canonical": "#E5E5E5",
         "light": "#E5E5E5",
-        "dark": "#FFFFFF26",
+        "dark": "#E6E6EA26",
         "tonalRamp": [
           "#E5E5E5"
         ],
@@ -162,7 +162,7 @@
         "displayName": "Barrier",
         "canonical": "#00000033",
         "light": "#00000033",
-        "dark": "#0000007A",
+        "dark": "#0A082D7A",
         "tonalRamp": [
           "#00000033"
         ],
