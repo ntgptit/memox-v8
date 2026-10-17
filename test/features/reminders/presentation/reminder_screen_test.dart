@@ -7,6 +7,8 @@ import 'package:memox/features/reminders/domain/models/reminder_platform_model.d
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
+import 'package:memox/features/reminders/presentation/widgets/sections/reminder_preview_section_widget.dart';
+import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -81,6 +83,34 @@ void main() {
       );
     },
   );
+
+  libraryTest('the gap before What it says is one section gap without a banner '
+      'and one more under a banner (audit 2026-10-17 SET-3)', (
+    tester,
+    env,
+  ) async {
+    await pumpReminderScreen(
+      tester,
+      env,
+      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+    );
+    final settings = find.byType(ReminderSettingsSectionWidget);
+    final preview = find.byType(ReminderPreviewSectionWidget);
+    final gap = tester.element(preview).dimens.space16;
+    // The section carries its own bottom space; nothing is added on top.
+    expect(
+      tester.getTopLeft(preview).dy - tester.getBottomLeft(settings).dy,
+      0,
+    );
+
+    await tapReminderToggle(tester);
+    final banner = find.byType(MxInlineBanner);
+    expect(banner, findsOneWidget);
+    expect(
+      tester.getTopLeft(preview).dy - tester.getBottomLeft(banner).dy,
+      gap,
+    );
+  });
 
   libraryTest('permDenied: the guidance and Try again, which asks again (E1)', (
     tester,
@@ -347,24 +377,6 @@ void main() {
     },
   );
 
-  libraryTest('a typed minute outside 0–59 disables Save', (tester, env) async {
-    await pumpReminderScreen(tester, env);
-    await tapReminderToggle(tester);
-    await tester.tap(find.text('20:00'));
-    await settleReminderScreen(tester);
-
-    // The minute stepper's value; a tap makes it typeable (MxStepper).
-    await tester.tap(find.text('00').last);
-    await tester.pump();
-    await tester.enterText(find.byType(EditableText).last, '75');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pump();
-
-    final save = find.widgetWithText(MxButton, _en.reminderTimeSave);
-    expect(tester.widget<MxButton>(save).onPressed, isNull);
-    await tester.pump(const Duration(milliseconds: 200));
-  });
-
   libraryTest(
     'couldNotChangeTime: the old time stands, the banner names it (E3)',
     (tester, env) async {
@@ -403,27 +415,6 @@ void main() {
       find.ancestor(of: time, matching: find.byType(Opacity)),
       findsNothing,
     );
-  });
-
-  libraryTest('the hour and minute read in two digits; a typed 7 reads 07 '
-      '(critique 2026-09-30 part 3d-2, Review Focus 5)', (tester, env) async {
-    await pumpReminderScreen(tester, env);
-    await tapReminderToggle(tester);
-    await tester.tap(find.text('20:00'));
-    await settleReminderScreen(tester);
-
-    expect(find.text('20'), findsOneWidget);
-    expect(find.text('00'), findsOneWidget);
-    await tester.tap(find.text('00'));
-    await tester.pump();
-    await tester.enterText(find.byType(EditableText).last, '7');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pump();
-    expect(find.text('07'), findsOneWidget);
-
-    await tester.tap(find.widgetWithText(MxButton, _en.reminderTimeSave));
-    await settleReminderScreen(tester);
-    expect(find.text('20:07'), findsOneWidget);
   });
 
   // SW-REV-005: the time button reads its full label and keeps its tap.

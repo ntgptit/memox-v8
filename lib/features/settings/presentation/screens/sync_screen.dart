@@ -16,6 +16,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -94,7 +95,21 @@ class SyncScreen extends ConsumerWidget {
               ),
           ],
         ),
-        AsyncData() || AsyncError() => MxScreenScroll(
+        // No Supabase in this build: there is no status to read, so nothing a
+        // Retry could fix.
+        AsyncData() => MxScreenScroll(
+          children: [
+            SizedBox(height: context.dimens.space8),
+            MxEmptyState(
+              icon: AppIcons.sync,
+              title: l10n.syncUnavailableTitle,
+              body: l10n.syncUnavailableBody,
+              tone: MxEmptyStateTone.neutral,
+              isCompact: true,
+            ),
+          ],
+        ),
+        AsyncError() => MxScreenScroll(
           children: [
             MxErrorState(
               title: l10n.syncLoadErrorTitle,

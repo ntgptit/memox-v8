@@ -77,8 +77,9 @@ class MonitoringListController extends _$MonitoringListController {
     _debounce = Timer(monitoringSearchDebounce, () => setFilter(_intended));
   }
 
-  /// Pull to refresh: the first page again, the rows kept until it lands.
-  /// A search still waiting is asked now.
+  /// Pull to refresh: the first page again, the rows kept until it lands
+  /// (and kept, with a notice, if it fails). A search still waiting is asked
+  /// now.
   Future<void> refresh() {
     final filter = _intended;
     _debounce?.cancel();
@@ -158,7 +159,15 @@ class MonitoringListController extends _$MonitoringListController {
       );
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
-      _show(MonitoringListFailed(MonitoringLoadFailure.of(error)));
+      final failure = MonitoringLoadFailure.of(error);
+      // A refresh over rows keeps them: what is shown is still correct.
+      // Only a lost admin right takes them away.
+      final kept = _loaded;
+      if (kept != null && failure != MonitoringLoadFailure.notAdmin) {
+        _show(kept.withRefreshFailed());
+        return;
+      }
+      _show(MonitoringListFailed(failure));
     }
   }
 }

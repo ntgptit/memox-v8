@@ -146,6 +146,43 @@ void main() {
     expect(_state(rig).cardLimitDraft, isNull);
   });
 
+  _settingsTest('an order picked while the limit writes is written once that '
+      'write ends, not lost (audit 2026-10-17 SET-6)', (rig) async {
+    final gate = rig.store.hold = Completer<void>();
+    _controller(rig).typeCardLimit('30');
+    await pumpEventQueue();
+    expect(_state(rig).isStudyDefaultsBusy, isTrue);
+
+    _controller(rig).chooseNewCardOrder(NewCardOrder.random);
+    rig.store.hold = null;
+    gate.complete();
+    await _settled();
+
+    final stored = await _stored(rig);
+    expect(stored.studyDefaults.cardLimit, 30);
+    expect(stored.studyDefaults.newCardOrder, NewCardOrder.random);
+    expect(rig.store.writes, 2);
+  });
+
+  _settingsTest('picking the stored order again while a write runs leaves '
+      'the order as it was (audit 2026-10-17 SET-6)', (rig) async {
+    final gate = rig.store.hold = Completer<void>();
+    _controller(rig)
+      ..typeCardLimit('30')
+      ..chooseNewCardOrder(NewCardOrder.random)
+      ..chooseNewCardOrder(NewCardOrder.created);
+    await pumpEventQueue();
+    rig.store.hold = null;
+    gate.complete();
+    await _settled();
+
+    expect(
+      (await _stored(rig)).studyDefaults.newCardOrder,
+      NewCardOrder.created,
+    );
+    expect(rig.store.writes, 1);
+  });
+
   _settingsTest('a step while its own write runs is written after it', (
     rig,
   ) async {

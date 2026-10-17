@@ -6260,7 +6260,7 @@
   "@settingsAppliesAtOnce": {
     "description": "Footnote of screen 25 (BR-SETTINGS-005)."
   },
-  "settingsThemeSaveFailed": "Couldn't change the theme.",
+  "settingsThemeSaveFailed": "Couldn't change the theme. Nothing changed.",
   "@settingsThemeSaveFailed": {
     "description": "Toast when saving the theme failed (E2); offers Retry."
   },
@@ -6309,7 +6309,7 @@
   "@settingsLanguageSwitched": {
     "description": "Toast after a language switch, read in the language switched to."
   },
-  "settingsLanguageSaveFailed": "Couldn't change the language.",
+  "settingsLanguageSaveFailed": "Couldn't change the language. Nothing changed.",
   "@settingsLanguageSaveFailed": {
     "description": "Toast when saving the language failed (E2); offers Retry."
   },
@@ -6517,15 +6517,15 @@
     },
     "description": "Toast when saving the card limit failed (E2); names the value that stands, and offers Retry."
   },
-  "settingsOrderSaveFailed": "Couldn't save the new-card order.",
+  "settingsOrderSaveFailed": "Couldn't save the new-card order. Nothing changed.",
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language.",
+  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language. Nothing changed.",
   "@settingsSpeechLanguageSaveFailed": {
     "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
   },
-  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch.",
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch. Nothing changed.",
   "@settingsSpeechAutoPlaySaveFailed": {
     "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
   },
@@ -7642,6 +7642,14 @@
   "@syncLoadErrorTitle": {
     "description": "Screen 27 (SB-U1): the status stream failed (spec §6)."
   },
+  "syncUnavailableTitle": "Sync isn't available",
+  "@syncUnavailableTitle": {
+    "description": "Screen handoff 27: the title when this build has no sync, so there is no status to show; no Retry (audit 2026-10-17)."
+  },
+  "syncUnavailableBody": "This version of MemoX keeps everything on this device. Nothing is lost.",
+  "@syncUnavailableBody": {
+    "description": "Screen handoff 27: the body when this build has no sync; says first that nothing is lost (audit 2026-10-17)."
+  },
   "studyHomeSyncRejected": "{count, plural, =1{1 change wasn't accepted.} other{{count} changes weren't accepted.}}",
   "@studyHomeSyncRejected": {
     "placeholders": {
@@ -7870,7 +7878,15 @@
   "@monitoringNoMore": {
     "description": "Screen 28: the end of the list."
   },
-  "monitoringLoadMoreFailed": "Couldn't load more logs.",
+  "monitoringRefresh": "Refresh",
+  "@monitoringRefresh": {
+    "description": "Screen 28: the app bar action that reads the Server tab's first page again, for a screen reader or a keyboard (audit 2026-10-17)."
+  },
+  "monitoringRefreshFailed": "Couldn't refresh. What is shown is still correct.",
+  "@monitoringRefreshFailed": {
+    "description": "Screen 28: the banner above the rows when a pull to refresh failed; Retry follows (audit 2026-10-17)."
+  },
+  "monitoringLoadMoreFailed": "Couldn't load more logs. What is shown is still correct.",
   "@monitoringLoadMoreFailed": {
     "description": "Screen 28: the end of the list when the next page failed."
   },

@@ -136,7 +136,8 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           onOpenSettings: () =>
               unawaited(ref.read(openNotificationSettingsProvider)()),
         ),
-        SizedBox(height: context.dimens.space16),
+        // The sections carry their own gap; a banner needs one of its own.
+        if (action.problem != null) SizedBox(height: context.dimens.space16),
         const ReminderPreviewSectionWidget(),
       ],
     );

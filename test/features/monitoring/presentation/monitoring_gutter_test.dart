@@ -4,6 +4,7 @@ import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart'
 import 'package:memox/features/monitoring/presentation/states/monitoring_tab_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
 import '../../../support/library_harness.dart';
@@ -59,6 +60,28 @@ void main() {
       await _widen(tester, width);
 
       expect(tester.getTopLeft(find.byType(MxNote)).dx, margin);
+    });
+
+    libraryTest('the Not sent header row (the SQL log switch) sits on the '
+        '$margin screen margin at ${width.toInt()} wide '
+        '(audit 2026-10-17 SET-4)', (tester, env) async {
+      final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
+      await pumpMonitoring(
+        tester,
+        env,
+        repository,
+        pendingHeader: const Text('header'),
+      );
+      repository.watches.single.feed.add(
+        PendingLogs(items: [summary('p1', status: null)], total: 1),
+      );
+      await settleMonitoring(tester);
+      await tester.tap(find.text('Not sent (1)'));
+      await tester.pumpAndSettle();
+      await _widen(tester, width);
+
+      final card = tester.getRect(find.byType(MxSection));
+      expect((card.left, width - card.right), (margin, margin));
     });
   }
 }

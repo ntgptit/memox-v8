@@ -293,6 +293,44 @@ void main() {
     });
   });
 
+  test('a refresh that fails keeps the rows and says so (audit 2026-10-17 '
+      'MON-1)', () {
+    _run((async, controller, state, repository) {
+      repository.lastQuery.answer(pageOf(2));
+      async.flushMicrotasks();
+
+      unawaited(controller.refresh());
+      repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
+      async.flushMicrotasks();
+
+      expect(_ids(state()), ['r0', 'r1']);
+      expect(_loaded(state()).hasRefreshFailed, isTrue);
+
+      // The next page that lands brings the banner down.
+      unawaited(controller.refresh());
+      repository.lastQuery.answer(pageOf(1, prefix: 'n'));
+      async.flushMicrotasks();
+      expect(_ids(state()), ['n0']);
+      expect(_loaded(state()).hasRefreshFailed, isFalse);
+    });
+  });
+
+  test('a refresh refused for want of admin rights replaces the rows', () {
+    _run((async, controller, state, repository) {
+      repository.lastQuery.answer(pageOf(2));
+      async.flushMicrotasks();
+
+      unawaited(controller.refresh());
+      repository.lastQuery.fail(const NotAdminFailure(cause: 'x'));
+      async.flushMicrotasks();
+
+      expect(
+        (state().content as MonitoringListFailed).failure,
+        MonitoringLoadFailure.notAdmin,
+      );
+    });
+  });
+
   test('a failure is told apart: not an admin, offline, or other', () {
     for (final (error, expected) in <(Object, MonitoringLoadFailure)>[
       (const NotAdminFailure(cause: 'x'), MonitoringLoadFailure.notAdmin),

@@ -14,7 +14,8 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 /// a trailing toggle, drawn by `app/` in screen 23b's Logs section and at
 /// the top of screen 28's Not sent tab, for an admin only (both hosts gate
 /// it). The toggle shows the account's row and is disabled while a save
-/// runs; a failed save says so and the row keeps its value.
+/// runs, and while the row is not read (loading or a failed read), when it
+/// shows off; a failed save says so and the row keeps its value.
 class SqlLogRowWidget extends ConsumerWidget {
   const SqlLogRowWidget({super.key});
 
@@ -44,7 +45,9 @@ class SqlLogRowWidget extends ConsumerWidget {
       subtitle: l10n.settingsLogSqlHint,
       icon: AppIcons.levelDebug,
       trailing: MxToggle(
-        isOn: enabled ?? true,
+        // Until the settings are read the value is unknown: off, and the
+        // switch below cannot be flipped, so no ON is ever claimed.
+        isOn: enabled ?? false,
         semanticLabel: l10n.settingsLogSql,
         onChanged: enabled == null || isSaving
             ? null

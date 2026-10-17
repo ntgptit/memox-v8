@@ -18,6 +18,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -48,7 +49,16 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     ];
     return Column(
       children: [
-        ?header,
+        if (header case final row?)
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              context.screenMargin,
+              context.dimens.space8,
+              context.screenMargin,
+              0,
+            ),
+            child: MxSection(children: [row]),
+          ),
         // Only while logs wait: an empty buffer says so below.
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(
