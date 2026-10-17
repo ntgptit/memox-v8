@@ -24,17 +24,40 @@ final class MonitoringListLoaded extends MonitoringListContent {
     required this.items,
     required this.next,
     this.more = MonitoringMore.idle,
+    this.hasRefreshFailed = false,
   });
 
   final List<LogSummaryEntity> items;
   final LogCursor? next;
   final MonitoringMore more;
 
-  MonitoringListLoaded withMore(MonitoringMore value) =>
-      MonitoringListLoaded(items: items, next: next, more: value);
+  /// A pull to refresh failed: the rows stand, and the screen says so with
+  /// a Retry until a read lands.
+  final bool hasRefreshFailed;
+
+  MonitoringListLoaded withMore(MonitoringMore value) => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: value,
+    hasRefreshFailed: hasRefreshFailed,
+  );
 
   MonitoringListLoaded withItems(List<LogSummaryEntity> value) =>
-      MonitoringListLoaded(items: value, next: next, more: more);
+      MonitoringListLoaded(
+        items: value,
+        next: next,
+        more: more,
+        hasRefreshFailed: hasRefreshFailed,
+      );
+
+  /// The refresh failed over these rows. A page that was loading is dropped
+  /// by the refresh's own ask, so it stops loading here.
+  MonitoringListLoaded withRefreshFailed() => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: more == MonitoringMore.loading ? MonitoringMore.idle : more,
+    hasRefreshFailed: true,
+  );
 }
 
 /// The first page failed; no stale row is shown.

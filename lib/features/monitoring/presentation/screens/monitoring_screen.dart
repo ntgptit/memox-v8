@@ -78,6 +78,18 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        actions: [
+          // The drag down has no TalkBack or keyboard equivalent; the Not
+          // sent tab watches its rows and needs none.
+          if (_tab == MonitoringTab.server)
+            MxIconButton(
+              icon: AppIcons.retry,
+              semanticLabel: l10n.monitoringRefresh,
+              onPressed: () => unawaited(
+                ref.read(monitoringListControllerProvider.notifier).refresh(),
+              ),
+            ),
+        ],
       ),
       body: Column(
         children: [

@@ -28,14 +28,15 @@ FE-B8; ADR-018 §6 to §8; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` + back `MxIconButton` | "Monitoring". |
+| App bar | `MxAppBar` + back `MxIconButton`; on the Server tab a refresh `MxIconButton` | "Monitoring". "Refresh" reads the first page again, as the pull down does, for TalkBack and a keyboard (audit 2026-10-17); the Not sent tab watches its rows and has none. |
 | Tabs | `MxSegmentedTray` | "Server" · "Not sent ({n})"; n is every row of the device buffer. |
 | Search (Server) | `MxSearchField` | "Search event or message"; asks 400 ms after the last keystroke. |
 | Filters (Server) | `MxChipTrigger` × 5 in a row that scrolls | Level (default warning + error) · Status (default open) · Category · Time · Device / user. A chip that holds a choice shows it, naming one or two and counting from three: "Level · Warning, Error", "Status · Open", "Time · Last 24 hours", "Level · 3"; Device / user counts a pair, since its choices are ids (critique 2026-09-30 part 3b). |
 | Count | `MxListSectionHeader` | "{n} logs" with any filter (the chip names the filter); "{n}+ logs" while more pages exist. |
 | Rows | `MxListRow` | Leading `MxIconTile` with a glyph per level (debug bug, info circle, warning triangle, error circle) on the tint of its level; title `event`; subtitle the first line of the message, or else of the error message, or else the error type; trailing `HH:mm` today or "Sep 26", and under it an `MxBadge` "Open" / "Fixed" for warnings and errors, except a row whose status is the one the Status filter holds: the chip and the header say it (critique 2026-09-30 part 3b). TalkBack: "{level}, {event}, {time}, {status}". |
-| End | `MxSpinner` / `MxInlineBanner` / caption | The next 100 rows load when the last 10 come into view; a spinner while they do; "Couldn't load more logs." with Retry; "No more logs". |
-| Not sent | the SQL log switch row (`MxSettingsRow` + `MxToggle`, the same row as screen 23's, first, above the note; SQL log switch spec 2026-10-07) + `MxNote` + one `MxChipTrigger` (Level, default warning + error) + rows | "These logs wait on this device. They are sent when MemoX is online." (the tab states how many), then the header "{n} at these levels" over the rows shown (critique 2026-09-30 part 3b). The rows are the device buffer, watched, without a status. |
+| End | `MxSpinner` / `MxInlineBanner` / caption | The next 100 rows load when the last 10 come into view; a spinner while they do; "Couldn't load more logs. What is shown is still correct." with Retry; "No more logs". |
+| Refresh failed | `MxInlineBanner` (danger) above the count | A pull down or Refresh that fails keeps the rows and says "Couldn't refresh. What is shown is still correct." with Retry; the next read that lands clears it. A lost admin right replaces the rows instead (audit 2026-10-17). |
+| Not sent | the SQL log switch row (`MxSettingsRow` + `MxToggle`, the same row as screen 23's, in an `MxSection` on the screen margin, first, above the note; SQL log switch spec 2026-10-07) + `MxNote` + one `MxChipTrigger` (Level, default warning + error) + rows | "These logs wait on this device. They are sent when MemoX is online." (the tab states how many), then the header "{n} at these levels" over the rows shown (critique 2026-09-30 part 3b). The rows are the device buffer, watched, without a status. |
 | Filter sheets | `MxBottomSheet` | Level, Status and Category: a toggle per value (`MxSettingsRow` + `MxToggle`). Time: an `MxOptionRow` per window (last hour, 24 hours, 7 days, 30 days, all time). Device / user: two `MxTextField`s, each painting its name as the label above the box (no placeholder repeats it), and an `MxNote`. Each has Reset (outline) and Apply. |
 
 Choosing Debug or Info, or no level at all (every level), clears the status filter: those rows have no status and it would
@@ -71,6 +72,7 @@ The images are the goldens.
 | detail, scrolled to the end | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_dark.png) | Golden `monitoring_detail_open_trace_*`: the context in the `code` style and the Details. |
 | detail, fixed with a note | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png) | Golden `monitoring_detail_fixed_*`, scrolled to the Details: Fixed by, Fixed at, the note, Reopen. |
 | detail, a row of the buffer | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png) | Golden `monitoring_detail_local_*`: no triage, no user. |
+| list, refresh failed | — | — | The rows stay under a danger `MxInlineBanner` "Couldn't refresh. What is shown is still correct." with Retry (executed: `monitoring_screen_test.dart`). |
 | list, loading | — | — | `MxSkeletonList`, six rows. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
 | list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
@@ -98,7 +100,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 
 - App bar and tabs: "Monitoring" · "Server" · "Not sent ({n})".
 - Search and chips: "Search event or message" · "Clear search" · "Level" · "Status" · "Category" · "Time" · "Device / user" · "{label} · {value}"; levels "Debug" · "Info" · "Warning" · "Error"; statuses "Open" · "Fixed"; windows "Last hour" · "Last 24 hours" · "Last 7 days" · "Last 30 days" · "All time"; sheets "Reset" · "Apply" · "Device ID" · "User ID" · "Paste an ID from a log's details." · "That isn't a valid user ID."
-- List: "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs." · "Retry".
+- List: "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs. What is shown is still correct." · "Couldn't refresh. What is shown is still correct." · "Refresh" · "Retry".
 - States: "No open problems" · "Warnings and errors will show here." · "Nothing matches" · "Clear filters" · "Can't reach the server" · "Monitoring reads the logs online. The ones this device hasn't sent are under Not sent." · "Not sent" · "Couldn't load logs" · "Nothing was lost. Try again in a moment." · "Only an admin can see this".
 - Not sent: "These logs wait on this device. They are sent when MemoX is online." · "{n} at these levels" · "Nothing waiting" · "Every log on this device has been sent." · "No logs at these levels" · "Try another level."
 - Detail: "Log" · "Copy log" · "Copied" · "Copy device ID" · "Copy user ID" · "Details" · "Fixed by" · "Fixed at" · "Note" · "Category" · "Source" · "Device" · "App" · "Platform" · "User" · "Message" · "Error" · "Stack trace" · "Context".
