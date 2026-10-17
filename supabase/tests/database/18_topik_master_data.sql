@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(285);
+select plan(282);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -743,9 +743,10 @@ select throws_like($$insert into storage.objects (bucket_id, name) values ('topi
 select is(public.t_rows($$update storage.objects set name = name || 'x' where bucket_id = 'topik-media'
     and name = 'topik1-96-reading/5/picture.png'$$), 0::bigint,
   'a user cannot update, even what they read');
-select is(public.t_rows($$delete from storage.objects where bucket_id = 'topik-media'
-    and name = 'topik1-96-reading/5/picture.png'$$), 0::bigint,
-  'a user cannot delete, even what they read');
+-- No direct DELETE here: storage-api's statement-level trigger storage.protect_delete()
+-- refuses every DELETE on storage.objects outside the Storage API, even one that matches
+-- no row (seen on the real stack, migrations workflow run 30). The delete policy is
+-- proven by topik_media_can_modify and the pg_policies assertions below.
 reset role;
 select is((select count(*) from storage.objects where bucket_id = 'topik-media'), current_setting('t.media_n')::bigint,
   'every media object is still there');
@@ -760,23 +761,18 @@ select lives_ok($$insert into storage.objects (bucket_id, name) values ('topik-m
   'an admin inserts into the bucket');
 select throws_like($$insert into storage.objects (bucket_id, name) values ('other', 'admin.png')$$,
   '%row-level security%', 'not into another bucket');
--- Direct UPDATE and DELETE by an admin are not run here: the stub lacks storage-api's own triggers
--- on storage.objects, so what they do on the real stack is not proven by this suite (the policy
--- predicates above and the pg_policies asserts are). An object a published version lists matches
--- no row, so 0 rows are touched and no trigger would fire.
+-- An object a published version lists matches no row of the update policy, so 0 rows are
+-- touched. DELETE is never run directly: storage.protect_delete() (storage-api, statement-level)
+-- refuses it on the real stack whatever the policies say; the delete policy is proven by
+-- topik_media_can_modify and the pg_policies assertions above.
 select is(public.t_rows($$update storage.objects set name = name || 'x' where bucket_id = 'topik-media'
     and name = 'topik2-96-listening/1/a.mp3'$$), 0::bigint, 'an admin cannot update a published version''s object');
-select is(public.t_rows($$delete from storage.objects where bucket_id = 'topik-media'
-    and name = 'topik2-96-listening/1/a.mp3'$$), 0::bigint, 'nor delete it');
 select is(public.t_rows($$update storage.objects set name = 'x' where bucket_id = 'other'$$), 0::bigint,
   'an admin cannot update another bucket''s objects');
-select is(public.t_rows($$delete from storage.objects where bucket_id = 'other'$$), 0::bigint,
-  'nor delete them');
 reset role;
--- The admin's upload goes with it (as postgres, the storage service's role here).
-delete from storage.objects where bucket_id = 'topik-media' and name = 'topik2-96-reading/1/admin.png';
-select is((select count(*) from storage.objects where bucket_id = 'topik-media'), current_setting('t.media_n')::bigint,
-  'the bucket holds what it held before the admin''s upload');
+-- The admin's upload stays (the Storage API, not SQL, removes objects).
+select is((select count(*) from storage.objects where bucket_id = 'topik-media'), current_setting('t.media_n')::bigint + 1,
+  'the bucket holds what it held before plus the admin''s upload');
 
 -- anon has no policy.
 set local role anon;
