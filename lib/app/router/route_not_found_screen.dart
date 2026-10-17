@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// An unknown location, such as a deep link that leads nowhere (IT-NAV-005,
 /// FE-D3 spec D5): no exception text, and one way back to the Library.
@@ -15,13 +16,18 @@ class RouteNotFoundScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxAppShell(
+      // Scrolls, so a short window (landscape, split screen) never cuts it.
       body: SafeArea(
-        child: MxEmptyState(
-          icon: AppIcons.searchOff,
-          title: l10n.routeNotFoundTitle,
-          body: l10n.routeNotFoundBody,
-          actionLabel: l10n.deckBackToLibrary,
-          onAction: () => context.go(AppRoutes.decks),
+        child: MxScreenScroll(
+          children: [
+            MxEmptyState(
+              icon: AppIcons.searchOff,
+              title: l10n.routeNotFoundTitle,
+              body: l10n.routeNotFoundBody,
+              actionLabel: l10n.deckBackToLibrary,
+              onAction: () => context.go(AppRoutes.decks),
+            ),
+          ],
         ),
       ),
     );

@@ -191,38 +191,43 @@ class _MxStepperState extends State<MxStepper> {
           heightFactor: 1,
           child: switch ((widget.isBusy, _isEditing)) {
             (true, _) => const MxSpinner(),
+            // The typed number keeps the value's name: the edit box alone
+            // would reach TalkBack unnamed.
             (_, true) => SizedBox(
               width: MxStepper._valueColumn,
-              child: FTextField(
-                control: FTextFieldControl.managed(controller: _field),
-                focusNode: _focus,
-                style: FTextFieldStyleDelta.delta(
-                  border:
-                      const FVariants<
-                        FTextFieldVariantConstraint,
-                        FTextFieldVariant,
-                        InputBorder,
-                        Delta
-                      >.all(InputBorder.none),
-                  contentPadding: const EdgeInsetsGeometryDelta.value(
-                    EdgeInsets.zero,
+              child: Semantics(
+                label: widget.valueLabel,
+                child: FTextField(
+                  control: FTextFieldControl.managed(controller: _field),
+                  focusNode: _focus,
+                  style: FTextFieldStyleDelta.delta(
+                    border:
+                        const FVariants<
+                          FTextFieldVariantConstraint,
+                          FTextFieldVariant,
+                          InputBorder,
+                          Delta
+                        >.all(InputBorder.none),
+                    contentPadding: const EdgeInsetsGeometryDelta.value(
+                      EdgeInsets.zero,
+                    ),
+                    contentTextStyle:
+                        FVariants<
+                          FTextFieldVariantConstraint,
+                          FTextFieldVariant,
+                          TextStyle,
+                          TextStyleDelta
+                        >.all(style),
                   ),
-                  contentTextStyle:
-                      FVariants<
-                        FTextFieldVariantConstraint,
-                        FTextFieldVariant,
-                        TextStyle,
-                        TextStyleDelta
-                      >.all(style),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(widget.maxDigits),
+                  ],
+                  onSubmit: (_) => _submit(),
                 ),
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(widget.maxDigits),
-                ],
-                onSubmit: (_) => _submit(),
               ),
             ),
             _ => Text(_text, style: style),

@@ -442,4 +442,19 @@ void main() {
       16,
     );
   });
+
+  testWidgets('a busy row says it is busy to TalkBack with the caller\'s '
+      'label (audit 2026-10-17)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxListRow(
+        title: 'verb',
+        isBusy: true,
+        busyLabel: 'Saving this tag',
+      ),
+    );
+    expect(find.bySemanticsLabel(RegExp('Saving this tag')), findsOneWidget);
+    handle.dispose();
+  });
 }

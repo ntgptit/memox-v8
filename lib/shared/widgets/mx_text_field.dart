@@ -168,6 +168,10 @@ class MxTextField extends StatelessWidget {
       readOnly: isReadOnly,
       onSubmit: onSubmitted,
       textInputAction: textInputAction,
+      // A typed study answer is the answer: the keyboard neither suggests
+      // the term nor corrects what was typed (BR-STUDY-026).
+      autocorrect: !isBare,
+      enableSuggestions: !isBare,
       inputFormatters: [edits.formatter],
       maxLines: _isMultiline ? null : 1,
       // A term wraps but is one line of meaning: Enter fires the action.

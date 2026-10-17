@@ -119,7 +119,7 @@ void main() {
       await tester.pump();
       expect(
         tester.getSemantics(find.text(_en.exportTitleDeck(2))),
-        containsSemantics(isHeader: true, namesRoute: true),
+        isSemantics(isHeader: true, namesRoute: true),
       );
       headingProbe.dispose();
       expect(find.text(_en.exportBodyDeck('Words')), findsOneWidget);

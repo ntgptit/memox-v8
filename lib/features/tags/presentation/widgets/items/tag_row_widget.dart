@@ -30,6 +30,7 @@ class TagRowWidget extends StatelessWidget {
       title: tag.name,
       subtitle: l10n.tagsCardCount(tag.cardCount),
       isBusy: isBusy,
+      busyLabel: l10n.tagsRowBusy,
       onTap: isBusy ? null : onActions,
       trailing: MxIconButton(
         icon: AppIcons.more,

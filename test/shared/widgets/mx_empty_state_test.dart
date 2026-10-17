@@ -237,4 +237,21 @@ void main() {
       );
     },
   );
+
+  testWidgets('the title and the body are one live region, as the error '
+      'state is (audit 2026-10-17)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.library,
+        title: 'No decks yet',
+        body: 'Create one to start.',
+      ),
+    );
+    final node = tester.getSemantics(find.text('No decks yet'));
+    expect(node, isSemantics(isLiveRegion: true));
+    expect(node.label, contains('Create one to start.'));
+    handle.dispose();
+  });
 }

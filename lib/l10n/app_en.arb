@@ -6877,6 +6877,10 @@
   "@tagsRename": {
     "description": "Screen 05: the rename action and the rename dialog title."
   },
+  "tagsRowBusy": "Saving this tag",
+  "@tagsRowBusy": {
+    "description": "Screen handoff 05: what TalkBack hears on a tag row while its write runs (audit 2026-10-17)."
+  },
   "tagsRenameHint": "Renaming onto an existing name merges the two",
   "@tagsRenameHint": {
     "description": "Screen 05 action sheet: what a rename may do (A1)."

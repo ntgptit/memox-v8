@@ -169,6 +169,8 @@ void main() {
           .onPressed,
       isNull,
     );
+    // Nor can a second target be picked (audit 2026-10-17).
+    expect(tester.widget<MxListRow>(find.byType(MxListRow)).isEnabled, isFalse);
   });
 
   // SW-REV-008: a picker that fails to load keeps its head and a way out,

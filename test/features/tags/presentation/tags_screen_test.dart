@@ -145,7 +145,7 @@ void main() {
     await tester.pump();
     expect(
       tester.getSemantics(find.text('động từ · 46')),
-      containsSemantics(isHeader: true, namesRoute: true),
+      isSemantics(isHeader: true, namesRoute: true),
     );
     headingProbe.dispose();
     expect(find.text(_en.tagsFindCardsHint('động từ')), findsOneWidget);

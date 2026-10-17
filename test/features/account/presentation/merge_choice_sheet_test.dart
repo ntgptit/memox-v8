@@ -70,7 +70,7 @@ void main() {
     await tester.pump();
     expect(
       tester.getSemantics(find.text(_en.accountTakenEmail('b@example.com'))),
-      containsSemantics(isHeader: true, namesRoute: true),
+      isSemantics(isHeader: true, namesRoute: true),
     );
     headingProbe.dispose();
     expect(find.text(_en.accountMergeCounts(1, 0)), findsOneWidget);

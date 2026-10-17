@@ -137,7 +137,7 @@ void main() {
       tester.getSemantics(
         find.text(_en.starterSheetTitle(hangulTemplate.title)),
       ),
-      containsSemantics(isHeader: true, namesRoute: true),
+      isSemantics(isHeader: true, namesRoute: true),
     );
     headingProbe.dispose();
     // The lock, not the counts the card already states (critique

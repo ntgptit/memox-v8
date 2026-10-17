@@ -109,23 +109,36 @@ class MxEmptyState extends StatelessWidget {
               // Ruling R7: the tile→title and title→body gaps are
               // UNSPECIFIED in the contract.
               SizedBox(height: context.dimens.space16),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: isCompact
-                    ? context.texts.itemTitle
-                    : context.texts.sectionTitle,
-              ),
-              if (body case final body?) ...[
-                SizedBox(height: context.dimens.space8),
-                Text(
-                  body,
-                  textAlign: TextAlign.center,
-                  style: context.texts.body.copyWith(
-                    color: context.colors.mutedForeground,
+              // It swaps in for a skeleton in place, as MxErrorState does:
+              // the title and the body are one live region (audit
+              // 2026-10-17).
+              MergeSemantics(
+                child: Semantics(
+                  liveRegion: true,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: isCompact
+                            ? context.texts.itemTitle
+                            : context.texts.sectionTitle,
+                      ),
+                      if (body case final body?) ...[
+                        SizedBox(height: context.dimens.space8),
+                        Text(
+                          body,
+                          textAlign: TextAlign.center,
+                          style: context.texts.body.copyWith(
+                            color: context.colors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-              ],
+              ),
               if ((actionLabel, onAction) case (
                 final label?,
                 final onPressed?,

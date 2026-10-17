@@ -162,6 +162,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
               subtitle: context.l10n.gallery120Of300Cards,
               leading: const MxIconTile(icon: AppIcons.library),
               isBusy: true,
+              busyLabel: context.l10n.commonLoading,
               onTap: () {},
             ),
             MxListRow(

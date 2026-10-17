@@ -1308,6 +1308,7 @@
   "tagsFindCards": "Tìm thẻ có tag này",
   "tagsFindCardsHint": "Tìm “{tag}” trong thư viện",
   "tagsRename": "Đổi tên tag",
+  "tagsRowBusy": "Đang lưu tag này",
   "tagsRenameHint": "Đổi sang tên đã có sẽ gộp hai tag",
   "tagsDelete": "Xoá tag",
   "tagsDeleteHint": "{count, plural, =0{Xoá khỏi danh mục} other{Gỡ khỏi {count} thẻ · thẻ vẫn còn}}",

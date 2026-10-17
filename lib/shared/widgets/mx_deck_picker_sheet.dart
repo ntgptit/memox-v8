@@ -103,7 +103,9 @@ class MxDeckPickerSheet extends StatelessWidget {
                       leading: MxIconTile(icon: candidate.icon),
                       hasChevron: true,
                       onTap: candidate.onTap,
-                      isEnabled: candidate.isEnabled,
+                      // Held: no second target can be picked while the
+                      // first one's write runs.
+                      isEnabled: candidate.isEnabled && !isHeld,
                     ),
                 ],
               ),
