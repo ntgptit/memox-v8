@@ -94,6 +94,7 @@
   "topikClockOfTotal": "{position} / {length}",
   "topikSpeed": "{speed}×",
   "topikPlaybackSpeed": "Tốc độ phát",
+  "topikSpeedTrigger": "Tốc độ phát, {speed}",
   "topikAudioFailed": "Không phát được âm thanh này",
   "topikAudioFailedBody": "Câu trả lời của bạn vẫn an toàn.",
   "topikPrevious": "Câu trước",

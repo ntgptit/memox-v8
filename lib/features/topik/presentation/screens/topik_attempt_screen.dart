@@ -215,7 +215,7 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
           total: questions.length,
           counterLabel: l10n.topikOfTotal(question.no, questions.last.no),
           closeLabel: l10n.topikClose,
-          onClose: isSubmitting ? () {} : widget.onClose,
+          onClose: isSubmitting ? null : widget.onClose,
         ),
         body: TopikTwoPaneWidget(
           top: TopikGroupPaneWidget(

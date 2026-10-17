@@ -227,6 +227,41 @@ void main() {
     expect(exits.summaries, 1);
   });
 
+  libraryTest('a test whose question set no longer matches the attempt shows '
+      'the unavailable state, not an error (BR-TOPIK-019)', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    // Same id, but question 1, which the attempt answered, is gone.
+    final changed = TopikTest(
+      schemaVersion: reading.schemaVersion,
+      contentVersion: reading.contentVersion,
+      testId: reading.testId,
+      level: reading.level,
+      round: reading.round,
+      section: reading.section,
+      format: reading.format,
+      form: reading.form,
+      titleKo: reading.titleKo,
+      officialTimeLimitSec: reading.officialTimeLimitSec,
+      source: reading.source,
+      groups: reading.groups,
+      questions: reading.questions.skip(1).toList(),
+    );
+    final exits = await pump(tester, env, done.id, catalog: [changed]);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text("Review isn't available for this test"), findsOneWidget);
+    await tester.tap(find.text('Back to summary'));
+    expect(exits.summaries, 1);
+  });
+
   libraryTest('the attempt deleted elsewhere, or still in progress: missing '
       '(UC-TOPIK-005 E2)', (tester, env) async {
     final done = await topikSeedSubmitted(env, reading);

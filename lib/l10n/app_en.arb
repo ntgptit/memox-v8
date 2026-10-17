@@ -471,6 +471,15 @@
   "@topikPlaybackSpeed": {
     "description": "Screen 37: the speed sheet's title and the speed chip's label."
   },
+  "topikSpeedTrigger": "Playback speed, {speed}",
+  "@topikSpeedTrigger": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: what TalkBack reads for the speed chip, its purpose and its current value, as Playback speed, 1× (the speed is formatted by topikSpeed)."
+  },
   "topikAudioFailed": "Couldn't play this audio",
   "@topikAudioFailed": {
     "description": "Screen 37: the audio banner's title (BR-TOPIK-017)."

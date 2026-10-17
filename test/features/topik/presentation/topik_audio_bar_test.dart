@@ -94,4 +94,16 @@ void main() {
     expect(data.value, '0:00 / 0:30');
     handle.dispose();
   });
+
+  libraryTest('the speed chip reads its purpose and value as one node', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env);
+
+    expect(find.text('1×'), findsOneWidget);
+    expect(find.bySemanticsLabel('Playback speed, 1×'), findsOneWidget);
+    handle.dispose();
+  });
 }

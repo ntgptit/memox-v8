@@ -34,6 +34,8 @@ class TopikTestRowWidget extends StatelessWidget {
     ];
     return MxListRow(
       title: test.titleKo,
+      // The round number is 1 to 3 digits: the title stays in one column.
+      hasStableLeading: true,
       leading: MxBadge(
         label: l10n.topikRoundNumber(test.round),
         tone: MxBadgeTone.neutral,
