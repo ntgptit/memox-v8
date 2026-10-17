@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -56,7 +56,7 @@ class StudyEntryResumeWidget extends StatelessWidget {
                       progress.total,
                     ),
             ),
-            style: context.texts.titleSmall,
+            style: context.texts.itemTitle,
           ),
           if (progress != null && progress.total > 0) ...[
             SizedBox(height: context.dimens.space8),
@@ -65,8 +65,8 @@ class StudyEntryResumeWidget extends StatelessWidget {
           SizedBox(height: context.dimens.space4),
           Text(
             l10n.studyEntryResumeBody,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space12),

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
@@ -20,6 +20,8 @@ import '../../../support/account_harness.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -146,7 +148,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), 'a@example.com');
+    await tester.enterText(find.byType(FTextField), 'a@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
 
@@ -162,7 +164,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), 'a@');
+    await tester.enterText(find.byType(FTextField), 'a@');
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
 
@@ -227,7 +229,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), 'b@example.com');
+    await tester.enterText(find.byType(FTextField), 'b@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
 
@@ -243,7 +245,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), 'a@example.com');
+    await tester.enterText(find.byType(FTextField), 'a@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
 
@@ -366,7 +368,7 @@ void main() {
         overrides: accountOverrides(world),
       );
 
-      await tester.enterText(find.byType(TextField), 'b@example.com');
+      await tester.enterText(find.byType(FTextField), 'b@example.com');
       await tester.tap(find.text(_en.accountSendCode));
       await _settle(tester);
       expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);

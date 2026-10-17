@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 
-/// Names the route with [child] for a screen reader, as the framework
-/// `AppBar` names it with its title: everywhere but on Apple platforms
-/// (`material/app_bar.dart:1067`..`:1080`), so TalkBack announces the screen
-/// on each push (M3F-08, DEV-393). The SDK reads `defaultTargetPlatform`;
-/// this reads the theme's platform, which the app theme never sets, so it is
-/// the same on a device and a test can override it. One route has one such
-/// node; a bar that is not the top of its route (a selection bar) must not
-/// use it.
+/// Names the route with [child] for a screen reader, as the framework's app
+/// bar names it with its title: everywhere but on Apple platforms, so
+/// TalkBack announces the screen on each push (M3F-08, DEV-393). It reads
+/// ForUI's platform variant, which follows the device and which a test can
+/// override with `FTheme(platform:)`. One route has one such node; a bar
+/// that is not the top of its route (a selection bar) must not use it.
 class MxRouteName extends StatelessWidget {
   const MxRouteName({super.key, required this.child, this.isHeader = false});
 
@@ -18,12 +17,9 @@ class MxRouteName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    namesRoute: switch (Theme.of(context).platform) {
-      TargetPlatform.android ||
-      TargetPlatform.fuchsia ||
-      TargetPlatform.linux ||
-      TargetPlatform.windows => true,
-      TargetPlatform.iOS || TargetPlatform.macOS => null,
+    namesRoute: switch (context.platformVariant) {
+      FPlatformVariant.iOS || FPlatformVariant.macOS => null,
+      _ => true,
     },
     header: isHeader ? true : null,
     child: child,

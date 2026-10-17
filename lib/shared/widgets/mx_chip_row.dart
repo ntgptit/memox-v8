@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A row of chips that never shrink or wrap, so it scrolls sideways. A chip
-/// that is focused keeps its whole ring: the row clips at its own edges plus
-/// the ring's reach, `strokeFocusGap` and `strokeFocus`, not at the chip's.
+/// that is focused keeps its whole outline: the row clips at its own edges
+/// plus the outline's reach, not at the chip's.
 ///
 /// Put an MxScrollFade around it to hint at the chips past an edge.
 class MxChipRow extends StatelessWidget {
@@ -15,7 +15,7 @@ class MxChipRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final dimens = context.dimens;
     return ClipRect(
-      clipper: _RingReachClipper(dimens.strokeFocusGap + dimens.strokeFocus),
+      clipper: _RingReachClipper(context.focusOutlineReach),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         // The scroll view's own clip is the chip's edge; the clipper above

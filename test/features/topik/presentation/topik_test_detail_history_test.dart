@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
@@ -13,6 +12,9 @@ import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
 import '../../../support/topik_test_detail_fixtures.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 /// The attempt store with a delete that fails, as a locked database does.
 final class _FailingDelete implements TopikAttemptRepository {
@@ -52,13 +54,13 @@ void main() {
     expect(find.text('3 ATTEMPTS'), findsOneWidget);
 
     // Newest first: #3, #2, #1. Cancel leaves #2 in place.
-    await tester.tap(find.byTooltip('Delete attempt 2'));
+    await tester.tap(byControlLabel('Delete attempt 2'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(find.text('#3'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Delete attempt 2'));
+    await tester.tap(byControlLabel('Delete attempt 2'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
@@ -103,6 +105,7 @@ void main() {
     expect(taps.summaries, [done.id]);
     expect(taps.reviews, [done.id]);
     expect(taps.attempts, [open.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('History with no attempt keeps the FAB', (tester, env) async {
@@ -133,13 +136,13 @@ void main() {
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Delete attempt 1'));
+    await tester.tap(byControlLabel('Delete attempt 1'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
 
     expect(find.text('#1'), findsOneWidget);
-    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.byType(FToast), findsOneWidget);
   });
 
   libraryTest('every History action is named with its attempt number for '
@@ -165,8 +168,8 @@ void main() {
     expect(find.bySemanticsLabel('Summary of attempt 2'), findsOneWidget);
     expect(find.bySemanticsLabel('Review of attempt 1'), findsOneWidget);
     // An icon button's name is its tooltip.
-    expect(find.byTooltip('Delete attempt 3'), findsOneWidget);
-    expect(find.byTooltip('Delete attempt 1'), findsOneWidget);
+    expect(byControlLabel('Delete attempt 3'), findsOneWidget);
+    expect(byControlLabel('Delete attempt 1'), findsOneWidget);
     // The visible labels stay short: one row of many.
     expect(find.text('Summary'), findsNWidgets(2));
     handle.dispose();

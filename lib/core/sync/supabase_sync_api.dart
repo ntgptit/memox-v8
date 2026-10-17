@@ -17,12 +17,10 @@ typedef SessionGuard = Future<void> Function();
 /// the scheduler and the `pause()` of an account transition (DEV-186).
 class SupabaseSyncApi implements SyncApi {
   SupabaseSyncApi({
-    required SessionGuard ensureSession,
-    required RpcCall rpc,
-    Duration timeout = rpcTimeout,
-  }) : _ensureSession = ensureSession,
-       _rpc = rpc,
-       _timeout = timeout;
+    required this._ensureSession,
+    required this._rpc,
+    this._timeout = rpcTimeout,
+  });
 
   /// Long enough for a push of one batch or a pull of one page on a slow
   /// link (app deck-sync spec §5).

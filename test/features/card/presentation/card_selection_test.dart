@@ -82,6 +82,7 @@ void main() {
     // DEV-307: selection ends with Close, as in the Trash.
     expect(_checked, findsNothing);
     expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('system Back leaves selection first (RF5)', (tester, env) async {

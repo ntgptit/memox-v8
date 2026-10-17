@@ -1,54 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
+import '../../support/forui_expect.dart';
+import '../../support/theme_harness.dart';
 import '../../support/widget_harness.dart';
 
 final _surfaceFinder = find
-    .descendant(of: find.byType(MxDialog), matching: find.byType(Material))
+    .descendant(
+      of: find.byType(MxDialog),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is DecoratedBox && widget.decoration is ShapeDecoration,
+      ),
+    )
     .first;
 
-Material _surface(WidgetTester tester) =>
-    tester.widget<Material>(_surfaceFinder);
-
-Widget _still(Widget child) => Builder(
-  builder: (context) => MediaQuery(
-    data: MediaQuery.of(context).copyWith(disableAnimations: true),
-    child: child,
-  ),
-);
+FDialogStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, find.byType(MxDialog)).dialogStyle;
 
 void main() {
-  final scheme = lightColorScheme;
+  const dimens = AppDimens();
 
-  testWidgets('the high container at radiusXl, elevation 6 with no shadow', (
+  testWidgets('ForUI\'s dialog surface: the card, its edge and radius', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
 
-    expect(_surface(tester).color, scheme.surfaceContainerHigh);
     expect(
-      (_surface(tester).shape! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(const AppDimens().radiusXl),
+      tester.widget<DecoratedBox>(_surfaceFinder).decoration,
+      _style(tester).decoration,
     );
-    expect(_surface(tester).elevation, 6);
-    expect(_surface(tester).shadowColor, Colors.transparent);
   });
 
   testWidgets(
-    'width: the column space24 in from each edge, capped at 340/320/300',
+    'width: the column inside ForUI\'s inset, at least 280, capped at '
+    '340/320/300',
     (tester) async {
       await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
+      final inset = _style(tester).insetPadding.horizontal;
       expect(
-        tester.getSize(find.byType(Material).last).width,
-        360 - 2 * const AppDimens().space24,
+        tester.getSize(_surfaceFinder).width,
+        (360 - inset).clamp(280.0, 340.0),
       );
 
       tester.view.physicalSize = const Size(600, 800);
@@ -60,56 +59,50 @@ void main() {
         await tester.pumpWidget(const SizedBox());
         await pumpMxAt(tester, MxDialog(title: 'Delete deck?', width: width));
 
-        expect(tester.getSize(find.byType(Material).last).width, cap);
+        expect(tester.getSize(_surfaceFinder).width, cap);
       }
     },
   );
 
   testWidgets(
-    'headlineSmall over a bodyMedium body 16 below, space24 all round, the '
-    'text on the action pair\'s edge (DEV-166); the route is named',
+    'the title over the body 16 below in ForUI\'s dialog text styles, '
+    'space24 all round, the text on the action pair\'s edge (DEV-166); the '
+    'route is named',
     (tester) async {
       final handle = tester.ensureSemantics();
       await pumpMx(
         tester,
         const MxDialog(title: 'Delete deck?', body: 'Its cards move to Trash.'),
       );
-      final surface = tester.getTopLeft(find.byType(Material).last);
+      final surface = tester.getTopLeft(_surfaceFinder);
+      final style = _style(tester);
 
-      final title = tester.widget<Text>(find.text('Delete deck?')).style!;
-      final body = tester.widget<Text>(find.text('Its cards move to Trash.'));
-      final texts = tester.element(find.text('Delete deck?')).texts;
       expect(
-        (title.fontSize, title.height, title.color),
-        (
-          texts.headlineSmall!.fontSize,
-          texts.headlineSmall!.height,
-          scheme.onSurface,
-        ),
+        tester.widget<Text>(find.text('Delete deck?')).style,
+        style.titleTextStyle,
       );
       expect(
-        (body.style!.fontSize, body.style!.color),
-        (texts.bodyMedium!.fontSize, scheme.onSurfaceVariant),
+        tester.widget<Text>(find.text('Its cards move to Trash.')).style,
+        style.bodyTextStyle,
       );
       expect(
         tester.getTopLeft(find.text('Delete deck?')) - surface,
-        Offset(const AppDimens().space24, const AppDimens().space24),
+        Offset(dimens.space24, dimens.space24),
       );
       expect(
         tester.getTopLeft(find.text('Its cards move to Trash.')).dy -
             tester.getBottomLeft(find.text('Delete deck?')).dy,
-        const AppDimens().space16,
+        dimens.space16,
       );
       expect(
-        tester.getSemantics(find.byType(MxDialog)),
+        tester.getSemantics(find.bySemanticsLabel('Delete deck?').first),
         isSemantics(label: 'Delete deck?', namesRoute: true, scopesRoute: true),
       );
       handle.dispose();
     },
   );
 
-  testWidgets('showMxDialog: the theme\'s scrim; a scrim tap returns null '
-      '(RF2)', (tester) async {
+  testWidgets('showMxDialog: a scrim tap returns null (RF2)', (tester) async {
     String? result = 'unset';
     await pumpMx(
       tester,
@@ -127,20 +120,46 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MxDialog), findsOneWidget);
-    expect(
-      tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color,
-      scheme.scrim.withValues(alpha: const AppDimens().opacityScrim),
-    );
+    expect(find.byType(ModalBarrier), findsWidgets);
     await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsNothing);
     expect(result, isNull);
   });
 
-  testWidgets('reduced motion opens with no transition (RF4)', (tester) async {
+  testWidgets('showMxDialog returns what the dialog pops with', (tester) async {
+    String? result;
     await pumpMx(
       tester,
-      _still(
+      Builder(
+        builder: (context) => MxButton(
+          label: 'Open',
+          onPressed: () async => result = await showMxDialog<String>(
+            context,
+            builder: (dialog) => MxDialog(
+              title: 'Pick',
+              actions: MxButton(
+                label: 'Yes',
+                onPressed: () => Navigator.of(dialog).pop('yes'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yes'));
+    await tester.pumpAndSettle();
+
+    expect(result, 'yes');
+    expect(find.byType(MxDialog), findsNothing);
+  });
+
+  group('motion (RF4)', () {
+    Future<void> open(WidgetTester tester) async {
+      await pumpMx(
+        tester,
         Builder(
           builder: (context) => MxButton(
             label: 'Open',
@@ -150,25 +169,36 @@ void main() {
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Open'));
-    await tester.pump();
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+    }
 
-    expect(
-      tester
-          .widget<FadeTransition>(
-            find
-                .ancestor(
-                  of: find.byType(MxDialog),
-                  matching: find.byType(FadeTransition),
-                )
-                .first,
-          )
-          .opacity
-          .value,
-      1,
-    );
+    Finder transitions(Type type) =>
+        find.descendant(of: find.byType(MxDialog), matching: find.byType(type));
+
+    testWidgets('it fades and scales in with ForUI\'s motion', (tester) async {
+      await open(tester);
+
+      expect(transitions(FadeTransition), findsWidgets);
+      expect(transitions(ScaleTransition), findsWidgets);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('reduced motion opens with no transition', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await open(tester);
+
+      expect(transitions(FadeTransition), findsNothing);
+      expect(transitions(ScaleTransition), findsNothing);
+      expect(find.text('Delete deck?'), findsOneWidget);
+      await tester.pumpAndSettle();
+    });
   });
 
   testWidgets('the title, the body and the action pair share one 24 edge, '
@@ -216,14 +246,15 @@ void main() {
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           home: Builder(
             builder: (context) => Scaffold(
               body: Center(
-                child: TextButton(
+                child: MxButton(
+                  label: 'Open',
                   onPressed: () =>
                       showMxDialog<void>(context, builder: (_) => dialog),
-                  child: const Text('Open'),
                 ),
               ),
             ),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/code_controller.dart';
@@ -102,7 +102,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
       children: [
         MxRouteName(
           isHeader: true,
-          child: Text(l10n.accountCodeTitle, style: context.texts.titleLarge),
+          child: Text(l10n.accountCodeTitle, style: context.texts.screenTitle),
         ),
         SizedBox(height: context.dimens.space8),
         // TalkBack reads the lead and its address as one sentence (DEV-168).
@@ -112,11 +112,11 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
             children: [
               Text(
                 l10n.accountCodeSentTo,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
-              Text(widget.email, style: context.texts.titleSmall),
+              Text(widget.email, style: context.texts.itemTitle),
             ],
           ),
         ),
@@ -179,8 +179,8 @@ class _WaitLine extends StatelessWidget {
           (true, _) => MxSpinner(semanticLabel: l10n.commonLoading),
           (false, final String time) => Text(
             l10n.accountResendIn(time),
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           // A polite live region on the button's own node, so TalkBack

@@ -1,9 +1,13 @@
 ---
 id: ADR-022
 title: Một nguồn token và theme theo cấu trúc Flutter thông thường
-status: active
-superseded_by:
+status: deprecated
+superseded_by: ADR-026
 ---
+> **Thay bởi [ADR-026](ADR-026-forui-la-he-component-giao-dien.md) (2026-10-17).**
+> ForUI là hệ component; giá trị viết bằng Dart ở `lib/core/theme/`; `design/tokens.json`,
+> bộ sinh và theme Material 3 đã bị xoá. Phần dưới là hồ sơ lịch sử.
+
 ## Bối cảnh
 
 Mỗi lần đổi giao diện phải sửa tay cùng một giá trị ở sáu nơi, và nơi nào cũng là một

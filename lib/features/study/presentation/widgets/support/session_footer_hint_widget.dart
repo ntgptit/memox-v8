@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -25,8 +25,8 @@ class SessionFooterHintWidget extends StatelessWidget {
     if (MxAppShell.isTypingOf(context)) {
       return const SizedBox.shrink();
     }
-    final style = context.texts.bodyMedium!.copyWith(
-      color: context.colors.onSurfaceVariant,
+    final style = context.texts.body.copyWith(
+      color: context.colors.mutedForeground,
     );
     return Padding(
       padding: EdgeInsets.fromLTRB(

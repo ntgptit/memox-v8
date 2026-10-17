@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
@@ -130,8 +130,8 @@ class _Lines extends StatelessWidget {
         ? MxBadge(label: timeLeft, tone: MxBadgeTone.warning)
         : Text(
             timeLeft,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           );
     return Column(
@@ -148,7 +148,7 @@ class _Lines extends StatelessWidget {
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.texts.titleSmall,
+                style: context.texts.itemTitle,
               ),
             ),
             timeLeftLabel,
@@ -158,16 +158,16 @@ class _Lines extends StatelessWidget {
           meta,
           maxLines: _metaLines,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.body.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
         Text(
           origin,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.body.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ],

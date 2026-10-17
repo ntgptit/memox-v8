@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 
 import '../../support/widget_harness.dart';
@@ -13,7 +13,7 @@ void main() {
   testWidgets('a centred note line on the muted fill, padded 24 16', (
     tester,
   ) async {
-    final scheme = lightColorScheme;
+    final colors = appLightColors;
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxDashedNote(text: _line)),
@@ -31,8 +31,8 @@ void main() {
             as BoxDecoration;
 
     expect(text.textAlign, TextAlign.center);
-    expect(text.style!.color, scheme.onSurfaceVariant);
-    expect(box.color, scheme.surfaceContainerLow);
+    expect(text.style!.color, colors.mutedForeground);
+    expect(box.color, colors.muted);
     expect(
       tester.getTopLeft(find.text(_line)).dy -
           tester.getTopLeft(find.byType(MxDashedNote)).dy,

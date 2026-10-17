@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
-import '../../support/field_edge_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-/// The decoration the field paints: its own, with the theme's defaults.
-InputDecoration _decoration(WidgetTester tester) =>
-    tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
+final _field = find.byType(FTextField);
 
-TextStyle _textOf(WidgetTester tester, String text) =>
-    tester.widget<Text>(find.text(text)).style!;
+/// The decoration the field paints: its own, with the theme's defaults.
+mu.InputDecoration _decoration(WidgetTester tester) =>
+    tester.widget<mu.InputDecorator>(find.byType(mu.InputDecorator)).decoration;
+
+/// The outlined edge the decorator takes in [states].
+Color _edgeIn(WidgetTester tester, Set<mu.WidgetState> states) =>
+    ((_decoration(tester).border! as mu.WidgetStateProperty<mu.InputBorder>)
+                .resolve(states)
+            as mu.OutlineInputBorder)
+        .borderSide
+        .color;
+
+/// The colour the painted [text] reads in: the ambient style over it.
+Color? _inkOf(WidgetTester tester, String text) {
+  final widget = tester.widget<Text>(find.text(text));
+  return widget.style?.color ??
+      DefaultTextStyle.of(tester.element(find.text(text))).style.color;
+}
 
 /// The painted label, the supporting row, the disabled state, the caret and
 /// the autofocus of [MxTextField] (DEV-372).
 void main() {
-  final scheme = lightColorScheme;
-  // The M3 disabled edge: onSurface at the container opacity.
-  final ghost = scheme.onSurface.withValues(alpha: 0.12);
+  final colors = appLightColors;
 
-  testWidgets('disabled: the M3 values once, no wrapper dimming the edge a '
-      'second time (DEV-372 R2)', (tester) async {
+  testWidgets('disabled: the ForUI disabled values once, no wrapper dimming '
+      'the edge a second time (DEV-372 R2)', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -36,29 +49,31 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(
-      find.ancestor(of: find.byType(TextField), matching: find.byType(Opacity)),
+      find.ancestor(of: _field, matching: find.byType(Opacity)),
       findsNothing,
     );
-    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
     expect(
-      edgeIn(_decoration(tester), {WidgetState.disabled}).borderSide.color,
-      ghost,
+      tester.widget<EditableText>(find.byType(EditableText)).readOnly,
+      isTrue,
     );
-    final content = scheme.onSurface.withValues(alpha: 0.38);
-    expect(_textOf(tester, 'Name').color, content);
-    expect(_textOf(tester, 'Shown on the card').color, content);
-    expect(_textOf(tester, '0 / 60').color, content);
-    final hint = tester.widget<Text>(find.text('Deck'));
-    expect(hint.style!.color, content);
+    expect(
+      _edgeIn(tester, {mu.WidgetState.disabled}),
+      colors.disable(colors.border),
+    );
+    expect(_inkOf(tester, 'Name'), colors.disable(colors.foreground));
+    expect(
+      _inkOf(tester, 'Shown on the card'),
+      colors.disable(colors.mutedForeground),
+    );
+    expect(_inkOf(tester, '0 / 60'), colors.disable(colors.mutedForeground));
+    expect(_inkOf(tester, 'Deck'), colors.disable(colors.mutedForeground));
   });
 
-  testWidgets('the painted label sits above the field, 4 clear of it, in '
-      'onSurfaceVariant, and the field keeps the name for TalkBack', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
+  testWidgets('the painted label sits above the field in ForUI\'s label '
+      'style', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(width: 300, child: MxTextField(label: 'Deck name')),
@@ -66,23 +81,31 @@ void main() {
 
     final label = find.text('Deck name');
     expect(label, findsOneWidget);
-    expect(_textOf(tester, 'Deck name').color, scheme.onSurfaceVariant);
+    expectForUiFieldLabel(tester, label);
     expect(
-      tester.getTopLeft(find.byType(TextField)).dy -
-          tester.getBottomLeft(label).dy,
-      4,
+      tester.getTopLeft(fieldBox(_field)).dy - tester.getBottomLeft(label).dy,
+      forUiTheme(
+        tester,
+        _field,
+      ).textFieldStyles.lg.labelPadding.resolve(TextDirection.ltr).bottom,
     );
-    // The label starts on the field's text inset.
-    expect(
-      tester.getTopLeft(label).dx -
-          tester.getTopLeft(find.byType(TextField)).dx,
-      16,
+    // The label starts on the field's edge.
+    expect(tester.getTopLeft(label).dx, tester.getTopLeft(fieldBox(_field)).dx);
+  });
+
+  testWidgets('the field keeps the label as its name for TalkBack, painted '
+      'once', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const SizedBox(width: 300, child: MxTextField(label: 'Deck name')),
     );
+
     expect(
       tester.getSemantics(find.byType(EditableText)).label,
       contains('Deck name'),
     );
-    // Painted once for TalkBack: the field's node carries it, not the Text.
+    // Painted once for TalkBack: a node carries it, not the Text.
     expect(find.bySemanticsLabel('Deck name'), findsOneWidget);
     handle.dispose();
   });
@@ -97,8 +120,9 @@ void main() {
         child: MxTextField(label: 'Deck name', errorText: 'Required'),
       ),
     );
+    await tester.pumpAndSettle();
 
-    expect(_textOf(tester, 'Deck name').color, scheme.error);
+    expect(_inkOf(tester, 'Deck name'), colors.error);
   });
 
   testWidgets('a bare study field and a code field paint no label', (
@@ -139,8 +163,8 @@ void main() {
     expect(tester.getTopLeft(find.text('Required')).dx, greaterThan(label.dx));
   });
 
-  testWidgets('supporting text sits under the field on the text inset, in '
-      'bodySmall onSurfaceVariant; an error takes its place', (tester) async {
+  testWidgets('supporting text sits under the field in ForUI\'s description '
+      'style; an error takes its place', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -148,16 +172,19 @@ void main() {
         child: MxTextField(supportingText: 'Shown on the card'),
       ),
     );
-    final field = find.byType(TextField);
     final text = find.text('Shown on the card');
+    final style = forUiTheme(tester, _field).textFieldStyles.lg;
 
-    expect(_textOf(tester, 'Shown on the card').color, scheme.onSurfaceVariant);
+    expect(_inkOf(tester, 'Shown on the card'), colors.mutedForeground);
     expect(
-      tester.widget<Text>(text).style!.fontSize,
-      tester.element(text).texts.bodySmall!.fontSize,
+      DefaultTextStyle.of(tester.element(text)).style.fontSize,
+      style.descriptionTextStyle.resolve({}).fontSize,
     );
-    expect(tester.getTopLeft(text).dx - tester.getTopLeft(field).dx, 16);
-    expect(tester.getTopLeft(text).dy - tester.getBottomLeft(field).dy, 4);
+    expect(tester.getTopLeft(text).dx, tester.getTopLeft(fieldBox(_field)).dx);
+    expect(
+      tester.getTopLeft(text).dy - tester.getBottomLeft(fieldBox(_field)).dy,
+      style.descriptionPadding.resolve(TextDirection.ltr).top,
+    );
 
     await pumpMx(
       tester,
@@ -169,6 +196,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
     expect(find.text('Shown on the card'), findsNothing);
     expect(find.text('Required'), findsOneWidget);
   });
@@ -182,11 +210,11 @@ void main() {
         child: MxTextField(supportingText: 'Hint', counter: '3 / 60'),
       ),
     );
-    final field = find.byType(TextField);
+    final box = fieldBox(_field);
     final counter = find.text('3 / 60');
 
-    expect(_textOf(tester, '3 / 60').color, scheme.onSurfaceVariant);
-    expect(tester.getTopRight(counter).dx, tester.getTopRight(field).dx - 16);
+    expect(_inkOf(tester, '3 / 60'), colors.mutedForeground);
+    expect(tester.getTopRight(counter).dx, tester.getTopRight(box).dx);
     expect(
       tester.getTopLeft(counter).dy,
       tester.getTopLeft(find.text('Hint')).dy,
@@ -199,11 +227,11 @@ void main() {
         child: MxTextField(counter: '61 / 60', errorText: 'Too long'),
       ),
     );
-    expect(_textOf(tester, '61 / 60').color, scheme.error);
+    await tester.pumpAndSettle();
     expect(find.text('Too long'), findsOneWidget);
     expect(
       tester.getTopRight(find.text('61 / 60')).dx,
-      tester.getTopRight(find.byType(TextField)).dx - 16,
+      tester.getTopRight(fieldBox(_field)).dx,
     );
   });
 
@@ -231,22 +259,15 @@ void main() {
     );
   });
 
-  testWidgets('the caret is the accent, and the error colour in error', (
-    tester,
-  ) async {
+  testWidgets('the caret is the primary, as the style sets it', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
     expect(
-      tester.widget<TextField>(find.byType(TextField)).cursorColor,
-      scheme.primary,
-    );
-
-    await pumpMx(
-      tester,
-      const SizedBox(width: 300, child: MxTextField(errorText: 'Required')),
+      tester.widget<EditableText>(find.byType(EditableText)).cursorColor,
+      colors.primary,
     );
     expect(
-      tester.widget<TextField>(find.byType(TextField)).cursorColor,
-      scheme.error,
+      tester.widget<EditableText>(find.byType(EditableText)).cursorColor,
+      forUiTheme(tester, _field).textFieldStyles.lg.cursorColor,
     );
   });
 }

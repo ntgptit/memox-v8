@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
@@ -18,6 +18,8 @@ import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -45,7 +47,7 @@ void main() {
 
     expect(find.text(_en.accountCodeSentTo), findsOneWidget);
     expect(find.text('a@example.com'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), '123456');
+    await tester.enterText(find.byType(FTextField), '123456');
     await _settle(tester);
 
     expect(signIns, 1);
@@ -85,10 +87,20 @@ void main() {
     );
 
     final held = world.gateway.holdRequests = Completer<void>();
-    await tester.enterText(find.byType(TextField), '123456');
+    await tester.enterText(find.byType(FTextField), '123456');
     await tester.pump();
 
-    expect(tester.widget<TextField>(find.byType(TextField)).readOnly, isTrue);
+    expect(
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byType(FTextField),
+              matching: find.byType(EditableText),
+            ),
+          )
+          .readOnly,
+      isTrue,
+    );
     expect(
       find.descendant(
         of: find.byKey(MxCodeField.slotKey(0)),
@@ -96,13 +108,15 @@ void main() {
       ),
       findsOneWidget,
     );
+    final disabledOpacity = tester
+        .element(find.byKey(MxCodeField.slotKey(0)))
+        .colors
+        .disabledOpacity;
     expect(
       find.ancestor(
         of: find.byKey(MxCodeField.slotKey(0)),
         matching: find.byWidgetPredicate(
-          (w) =>
-              w is Opacity &&
-              w.opacity == const AppDimens().opacityDisabledContent,
+          (w) => w is Opacity && w.opacity == disabledOpacity,
         ),
       ),
       findsNothing,
@@ -123,17 +137,25 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), '000000');
+    await tester.enterText(find.byType(FTextField), '000000');
     await _settle(tester);
 
     expect(find.text(_en.accountCodeWrong), findsOneWidget);
     expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byType(FTextField),
+              matching: find.byType(EditableText),
+            ),
+          )
+          .controller
+          .text,
       '',
     );
     expect(signIns, 0);
 
-    await tester.enterText(find.byType(TextField), '123456');
+    await tester.enterText(find.byType(FTextField), '123456');
     await _settle(tester);
     expect(signIns, 1);
   });
@@ -268,7 +290,7 @@ void main() {
     await tester.tap(find.text(_en.accountResend));
     await tester.pump();
 
-    await tester.enterText(find.byType(TextField), '123456');
+    await tester.enterText(find.byType(FTextField), '123456');
     await tester.pump();
     held.complete();
     world.gateway.holdRequests = null;
@@ -291,7 +313,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), '000000');
+    await tester.enterText(find.byType(FTextField), '000000');
     await _settle(tester);
 
     expect(find.text(_en.accountCodeWrong), findsOneWidget);
@@ -316,7 +338,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
@@ -345,7 +367,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
@@ -374,7 +396,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
@@ -414,7 +436,7 @@ void main() {
     final before = tester.getTopLeft(find.text(_en.accountUseAnotherEmail));
 
     final held = world.gateway.holdRequests = Completer<void>();
-    await tester.enterText(find.byType(TextField), '123456');
+    await tester.enterText(find.byType(FTextField), '123456');
     await tester.pump();
 
     expect(find.byType(MxSpinner), findsOneWidget);
@@ -439,7 +461,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.enterText(find.byType(TextField), '000000');
+    await tester.enterText(find.byType(FTextField), '000000');
     await _settle(tester);
 
     expect(find.text(_en.accountCodeWrong), findsOneWidget);

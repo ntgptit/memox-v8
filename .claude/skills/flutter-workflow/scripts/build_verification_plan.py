@@ -302,7 +302,7 @@ class VerificationPlanBuilder:
         ):
             self.has_tooling_changes = True
             self.add_reason("tooling outside the Dart host suite changed")
-            # tools/ Dart (m3_lint, topik) is imported by its own tests, which
+            # tools/ Dart (ui_lint, design, topik) is imported by its own tests, which
             # seal finds; integration_test/ Dart selects none.
             return
 

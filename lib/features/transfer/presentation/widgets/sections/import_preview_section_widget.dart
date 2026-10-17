@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
@@ -214,12 +214,12 @@ class _GroupHeader extends StatelessWidget {
               name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: context.texts.titleSmall,
+              style: context.texts.itemTitle,
             ),
             Text(
               context.l10n.importDeckCards(cards),
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

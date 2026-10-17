@@ -1,42 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
-import '../../support/field_edge_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
+final _field = find.byType(FTextField);
+
 /// The decoration the field paints: its own, with the theme's defaults.
-InputDecoration _decoration(WidgetTester tester) =>
-    tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
+mu.InputDecoration _decoration(WidgetTester tester) =>
+    tester.widget<mu.InputDecorator>(find.byType(mu.InputDecorator)).decoration;
 
-Color _edge(OutlineInputBorder border) => border.borderSide.color;
+/// The outlined edge the decorator takes in [states].
+mu.OutlineInputBorder _in(WidgetTester tester, Set<mu.WidgetState> states) =>
+    (_decoration(tester).border! as mu.WidgetStateProperty<mu.InputBorder>)
+            .resolve(states)
+        as mu.OutlineInputBorder;
 
-OutlineInputBorder _in(WidgetTester tester, Set<WidgetState> states) =>
-    edgeIn(_decoration(tester), states);
+Color _edge(mu.OutlineInputBorder border) => border.borderSide.color;
+
+double _boxHeight(WidgetTester tester) => fieldBoxSize(tester, _field).height;
+
+FTextFieldStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _field).textFieldStyles.lg;
 
 void main() {
-  final scheme = lightColorScheme;
-  // The M3 disabled edge: onSurface at the container opacity.
-  final ghost = scheme.onSurface.withValues(alpha: 0.12);
+  final colors = appLightColors;
 
-  testWidgets('single line is 56 tall', (tester) async {
+  testWidgets('single line is the large ForUI field tall', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(width: 300, child: MxTextField(hintText: 'Deck name')),
     );
 
-    expect(tester.getSize(find.byType(TextField)).height, 56);
+    expect(_boxHeight(tester), _style(tester).constraints.minHeight);
+    expect(_boxHeight(tester), greaterThanOrEqualTo(48));
   });
 
-  testWidgets('detail starts at the form field\'s 56 and grows with the text', (
-    tester,
-  ) async {
+  testWidgets('detail starts at the form field\'s height and grows with the '
+      'text', (tester) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
     await pumpMx(
@@ -49,36 +56,38 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 56);
+    final rest = _style(tester).constraints.minHeight;
+    expect(_boxHeight(tester), rest);
 
     controller.text = 'one\ntwo\nthree\nfour';
     await tester.pump();
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(60));
+    expect(_boxHeight(tester), greaterThan(rest + 4));
   });
 
-  testWidgets('outlined, no fill: the sheet ground shows through, focused '
-      'or not', (tester) async {
+  testWidgets('outlined on the card ground, focused or not', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
 
-    expect(_decoration(tester).filled, isNot(isTrue));
-    expect(_decoration(tester).fillColor, isNull);
+    expect(_decoration(tester).filled, isTrue);
+    expect(_decoration(tester).fillColor, colors.card);
   });
 
-  testWidgets('edges: outline edge at rest, the accent focused, ghost '
-      'disabled (DEV-166)', (tester) async {
-    final rest = scheme.outline;
+  testWidgets('edges: border at rest, the primary focused, the disabled '
+      'border disabled (DEV-166)', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
-    expect(_edge(_in(tester, {})), rest);
-    expect(_edge(_in(tester, {WidgetState.focused})), accentOf(scheme));
+    expect(_edge(_in(tester, {})), colors.border);
+    expect(_edge(_in(tester, {mu.WidgetState.focused})), colors.primary);
 
     await pumpMx(
       tester,
       const SizedBox(width: 300, child: MxTextField(isEnabled: false)),
     );
-    expect(_edge(_in(tester, {WidgetState.disabled})), ghost);
+    expect(
+      _edge(_in(tester, {mu.WidgetState.disabled})),
+      colors.disable(colors.border),
+    );
   });
 
-  testWidgets('every edged variant rests on the outline', (tester) async {
+  testWidgets('every edged variant rests on the border', (tester) async {
     for (final variant in [
       MxTextFieldVariant.form,
       MxTextFieldVariant.detail,
@@ -88,7 +97,7 @@ void main() {
         tester,
         SizedBox(width: 300, child: MxTextField(variant: variant)),
       );
-      expect(_edge(_in(tester, {})), scheme.outline, reason: '$variant');
+      expect(_edge(_in(tester, {})), colors.border, reason: '$variant');
     }
   });
 
@@ -102,19 +111,19 @@ void main() {
         child: MxTextField(errorText: 'Name is required'),
       ),
     );
+    await tester.pumpAndSettle();
 
-    expect(_decoration(tester).error, isNotNull);
-    expect(_edge(_in(tester, {WidgetState.error})), scheme.error);
+    expect(_edge(_in(tester, {mu.WidgetState.error})), colors.error);
     expect(
-      _edge(_in(tester, {WidgetState.error, WidgetState.focused})),
-      scheme.error,
+      _edge(_in(tester, {mu.WidgetState.error, mu.WidgetState.focused})),
+      colors.error,
     );
     expect(find.byType(MxFieldMessage), findsOneWidget);
     expect(
       tester.getTopLeft(find.byType(MxFieldMessage)).dy,
-      greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+      greaterThanOrEqualTo(tester.getBottomLeft(fieldBox(_field)).dy),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 56);
+    expect(_boxHeight(tester), _style(tester).constraints.minHeight);
   });
 
   testWidgets('typing reports the value', (tester) async {
@@ -123,7 +132,7 @@ void main() {
       tester,
       SizedBox(width: 300, child: MxTextField(onChanged: (v) => typed = v)),
     );
-    await tester.enterText(find.byType(TextField), 'Verbs');
+    await tester.enterText(find.byType(EditableText), 'Verbs');
 
     expect(typed, 'Verbs');
   });
@@ -144,6 +153,8 @@ void main() {
       ),
     );
 
+    // The field's own node, the one TalkBack focuses, carries the name with
+    // the value.
     final node = tester.getSemantics(find.byType(EditableText));
     expect(node.label, contains('Front'));
     expect(node.value, 'gamsa');
@@ -165,15 +176,19 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(find.byType(TextField)).height, 56);
+      expect(_boxHeight(tester), _style(tester).constraints.minHeight);
       final decoration = _decoration(tester);
-      expect(decoration.fillColor, isNull);
-      final edge = edgeIn(decoration, {});
-      expect(edge.borderSide.color, scheme.outline);
-      expect(edge.borderRadius, BorderRadius.circular(12));
-      final style = tester.widget<EditableText>(find.byType(EditableText));
-      expect(style.style.fontSize, 16);
-      expect(style.style.fontWeight, FontWeight.w400);
+      expect(decoration.fillColor, colors.card);
+      final edge = _in(tester, {});
+      expect(edge.borderSide.color, colors.border);
+      expect(
+        edge.borderRadius,
+        tester.element(find.byType(EditableText)).radii.md,
+      );
+      final text = tester.widget<EditableText>(find.byType(EditableText));
+      final content = _style(tester).contentTextStyle.resolve({});
+      expect(text.style.fontSize, content.fontSize);
+      expect(text.style.fontWeight, content.fontWeight);
     });
   }
 
@@ -193,8 +208,14 @@ void main() {
 
     final text = tester.widget<EditableText>(find.byType(EditableText));
     expect(text.maxLines, isNull);
-    expect(text.style.fontSize, 16);
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(56));
+    expect(
+      text.style.fontSize,
+      _style(tester).contentTextStyle.resolve({}).fontSize,
+    );
+    expect(
+      _boxHeight(tester),
+      greaterThan(_style(tester).constraints.minHeight),
+    );
   });
 
   testWidgets('term: Enter moves on and adds no newline', (tester) async {
@@ -231,9 +252,12 @@ void main() {
           child: MxTextField(variant: variant, errorText: 'Required'),
         ),
       );
+      await tester.pumpAndSettle();
       expect(
         tester.getTopLeft(find.byType(MxFieldMessage)).dy,
-        greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+        greaterThanOrEqualTo(
+          tester.getBottomLeft(find.byType(EditableText)).dy,
+        ),
         reason: variant.name,
       );
     }
@@ -256,19 +280,20 @@ void main() {
         ),
       ),
     );
-    final typed = tester.getSize(find.byType(TextField)).height;
-    expect(typed, greaterThan(56));
+    final rest = _style(tester).constraints.minHeight;
+    final typed = _boxHeight(tester);
+    expect(typed, greaterThan(rest));
 
     controller.clear();
-    await tester.pump();
-    expect(tester.getSize(find.byType(TextField)).height, typed);
+    await tester.pumpAndSettle();
+    expect(_boxHeight(tester), typed);
 
     controller.text = 'nunchi';
-    await tester.pump();
-    expect(tester.getSize(find.byType(TextField)).height, 56);
+    await tester.pumpAndSettle();
+    expect(_boxHeight(tester), rest);
   });
 
-  testWidgets('a long detail grows past its floor on the 12 padding', (
+  testWidgets('a long detail grows past its floor on the content padding', (
     tester,
   ) async {
     final controller = TextEditingController(text: 'one\ntwo\nthree\nfour');
@@ -285,7 +310,7 @@ void main() {
     );
 
     final text = tester.getSize(find.byType(EditableText)).height;
-    expect(tester.getSize(find.byType(TextField)).height, text + 24);
+    expect(_boxHeight(tester), text + _style(tester).contentPadding.vertical);
   });
 
   testWidgets('a multi-line box follows typing without a caller controller', (
@@ -298,10 +323,11 @@ void main() {
         child: MxTextField(variant: MxTextFieldVariant.term),
       ),
     );
+    final rest = _boxHeight(tester);
     await tester.enterText(find.byType(EditableText), 'a' * 80);
     await tester.pump();
 
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(56));
+    expect(_boxHeight(tester), greaterThan(rest));
   });
 
   test('only a form field takes leading and trailing slots', () {
@@ -314,8 +340,8 @@ void main() {
     );
   });
 
-  testWidgets('study is bare: no fill and no edge in any state, centred, '
-      'one line, in the study term role (FE-A6 P4 F1)', (tester) async {
+  testWidgets('study is bare: no edge in any state, centred, one line, in '
+      'the study term role (FE-A6 P4 F1)', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -323,30 +349,28 @@ void main() {
         child: MxTextField(variant: MxTextFieldVariant.study, label: 'Answer'),
       ),
     );
-    await tester.tap(find.byType(TextField));
+    await tester.tap(find.byType(EditableText));
     await tester.pump();
 
     final decoration = _decoration(tester);
-    expect(decoration.filled, isFalse);
-    for (final border in [
-      decoration.border,
-      decoration.enabledBorder,
-      decoration.focusedBorder,
-      decoration.disabledBorder,
+    final border = decoration.border! as mu.WidgetStateProperty<mu.InputBorder>;
+    for (final states in [
+      <mu.WidgetState>{},
+      {mu.WidgetState.focused},
+      {mu.WidgetState.hovered},
+      {mu.WidgetState.disabled},
+      {mu.WidgetState.error},
     ]) {
-      expect(border, InputBorder.none);
+      expect(border.resolve(states), mu.InputBorder.none, reason: '$states');
     }
     expect(decoration.contentPadding, EdgeInsets.zero);
-    final field = tester.widget<TextField>(find.byType(TextField));
+    final field = tester.widget<EditableText>(find.byType(EditableText));
     expect(field.textAlign, TextAlign.center);
     expect(field.maxLines, 1);
     expect(
-      field.style!.fontSize,
-      tester.element(find.byType(TextField)).texts.displaySmall!.fontSize,
+      field.style.fontSize,
+      tester.element(find.byType(EditableText)).texts.term.fontSize,
     );
-    expect(
-      tester.getSize(find.byType(TextField)).height,
-      greaterThanOrEqualTo(48),
-    );
+    expect(tester.getSize(_field).height, greaterThanOrEqualTo(48));
   });
 }

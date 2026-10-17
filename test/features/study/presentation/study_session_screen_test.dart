@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
@@ -21,6 +22,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 // The session route's screen: spec D2–D8 (D8 as the owner ruled it);
 // UC-STUDY-001 A3, A5, E2, E4.
@@ -143,7 +145,7 @@ void main() {
     await _pumpScreen(tester, env, id);
     await _swipeLeft(tester);
 
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
     expect(find.text(_en.studyExitTitle), findsOneWidget);
     await tester.tap(find.text(_en.studyExitStop));
@@ -161,7 +163,7 @@ void main() {
     await _pumpScreen(tester, env, id);
     final front = _front(tester);
 
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.studyExitKeep));
     await tester.pumpAndSettle();
@@ -289,6 +291,8 @@ void main() {
     expect(find.byType(StudyRecallWidget), findsOneWidget);
     expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
+    // The last tile tapped lifts its pressed state after ForUI's exit delay.
+    await tester.pump(_tappableExit(tester));
   });
 
   libraryTest('a held turn stays on screen when its answer ends the session; '
@@ -393,3 +397,9 @@ StudySessionScreen _screen(String id) => StudySessionScreen(
 StudySessionController _controllerOf(WidgetTester tester, String id) =>
     ProviderScope.containerOf(tester.element(find.byType(StudySessionScreen)))
         .read(studySessionControllerProvider(id).notifier);
+
+/// How long ForUI's tappable holds its pressed state after a release.
+Duration _tappableExit(WidgetTester tester) =>
+    FTheme.of(tester.element(find.byType(MxStudyTopBar)))
+        .tappableStyle
+        .pressedExitDuration;

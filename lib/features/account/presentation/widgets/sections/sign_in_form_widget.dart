@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
@@ -203,8 +204,8 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           if (eyebrow != null) ...[
             Text(
               eyebrow,
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             SizedBox(height: context.dimens.space4),
@@ -213,14 +214,14 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             isHeader: true,
             child: Text(
               isReauth ? l10n.accountReauthTitle : l10n.accountSignIn,
-              style: context.texts.titleLarge,
+              style: context.texts.screenTitle,
             ),
           ),
           SizedBox(height: context.dimens.space8),
           Text(
             _purposeLine(l10n),
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space24),

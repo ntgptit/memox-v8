@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The tone a count carries. There is no streak tone (ruling S1). Mastery is
@@ -23,7 +23,7 @@ class MxBadge extends StatelessWidget {
     this.icon,
   }) : assert(
          !isSolid || tone == MxBadgeTone.primary,
-         'a solid badge is primary: only onPrimary is guaranteed on its fill',
+         'a solid badge is primary: only primaryForeground is guaranteed on its fill',
        );
 
   final String label;
@@ -35,64 +35,90 @@ class MxBadge extends StatelessWidget {
   /// A 12 glyph before the label, for a counted status (ruling S18).
   final IconData? icon;
 
-  /// A minimum: text scaling grows the pill (ruling S11).
-  static const double _height = 22;
   static const double _glyphSize = 12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final status = context.status;
     final toneColor = switch (tone) {
       MxBadgeTone.primary => colors.primary,
-      MxBadgeTone.mastery => context.mxColors.successContainer,
-      MxBadgeTone.success => context.mxColors.success,
-      MxBadgeTone.warning => context.mxColors.warningContainer,
+      MxBadgeTone.mastery => status.successFill,
+      MxBadgeTone.success => status.success,
+      MxBadgeTone.warning => status.warningFill,
       MxBadgeTone.danger => colors.error,
       // Ruling S2: the contract names no neutral colour.
-      MxBadgeTone.neutral => colors.onSurfaceVariant,
+      MxBadgeTone.neutral => colors.mutedForeground,
     };
-    // Ruling S3: tonal warning text reads in warning-ink, because the amber
-    // fails as 12px text on a light surface; the mastery green likewise
-    // reads in its ink (3.56:1 on its tint in light, FE-C1).
+    // Ruling S3: tonal warning text reads in the warning ink, because the
+    // amber fails as 12px text on a light surface; the mastery green likewise
+    // reads in its ink.
     final ink = switch ((isSolid, tone)) {
-      (true, _) => colors.onPrimary,
-      (false, MxBadgeTone.warning) => context.mxColors.warning,
-      (false, MxBadgeTone.primary) => context.accentColor,
-      (false, MxBadgeTone.mastery) => context.mxColors.success,
-      (false, MxBadgeTone.success) => context.mxColors.success,
+      (true, _) => colors.primaryForeground,
+      (false, MxBadgeTone.warning) => status.warning,
+      (false, MxBadgeTone.mastery) => status.success,
       (false, _) => toneColor,
     };
-    return DecoratedBox(
-      decoration: ShapeDecoration(
-        // The primary tint is the accent's, as the token spec computes it.
-        color: isSolid
-            ? toneColor
-            : switch (tone) {
-                MxBadgeTone.primary => context.accentColor,
-                _ => toneColor,
-              }.tintOver(MxTintBase.of(context)),
-        shape: const StadiumBorder(),
-      ),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: _height),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: context.dimens.space4,
-            children: [
-              if (icon case final glyph?)
-                Icon(glyph, size: _glyphSize, color: ink),
-              Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                style: context.texts.labelSmall?.copyWith(color: ink),
-              ),
-            ],
-          ),
-        ),
+    return MxToneBadge(
+      fill: isSolid ? toneColor : toneColor.tintOver(MxTintBase.of(context)),
+      ink: ink,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: context.dimens.space4,
+        children: [
+          if (icon case final glyph?) Icon(glyph, size: _glyphSize, color: ink),
+          Text(label, maxLines: 1, softWrap: false),
+        ],
       ),
     );
   }
+}
+
+/// ForUI's [FBadge] in [fill] with [ink] text in the meta role: the one pill
+/// MxBadge, MxStatusBadge and MxTagChip share. It is at least 22 tall and
+/// grows with the text scale (ruling S11); [padding] replaces its 8 sides.
+class MxToneBadge extends StatelessWidget {
+  const MxToneBadge({
+    super.key,
+    required this.fill,
+    required this.ink,
+    required this.child,
+    this.padding,
+    this.minHeight = _height,
+  });
+
+  final Color fill;
+  final Color ink;
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final double minHeight;
+
+  static const double _height = 22;
+
+  @override
+  Widget build(BuildContext context) => FBadge.raw(
+    style: FBadgeStyleDelta.delta(
+      decoration: DecorationDelta.shapeDelta(color: fill),
+      labelTextStyle: TextStyleDelta.value(
+        context.texts.meta.copyWith(color: ink),
+      ),
+    ),
+    builder: (context, style) => ConstrainedBox(
+      constraints: BoxConstraints(minHeight: minHeight),
+      child: Padding(
+        padding:
+            padding ?? EdgeInsets.symmetric(horizontal: context.dimens.space8),
+        child: Center(
+          widthFactor: 1,
+          child: DefaultTextStyle.merge(
+            style: style.labelTextStyle,
+            child: IconTheme.merge(
+              data: IconThemeData(color: ink),
+              child: child,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }

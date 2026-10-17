@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -140,9 +140,12 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
               slivers: [
                 SliverFillRemaining(
                   hasScrollBody: false,
+                  // The tiles' focus outline reaches past them; the room
+                  // above and below keeps the scroll view's clip off it.
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: context.screenMargin,
+                      vertical: context.focusOutlineReach,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -282,8 +285,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? context.texts.headlineSmall!.copyWith(color: foreground)
-                    : context.texts.bodySmall!.copyWith(color: foreground),
+                    ? context.texts.termCompact.copyWith(color: foreground)
+                    : context.texts.caption.copyWith(color: foreground),
               ),
             ),
           ],

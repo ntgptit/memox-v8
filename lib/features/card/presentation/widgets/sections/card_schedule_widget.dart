@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
@@ -39,8 +39,8 @@ class CardScheduleWidget extends StatelessWidget {
             Text(
               title.toUpperCase(),
               semanticsLabel: title,
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             if (box != null) ...[
@@ -52,14 +52,14 @@ class CardScheduleWidget extends StatelessWidget {
                 children: [
                   Text(
                     l10n.cardBoxRampStart,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.meta.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                   Text(
                     l10n.cardBoxRampEnd,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.meta.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ],
@@ -223,11 +223,11 @@ class _Fact extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
-              Text(value, style: context.texts.titleSmall),
+              Text(value, style: context.texts.itemTitle),
             ],
           ),
         ),

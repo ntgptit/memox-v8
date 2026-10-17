@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
+import '../../support/theme_harness.dart';
+
 void main() {
-  testWidgets('the four getters read the ThemeData in scope', (tester) async {
+  testWidgets('the getters read the ForUI theme in scope', (tester) async {
     late BuildContext captured;
     await tester.pumpWidget(
       MaterialApp(
-        theme: buildDarkTheme(),
+        theme: materialHostTheme(buildDarkTheme()),
+        builder: mxThemeBuilder(buildDarkTheme()),
         home: Builder(
           builder: (context) {
             captured = context;
@@ -19,17 +23,39 @@ void main() {
         ),
       ),
     );
-    final theme = Theme.of(captured);
-    expect(captured.colors, theme.colorScheme);
-    expect(captured.texts, theme.textTheme);
-    expect(captured.mxColors, MxColorsExtension.dark);
+    final theme = buildDarkTheme();
+    expect(captured.colors, theme.colors);
+    expect(captured.texts.body.fontSize, theme.typography.body.xs.fontSize);
+    expect(captured.status, MxStatusColors.dark);
     expect(captured.dimens, isA<AppDimens>());
+    expect(captured.radii, theme.style.borderRadius);
+    expect(captured.hairline, theme.style.borderWidth);
   });
 
-  testWidgets('both built themes carry both extensions', (tester) async {
-    for (final theme in [buildLightTheme(), buildDarkTheme()]) {
-      expect(theme.extension<MxColorsExtension>(), isNotNull);
-      expect(theme.extension<AppDimens>(), isNotNull);
-    }
+  testWidgets('a ForUI theme without the app extensions fails with the fix '
+      'named', (tester) async {
+    late BuildContext captured;
+    await tester.pumpWidget(
+      FTheme(
+        data: FTheme.neutral.light.touch,
+        child: Builder(
+          builder: (context) {
+            captured = context;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    expect(
+      () => captured.dimens,
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          contains('buildLightTheme()'),
+        ),
+      ),
+    );
+    expect(() => captured.status, throwsStateError);
   });
 }

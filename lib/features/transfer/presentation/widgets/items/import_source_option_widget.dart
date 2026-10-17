@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -42,11 +42,11 @@ class ImportSourceOptionWidget extends StatelessWidget {
             children: [
               MxIconTile(icon: icon),
               SizedBox(height: context.dimens.space4),
-              Text(label, style: context.texts.titleMedium),
+              Text(label, style: context.texts.sectionTitle),
               Text(
                 hint,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
             ],

@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _today = DateTime(2026, 9, 24);
@@ -124,8 +125,9 @@ void main() {
     var more = 0;
     await pump(tester, env, _tile(), onMore: () => more++);
 
-    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
     expect(more, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the structure line wraps, never cut '

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -106,6 +106,6 @@ class MxSelectableCardRow extends StatelessWidget {
             ),
     );
     if (isEnabled) return card;
-    return Opacity(opacity: context.dimens.opacityDisabledContent, child: card);
+    return Opacity(opacity: context.colors.disabledOpacity, child: card);
   }
 }

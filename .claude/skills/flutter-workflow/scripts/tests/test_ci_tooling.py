@@ -94,7 +94,7 @@ _ADR010_SOURCE_FILES: dict[str, str] = {
     "lib/core/database/queries/study.drift": "-- fixture\n",
     "lib/shared/widgets/mx_chip.dart": "// fixture\n",
     "lib/core/clock/day_clock.dart": "// fixture\n",
-    "tools/m3_lint/m3_rules.dart": "// fixture\n",
+    "tools/ui_lint/ui_rules.dart": "// fixture\n",
     "lib/core/platform/web_impl.dart": "// fixture\n",
     "lib/core/platform/io_impl.dart": "// fixture\n",
 }
@@ -137,8 +137,8 @@ _ADR010_TEST_FILES: dict[str, str] = {
     "test/features/study/presentation/study_clock_test.dart":
         "import '../../../support/clock_harness.dart';\n"
         "void main() { test('t', () {}); }\n",
-    "test/tools/m3_lint_test.dart":
-        "import '../../tools/m3_lint/m3_rules.dart';\n"
+    "test/tools/ui_lint_test.dart":
+        "import '../../tools/ui_lint/ui_rules.dart';\n"
         "void main() { test('t', () {}); }\n",
     "test/core/platform/platform_test.dart":
         "import 'package:memox/core/platform/web_impl.dart'\n"
@@ -475,9 +475,9 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.full_suite)
 
     def test_tooling_dart_selects_its_importing_test(self) -> None:
-        plan = self._plan("tools/m3_lint/m3_rules.dart")
+        plan = self._plan("tools/ui_lint/ui_rules.dart")
         self.assertFalse(plan.full_suite)
-        self.assertEqual(("test/tools/m3_lint_test.dart",), plan.test_files)
+        self.assertEqual(("test/tools/ui_lint_test.dart",), plan.test_files)
 
     def test_a_declared_reader_runs_when_the_path_it_reads_changes(self) -> None:
         """Native folders are tooling, except for the test that reads them."""
@@ -659,7 +659,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         for path in (
             "lib/core/theme/app_theme.dart",
             "lib/l10n/app_en.arb",
-            "design/tokens.json",
+            "lib/core/theme/app_palette.dart",
             "pubspec.yaml",
         ):
             with self.subTest(path=path):
@@ -1239,7 +1239,7 @@ _DISK_ACCESS = re.compile(r"\b(?:File|Directory|Process)\s*[.(]")
 # Tests whose matching literals are not paths they read.
 _NOT_READERS = {
     # Allowlist entries and paths built in memory, linted from fixtures.
-    "test/tools/m3_lint_test.dart",
+    "test/tools/ui_lint_test.dart",
 }
 
 
@@ -1352,13 +1352,13 @@ class GateScopesAChangedRunTest(unittest.TestCase):
 
     def test_the_full_gate_lints_the_whole_tree(self) -> None:
         self.assertIn(
-            'plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"',
+            'plan ui_lint "ForUI boundary rules (tools/ui_lint)" "dart run tools/ui_lint/ui_lint.dart"',
             self._gate(),
         )
 
     def test_each_scoped_out_check_is_named_in_the_summary(self) -> None:
         gate = self._gate()
-        for check in ("hook tests:", "m3_lint:", "guard self-tests:"):
+        for check in ("hook tests:", "ui_lint:", "guard self-tests:"):
             with self.subTest(check=check):
                 self.assertIn(f'SCOPED_OUT+=("{check}', gate)
 

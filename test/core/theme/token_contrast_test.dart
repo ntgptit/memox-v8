@@ -1,206 +1,96 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 
-import 'token_source.dart';
-
-// WCAG 2 contrast of the token pairs, worked from design/tokens.json. Pairs
-// below the floor are recorded in design/contrast_exceptions.json with their
-// measured ratio and the reason; the test fails when a pair falls below its
-// floor without a record, and when a record no longer matches the measurement.
+// WCAG 2 contrast of the palette's pairs (ADR-026): text keeps 4.5:1 and a
+// glyph or control edge 3:1, in both modes, on the grounds the widgets draw
+// them on. No exception is recorded: a pair below its floor is a palette
+// change in lib/core/theme/app_palette.dart.
 
 const double _text = 4.5;
 const double _nonText = 3;
 
+double _contrast(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (light, dark) = la > lb ? (la, lb) : (lb, la);
+  return (light + 0.05) / (dark + 0.05);
+}
+
+/// [ink] laid over [ground] when [ink] is translucent.
+Color _over(Color ink, Color ground) => Color.alphaBlend(ink, ground);
+
 typedef _Pair = (String name, Color ink, Color ground, double minimum);
 
-List<_Pair> _pairs(String mode) {
-  Color c(String name) => tokenColor(name, mode);
-  final surface = c('surface');
-  final card = c('cardSurface');
-  final accent = mode == 'light' ? c('primary') : c('primaryFixedDim');
-  final onAccent = mode == 'light' ? c('onPrimary') : c('onPrimaryFixed');
+List<_Pair> _pairs(FColors colors) {
+  final status = colors.extension<MxStatusColors>();
   final pairs = <_Pair>[];
   void add(String name, Color ink, Color ground, [double min = _text]) =>
-      pairs.add((name, ink, ground, min));
+      pairs.add((name, ink, _over(ground, colors.background), min));
 
-  for (final role in [
-    'primary',
-    'primaryContainer',
-    'secondary',
-    'secondaryContainer',
-    'tertiary',
-    'tertiaryContainer',
-    'error',
-    'errorContainer',
-    'inverseSurface',
+  for (final (where, ground) in [
+    ('background', colors.background),
+    ('card', colors.card),
+    ('muted', colors.muted),
   ]) {
-    final on = 'on${role[0].toUpperCase()}${role.substring(1)}';
-    add('$on on $role', c(on), c(role));
+    add('foreground on $where', colors.foreground, ground);
+    add('mutedForeground on $where', colors.mutedForeground, ground);
+    add('primary on $where', colors.primary, ground);
+    add('error on $where', colors.error, ground);
+    add('success on $where', status.success, ground);
+    add('warning on $where', status.warning, ground);
+    add('info on $where', status.info, ground);
   }
-  for (final family in ['success', 'warning', 'info']) {
-    add(
-      '$family-onColor on $family-color',
-      c('$family-onColor'),
-      c('$family-color'),
-    );
-    add(
-      '$family-onContainer on $family-container',
-      c('$family-onContainer'),
-      c('$family-container'),
-    );
-  }
-  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
-    add('onSurface on $where', c('onSurface'), ground);
-    add('onSurfaceVariant on $where', c('onSurfaceVariant'), ground);
-    add('accent on $where', accent, ground);
-    add('error on $where', c('error'), ground);
-    add('success on $where', c('success-color'), ground);
-    add('warning on $where', c('warning-color'), ground);
-    add('info on $where', c('info-color'), ground);
-    add('outline on $where', c('outline'), ground, _nonText);
-  }
-  add(
-    'inversePrimary on inverseSurface',
-    c('inversePrimary'),
-    c('inverseSurface'),
-  );
-  add('primary on surface', c('primary'), surface);
-  // The switch's handle on its track (MxToggle, Material 3): non-text, 3:1.
-  add(
-    'switch handle (onPrimary) on track (primary)',
-    c('onPrimary'),
-    c('primary'),
-    _nonText,
-  );
-  add(
-    'switch handle (outline) on track (surfaceContainerHighest)',
-    c('outline'),
-    c('surfaceContainerHighest'),
-    _nonText,
-  );
-  // The checked checkbox (MxSelectionCheckbox): the accent fill against the
-  // card or sheet it sits on, and its check against the fill. Non-text, 3:1.
-  for (final (ground, where) in [
-    (card, 'cardSurface'),
-    (c('surfaceContainerLow'), 'surfaceContainerLow'),
-    (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
+  for (final (where, ground) in [
+    ('background', colors.background),
+    ('card', colors.card),
   ]) {
-    add('checkbox fill (accent) on $where', accent, ground, _nonText);
-  }
-  add('checkbox check (onAccent) on fill (accent)', onAccent, accent, _nonText);
-  // The seek bar's thumb and active track (MxSlider, the theme's
-  // sliderTheme) are primary, drawn on the recessed group pane of the TOPIK
-  // attempt (surfaceContainerLow). Non-text, 3:1.
-  add(
-    'seek bar thumb (primary) on surfaceContainerLow',
-    c('primary'),
-    c('surfaceContainerLow'),
-    _nonText,
-  );
-  // The loading spinner (MxButton, M3F-02) is drawn in the tone's own
-  // foreground on the tone's fill. Non-text, 3:1. Several of these pairs also
-  // sit above as text pairs; they are named here by the widget that draws them.
-  add(
-    'loading spinner (onPrimary) on primary fill',
-    c('onPrimary'),
-    c('primary'),
-    _nonText,
-  );
-  add(
-    'loading spinner (onSurface) on secondary fill (surfaceContainer)',
-    c('onSurface'),
-    c('surfaceContainer'),
-    _nonText,
-  );
-  add(
-    'loading spinner (onError) on destructive fill (error)',
-    c('onError'),
-    c('error'),
-    _nonText,
-  );
-  add(
-    'loading spinner (onWarningContainer) on warning fill (warningContainer)',
-    c('warning-onContainer'),
-    c('warning-container'),
-    _nonText,
-  );
-  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
-    add('loading spinner (accent) on $where', accent, ground, _nonText);
-    add(
-      'loading spinner (error) on danger tint fill over $where',
-      c('error'),
-      c('error').tintOver(ground),
-      _nonText,
-    );
-  }
-  // The filter chip count (MxFilterChip, M3F-03) is text: the resting count
-  // is the unblended onSurfaceVariant on the page or a card, the selected
-  // count is onSecondaryContainer on its fill.
-  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
-    add(
-      'filter chip count (onSurfaceVariant) on $where',
-      c('onSurfaceVariant'),
-      ground,
-    );
-  }
-  add(
-    'filter chip count (onSecondaryContainer) on selected fill (secondaryContainer)',
-    c('onSecondaryContainer'),
-    c('secondaryContainer'),
-  );
-  // A tint is laid over the ground directly beneath it (MxTintBase): the
-  // page, a card, a sheet (surfaceContainerLow) or a dialog
-  // (surfaceContainerHigh).
-  for (final (base, where) in [
-    (surface, 'surface'),
-    (card, 'cardSurface'),
-    (c('surfaceContainerLow'), 'surfaceContainerLow'),
-    (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
-  ]) {
-    for (final (name, ink) in [
-      ('accent', accent),
-      ('success', c('success-color')),
-      ('warning', c('warning-color')),
-      ('error', c('error')),
+    // A tint carries its own ink: a banner, a badge, an answered choice.
+    for (final (role, ink) in [
+      ('primary', colors.primary),
+      ('error', colors.error),
+      ('success', status.success),
+      ('warning', status.warning),
     ]) {
-      add('$name on its tint over $where', ink, ink.tintOver(base));
+      add('$role on its tint over $where', ink, ink.tintOver(ground));
     }
   }
+  add('primaryForeground on primary', colors.primaryForeground, colors.primary);
+  add('errorForeground on error', colors.errorForeground, colors.error);
+  add(
+    'secondaryForeground on secondary',
+    colors.secondaryForeground,
+    colors.secondary,
+  );
+  add('onSuccessFill on successFill', status.onSuccessFill, status.successFill);
+  add('onWarningFill on warningFill', status.onWarningFill, status.warningFill);
+  // A control's resting edge or a supporting glyph.
+  add(
+    'mutedForeground glyph on background',
+    colors.mutedForeground,
+    colors.background,
+    _nonText,
+  );
   return pairs;
 }
 
 void main() {
-  final exceptions =
-      (jsonDecode(File('design/contrast_exceptions.json').readAsStringSync())
-              as Map<String, dynamic>)['exceptions']
-          as List<dynamic>;
-
-  for (final mode in ['light', 'dark']) {
+  for (final (mode, colors) in [
+    ('light', appLightColors),
+    ('dark', appDarkColors),
+  ]) {
     group(mode, () {
-      for (final (name, ink, ground, minimum) in _pairs(mode)) {
+      for (final (name, ink, ground, minimum) in _pairs(colors)) {
         test(name, () {
-          final ratio = contrast(ink, ground);
-          final known = exceptions.cast<Map<String, dynamic>>().where(
-            (e) => e['pair'] == name && e['mode'] == mode,
-          );
-          if (known.isEmpty) {
-            expect(ratio, greaterThanOrEqualTo(minimum));
-            return;
-          }
+          final ratio = _contrast(_over(ink, ground), ground);
           expect(
             ratio,
-            lessThan(minimum),
-            reason: 'recorded exception is now met',
+            greaterThanOrEqualTo(minimum),
+            reason: '$name is ${ratio.toStringAsFixed(2)}:1',
           );
-          expect(
-            ratio,
-            closeTo((known.single['ratio'] as num).toDouble(), 0.01),
-          );
-          expect((known.single['reason'] as String).trim(), isNotEmpty);
         });
       }
     });

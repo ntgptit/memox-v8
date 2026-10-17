@@ -441,9 +441,9 @@ void main() {
       find.byType(CardHistoryRailWidget),
     );
     final context = tester.element(find.byType(CardHistoryEventWidget));
-    expect(rail.foreground, context.mxColors.warning);
+    expect(rail.foreground, context.status.warning);
     final move = tester.widget<Text>(find.text(_en.cardHistoryBoxMove(4, 1)));
-    expect(move.style!.color, context.mxColors.warning);
+    expect(move.style!.color, context.status.warning);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
     expect(find.byIcon(AppIcons.timeout), findsOneWidget);
   });

@@ -73,11 +73,6 @@ def _repo_root() -> Path:
     return Path.cwd()
 
 
-# Committed on purpose: tools/design/generate.py writes it from design/tokens.json
-# and tools/design/check.py proves it equals a fresh generation.
-_TOKEN_GENERATED_PREFIX = "lib/core/theme/generated/"
-
-
 def _generated_files(root: Path) -> list[str]:
     """Files the generators own, repo-relative posix, excluding the hand-written
     drift fixtures under test/drift/generated/ (drift names some `*.g.dart`)."""
@@ -90,7 +85,7 @@ def _generated_files(root: Path) -> list[str]:
             if not _GENERATED_SUFFIX_RE.search(p.name):
                 continue
             rel = p.relative_to(root).as_posix()
-            if rel.startswith(("test/drift/generated/", _TOKEN_GENERATED_PREFIX)):
+            if rel.startswith("test/drift/generated/"):
                 continue
             out.append(rel)
     return sorted(out)
@@ -132,7 +127,7 @@ def main() -> int:
     for f in sorted(tracked):
         if not _GENERATED_SUFFIX_RE.search(f):
             continue
-        if f.startswith(("test/drift/generated/", "drift_schemas/", _TOKEN_GENERATED_PREFIX)):
+        if f.startswith(("test/drift/generated/", "drift_schemas/")):
             continue
         _report(
             "generated file is committed", f,

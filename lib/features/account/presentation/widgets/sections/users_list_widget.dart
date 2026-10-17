@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show RefreshIndicator;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -185,8 +186,8 @@ class _End extends StatelessWidget {
       (_, null) => Text(
         l10n.usersNoMore,
         textAlign: TextAlign.center,
-        style: context.texts.labelSmall?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.meta.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
       _ => const SizedBox.shrink(),

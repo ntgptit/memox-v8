@@ -1,5 +1,7 @@
 # Material Design 3 — Shared Widget Design & UI/UX Specification
 
+> **Historical record (2026-10-17).** The app no longer uses Material 3 as its UI system: ForUI draws it ([ADR-026](../decisions/ADR-026-forui-la-he-component-giao-dien.md)). The rules, gates and files this document names (`tools/m3_lint`, the M3 theme files, `design/tokens.json`) were retired; their replacements are in `docs/forui-migration/FORUI_ARCHITECTURE.md`. Kept unedited below as the record of what the Material 3 system was.
+
 **Version:** 2.6.1 (baseline review candidate)  
 **Date:** 2026-10-15  
 **Target:** Flutter mobile, Material 3 Standard baseline  

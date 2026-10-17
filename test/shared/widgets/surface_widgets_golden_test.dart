@@ -38,11 +38,11 @@ class _RowContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: context.texts.titleSmall),
+            Text(title, style: context.texts.itemTitle),
             Text(
               subtitle,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

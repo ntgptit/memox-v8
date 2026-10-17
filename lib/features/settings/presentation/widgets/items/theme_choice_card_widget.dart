@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -8,7 +8,6 @@ import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One theme on screen 25 (kit 25): a preview in that theme's own colours,
 /// its name and its line (FE-A3 D7). One TalkBack node, selected when
@@ -61,13 +60,11 @@ class ThemeChoiceCardWidget extends StatelessWidget {
         textScaler.scale(context.dimens.sizeIconCompact) +
         context.dimens.space4;
     final text = [
-      for (final name in names) widest(name, context.texts.titleSmall!) + check,
+      for (final name in names) widest(name, context.texts.itemTitle) + check,
       for (final hint in hints)
         widest(
           hint,
-          context.texts.bodyMedium!.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
+          context.texts.body.copyWith(color: context.colors.mutedForeground),
         ),
     ].reduce(math.max);
     return text + context.dimens.space8 * 2;
@@ -110,21 +107,19 @@ class ThemeChoiceCardWidget extends StatelessWidget {
                 Row(
                   spacing: context.dimens.space4,
                   children: [
-                    Expanded(
-                      child: Text(name, style: context.texts.titleSmall),
-                    ),
+                    Expanded(child: Text(name, style: context.texts.itemTitle)),
                     if (isSelected)
                       Icon(
                         AppIcons.check,
                         size: context.dimens.sizeIconCompact,
-                        color: context.accentColor,
+                        color: context.colors.primary,
                       ),
                   ],
                 ),
                 Text(
                   hint,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ],
@@ -151,30 +146,39 @@ class _Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final light = buildLightTheme().colorScheme;
-    final dark = buildDarkTheme().colorScheme;
+    final light = buildLightTheme().colors;
+    final dark = buildDarkTheme().colors;
     final main = theme == ThemeChoice.dark ? dark : light;
-    final radius = BorderRadius.circular(context.dimens.radiusSm);
+    final radius = context.radii.sm;
     // The kit's hairline keeps a light preview apart from a light card.
     return DecoratedBox(
       position: DecorationPosition.foreground,
       decoration: BoxDecoration(
         borderRadius: radius,
         border: Border.all(
-          color: context.colors.outlineVariant,
-          width: context.dimens.strokeHairline,
+          color: context.colors.border,
+          width: context.hairline,
         ),
       ),
-      child: _clipped(context, main, dark, radius),
+      child: _clipped(
+        context,
+        ground: main.background,
+        darkGround: dark.background,
+        accent: main.primary,
+        line: main.border,
+        radius: radius,
+      ),
     );
   }
 
   Widget _clipped(
-    BuildContext context,
-    ColorScheme main,
-    ColorScheme dark,
-    BorderRadius radius,
-  ) {
+    BuildContext context, {
+    required Color ground,
+    required Color darkGround,
+    required Color accent,
+    required Color line,
+    required BorderRadius radius,
+  }) {
     return ClipRRect(
       borderRadius: radius,
       child: SizedBox(
@@ -182,13 +186,13 @@ class _Preview extends StatelessWidget {
         width: double.infinity,
         child: Stack(
           children: [
-            Positioned.fill(child: ColoredBox(color: main.surface)),
+            Positioned.fill(child: ColoredBox(color: ground)),
             if (theme == ThemeChoice.system)
               Positioned.fill(
                 child: FractionallySizedBox(
                   alignment: AlignmentDirectional.centerEnd,
                   widthFactor: 0.5,
-                  child: ColoredBox(color: dark.surface),
+                  child: ColoredBox(color: darkGround),
                 ),
               ),
             Padding(
@@ -197,10 +201,10 @@ class _Preview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: context.dimens.space4,
                 children: [
-                  _block(context, main.primary, _tile, _tile),
+                  _block(context, accent, _tile, _tile),
                   SizedBox(height: context.dimens.space4),
-                  _block(context, main.outlineVariant, _longLine, _lineHeight),
-                  _block(context, main.outlineVariant, _shortLine, _lineHeight),
+                  _block(context, line, _longLine, _lineHeight),
+                  _block(context, line, _shortLine, _lineHeight),
                 ],
               ),
             ),
@@ -216,10 +220,7 @@ class _Preview extends StatelessWidget {
     double width,
     double height,
   ) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(context.dimens.radiusXs),
-    ),
+    decoration: BoxDecoration(color: color, borderRadius: context.radii.xs2),
     child: SizedBox(width: width, height: height),
   );
 }

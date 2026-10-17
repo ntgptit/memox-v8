@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -88,8 +88,8 @@ class _Counts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final count = context.texts.labelSmall?.copyWith(
-      color: context.colors.onSurfaceVariant,
+    final count = context.texts.meta.copyWith(
+      color: context.colors.mutedForeground,
     );
     MxListRow row(IconData icon, String label, int value) => MxListRow(
       title: label,

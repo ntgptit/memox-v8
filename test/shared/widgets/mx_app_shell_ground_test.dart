@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
@@ -18,30 +18,42 @@ void main() {
       body: ListView(key: listKey, children: tall),
     );
 
-    Color ground(WidgetTester tester) => tester
-        .widget<ColoredBox>(
-          find
-              .ancestor(
-                of: find.byKey(_barKey),
-                matching: find.byType(ColoredBox),
-              )
-              .first,
-        )
-        .color;
+    // The band behind the bar: the page ground, with a hairline under it.
+    final band = find.ancestor(
+      of: find.byKey(_barKey),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is DecoratedBox &&
+            widget.decoration is BoxDecoration &&
+            (widget.decoration as BoxDecoration).border != null,
+      ),
+    );
 
-    testWidgets('surface at rest, surfaceContainer once scrolled, and back', (
-      tester,
-    ) async {
+    BoxDecoration paint(WidgetTester tester) =>
+        tester.widget<DecoratedBox>(band.first).decoration as BoxDecoration;
+
+    Color ground(WidgetTester tester) => paint(tester).color!;
+
+    Color edge(WidgetTester tester) =>
+        (paint(tester).border! as Border).bottom.color;
+
+    final clear = appLightColors.border.withValues(alpha: 0);
+
+    testWidgets('the page ground with no edge at rest, the hairline edge once '
+        'scrolled, and back', (tester) async {
       await pumpMxPage(tester, shell());
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
+      expect(edge(tester), clear);
 
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.background);
+      expect(edge(tester), appLightColors.border);
 
       await tester.drag(find.byKey(listKey), const Offset(0, 1000));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
+      expect(edge(tester), clear);
     });
 
     testWidgets('a bar wrapped in a widget of its own takes the ground too', (
@@ -54,12 +66,13 @@ void main() {
           body: ListView(key: listKey, children: tall),
         ),
       );
-      expect(ground(tester), lightColorScheme.surface);
+      expect(edge(tester), clear);
 
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.background);
+      expect(edge(tester), appLightColors.border);
     });
 
     testWidgets('a bar that paints its own ground keeps the shell out of it', (
@@ -76,7 +89,7 @@ void main() {
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(edge(tester), clear);
     });
 
     testWidgets('content that fits never scrolls under', (tester) async {
@@ -90,7 +103,7 @@ void main() {
       await tester.drag(find.byType(ListView), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(edge(tester), clear);
     });
 
     testWidgets('swapping the scrolled body for one that does not scroll '
@@ -111,12 +124,12 @@ void main() {
       );
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(edge(tester), appLightColors.border);
 
       body.value = const SizedBox.expand();
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(edge(tester), clear);
     });
 
     testWidgets('content that shrinks back into the viewport clears the '
@@ -140,12 +153,12 @@ void main() {
       );
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(edge(tester), appLightColors.border);
 
       count.value = 2;
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(edge(tester), clear);
     });
 
     testWidgets('the colour eases in', (tester) async {
@@ -153,9 +166,9 @@ void main() {
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 50));
-      final midway = ground(tester);
-      expect(midway, isNot(lightColorScheme.surface));
-      expect(midway, isNot(lightColorScheme.surfaceContainer));
+      final midway = edge(tester);
+      expect(midway, isNot(clear));
+      expect(midway, isNot(appLightColors.border));
       await tester.pumpAndSettle();
     });
 
@@ -173,7 +186,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 1));
 
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(edge(tester), appLightColors.border);
     });
 
     testWidgets('on a wide window the ground runs the full width while the '
@@ -181,13 +194,11 @@ void main() {
       await pumpMxWide(tester, shell());
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      final band = find
-          .ancestor(of: find.byKey(_barKey), matching: find.byType(ColoredBox))
-          .first;
 
-      expect(tester.getSize(band).width, 1280);
+      expect(tester.getSize(band.first).width, 1280);
       expect(tester.getSize(find.byKey(_barKey)).width, lessThan(1280));
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.background);
+      expect(edge(tester), appLightColors.border);
     });
   });
 }

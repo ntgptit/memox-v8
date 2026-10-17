@@ -1,140 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/text_theme.g.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 
 void main() {
-  for (final (name, theme) in [
-    ('light', buildLightTheme()),
-    ('dark', buildDarkTheme()),
+  for (final (name, theme, colors, status) in [
+    ('light', buildLightTheme(), appLightColors, MxStatusColors.light),
+    ('dark', buildDarkTheme(), appDarkColors, MxStatusColors.dark),
   ]) {
     group(name, () {
-      test('is Material 3 and inks its text onSurface', () {
-        expect(theme.useMaterial3, isTrue);
-        expect(theme.textTheme.bodyMedium!.color, theme.colorScheme.onSurface);
+      test('is the app palette on the ForUI touch theme', () {
+        expect(theme.colors, colors);
+        // Touch: ForUI's 44 field and 48 tile, not the desktop 36 and 48.
+        expect(theme.style.sizes.field.md, 44);
       });
 
-      // CircleAvatar, FlexibleSpaceBar and UserAccountsDrawerHeader read
-      // primaryTextTheme directly, not textTheme.
-      test('primaryTextTheme is bound to the theme family too', () {
-        final style = theme.primaryTextTheme.bodyMedium!;
-        final weight = style.fontWeight ?? FontWeight.w400;
-
-        expect(style.fontFamily, kFontFamily);
-        expect(
-          style.fontVariations,
-          contains(FontVariation.weight(weight.value.toDouble())),
-        );
+      test('carries the app extensions: geometry on the theme, status '
+          'colours on the palette', () {
+        expect(theme.extension<AppDimens>(), isA<AppDimens>());
+        expect(theme.colors.extension<MxStatusColors>(), status);
       });
 
-      // SW-REV-007: the slots Material paints through when no component
-      // theme says otherwise; left at their defaults they drew grey ripples,
-      // a raised snackbar and a grey tooltip in both themes.
-      test('rows press in onSurface at the pressed overlay', () {
-        final scheme = theme.colorScheme;
-        final pressed = scheme.onSurface.withValues(
-          alpha: theme.extension<AppDimens>()!.opacityPressed,
-        );
-
-        expect(theme.splashColor, pressed);
-        expect(theme.highlightColor, pressed);
+      test('sets the type in Be Vietnam Pro, Noto Sans KR behind it', () {
+        expect(theme.typography.body.fontFamily, 'BeVietnamPro');
+        expect(theme.typography.display.fontFamily, 'BeVietnamPro');
+        expect(theme.typography.body.fontFamilyFallback, ['NotoSansKR']);
       });
 
-      // M3F-12: an Icon with no IconTheme ancestor read the SDK's black 87%
-      // or white; a supporting glyph is onSurfaceVariant (owner 2026-10-15).
-      test('M3F-12: the ambient icon is onSurfaceVariant at sizeIcon', () {
-        expect(theme.iconTheme.color, theme.colorScheme.onSurfaceVariant);
-        expect(theme.iconTheme.size, theme.extension<AppDimens>()!.sizeIcon);
-      });
-
-      // M3F-13: hover and focus fell to the SDK's black or white at 4% and
-      // 12%; the buttons already use the token layers.
-      test('M3F-13: rows hover at opacityHover and focus at opacityFocus', () {
-        final scheme = theme.colorScheme;
-        final dimens = theme.extension<AppDimens>()!;
-
-        expect(
-          theme.hoverColor,
-          scheme.onSurface.withValues(alpha: dimens.opacityHover),
-        );
-        expect(
-          theme.focusColor,
-          scheme.onSurface.withValues(alpha: dimens.opacityFocus),
-        );
-      });
-
-      // M3F-14: density and tap size were the platform's, so Linux, Windows
-      // and macOS (the Web review lane) rendered compact.
-      test('M3F-14: standard density and a padded tap target', () {
-        expect(theme.visualDensity, VisualDensity.standard);
-        expect(theme.materialTapTargetSize, MaterialTapTargetSize.padded);
-      });
-
-      test('snackbar is flat: the inverse surface carries it', () {
-        expect(theme.snackBarTheme.elevation, 0);
-      });
-
-      test('tooltip: the caption on the inverse surface, radiusXs', () {
-        final scheme = theme.colorScheme;
-        final dimens = theme.extension<AppDimens>()!;
-
-        expect(
-          theme.tooltipTheme.decoration,
-          BoxDecoration(
-            color: scheme.inverseSurface,
-            borderRadius: BorderRadius.circular(dimens.radiusXs),
-          ),
-        );
-        expect(theme.tooltipTheme.textStyle!.color, scheme.onInverseSurface);
-        expect(
-          theme.tooltipTheme.textStyle!.fontSize,
-          theme.textTheme.bodySmall!.fontSize,
-        );
+      test('the SDK host theme is derived from the ForUI theme, one way', () {
+        final host = materialHostTheme(theme);
+        expect(host.colorScheme.brightness, colors.brightness);
+        expect(host.colorScheme.primary, colors.primary);
+        expect(host.colorScheme.surface, colors.background);
+        expect(host.colorScheme.onSurface, colors.foreground);
+        expect(host.scaffoldBackgroundColor, colors.background);
+        // ForUI draws every press state; the host draws no ripple.
+        expect(host.splashFactory, NoSplash.splashFactory);
+        expect(host.textTheme.bodyMedium?.fontFamily, 'BeVietnamPro');
       });
     });
   }
 
-  test('light to dark lerp keeps the extension (theme animation)', () {
-    final mid = ThemeData.lerp(buildLightTheme(), buildDarkTheme(), 0.5);
-
-    expect(
-      mid.extension<MxColorsExtension>()!.successContainer,
-      Color.lerp(
-        MxColorsExtension.light.successContainer,
-        MxColorsExtension.dark.successContainer,
-        0.5,
-      ),
-    );
+  test('the builders return one shared theme per mode', () {
+    expect(identical(buildLightTheme(), buildLightTheme()), isTrue);
+    expect(themeFor(Brightness.light), buildLightTheme());
+    expect(themeFor(Brightness.dark), buildDarkTheme());
   });
 
-  testWidgets('a theme without the extension fails with the fix named', (
-    tester,
-  ) async {
-    late BuildContext context;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(),
-        home: Builder(
-          builder: (c) {
-            context = c;
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    );
-
-    expect(
-      () => context.mxColors,
-      throwsA(
-        isA<StateError>().having(
-          (e) => e.message,
-          'message',
-          contains('buildLightTheme'),
-        ),
-      ),
-    );
+  test('light to dark lerp keeps the extensions (the theme animation)', () {
+    final halfway = FThemeData.lerp(buildLightTheme(), buildDarkTheme(), 0.5);
+    expect(halfway.extension<AppDimens>(), isA<AppDimens>());
+    expect(halfway.colors.extension<MxStatusColors>(), isA<MxStatusColors>());
   });
 }

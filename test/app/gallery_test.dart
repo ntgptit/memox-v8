@@ -13,6 +13,10 @@ import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 
 import '../support/library_harness.dart';
+import '../support/theme_harness.dart';
+import '../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 Future<void> _pumpGallery(WidgetTester tester, {Locale? locale}) async {
   tester.view.physicalSize = const Size(1080, 2400);
@@ -20,7 +24,8 @@ Future<void> _pumpGallery(WidgetTester tester, {Locale? locale}) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
-      theme: buildLightTheme(),
+      theme: materialHostTheme(buildLightTheme()),
+      builder: mxThemeBuilder(buildLightTheme()),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
@@ -70,11 +75,13 @@ void main() {
 
   testWidgets('the theme switch flips the gallery to dark', (tester) async {
     await _pumpGallery(tester);
-    await tester.tap(find.byTooltip('Dark theme'));
+    await tester.tap(byControlLabel('Dark theme'));
+    // ForUI eases the theme over: one frame starts it, the next ends it.
     await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(
-      Theme.of(tester.element(find.byType(MxAppBar).first)).brightness,
+      FTheme.of(tester.element(find.byType(MxAppBar).first)).colors.brightness,
       Brightness.dark,
     );
   });
@@ -99,13 +106,13 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(en.navSettings));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip(en.openGallery));
+    await tester.tap(byControlLabel(en.openGallery));
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.byType(GalleryScreen), findsOneWidget);
 
     // The page's own back comes first; the chrome demos also say 'Back'.
-    await tester.tap(find.byTooltip('Back').first);
+    await tester.tap(byControlLabel('Back').first);
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(GalleryScreen), findsNothing);
   });
@@ -136,7 +143,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Snackbar'));
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.byType(FToast), findsOneWidget);
   });
 
   testWidgets('the gallery reads in Vietnamese and holds (FE-C7)', (

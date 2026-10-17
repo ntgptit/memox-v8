@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -43,22 +43,22 @@ class ProgressTodayWidget extends StatelessWidget {
           Text(
             l10n.progressToday.toUpperCase(),
             semanticsLabel: l10n.progressToday,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space4),
           Text(
             '${today.total}',
-            style: context.texts.displayMedium?.copyWith(
-              color: context.colors.onSurface,
+            style: context.texts.figure.copyWith(
+              color: context.colors.foreground,
             ),
           ),
           SizedBox(height: context.dimens.space4),
           Text(
             sub,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space12),
@@ -113,7 +113,7 @@ class ProgressTodayWidget extends StatelessWidget {
         // The learning status fill, as MxStatusBadge's dot. The mastery
         // ramp draws its learning band in `warning` instead, to hold 3:1 on
         // its track (deck mastery spec R4).
-        color: context.mxColors.warningContainer,
+        color: context.status.warningFill,
       ),
     );
   }

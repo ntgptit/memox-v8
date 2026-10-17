@@ -1,28 +1,55 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialLocalizations;
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_held_route.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
-/// Opens [builder] (usually an MxBottomSheet) on the platform modal route
-/// over the theme's scrim, sliding up over `Durations.medium2`. It opens
-/// instantly under reduced motion (ruling O7). A scrim tap or a drag down
-/// dismisses it.
+/// Opens [builder] (usually an MxBottomSheet) on ForUI's bottom sheet
+/// route, over its barrier, from the nearest navigator. It slides up with
+/// ForUI's motion, at once under reduced motion (ruling O7). A scrim tap or
+/// a drag down dismisses it, unless the sheet is held (MxBottomSheet.isHeld).
+/// The result is what the sheet pops with.
 Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
 }) {
-  // The surface, radius and scrim are the theme's sheet (spec §4.6).
-  return showModalBottomSheet<T>(
-    context: context,
-    builder: builder,
-    isScrollControlled: true,
-    useSafeArea: true,
-    sheetAnimationStyle: AnimationStyle(
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : Durations.medium2,
-      curve: Easing.standard,
+  final navigator = Navigator.of(context);
+  // Material's strings, as showModalBottomSheet read them: ForUI's Vietnamese
+  // barrier strings are defective ("Scrim", a literal "$modalRouteContentName").
+  final material = MaterialLocalizations.of(context);
+  return navigator.push(
+    _MxSheetRoute<T>(
+      style: context.theme.modalSheetStyle,
+      side: FLayout.btt,
+      builder: builder,
+      // MxBottomSheet caps itself at 85% and scrolls its body.
+      mainAxisMaxRatio: null,
+      useSafeArea: true,
+      barrierLabel: material.scrimLabel,
+      barrierOnTapHint: material.scrimOnTapHint(material.bottomSheetLabel),
+      capturedFTheme: FTheme.capture(from: context, to: navigator.context),
+      capturedThemes: InheritedTheme.capture(
+        from: context,
+        to: navigator.context,
+      ),
     ),
   );
+}
+
+/// ForUI's sheet route, with a barrier that a held sheet keeps.
+class _MxSheetRoute<T> extends FModalSheetRoute<T> with MxHeldRoute<T> {
+  _MxSheetRoute({
+    required super.style,
+    required super.side,
+    required super.builder,
+    super.mainAxisMaxRatio,
+    super.useSafeArea,
+    super.barrierLabel,
+    super.barrierOnTapHint,
+    super.capturedFTheme,
+    super.capturedThemes,
+  });
 }
 
 /// The bottom-anchored modal for action lists and pickers. It stops at 85% of
@@ -31,8 +58,9 @@ Future<T?> showMxBottomSheet<T>(
 ///   O12);
 /// - the fill runs under the gesture bar, and the content stays above it.
 ///
-/// It is a Material, so the ripple of a row inside is visible. Its surface,
-/// elevation (1, no drawn shadow) and drag handle are the theme's sheet.
+/// It paints ForUI's sheet surface: the background, a hairline border on top
+/// and the large radius on its top corners; ForUI's route keeps it above the
+/// keyboard.
 class MxBottomSheet extends StatelessWidget {
   const MxBottomSheet({
     super.key,
@@ -66,19 +94,20 @@ class MxBottomSheet extends StatelessWidget {
   final bool hasGrabber;
 
   /// The sheet stays while its work runs: Back and a scrim tap are refused,
-  /// and a drag down is absorbed. The modal route's own drag pops without
-  /// asking, so refusing the pop alone does not hold it (FE-B4 final
-  /// review).
+  /// and a drag down is absorbed. ForUI's route pops on its own drag and
+  /// barrier without asking, so refusing the pop alone does not hold it
+  /// (FE-B4 final review; MxHeldRoute).
   final bool isHeld;
 
   static const double _maxHeightShare = 0.85;
+
+  /// The drag handle's painted size.
+  static const Size _handle = Size(32, 4);
+
   @override
   Widget build(BuildContext context) {
-    final sheets = Theme.of(context).bottomSheetTheme;
-    final shape = sheets.shape! as RoundedRectangleBorder;
-    final handle = sheets.dragHandleSize!;
-    // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
-    // the IME inset and caps itself within what is left.
+    final colors = context.colors;
+    final radius = context.radii.xl2.topLeft;
     final inset = MediaQuery.viewInsetsOf(context).bottom;
     final sheet = ConstrainedBox(
       constraints: BoxConstraints(
@@ -87,75 +116,77 @@ class MxBottomSheet extends StatelessWidget {
       ),
       child: MxTintBase(
         // What the sheet holds is tinted over its own ground.
-        color: sheets.backgroundColor ?? context.colors.surfaceContainerLow,
-        child: Material(
-          color: sheets.backgroundColor,
-          elevation: sheets.modalElevation!,
-          shadowColor: sheets.shadowColor,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (hasGrabber)
-                  // Material's drag-handle semantics: a screen reader can
-                  // dismiss by the grabber (§9 row 65).
-                  Center(
-                    child: Semantics(
-                      key: const ValueKey('mx-sheet-grabber'),
-                      container: true,
-                      button: true,
-                      label: MaterialLocalizations.of(context)
-                          .modalBarrierDismissLabel,
-                      onTap: () => Navigator.of(context).maybePop(),
-                      child: SizedBox.square(
-                        dimension: context.dimens.sizeControl,
-                        child: Center(
-                          child: SizedBox.fromSize(
-                            size: handle,
-                            child: DecoratedBox(
-                              // Variant ink, 3:1 on the sheet; the kit's
-                              // outlineVariant is 1.30 (FE-C1).
-                              decoration: BoxDecoration(
-                                color: sheets.dragHandleColor,
-                                borderRadius: BorderRadius.circular(
-                                  handle.height / 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (title case final text?)
-                  _SheetHead(title: text, subtitle: subtitle)
-                else
-                  ?header,
-                Flexible(child: SingleChildScrollView(child: child)),
-                ?footer,
-              ],
+        color: colors.background,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.background,
+            border: Border(
+              top: BorderSide(color: colors.border, width: context.hairline),
+            ),
+            borderRadius: BorderRadius.vertical(top: radius),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.vertical(top: radius),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasGrabber) _grabber(context),
+                  if (title case final text?)
+                    _SheetHead(title: text, subtitle: subtitle)
+                  else
+                    ?header,
+                  Flexible(child: SingleChildScrollView(child: child)),
+                  ?footer,
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
-    return PopScope(
-      canPop: !isHeld,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: inset),
-        // Inside the route's drag detector, so it wins the vertical drag.
-        child: isHeld
-            ? GestureDetector(
-                onVerticalDragStart: (_) {},
-                onVerticalDragUpdate: (_) {},
-                onVerticalDragEnd: (_) {},
-                child: sheet,
-              )
-            : sheet,
+    return MxHoldRoute(
+      isHeld: isHeld,
+      // Inside the route's drag detector, so a held sheet's absorber wins the
+      // vertical drag. Opaque: a drag that starts on a locked row (which
+      // ignores pointers) still reaches it. Always present, so a hold that
+      // comes or goes never remounts the sheet's content.
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragStart: isHeld ? (_) {} : null,
+        onVerticalDragUpdate: isHeld ? (_) {} : null,
+        onVerticalDragEnd: isHeld ? (_) {} : null,
+        child: sheet,
+      ),
+    );
+  }
+
+  /// The drag affordance: a screen reader can dismiss by it (§9 row 65).
+  Widget _grabber(BuildContext context) {
+    return Center(
+      child: Semantics(
+        key: const ValueKey('mx-sheet-grabber'),
+        container: true,
+        button: true,
+        label: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        onTap: () => Navigator.of(context).maybePop(),
+        child: SizedBox.square(
+          dimension: context.dimens.sizeControl,
+          child: Center(
+            child: SizedBox.fromSize(
+              size: _handle,
+              child: DecoratedBox(
+                // Muted ink, 3:1 on the sheet.
+                decoration: BoxDecoration(
+                  color: context.colors.mutedForeground,
+                  borderRadius: context.radii.pill,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -193,14 +224,14 @@ class _SheetHead extends StatelessWidget {
               title,
               maxLines: _titleMaxLines,
               overflow: TextOverflow.ellipsis,
-              style: context.texts.titleSmall,
+              style: context.texts.itemTitle,
             ),
           ),
           if (subtitle case final text?)
             Text(
               text,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
         ],

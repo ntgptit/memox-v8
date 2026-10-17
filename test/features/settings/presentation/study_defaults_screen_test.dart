@@ -23,6 +23,9 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 // Screen 23a (settings hub spec §5.2): the study rows that were on the tab,
 // with their saving, validation and toasts (UC-SETTINGS-001, FE-A3 D1, D6;
@@ -78,7 +81,7 @@ void main() {
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
     for (var i = 0; i < 3; i++) {
-      await tester.tap(find.byTooltip(_en.settingsMoreCards));
+      await tester.tap(byControlLabel(_en.settingsMoreCards));
       await tester.pump();
     }
     expect(store.writes, 0);
@@ -105,7 +108,7 @@ void main() {
       _screen(),
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump(cardLimitSettle);
     await tester.pump();
 
@@ -135,7 +138,7 @@ void main() {
     );
     await tester.tap(find.byKey(_valueKey));
     await tester.pump();
-    await tester.enterText(find.byType(TextField), '250');
+    await tester.enterText(find.byType(FTextField), '250');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
@@ -163,7 +166,7 @@ void main() {
       _screen(),
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
     await tester.pump(cardLimitSettle);
     await tester.pumpAndSettle();
 
@@ -320,7 +323,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen());
     await tester.tap(find.byKey(_valueKey));
     await tester.pump();
-    await tester.enterText(find.byType(TextField), '250');
+    await tester.enterText(find.byType(FTextField), '250');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     final message = tester.getRect(

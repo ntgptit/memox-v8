@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
@@ -60,7 +60,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
             liveRegion: true,
             child: Text(
               l10n.topikQuestionStem(question.no, question.stemKo),
-              style: context.texts.bodyLarge,
+              style: context.texts.content,
             ),
           ),
           SizedBox(height: dimens.space16),
@@ -83,8 +83,8 @@ class TopikReviewQuestionWidget extends StatelessWidget {
     return Text(
       meta.shown,
       semanticsLabel: meta.spoken,
-      style: context.texts.labelMedium?.copyWith(
-        color: context.colors.onSurfaceVariant,
+      style: context.texts.label.copyWith(
+        color: context.colors.mutedForeground,
       ),
     );
   }
@@ -117,7 +117,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
         children: [
           Text(
             [topikCircled(option.idx), ?option.textKo].join(' '),
-            style: context.texts.bodyLarge?.copyWith(color: foreground),
+            style: context.texts.content.copyWith(color: foreground),
           ),
           if (option.image case final image?)
             Image.asset(image, fit: BoxFit.contain, excludeFromSemantics: true),
@@ -132,7 +132,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
     final dimens = context.dimens;
     Widget line(String text) => Padding(
       padding: EdgeInsets.all(dimens.space16),
-      child: Text(text, style: context.texts.bodyMedium),
+      child: Text(text, style: context.texts.body),
     );
     final sections = [
       if (question.explanation case final text?)

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/log_window_model.dart';
@@ -7,6 +6,8 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
+
+import 'package:forui/forui.dart';
 
 // Monitoring spec §3.2: the filter chips and their sheets.
 void main() {
@@ -107,15 +108,15 @@ void main() {
     await pumpMonitoring(tester, env, repository);
 
     await tapMonitoringChip(tester, 'Device');
-    await tester.enterText(find.byType(TextField).at(1), 'dev-1');
-    await tester.enterText(find.byType(TextField).at(2), 'not a uuid');
+    await tester.enterText(find.byType(FTextField).at(1), 'dev-1');
+    await tester.enterText(find.byType(FTextField).at(2), 'not a uuid');
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
     expect(find.text("That isn't a valid user ID."), findsOneWidget);
     expect(repository.queries, hasLength(1));
 
     const user = '00000000-0000-0000-0000-00000000dead';
-    await tester.enterText(find.byType(TextField).at(2), user);
+    await tester.enterText(find.byType(FTextField).at(2), user);
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
 

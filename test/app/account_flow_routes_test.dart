@@ -19,6 +19,10 @@ import '../support/account_harness.dart';
 import '../support/fake_auth_server.dart';
 import '../support/app_harness.dart';
 
+import 'package:forui/forui.dart';
+
+import '../support/forui_expect.dart';
+
 // Where the sign-in flows begin and end (login navigation review,
 // owner 2026-10-08): Welcome's email ends where Welcome was headed, as its
 // Google does; the layer's Cancel waits while its target signs in.
@@ -46,7 +50,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(SignInScreen), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
 
     expect(find.byType(WelcomeScreen), findsNothing);
@@ -64,10 +68,10 @@ void main() {
     await tester.tap(find.text(_en.accountContinueEmail));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), 'a@example.com');
+    await tester.enterText(find.byType(FTextField), 'a@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).last, FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField).last, FakeAuthGateway.code);
     await _settle(tester);
 
     expect(world.state, isA<Ready>());

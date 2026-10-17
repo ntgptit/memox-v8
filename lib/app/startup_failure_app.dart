@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialApp, ThemeMode;
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/app/app_bootstrap.dart';
+import 'package:memox/app/app_theme_host.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 
@@ -34,10 +38,18 @@ class StartupFailureApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-    theme: buildLightTheme(),
-    darkTheme: buildDarkTheme(),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    theme: materialHostTheme(buildLightTheme()),
+    darkTheme: materialHostTheme(buildDarkTheme()),
+    localizationsDelegates: [
+      ...AppLocalizations.localizationsDelegates,
+      FLocalizations.delegate,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
+    // No settings row could be read: the platform's brightness.
+    builder: (context, child) => AppThemeHost(
+      brightness: resolveBrightness(context, ThemeMode.system),
+      child: child!,
+    ),
     home: _StartupFailureScreen(
       failure: failure,
       onRetry: onRetry,
@@ -71,7 +83,7 @@ class _StartupFailureScreen extends StatelessWidget {
         ? l10n.startupDatabaseErrorBody
         : '${l10n.startupDatabaseMigrationHint(migration.$1, migration.$2)}\n'
               '${l10n.startupDatabaseErrorBody}';
-    return Scaffold(
+    return MxAppShell(
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.all(context.dimens.space24),
@@ -87,8 +99,8 @@ class _StartupFailureScreen extends StatelessWidget {
             if (isReportQueued)
               Text(
                 l10n.startupReportQueued,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
                 textAlign: TextAlign.center,
               )

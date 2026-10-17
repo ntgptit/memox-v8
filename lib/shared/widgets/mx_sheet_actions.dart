@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
@@ -80,7 +81,7 @@ class MxSheetActions extends StatelessWidget {
   final bool isConfirmLoading;
 
   /// The sheet form: a divider rule on top and 8 16 16 padding, instead of
-  /// the dialog's 24 on the sides and below (the theme's actionsPadding).
+  /// the dialog's 24 on the sides and below.
   final bool isInSheet;
   final List<Widget> children;
 
@@ -129,28 +130,37 @@ class MxSheetActions extends StatelessWidget {
     if (!isInSheet) {
       // A dialog's pair, on the edge its title and body share (DEV-166).
       return Padding(
-        padding: DialogTheme.of(context).actionsPadding!,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          0,
+          context.dimens.space24,
+          context.dimens.space24,
+        ),
         child: row,
       );
     }
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: context.mxColors.divider,
-            width: context.dimens.strokeHairline,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FDivider(
+          style: FDividerStyleDelta.delta(
+            color: context.colors.border,
+            padding: const EdgeInsetsGeometryDelta.value(EdgeInsets.zero),
+            width: context.hairline,
           ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space16,
-          context.dimens.space8,
-          context.dimens.space16,
-          context.dimens.space16,
+        Padding(
+          // The rule takes its hairline out of the 8 under it.
+          padding: EdgeInsets.fromLTRB(
+            context.dimens.space16,
+            context.dimens.space8 - context.hairline,
+            context.dimens.space16,
+            context.dimens.space16,
+          ),
+          child: row,
         ),
-        child: row,
-      ),
+      ],
     );
   }
 }

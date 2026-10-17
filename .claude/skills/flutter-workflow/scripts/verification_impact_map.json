@@ -55,27 +55,83 @@
     "trash": []
   },
   "database_query_features": {
-    "account_device_queries": ["account"],
+    "account_device_queries": [
+      "account"
+    ],
     "account_state_queries": [],
-    "card_list_queries": ["card"],
-    "card_queries": ["card"],
-    "card_row_queries": ["card", "transfer", "trash"],
-    "deck_queries": ["deck", "study", "reminders", "progress"],
-    "deck_row_queries": ["deck", "trash"],
-    "deck_tree_queries": ["deck"],
-    "delete_batch_queries": ["card", "deck", "trash"],
-    "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
-    "live_row_queries": ["card", "deck", "settings", "srs", "study"],
-    "progress_queries": ["progress"],
-    "search_queries": ["search"],
-    "settings_queries": ["settings", "reminders", "study"],
-    "srs_queries": ["srs", "study", "deck"],
+    "card_list_queries": [
+      "card"
+    ],
+    "card_queries": [
+      "card"
+    ],
+    "card_row_queries": [
+      "card",
+      "transfer",
+      "trash"
+    ],
+    "deck_queries": [
+      "deck",
+      "study",
+      "reminders",
+      "progress"
+    ],
+    "deck_row_queries": [
+      "deck",
+      "trash"
+    ],
+    "deck_tree_queries": [
+      "deck"
+    ],
+    "delete_batch_queries": [
+      "card",
+      "deck",
+      "trash"
+    ],
+    "dismissed_note_queries": [
+      "starter_decks",
+      "trash",
+      "transfer"
+    ],
+    "live_row_queries": [
+      "card",
+      "deck",
+      "settings",
+      "srs",
+      "study"
+    ],
+    "progress_queries": [
+      "progress"
+    ],
+    "search_queries": [
+      "search"
+    ],
+    "settings_queries": [
+      "settings",
+      "reminders",
+      "study"
+    ],
+    "srs_queries": [
+      "srs",
+      "study",
+      "deck"
+    ],
     "sql_log_queries": [],
-    "starter_queries": ["starter_decks"],
-    "study_queue_queries": ["study"],
-    "study_round_queries": ["study"],
-    "study_session_queries": ["study"],
-    "study_view_queries": ["study"],
+    "starter_queries": [
+      "starter_decks"
+    ],
+    "study_queue_queries": [
+      "study"
+    ],
+    "study_round_queries": [
+      "study"
+    ],
+    "study_session_queries": [
+      "study"
+    ],
+    "study_view_queries": [
+      "study"
+    ],
     "sync_card_queries": [],
     "sync_card_schedule_queries": [],
     "sync_deck_queries": [],
@@ -83,15 +139,24 @@
     "sync_outbox_queries": [],
     "sync_review_log_queries": [],
     "sync_tag_queries": [],
-    "sync_topik_attempt_queries": ["topik"],
-    "tag_queries": ["tags", "search", "transfer"],
-    "topik_queries": ["topik"],
-    "trash_queries": ["trash"]
+    "sync_topik_attempt_queries": [
+      "topik"
+    ],
+    "tag_queries": [
+      "tags",
+      "search",
+      "transfer"
+    ],
+    "topik_queries": [
+      "topik"
+    ],
+    "trash_queries": [
+      "trash"
+    ]
   },
   "full_scope_prefixes": [
     "lib/core/theme/",
     "lib/l10n/",
-    "design/",
     "assets/",
     "drift_schemas/",
     "test/support/fonts/"
@@ -133,21 +198,45 @@
       "test/core/network/supabase_client_test.dart",
       "test/visual_audit/screens/screen_audit_coverage_test.dart"
     ],
-    "design/": [
-      "test/core/theme/token_contrast_test.dart",
-      "test/core/theme/token_source.dart",
-      "test/support/approved_palette.dart"
+    "DESIGN.md": [
+      "test/tools/design_doc_test.dart"
     ],
-    "docs/shared/data/schema.md": ["test/support/invariant_queries.dart"],
-    "drift_schemas/": ["test/database/schema_test.dart"],
-    "supabase/migrations/": ["test/core/database/schema_constants_parity_test.dart"],
-    "assets/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"],
-    "pubspec.yaml": ["test/tools/topik_content_assets_test.dart"],
-    "android/": ["test/app/android_manifest_test.dart", "test/app/android_signing_test.dart"],
-    ".github/": ["test/app/android_signing_test.dart"],
-    ".gitignore": ["test/app/android_signing_test.dart"],
-    "tools/m3_lint/": ["test/tools/m3_lint_test.dart"],
-    "tools/topik/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"]
+    ".impeccable/": [
+      "test/tools/design_doc_test.dart"
+    ],
+    "docs/shared/data/schema.md": [
+      "test/support/invariant_queries.dart"
+    ],
+    "drift_schemas/": [
+      "test/database/schema_test.dart"
+    ],
+    "supabase/migrations/": [
+      "test/core/database/schema_constants_parity_test.dart"
+    ],
+    "assets/": [
+      "test/tools/topik_content_assets_test.dart",
+      "test/tools/topik_lint_test.dart"
+    ],
+    "pubspec.yaml": [
+      "test/tools/topik_content_assets_test.dart"
+    ],
+    "android/": [
+      "test/app/android_manifest_test.dart",
+      "test/app/android_signing_test.dart"
+    ],
+    ".github/": [
+      "test/app/android_signing_test.dart"
+    ],
+    ".gitignore": [
+      "test/app/android_signing_test.dart"
+    ],
+    "tools/ui_lint/": [
+      "test/tools/ui_lint_test.dart"
+    ],
+    "tools/topik/": [
+      "test/tools/topik_content_assets_test.dart",
+      "test/tools/topik_lint_test.dart"
+    ]
   },
   "golden_scope_files": [
     ".claude/skills/flutter-testing/scripts/golden.Dockerfile",

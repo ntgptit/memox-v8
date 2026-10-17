@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -175,13 +175,13 @@ class _Header extends StatelessWidget {
             deckName == null
                 ? l10n.exportTitleSelection(scope.cardCount)
                 : l10n.exportTitleDeck(scope.cardCount),
-            style: context.texts.titleSmall,
+            style: context.texts.itemTitle,
           ),
           Text(
             deckName == null
                 ? l10n.exportBodySelection
                 : l10n.exportBodyDeck(deckName),
-            style: context.texts.bodyMedium,
+            style: context.texts.body,
           ),
         ],
       ),

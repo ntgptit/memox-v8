@@ -1,7 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tooltip.dart';
 
-/// An icon in a round `sizeControl` box: the Design System's icon button.
-/// [semanticLabel] names it for screen readers and shows as its tooltip.
+/// An icon at `sizeIcon` in a round 48 box: ForUI's ghost icon button at the
+/// large touch size. The glyph size is the app's, not ForUI's default, so a
+/// bar can put the glyph itself on the screen margin (MxAppBar).
+/// [semanticLabel] names it for screen readers and shows as its tooltip on a
+/// long press.
 class MxIconButton extends StatelessWidget {
   const MxIconButton({
     super.key,
@@ -13,15 +19,29 @@ class MxIconButton extends StatelessWidget {
   final IconData icon;
   final String semanticLabel;
 
-  /// Null disables the control; the theme dims it.
+  /// Null disables the control; ForUI dims it.
   final VoidCallback? onPressed;
 
-  /// The theme's IconButton is this contract: the glyph size, the control
-  /// size, the state layers, the disabled opacity and the focus ring.
   @override
-  Widget build(BuildContext context) => IconButton(
-    icon: Icon(icon),
-    tooltip: semanticLabel,
-    onPressed: onPressed,
-  );
+  Widget build(BuildContext context) {
+    final dimens = context.dimens;
+    return MxTooltip(
+      label: semanticLabel,
+      child: FButton.icon(
+        onPress: onPressed,
+        variant: FButtonVariant.ghost,
+        size: FButtonSizeVariant.lg,
+        semanticsLabel: semanticLabel,
+        // The padding keeps the larger glyph in the 48 box.
+        style: FButtonStyleDelta.delta(
+          iconContentStyle: FButtonIconContentStyleDelta.delta(
+            padding: EdgeInsetsGeometryDelta.value(
+              EdgeInsets.all((dimens.sizeControl - dimens.sizeIcon) / 2),
+            ),
+          ),
+        ),
+        child: Icon(icon, size: dimens.sizeIcon),
+      ),
+    );
+  }
 }

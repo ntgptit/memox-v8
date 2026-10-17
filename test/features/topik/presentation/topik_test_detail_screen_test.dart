@@ -25,6 +25,8 @@ import '../../../support/topik_fakes.dart';
 import '../../../support/topik_screen_fixtures.dart';
 import '../../../support/topik_test_detail_fixtures.dart';
 
+import 'package:forui/forui.dart';
+
 // Screen 36 (UC-TOPIK-002, BR-TOPIK-011, -020): Overview, starting an
 // attempt, and the screen's states. History is in
 // topik_test_detail_history_test.dart.
@@ -140,7 +142,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(taps.attempts, hasLength(1));
     // The second tap is ignored, not refused: no message either.
-    expect(find.byType(SnackBar), findsNothing);
+    expect(find.byType(FToast), findsNothing);
   });
 
   libraryTest('an unknown test: missing, with Back to tests and no FAB '
@@ -158,6 +160,7 @@ void main() {
     expect(find.byType(MxFab), findsNothing);
     await tester.tap(find.text('Back to tests'));
     expect(taps.backToTests, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a recent row opens Summary when completed and the attempt '
@@ -175,6 +178,7 @@ void main() {
     await tester.tap(find.text('#2'));
     expect(taps.summaries, [done.id]);
     expect(taps.attempts, [open.id]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('an error after the test loaded drops the FAB and the title '

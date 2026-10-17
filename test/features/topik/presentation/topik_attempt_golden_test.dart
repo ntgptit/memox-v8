@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -147,7 +149,7 @@ void main() {
         env,
         'collapsed',
         attempt.id,
-        before: () => tester.tap(find.byTooltip('Hide passage')),
+        before: () => tester.tap(byControlLabel('Hide passage')),
       );
     });
 

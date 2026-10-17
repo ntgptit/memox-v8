@@ -39,6 +39,7 @@ void main() {
     );
     await tester.tap(find.text('TOPIK II'));
     expect(opened, [TopikLevel.topik2]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a level with no valid test says so and is not a button '

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _grabberKey = ValueKey('mx-sheet-grabber');
@@ -20,30 +22,35 @@ Widget _rows(int count) => Column(
 );
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
-  testWidgets('surface: the low container, radiusXl on top, elevation 1 '
-      'with no shadow', (tester) async {
+  testWidgets('surface: the background, a hairline border and the large '
+      'radius on top', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
-    final surface = tester.widget<Material>(
-      find
-          .descendant(
+    final surface = tester
+        .widgetList<DecoratedBox>(
+          find.descendant(
             of: find.byType(MxBottomSheet),
-            matching: find.byType(Material),
-          )
-          .first,
-    );
+            matching: find.byType(DecoratedBox),
+          ),
+        )
+        .map((box) => box.decoration)
+        .whereType<BoxDecoration>()
+        .firstWhere((decoration) => decoration.border != null);
+    final context = tester.element(find.byType(MxBottomSheet));
 
-    expect(surface.color, scheme.surfaceContainerLow);
+    expect(surface.color, colors.background);
     expect(
-      (surface.shape! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.vertical(top: Radius.circular(const AppDimens().radiusXl)),
+      (surface.border! as Border).top,
+      BorderSide(color: colors.border, width: context.hairline),
     );
-    expect(surface.elevation, 1);
-    expect(surface.shadowColor, Colors.transparent);
+    expect(
+      surface.borderRadius,
+      BorderRadius.vertical(top: context.radii.xl2.topLeft),
+    );
   });
 
-  testWidgets('what the sheet holds is tinted over the low container', (
+  testWidgets('what the sheet holds is tinted over its background', (
     tester,
   ) async {
     late Color base;
@@ -59,10 +66,10 @@ void main() {
       ),
     );
 
-    expect(base, scheme.surfaceContainerLow);
+    expect(base, colors.background);
   });
 
-  testWidgets('a 32×4 onSurfaceVariant handle centred in a 48×48 target '
+  testWidgets('a 32×4 muted-foreground handle centred in a 48×48 target '
       '(FE-C1)', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(1)));
     final bar = find.descendant(
@@ -73,7 +80,7 @@ void main() {
     expect(tester.getSize(bar), const Size(32, 4));
     expect(
       (tester.widget<DecoratedBox>(bar).decoration as BoxDecoration).color,
-      scheme.onSurfaceVariant,
+      colors.mutedForeground,
     );
     expect(tester.getSize(find.byKey(_grabberKey)), const Size(48, 48));
     expect(tester.getCenter(bar), tester.getCenter(find.byKey(_grabberKey)));
@@ -116,42 +123,29 @@ void main() {
       lessThan(before),
     );
     await tester.tap(find.byKey(_footerKey));
+    await tester.pumpAndSettle();
     expect(taps, 1);
   });
 
-  testWidgets('a row ripple paints on the sheet; the gesture inset is kept', (
-    tester,
-  ) async {
+  testWidgets('a tappable row inside takes its tap; the gesture inset is '
+      'kept', (tester) async {
+    var taps = 0;
     await pumpMx(
       tester,
       MxBottomSheet(
         footer: const SizedBox(key: _footerKey, height: 40),
-        child: InkWell(
+        child: GestureDetector(
           key: _rowKey,
-          onTap: () {},
+          behavior: HitTestBehavior.opaque,
+          onTap: () => taps++,
           child: const SizedBox(height: 48),
         ),
       ),
       padding: const EdgeInsets.only(bottom: 24),
     );
 
-    expect(
-      tester.widget<Material>(
-        find
-            .ancestor(of: find.byKey(_rowKey), matching: find.byType(Material))
-            .first,
-      ),
-      same(
-        tester.widget<Material>(
-          find
-              .descendant(
-                of: find.byType(MxBottomSheet),
-                matching: find.byType(Material),
-              )
-              .first,
-        ),
-      ),
-    );
+    await tester.tap(find.byKey(_rowKey));
+    expect(taps, 1);
     expect(
       tester.getBottomLeft(find.byType(MxBottomSheet)).dy -
           tester.getBottomLeft(find.byKey(_footerKey)).dy,
@@ -159,7 +153,7 @@ void main() {
     );
   });
 
-  testWidgets('showMxBottomSheet: the theme\'s scrim; a scrim tap closes it '
+  testWidgets("showMxBottomSheet: ForUI's scrim; a scrim tap closes it "
       '(RF2)', (tester) async {
     await pumpMx(
       tester,
@@ -178,11 +172,44 @@ void main() {
 
     expect(find.byType(MxBottomSheet), findsOneWidget);
     expect(
-      tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color,
-      scheme.scrim.withValues(alpha: const AppDimens().opacityScrim),
+      forUiTheme(
+        tester,
+        find.byType(MxBottomSheet),
+      ).modalSheetStyle.barrierFilter,
+      isNotNull,
     );
     await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsNothing);
+  });
+
+  testWidgets('showMxBottomSheet returns what the sheet pops with', (
+    tester,
+  ) async {
+    String? result;
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => MxButton(
+          label: 'Open',
+          onPressed: () async => result = await showMxBottomSheet<String>(
+            context,
+            builder: (sheet) => MxBottomSheet(
+              child: MxButton(
+                label: 'Pick',
+                onPressed: () => Navigator.of(sheet).pop('picked'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pick'));
+    await tester.pumpAndSettle();
+
+    expect(result, 'picked');
     expect(find.byType(MxBottomSheet), findsNothing);
   });
 
@@ -222,12 +249,12 @@ void main() {
     await pumpMx(
       tester,
       Builder(
-        builder: (context) => TextButton(
+        builder: (context) => MxButton(
+          label: 'open',
           onPressed: () => showMxBottomSheet<void>(
             context,
             builder: (_) => const MxBottomSheet(child: Text('Sheet')),
           ),
-          child: const Text('open'),
         ),
       ),
     );
@@ -239,7 +266,9 @@ void main() {
         .modalBarrierDismissLabel;
     final node = tester.getSemantics(grabber);
     expect(node.label, label);
-    tester.semantics.tap(find.semantics.byLabel(label));
+    tester.semantics.tap(
+      find.semantics.byPredicate((candidate) => candidate.id == node.id),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Sheet'), findsNothing);
     handle.dispose();
@@ -249,36 +278,37 @@ void main() {
     await pumpMx(
       tester,
       Builder(
-        builder: (context) {
-          final size = MediaQuery.sizeOf(context);
-          return MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(viewInsets: const EdgeInsets.only(bottom: 300)),
-            child: SizedBox(
-              width: size.width,
-              height: size.height,
-              child: const Align(
-                alignment: Alignment.bottomCenter,
-                child: MxBottomSheet(child: TextField()),
-              ),
-            ),
-          );
-        },
+        builder: (context) => MxButton(
+          label: 'Open',
+          onPressed: () => showMxBottomSheet<void>(
+            context,
+            builder: (_) =>
+                const MxBottomSheet(child: SizedBox(key: _rowKey, height: 48)),
+          ),
+        ),
       ),
     );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final rest = tester.getBottomLeft(find.byKey(_rowKey)).dy;
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
 
     final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(
-      tester.getBottomLeft(find.byType(TextField)).dy,
+      tester.getBottomLeft(find.byKey(_rowKey)).dy,
       lessThanOrEqualTo(screen.height - 300),
     );
+    expect(rest, greaterThan(screen.height - 300));
   });
 
   // SW-REV-008: the head every sheet drew by hand, now the sheet's own.
   group('title and subtitle (SW-REV-008)', () {
-    testWidgets('the title in titleSmall, space24 in and space4 below the '
-        'grabber; the subtitle in the variant bodyMedium space4 under it; '
-        'space12 above the content', (tester) async {
+    testWidgets('the title in the item-title role, space24 in and space4 '
+        'below the grabber; the subtitle in the body role, muted, space4 '
+        'under it; space12 above the content', (tester) async {
       await pumpMx(
         tester,
         const MxBottomSheet(
@@ -288,8 +318,7 @@ void main() {
         ),
       );
       const dimens = AppDimens();
-      final texts = Theme.of(tester.element(find.byType(MxBottomSheet)))
-          .textTheme;
+      final texts = tester.element(find.byType(MxBottomSheet)).texts;
       final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
       final grabber = tester.getSize(find.byKey(_grabberKey)).height;
       final title = tester.widget<Text>(find.text('Move to deck'));
@@ -297,10 +326,10 @@ void main() {
         find.text('Cards keep their progress.'),
       );
 
-      expect(title.style, texts.titleSmall);
+      expect(title.style, texts.itemTitle);
       expect(
         subtitle.style,
-        texts.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+        texts.body.copyWith(color: colors.mutedForeground),
       );
       expect(
         tester.getTopLeft(find.text('Move to deck')) - sheet,

@@ -71,6 +71,7 @@ void main() {
     expectOnePrimaryPerDecision(tester);
     await tester.tap(find.text('Details'));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest("one refused row reads in the singular (critique 2026-09-30 "

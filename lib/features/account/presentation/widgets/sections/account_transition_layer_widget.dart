@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -254,15 +255,15 @@ class _Progress extends StatelessWidget {
                     child: Text(
                       step,
                       textAlign: TextAlign.center,
-                      style: context.texts.titleLarge,
+                      style: context.texts.screenTitle,
                     ),
                   ),
                   SizedBox(height: context.dimens.space8),
                   Text(
                     l10n.accountSafeToClose,
                     textAlign: TextAlign.center,
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ],

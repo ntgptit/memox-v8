@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -68,7 +68,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
                   children: [
                     Text(
                       l10n.topikAttemptNumber(numbered.number),
-                      style: context.texts.titleSmall,
+                      style: context.texts.itemTitle,
                     ),
                     MxBadge(
                       label: isCompleted
@@ -82,8 +82,8 @@ class TopikHistoryRowWidget extends StatelessWidget {
                 ),
                 Text(
                   meta,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ],

@@ -18,6 +18,8 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 
+import 'package:forui/forui.dart';
+
 // Screen 07's tag filter (FE-B2 spec D3, D12, D14; UC-TAG-001 steps 6-8,
 // A4, A5, A7).
 
@@ -168,7 +170,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.cardTagFilterNone), findsOneWidget);
-    expect(find.byType(BottomSheet), findsOneWidget);
+    expect(find.byType(MxBottomSheet), findsOneWidget);
     await _apply(tester);
 
     expect(_fronts(tester), hasLength(4));
@@ -223,7 +225,7 @@ void main() {
     expect(find.byType(MxSearchField), findsOneWidget);
 
     await tester.tap(_inSheet('noun'));
-    await tester.enterText(find.byType(TextField), 'VER');
+    await tester.enterText(find.byType(FTextField), 'VER');
     await tester.pump();
 
     expect(_inSheet('noun'), findsNothing);
@@ -278,6 +280,7 @@ void main() {
     expect(find.text(metaDots(vi.cardTagFilterChosen(1))), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   // SW-REV-008 (impeccable audit 2026-10-08): a filter that fails to load

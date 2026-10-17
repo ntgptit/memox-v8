@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
-Future<BuildContext> contextOf(WidgetTester tester, ThemeData theme) async {
+import '../../support/theme_harness.dart';
+
+Future<BuildContext> contextOf(WidgetTester tester, FThemeData theme) async {
   late BuildContext captured;
   await tester.pumpWidget(
     MaterialApp(
-      theme: theme,
+      theme: materialHostTheme(theme),
+      builder: mxThemeBuilder(theme),
       home: Builder(
         builder: (context) {
           captured = context;
@@ -21,32 +25,6 @@ Future<BuildContext> contextOf(WidgetTester tester, ThemeData theme) async {
 }
 
 void main() {
-  testWidgets(
-    'light: accent and its on-colour are primary and onPrimary, deck icon is info',
-    (tester) async {
-      final context = await contextOf(tester, buildLightTheme());
-      expect(context.accentColor, Theme.of(context).colorScheme.primary);
-      expect(context.onAccentColor, Theme.of(context).colorScheme.onPrimary);
-      expect(context.deckIconColor, context.mxColors.info);
-    },
-  );
-
-  testWidgets(
-    'dark: accent and its on-colour are the fixed steps, deck icon is infoContainer',
-    (tester) async {
-      final context = await contextOf(tester, buildDarkTheme());
-      expect(
-        context.accentColor,
-        Theme.of(context).colorScheme.primaryFixedDim,
-      );
-      expect(
-        context.onAccentColor,
-        Theme.of(context).colorScheme.onPrimaryFixed,
-      );
-      expect(context.deckIconColor, context.mxColors.infoContainer);
-    },
-  );
-
   testWidgets('screen margin follows the window width', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -74,7 +52,8 @@ void main() {
       late BuildContext inside;
       await tester.pumpWidget(
         MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           home: WindowWidthScope(
             width: 620,
             child: Builder(

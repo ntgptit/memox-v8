@@ -4,6 +4,7 @@ import 'package:memox/features/settings/presentation/screens/admin_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/forui_expect.dart';
 
 // Settings hub spec §5.3: the admin rows the features supply, in Logs and
 // People; the gate is the router's (account_routes_test).
@@ -33,6 +34,6 @@ void main() {
       tester.getTopLeft(find.text('Log SQL statements')).dy,
       lessThan(tester.getTopLeft(find.text('Users')).dy),
     );
-    expect(find.byTooltip(_en.commonBack), findsOneWidget);
+    expect(byControlLabel(_en.commonBack), findsOneWidget);
   });
 }

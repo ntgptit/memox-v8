@@ -1,13 +1,15 @@
-import 'dart:math' as math;
-
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+// FTextField's style takes its borders as material_ui's InputBorder.
+import 'package:material_ui/material_ui.dart' show InputBorder;
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
+import 'package:memox/shared/widgets/mx_user_edits.dart';
 
-/// How a field takes its text. Every boxed variant shares one box and one
-/// type: the Material 3 outlined field, radius 12, padding 16, 56 tall, the
-/// input role (DEV-169, DEV-372).
+/// How a field takes its text. Every boxed variant is ForUI's large touch
+/// text field (DEV-169, DEV-372).
 enum MxTextFieldVariant {
   /// A form or dialog entry: one line.
   form,
@@ -31,20 +33,11 @@ enum MxTextFieldVariant {
   code,
 }
 
-typedef _Geometry = ({
-  double floor,
-  double horizontal,
-  double vertical,
-  bool isMultiline,
-});
-
-/// Every form field: the Material 3 outlined field, with no fill. The edge is
-/// the outline at rest, the focus ring on focus and the error tone in error
-/// (the error container's on-colour while the pointer is over it); the label
-/// sits above it, and a supporting row below holds the supporting text or the
-/// error message, with the counter at its trailing end. Focus, selection and
-/// IME are the platform's; the caret turns to the error tone with the edge.
-/// Validation and the message text are the caller's.
+/// Every form field, on ForUI's [FTextField]: ForUI's border at rest, its
+/// focus ring on focus and its error tone in error; the label above it, and
+/// a supporting row below that holds the supporting text or the error
+/// message, with the counter at its trailing end. Focus, selection and IME
+/// are the platform's. Validation and the message text are the caller's.
 class MxTextField extends StatelessWidget {
   const MxTextField({
     super.key,
@@ -73,35 +66,14 @@ class MxTextField extends StatelessWidget {
          'measures its text across its whole width',
        );
 
-  /// [field] on [controller]: a multi-line box that must follow typing owns
-  /// one when its caller does not. The outer field keeps the key.
-  MxTextField._on(MxTextField field, TextEditingController this.controller)
-    : focusNode = field.focusNode,
-      label = field.label,
-      labelLeading = field.labelLeading,
-      labelTrailing = field.labelTrailing,
-      hintText = field.hintText,
-      supportingText = field.supportingText,
-      counter = field.counter,
-      errorText = field.errorText,
-      variant = field.variant,
-      isEnabled = field.isEnabled,
-      isAutofocused = field.isAutofocused,
-      isReadOnly = field.isReadOnly,
-      onChanged = field.onChanged,
-      onSubmitted = field.onSubmitted,
-      textInputAction = field.textInputAction,
-      leading = field.leading,
-      trailing = field.trailing;
-
   final TextEditingController? controller;
   final FocusNode? focusNode;
 
-  /// The field's name: painted above the box, 4 clear of it and on its text
-  /// inset, in `onSurfaceVariant` (the error tone in error), and announced
-  /// by TalkBack with the value. A hint disappears once typed, so a field
-  /// that needs a name always gets a label. The bare study field and the code
-  /// slots paint none: the screen around them names them.
+  /// The field's name: painted above the box in the label role (the error
+  /// tone in error), and announced by TalkBack with the value. A hint
+  /// disappears once typed, so a field that needs a name always gets a label.
+  /// The bare study field and the code slots paint none: the screen around
+  /// them names them.
   final String? label;
 
   /// A glyph before the painted [label], such as an optional field's mark.
@@ -112,8 +84,8 @@ class MxTextField extends StatelessWidget {
   final Widget? labelTrailing;
   final String? hintText;
 
-  /// A line under the box on its text inset, in the supporting-text role. An
-  /// [errorText] takes its place.
+  /// A line under the box, in ForUI's description style. An [errorText]
+  /// takes its place.
   final String? supportingText;
 
   /// The count against a limit, such as "12 / 60", at the trailing end of the
@@ -131,6 +103,7 @@ class MxTextField extends StatelessWidget {
   /// Shows the value but takes no input, such as a code being checked.
   final bool isReadOnly;
 
+  /// The person changed the text (not the selection, not the code).
   final ValueChanged<String>? onChanged;
 
   /// The keyboard's action key (Done, Next…) was pressed.
@@ -142,373 +115,226 @@ class MxTextField extends StatelessWidget {
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
 
-  static _Geometry _geometry(
-    BuildContext context,
-    MxTextFieldVariant variant,
-  ) => switch (variant) {
-    MxTextFieldVariant.form || MxTextFieldVariant.code => (
-      floor: context.dimens.sizeInput,
-      horizontal: context.dimens.space16,
-      // Centred by the floor: see _field.
-      vertical: 0,
-      isMultiline: false,
-    ),
-    // One line sits exactly as a form field does; more lines keep 12 above
-    // and below.
-    MxTextFieldVariant.detail || MxTextFieldVariant.term => (
-      floor: context.dimens.sizeInput,
-      horizontal: context.dimens.space16,
-      vertical: context.dimens.space12,
-      isMultiline: true,
-    ),
-    MxTextFieldVariant.study => (
-      floor: context.dimens.sizeControl,
-      horizontal: 0,
-      vertical: 0,
-      isMultiline: false,
-    ),
-  };
-
-  TextStyle _valueStyle(BuildContext context) {
-    return switch (variant) {
-      MxTextFieldVariant.study ||
-      MxTextFieldVariant.code => context.texts.displaySmall!,
-      _ => context.texts.bodyLarge!,
-    };
-  }
+  bool get _isMultiline =>
+      variant == MxTextFieldVariant.detail ||
+      variant == MxTextFieldVariant.term;
 
   @override
   Widget build(BuildContext context) {
     if (variant == MxTextFieldVariant.code) return MxCodeField(field: this);
-    final controller = this.controller;
-    if (!_geometry(context, variant).isMultiline) return _field(context, null);
-    // A multi-line box pads to its floor around what it holds, which follows
-    // the text and the width.
-    Widget sized() => LayoutBuilder(
-      builder: (context, constraints) => _field(context, constraints.maxWidth),
-    );
-    if (controller == null) return _OwnController(field: this);
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) => sized(),
+    final edits = MxUserEdits(onChanged);
+    return _HintWhileEmpty(
+      controller: controller,
+      builder: (context, controller, isEmpty) =>
+          _field(context, controller, edits, isEmpty),
     );
   }
 
-  /// The vertical padding that brings the box to its floor. A form field
-  /// centres one line; a multi-line box keeps its padding, or more when
-  /// what it shows (its value, or its hint while empty) is shorter than the
-  /// floor, measured at [width] and the reader's text scale.
-  double _verticalPadding(
+  Widget _field(
     BuildContext context,
-    double? width,
-    TextStyle valueStyle,
-    TextStyle hintStyle,
+    TextEditingController controller,
+    MxUserEdits edits,
+    bool isEmpty,
   ) {
-    final geometry = _geometry(context, variant);
-    double lineOf(TextStyle style) => style.fontSize! * style.height!;
-    if (width == null) {
-      final scaler = MediaQuery.textScalerOf(context);
-      final line = math.max(
-        scaler.scale(lineOf(valueStyle)),
-        scaler.scale(lineOf(hintStyle)),
-      );
-      // Scaled text that outgrows the floor sets the height itself.
-      return math.max(0, (geometry.floor - line) / 2);
-    }
-    final inner = width - 2 * geometry.horizontal;
-    // ponytail: two TextPainter layouts per rebuild, and the controller
-    // rebuilds on every keystroke and caret move. Cheap at the card fields'
-    // 240-character cap; cache on (text, width, scale) if a longer-form
-    // variant ever arrives.
-    double measure(String text, TextStyle style) {
-      final painter = TextPainter(
-        text: TextSpan(text: text, style: style),
-        textDirection: Directionality.of(context),
-        textScaler: MediaQuery.textScalerOf(context),
-        textHeightBehavior: DefaultTextHeightBehavior.maybeOf(context),
-      )..layout(maxWidth: inner);
-      final height = painter.height;
-      painter.dispose();
-      return height;
-    }
-
-    final value = controller?.text ?? '';
-    // A typed value sizes the box alone: the hint is hidden and holds no
-    // room (maintainHintSize off), so a short value sits on the 56 floor
-    // beside the other fields. An empty value still holds one line.
-    final hint = hintText;
-    final shown = measure(value.isEmpty ? ' ' : value, valueStyle);
-    final content = value.isEmpty && hint != null
-        ? math.max(shown, measure(hint, hintStyle))
-        : shown;
-    return math.max(geometry.vertical, (geometry.floor - content) / 2);
-  }
-
-  // The code variant never reaches here: MxCodeField draws it.
-  Widget _field(BuildContext context, double? width) {
-    final colors = context.colors;
     final hasError = errorText != null;
-    final geometry = _geometry(context, variant);
-    // The theme carries the field (spec §4.6): its edge, suffix glyph and
-    // hint resolve from the decorator's own states, and a disabled field takes
-    // the theme's disabled edge and hint once, with no wrapper dimming them
-    // again.
-    final fields = Theme.of(context).inputDecorationTheme;
-    // The box height is a floor painted by the decorator itself, reached by
-    // padding (InputDecoration.constraints reserves the height but paints
-    // the fill and edge around the text only); more lines or scaled text
-    // grow the box.
-    final textStyle = _valueStyle(context).copyWith(
-      color: isEnabled
-          ? null
-          : colors.onSurface.withValues(
-              alpha: context.dimens.opacityDisabledContent,
-            ),
-    );
-    final hintStyle = WidgetStateProperty.resolveAs(
-      fields.hintStyle!,
-      <WidgetState>{},
-    );
+    final name = label;
     final isBare = variant == MxTextFieldVariant.study;
-    final field = TextField(
+    final field = FTextField(
+      // The name goes on the input itself, the node TalkBack focuses, so the
+      // field reads as its name with its value; ForUI's own label sits
+      // outside the input's node.
+      builder: (context, style, variants, input) =>
+          name == null ? input : Semantics(label: name, child: input),
       // Autofocus is read once, on mount: a field that was disabled when
       // first built takes the focus when it is enabled, so the flip remounts.
       key: ValueKey(isEnabled),
-      controller: controller,
+      control: FTextFieldControl.managed(
+        controller: controller,
+        onChange: edits.onChange,
+      ),
+      size: FTextFieldSizeVariant.lg,
+      style: isBare
+          ? _bareStyle(context)
+          : const FTextFieldStyleDelta.context(),
+      label: isBare ? null : _paintedLabel(context, hasError),
+      // Only while empty: the decorator keeps an unseen hint's room, so a
+      // hint that wraps would hold a filled box open.
+      hint: isEmpty ? hintText : null,
+      description: hasError || isBare ? null : _supportingRow(context, null),
+      error: hasError ? _supportingRow(context, errorText) : null,
       focusNode: focusNode,
       autofocus: isAutofocused,
       enabled: isEnabled,
       readOnly: isReadOnly,
-      onChanged: onChanged,
-      onSubmitted: onSubmitted,
+      onSubmit: onSubmitted,
       textInputAction: textInputAction,
-      maxLines: geometry.isMultiline ? null : 1,
+      inputFormatters: [edits.formatter],
+      maxLines: _isMultiline ? null : 1,
       // A term wraps but is one line of meaning: Enter fires the action.
-      keyboardType: switch (variant) {
-        MxTextFieldVariant.detail => TextInputType.multiline,
-        _ => TextInputType.text,
-      },
-      style: textStyle,
+      keyboardType: variant == MxTextFieldVariant.detail
+          ? TextInputType.multiline
+          : TextInputType.text,
       textAlign: isBare ? TextAlign.center : TextAlign.start,
-      cursorColor: hasError ? colors.error : colors.primary,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: isBare
-          ? const InputDecoration(
-              filled: false,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
-            )
-          : InputDecoration(
-              hintText: hintText,
-              maintainHintSize: false,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: geometry.horizontal,
-                vertical: _verticalPadding(
-                  context,
-                  width,
-                  textStyle,
-                  hintStyle,
-                ),
+      prefixBuilder: leading == null
+          ? null
+          : (context, _, _) => Padding(
+              padding: EdgeInsetsDirectional.only(
+                start: context.dimens.space12,
+                end: context.dimens.space8,
               ),
-              prefixIcon: leading == null
-                  ? null
-                  : Padding(
-                      padding: EdgeInsetsDirectional.only(
-                        start: context.dimens.space12,
-                        end: context.dimens.space8,
-                      ),
-                      child: leading,
-                    ),
-              prefixIconConstraints: const BoxConstraints(),
-              suffixIcon: trailing == null
-                  ? null
-                  : Padding(
-                      padding: EdgeInsetsDirectional.only(
-                        start: context.dimens.space8,
-                        end: context.dimens.space12,
-                      ),
-                      child: trailing,
-                    ),
-              suffixIconConstraints: const BoxConstraints(),
-              // The decorator is in error, so its states reach the edge and
-              // the suffix glyph; the message is the supporting row's, and a
-              // widget of no size adds no line of its own.
-              error: hasError ? const SizedBox.shrink() : null,
+              child: leading,
+            ),
+      suffixBuilder: trailing == null
+          ? null
+          : (context, _, _) => Padding(
+              padding: EdgeInsetsDirectional.only(
+                start: context.dimens.space8,
+                end: context.dimens.space12,
+              ),
+              child: trailing,
             ),
     );
-    // A bare field has no padded box to reach its floor with: the floor
-    // holds the 48 touch target around its one line.
+    // A bare field has no box to reach its 48 target with: the floor holds
+    // it around its one line.
     final target = isBare
         ? ConstrainedBox(
-            constraints: BoxConstraints(minHeight: geometry.floor),
-            child: field,
+            constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+            child: Center(child: field),
           )
         : field;
-    final heading = _paintedLabel(context, hasError);
-    final supporting = _supportingRow(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return target;
+  }
+
+  /// The study answer: no edge in any state, no padding, the term role.
+  FTextFieldStyleDelta _bareStyle(BuildContext context) =>
+      FTextFieldStyleDelta.delta(
+        border:
+            const FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              InputBorder,
+              Delta
+            >.all(InputBorder.none),
+        contentPadding: const EdgeInsetsGeometryDelta.value(EdgeInsets.zero),
+        contentTextStyle:
+            FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              TextStyle,
+              TextStyleDelta
+            >.all(context.texts.term),
+      );
+
+  /// The label above the box, with its leading glyph and trailing marker.
+  Widget? _paintedLabel(BuildContext context, bool hasError) {
+    final name = label;
+    if (name == null) return null;
+    final leading = labelLeading;
+    return Row(
+      spacing: context.dimens.space4,
       children: [
-        ?heading,
-        if (label case final name?)
-          Semantics(label: name, child: target)
-        else
-          target,
-        ?supporting,
+        ?leading,
+        // The label and its marker take the room there is, and wrap as a
+        // pair rather than splitting the label.
+        Expanded(
+          child: Wrap(
+            spacing: context.dimens.space4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              // The field carries the name, so TalkBack reads it once.
+              ExcludeSemantics(child: Text(name)),
+              // Its own node, so a marker ("Required") is not read as part
+              // of the field's name.
+              if (labelTrailing case final marker?)
+                Semantics(container: true, child: marker),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  /// The label above the box, or null when this field paints none.
-  Widget? _paintedLabel(BuildContext context, bool hasError) {
-    final name = label;
-    if (name == null) return null;
-    if (variant == MxTextFieldVariant.study) return null;
-    final color = _supportColor(
-      context,
-      hasError: hasError,
-      isEnabled: isEnabled,
-    );
-    final leading = labelLeading;
-    return Padding(
-      padding: EdgeInsetsDirectional.only(
-        start: context.dimens.space16,
-        end: context.dimens.space16,
-        bottom: context.dimens.space4,
-      ),
-      child: IconTheme.merge(
-        data: IconThemeData(color: color),
-        child: Row(
-          spacing: context.dimens.space4,
-          children: [
-            ?leading,
-            // The label and its marker take the room there is, and wrap as
-            // a pair rather than splitting the label.
-            Expanded(
-              child: Wrap(
-                spacing: context.dimens.space4,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  // The field below carries the name, so TalkBack reads it
-                  // once.
-                  ExcludeSemantics(
-                    child: Text(
-                      name,
-                      style: context.texts.labelMedium?.copyWith(color: color),
-                    ),
-                  ),
-                  ?labelTrailing,
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// The row under the box: the error message, or the supporting text, with
-  /// the counter at its trailing end; null when there is none of them.
-  Widget? _supportingRow(BuildContext context) {
-    final message = errorText;
+  /// The row under the box: [message] (the error) or the supporting text,
+  /// with the counter at its trailing end; null when there is none of them.
+  Widget? _supportingRow(BuildContext context, String? message) {
     final support = supportingText;
     final count = counter;
     if (message == null && support == null && count == null) return null;
-    final hasError = message != null;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.dimens.space8,
       children: [
         Expanded(
           child: switch ((message, support)) {
             (final message?, _) => MxFieldMessage(message: message),
-            (_, final support?) => _SupportingLine(
-              text: support,
-              color: _supportColor(
-                context,
-                hasError: false,
-                isEnabled: isEnabled,
-              ),
-            ),
+            (_, final support?) => Text(support),
             _ => const SizedBox.shrink(),
           },
         ),
-        if (count != null)
-          _SupportingLine(
-            text: count,
-            color: _supportColor(
-              context,
-              hasError: hasError,
-              isEnabled: isEnabled,
-            ),
-          ),
+        ?switch (count) {
+          final value? => Text(value),
+          null => null,
+        },
       ],
     );
   }
 }
 
-/// The colour of a field's label, supporting text and counter: the variant
-/// tone, the error tone in error, the disabled content tone when disabled.
-Color _supportColor(
-  BuildContext context, {
-  required bool hasError,
-  required bool isEnabled,
-}) {
-  final colors = context.colors;
-  return switch ((isEnabled, hasError)) {
-    (false, _) => colors.onSurface.withValues(
-      alpha: context.dimens.opacityDisabledContent,
-    ),
-    (_, true) => colors.error,
-    _ => colors.onSurfaceVariant,
-  };
-}
+/// Gives [builder] the field's controller, the caller's or one of its own,
+/// and whether it is empty, rebuilding only when that flips.
+class _HintWhileEmpty extends StatefulWidget {
+  const _HintWhileEmpty({required this.controller, required this.builder});
 
-/// A line of the supporting row, on the field's text inset, in the
-/// supporting-text role (`bodySmall`): the supporting text and the counter.
-class _SupportingLine extends StatelessWidget {
-  const _SupportingLine({required this.text, required this.color});
-
-  final String text;
-  final Color color;
+  final TextEditingController? controller;
+  final Widget Function(
+    BuildContext context,
+    TextEditingController controller,
+    bool isEmpty,
+  )
+  builder;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsetsDirectional.only(
-      start: context.dimens.space16,
-      top: context.dimens.space4,
-      end: context.dimens.space16,
-    ),
-    child: Text(text, style: context.texts.bodySmall?.copyWith(color: color)),
-  );
+  State<_HintWhileEmpty> createState() => _HintWhileEmptyState();
 }
 
-/// Owns the controller a multi-line box listens to when its caller passed none.
-class _OwnController extends StatefulWidget {
-  const _OwnController({required this.field});
+class _HintWhileEmptyState extends State<_HintWhileEmpty> {
+  TextEditingController? _own;
+  late bool _isEmpty;
 
-  final MxTextField field;
+  TextEditingController get _controller =>
+      widget.controller ?? (_own ??= TextEditingController());
 
   @override
-  State<_OwnController> createState() => _OwnControllerState();
-}
+  void initState() {
+    super.initState();
+    _controller.addListener(_onText);
+    _isEmpty = _controller.text.isEmpty;
+  }
 
-class _OwnControllerState extends State<_OwnController> {
-  final _controller = TextEditingController();
+  @override
+  void didUpdateWidget(_HintWhileEmpty oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final old = oldWidget.controller ?? _own;
+    if (identical(old, _controller)) return;
+    old?.removeListener(_onText);
+    _controller.addListener(_onText);
+    _isEmpty = _controller.text.isEmpty;
+  }
+
+  void _onText() {
+    final isEmpty = _controller.text.isEmpty;
+    if (isEmpty == _isEmpty) return;
+    setState(() => _isEmpty = isEmpty);
+  }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.removeListener(_onText);
+    _own?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) =>
-      MxTextField._on(widget.field, _controller);
+      widget.builder(context, _controller, _isEmpty);
 }

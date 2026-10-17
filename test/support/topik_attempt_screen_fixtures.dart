@@ -62,6 +62,7 @@ Future<TopikAttemptExits> pumpTopikAttempt(
   FakeTopikAudioRepository? player,
   List<Override> overrides = const [],
   Locale locale = const Locale('en'),
+  Brightness brightness = Brightness.light,
 }) async {
   final exits = TopikAttemptExits();
   await pumpLibraryScreen(
@@ -73,6 +74,7 @@ Future<TopikAttemptExits> pumpTopikAttempt(
       onSubmitted: exits.submitted.add,
     ),
     locale: locale,
+    brightness: brightness,
     overrides: [
       ...topikContentOverrides(catalog),
       topikAudioRepositoryProvider.overrideWithValue(

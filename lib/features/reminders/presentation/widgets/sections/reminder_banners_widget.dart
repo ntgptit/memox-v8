@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';

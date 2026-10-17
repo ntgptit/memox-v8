@@ -1,13 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+// FTextField's style takes its borders as material_ui's InputBorder.
+import 'package:material_ui/material_ui.dart'
+    show InputBorder, OutlineInputBorder;
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
+import 'package:memox/shared/widgets/mx_user_edits.dart';
 
-/// The library search input: a leading glyph, a single-line query, and a
-/// clear button that appears only once there is something to clear. What the
-/// query filters is the caller's.
+/// The library search input, on ForUI's [FTextField]: a leading glyph, a
+/// single-line query on the muted ground in a pill, and a clear button that
+/// appears only once there is something to clear. What the query filters is
+/// the caller's.
 class MxSearchField extends StatefulWidget {
   const MxSearchField({
     super.key,
@@ -16,11 +22,13 @@ class MxSearchField extends StatefulWidget {
     required String this.clearLabel,
     this.onChanged,
     this.focusNode,
+    this.isRouteName = false,
+    this.isAutofocused = false,
   }) : onTap = null;
 
-  /// A read-only field that opens the search elsewhere (screen 01's root
-  /// search). It takes no focus, never shows a clear button, and reads as a
-  /// button named by [hintText].
+  /// A button that looks like the resting field and opens the search
+  /// elsewhere (screen 01's root search). It holds no text, never shows a
+  /// clear button, and reads as a button named by [hintText].
   const MxSearchField.trigger({
     super.key,
     required this.hintText,
@@ -28,7 +36,9 @@ class MxSearchField extends StatefulWidget {
   }) : controller = null,
        clearLabel = null,
        onChanged = null,
-       focusNode = null;
+       focusNode = null,
+       isRouteName = false,
+       isAutofocused = false;
 
   final TextEditingController? controller;
   final String hintText;
@@ -44,16 +54,20 @@ class MxSearchField extends StatefulWidget {
   /// opens elsewhere.
   final VoidCallback? onTap;
 
+  /// The field names its route (screen 04), as an app bar title does: the
+  /// field's own node, which reads the hint, carries the name (DEV-393).
+  final bool isRouteName;
+
+  /// Takes focus, and so opens the keyboard, when the field first appears:
+  /// the person came to this screen to type.
+  final bool isAutofocused;
+
   @override
   State<MxSearchField> createState() => _MxSearchFieldState();
 }
 
 class _MxSearchFieldState extends State<MxSearchField> {
-  FocusNode? _ownFocusNode;
   TextEditingController? _ownController;
-
-  FocusNode get _focusNode =>
-      widget.focusNode ?? (_ownFocusNode ??= FocusNode());
 
   TextEditingController get _controller =>
       widget.controller ?? (_ownController ??= TextEditingController());
@@ -62,31 +76,24 @@ class _MxSearchFieldState extends State<MxSearchField> {
   void initState() {
     super.initState();
     _controller.addListener(_rebuild);
-    _focusNode.addListener(_rebuild);
   }
 
   @override
   void didUpdateWidget(MxSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      (oldWidget.controller ?? _ownController)?.removeListener(_rebuild);
-      _controller.addListener(_rebuild);
-    }
-    if (oldWidget.focusNode != widget.focusNode) {
-      (oldWidget.focusNode ?? _ownFocusNode)?.removeListener(_rebuild);
-      _focusNode.addListener(_rebuild);
-    }
+    if (oldWidget.controller == widget.controller) return;
+    (oldWidget.controller ?? _ownController)?.removeListener(_rebuild);
+    _controller.addListener(_rebuild);
   }
 
   @override
   void dispose() {
     _controller.removeListener(_rebuild);
-    _focusNode.removeListener(_rebuild);
-    _ownFocusNode?.dispose();
     _ownController?.dispose();
     super.dispose();
   }
 
+  /// Rebuilds for the semantics label, which follows whether a query is held.
   void _rebuild() => setState(() {});
 
   void _clear() {
@@ -96,103 +103,155 @@ class _MxSearchFieldState extends State<MxSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final onTap = widget.onTap;
+    if (onTap != null) return _trigger(context, onTap);
     final colors = context.colors;
-    final isFocused = _focusNode.hasFocus;
-    final hasQuery = _controller.text.isNotEmpty;
-    // As in MxTextField: padding centres the line in the `sizeSearch` floor, so the
-    // decorator paints the full box and scaled text still grows it.
-    final valueStyle = context.texts.labelMedium!;
-    final lineHeight = valueStyle.fontSize! * valueStyle.height!;
-    final stadium = BorderRadius.circular(context.dimens.sizeSearch / 2);
+    final pill = context.radii.pill;
+    final edits = MxUserEdits(widget.onChanged);
     final edge = OutlineInputBorder(
       gapPadding: 0,
-      borderRadius: stadium,
+      borderRadius: pill,
       borderSide: BorderSide.none,
     );
-    final field = TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      readOnly: widget.onTap != null,
-      // A trigger's one tab stop is its ink, not the field under it.
-      canRequestFocus: widget.onTap == null,
-      onChanged: widget.onChanged,
-      maxLines: 1,
+    final hasQuery = _controller.text.isNotEmpty;
+    final field = FTextField(
+      // The input's own node is the field's name: the decorator labels it
+      // with the hint while empty, and the hint stays its name once it holds
+      // a query, so it never reads only as its value.
+      builder: (context, style, variants, input) {
+        // Always this Semantics, labelled or not, so a query that comes or
+        // goes never remounts the input (and drops its focus).
+        final named = Semantics(
+          label: hasQuery ? widget.hintText : null,
+          child: input,
+        );
+        return widget.isRouteName ? MxRouteName(child: named) : named;
+      },
+      control: FTextFieldControl.managed(
+        controller: _controller,
+        onChange: edits.onChange,
+      ),
+      size: FTextFieldSizeVariant.lg,
+      // The search bar is a pill on the muted ground, with no edge in any
+      // state.
+      style: FTextFieldStyleDelta.delta(
+        color:
+            FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              Color?,
+              Delta
+            >.all(colors.muted),
+        border:
+            FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              InputBorder,
+              Delta
+            >.all(edge),
+      ),
+      hint: widget.hintText,
+      focusNode: widget.focusNode,
+      autofocus: widget.isAutofocused,
+      inputFormatters: [edits.formatter],
       textInputAction: TextInputAction.search,
-      style: valueStyle,
-      cursorColor: colors.primary,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: context.texts.labelMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+      prefixBuilder: (context, _, variants) => Padding(
+        padding: EdgeInsetsDirectional.only(
+          start: context.dimens.space16,
+          end: context.dimens.space8,
         ),
-        // The search bar is a stadium on its own surface, with no edge in any
-        // state (Design System: SearchBar).
-        // The theme's field is outlined with no fill: the bar fills itself.
-        filled: true,
-        fillColor: context.mxColors.searchSurface,
-        border: edge,
-        enabledBorder: edge,
-        focusedBorder: edge,
-        contentPadding: EdgeInsets.symmetric(
-          vertical: (context.dimens.sizeSearch - lineHeight) / 2,
+        child: Icon(
+          AppIcons.search,
+          size: context.dimens.sizeIcon,
+          color: variants.contains(FTextFieldVariant.focused)
+              ? colors.primary
+              : colors.mutedForeground,
         ),
-        prefixIcon: Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: context.dimens.space16,
-            end: context.dimens.space8,
-          ),
-          child: Icon(
-            AppIcons.search,
-            size: context.dimens.sizeIcon,
-            color: isFocused ? context.accentColor : colors.onSurfaceVariant,
-          ),
+      ),
+      // The clear button owns its inset.
+      clearable: (value) => value.text.isNotEmpty,
+      clearIconBuilder: (context, _, _) => Padding(
+        padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
+        child: MxIconButton(
+          icon: AppIcons.close,
+          semanticLabel: widget.clearLabel!,
+          onPressed: _clear,
         ),
-        prefixIconConstraints: const BoxConstraints(),
-        // The clear button owns its inset; an empty field keeps a 12 spacer.
-        suffixIcon: hasQuery
-            ? Padding(
-                padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
-                child: MxIconButton(
-                  icon: AppIcons.close,
-                  // A trigger never holds a query, so a clear button always
-                  // belongs to the default constructor, which requires it.
-                  semanticLabel: widget.clearLabel!,
-                  onPressed: _clear,
-                ),
-              )
-            : SizedBox(width: context.dimens.space12),
-        suffixIconConstraints: const BoxConstraints(),
       ),
     );
-    final onTap = widget.onTap;
-    // An empty field is named by its hint; one holding a query keeps that
-    // name, or it reads only as its value (and names its route with nothing
-    // on screen 04, DEV-393).
-    if (onTap == null) {
-      return Semantics(label: hasQuery ? widget.hintText : null, child: field);
-    }
-    return Semantics(
-      button: true,
-      label: widget.hintText,
-      excludeSemantics: true,
-      onTap: onTap,
-      child: Stack(
-        children: [
-          IgnorePointer(child: field),
-          // Its own Material, above the filled field, so the ripple and the
-          // hover and pressed layers show over the search surface.
-          Positioned.fill(
-            child: Material(
-              type: MaterialType.transparency,
-              child: MxRowInk(
-                onTap: onTap,
-                borderRadius: stadium,
-                child: const SizedBox.expand(),
+    return field;
+  }
+
+  /// The trigger: an [FButton] that paints the resting field, so the button
+  /// semantics, the focus outline and the keyboard are ForUI's.
+  Widget _trigger(BuildContext context, VoidCallback onTap) {
+    final colors = context.colors;
+    final dimens = context.dimens;
+    final pill = context.radii.pill;
+    final hint = FTheme.of(context).textFieldStyles.lg.hintTextStyle
+        .resolve(const {});
+    // Every state paints the same: the pill on the muted ground, the hint and
+    // the glyph at rest, and the press does not shrink it.
+    return FButton(
+      onPress: onTap,
+      size: FButtonSizeVariant.lg,
+      mainAxisAlignment: MainAxisAlignment.start,
+      style: FButtonStyleDelta.delta(
+        decoration:
+            FVariants<
+              FTappableVariantConstraint,
+              FTappableVariant,
+              Decoration,
+              DecorationDelta
+            >.all(
+              ShapeDecoration(
+                color: colors.muted,
+                shape: RoundedRectangleBorder(borderRadius: pill),
               ),
             ),
+        contentStyle: FButtonContentStyleDelta.delta(
+          textStyle:
+              FVariants<
+                FTappableVariantConstraint,
+                FTappableVariant,
+                TextStyle,
+                TextStyleDelta
+              >.all(hint),
+          iconStyle:
+              FVariants<
+                FTappableVariantConstraint,
+                FTappableVariant,
+                IconThemeData,
+                IconThemeDataDelta
+              >.all(
+                IconThemeData(
+                  color: colors.mutedForeground,
+                  size: dimens.sizeIcon,
+                ),
+              ),
+          constraints: BoxConstraints(minHeight: dimens.sizeControl),
+          padding: EdgeInsetsGeometryDelta.value(
+            EdgeInsetsDirectional.symmetric(horizontal: dimens.space16),
           ),
-        ],
+          spacing: dimens.space8,
+        ),
+        tappableStyle: const FTappableStyleDelta.delta(
+          motion: FTappableMotionDelta.delta(
+            bounceTween: FTappableMotion.noBounceTween,
+          ),
+        ),
+        focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
+          borderRadius: pill,
+        ),
+      ),
+      prefix: const Icon(AppIcons.search),
+      child: Flexible(
+        child: Text(
+          widget.hintText,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

@@ -2,8 +2,8 @@
 
 Reads tools/design/removed_symbols.json. Refuses (exit 2) a write that
 - puts a removed name into Dart under lib/, test/ or integration_test/,
-- writes to a path the file lists as deleted,
-- edits lib/core/theme/generated/ by hand.
+- writes to a path the file lists as deleted (the old generated theme,
+  design/tokens.json and its generator among them, ADR-026).
 Any environment problem exits 0: the gate's grep (check.py --symbols) is the
 real backstop, and tests/ notice a hook that has stopped working.
 """
@@ -17,7 +17,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools" / "design"))
 
-GENERATED_DIR = "lib/core/theme/generated/"
 DART_ROOTS = ("lib/", "test/", "integration_test/")
 
 
@@ -41,14 +40,12 @@ def verdict(tool_input: dict) -> str | None:
     relative = relative_path(raw)
     removed, files = removed_symbols.load()
 
-    if relative.startswith(GENERATED_DIR):
-        return (
-            f"'{relative}' is generated. Sửa design/tokens.json rồi chạy "
-            "tools/design/generate.py."
-        )
     listed = removed_symbols.forbidden_path(relative, files)
     if listed:
-        return f"'{listed}' đã bị xoá. Không tạo lại; dùng cấu trúc theme mới (design/tokens.json)."
+        return (
+            f"'{listed}' đã bị xoá. Không tạo lại; giá trị theme nằm ở "
+            "lib/core/theme (app_palette.dart, ADR-026)."
+        )
 
     if not relative.endswith(".dart") or not relative.startswith(DART_ROOTS):
         return None

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -17,23 +14,26 @@ import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-// Spec 2026-09-27 D2: in dark, primary as text, icon or focus ring reads in
-// primaryInk; fills, edges and tints keep primary.
+// Spec 2026-09-27 D2, on ForUI (ADR-026): in dark, primary is the light step,
+// so primary as text, icon or focus ring reads on the dark page without a
+// separate ink; fills, edges and tints keep primary.
 void main() {
-  final scheme = darkColorScheme;
-  final ink = accentOf(scheme);
+  final scheme = appDarkColors;
+  final ink = scheme.primary;
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
 
-  Color? textColor(WidgetTester tester, String text) =>
-      tester.widget<Text>(find.text(text)).style?.color;
+  Color? textColorOf(WidgetTester tester, String text) =>
+      textColor(tester, find.text(text));
 
   testWidgets(
-    'MxButton: outline foreground is the accent and every focus ring is '
-    'primary; the primary fill keeps primary',
+    'MxButton: the primary fill keeps primary under its foreground, and every '
+    'focus ring is the theme ring in primary',
     (tester) async {
       await pumpDark(
         tester,
@@ -48,23 +48,20 @@ void main() {
           ],
         ),
       );
-      ButtonStyle style(String label) => tester
-          .widget<TextButton>(
-            find.descendant(
-              of: find.widgetWithText(MxButton, label),
-              matching: find.byType(TextButton),
-            ),
-          )
-          .style!;
-      // The focus ring rides on the shape, outside the container.
-      BorderSide ringOf(ButtonStyle style) =>
-          (style.shape!.resolve({WidgetState.focused})! as MxFocusRingBorder)
-              .ring;
-      expect(style('Outline').foregroundColor!.resolve({}), ink);
-      expect(ringOf(style('Outline')).color, scheme.primary);
-      expect(style('Fill').backgroundColor!.resolve({}), scheme.primary);
-      expect(style('Fill').foregroundColor!.resolve({}), scheme.onPrimary);
-      expect(ringOf(style('Fill')).color, scheme.primary);
+      final fill = find.widgetWithText(MxButton, 'Fill');
+      expect(paintedDecoration(tester, fill).color, scheme.primary);
+      expect(textColorOf(tester, 'Fill'), scheme.primaryForeground);
+
+      useKeyboardFocusHighlight();
+      final ring = forUiTheme(tester, fill).style.focusedOutlineStyle;
+      expect(ring.color, scheme.primary);
+      for (final label in ['Outline', 'Fill']) {
+        await tabTo(tester, find.text(label));
+        expect(
+          focusRingRender(tester),
+          paintsFocusRing(scheme.primary, width: ring.width),
+        );
+      }
     },
   );
 
@@ -72,7 +69,7 @@ void main() {
     tester,
   ) async {
     await pumpDark(tester, const MxBadge(label: '23 due'));
-    expect(textColor(tester, '23 due'), ink);
+    expect(textColorOf(tester, '23 due'), ink);
   });
 
   test('MxBadge: a solid badge is primary only (D5)', () {
@@ -92,8 +89,8 @@ void main() {
         onTap: () {},
       ),
     );
-    // The verb stays onSurface (commandLabel); the glyph is the ink.
-    expect(textColor(tester, 'Restore…'), scheme.onSurface);
+    // The verb stays in the foreground; the glyph is the ink.
+    expect(textColorOf(tester, 'Restore…'), scheme.foreground);
     expect(tester.widget<Icon>(find.byIcon(AppIcons.restore)).color, ink);
   });
 
@@ -135,7 +132,7 @@ void main() {
         clearLabel: 'Clear',
       ),
     );
-    await tester.tap(find.byType(TextField));
+    await tester.tap(find.byType(FTextField));
     await tester.pump();
     expect(tester.widget<Icon>(find.byIcon(AppIcons.search)).color, ink);
   });
@@ -160,7 +157,7 @@ void main() {
         emphasis: MxStatTileEmphasis.primary,
       ),
     );
-    expect(textColor(tester, '20'), ink);
+    expect(textColorOf(tester, '20'), ink);
   });
 
   testWidgets('MxIconTile: the tinted glyph is the accent without a seed', (
@@ -182,24 +179,17 @@ void main() {
         onClose: () {},
       ),
     );
-    expect(textColor(tester, 'MATCH'), ink);
+    expect(textColorOf(tester, 'MATCH'), ink);
   });
 
-  testWidgets('MxSpinner: the arc is the accent unless a colour is given', (
+  testWidgets('MxSpinner: the glyph is the accent unless a colour is given', (
     tester,
   ) async {
-    RenderObject ring() => tester.renderObject(
-      find
-          .descendant(
-            of: find.byType(MxSpinner),
-            matching: find.byType(CustomPaint),
-          )
-          .first,
-    );
+    Color? glyph() => spinnerIconTheme(tester, find.byType(MxSpinner)).color;
     await pumpDark(tester, const MxSpinner());
-    expect(ring(), paints..arc(color: ink));
-    await pumpDark(tester, MxSpinner(color: scheme.onPrimary));
-    expect(ring(), paints..arc(color: scheme.onPrimary));
+    expect(glyph(), ink);
+    await pumpDark(tester, MxSpinner(color: scheme.primaryForeground));
+    expect(glyph(), scheme.primaryForeground);
   });
 }
 

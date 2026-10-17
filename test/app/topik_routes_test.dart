@@ -20,6 +20,7 @@ import '../support/app_harness.dart';
 import '../support/topik_attempt_screen_fixtures.dart';
 import '../support/topik_fakes.dart';
 import '../support/topik_screen_fixtures.dart';
+import '../support/forui_expect.dart';
 
 // Detail files 34–36: the TOPIK screens under Study (the tab bar stays).
 
@@ -80,11 +81,11 @@ void main() {
     expect(find.byType(TopikTestDetailScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
 
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(TopikTestListScreen), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(TopikHomeScreen), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyHomeScreen), findsOneWidget);
   });
 
@@ -121,7 +122,7 @@ void main() {
     await _tap(tester, find.text('#1'));
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
-    await _tap(tester, find.byTooltip(_en.topikClose));
+    await _tap(tester, byControlLabel(_en.topikClose));
     expect(find.byType(TopikTestDetailScreen), findsOneWidget);
   });
 
@@ -148,7 +149,7 @@ void main() {
     await _go(tester, AppRoutes.topikAttempt(attempt.id));
 
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.topikClose));
+    await _tap(tester, byControlLabel(_en.topikClose));
     expect(find.byType(TopikHomeScreen), findsOneWidget);
   });
 
@@ -198,7 +199,7 @@ void main() {
     await _tap(tester, find.text(_en.topikQuestionTitle(33)));
     expect(find.byType(TopikReviewScreen), findsOneWidget);
     expect(find.text(_en.topikReviewTitle(33, 70)), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(TopikSummaryScreen), findsOneWidget);
   });
 }

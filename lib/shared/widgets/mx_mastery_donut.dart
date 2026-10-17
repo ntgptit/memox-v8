@@ -1,10 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// The circular mastery indicator. The ring fills clockwise from twelve
 /// o'clock in the MasteryRamp colour, and the percentage uses the same
@@ -36,10 +35,11 @@ class MxMasteryDonut extends StatelessWidget {
   Widget build(BuildContext context) {
     // The arc is the ramp's fill; the label is text, so it takes the band's
     // text colour (SW-REV-001). Ruling S10: 0% falls in the lowest band.
-    final mx = context.mxColors;
-    final accent = context.accentColor;
-    final fill = MasteryRamp.fill(mx, accent, fraction) ?? mx.warning;
-    final foreground = MasteryRamp.foreground(mx, accent, fraction);
+    final status = context.status;
+    final accent = context.colors.primary;
+    final fill =
+        MasteryRamp.fill(status, accent, fraction) ?? status.warningFill;
+    final foreground = MasteryRamp.foreground(status, accent, fraction);
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(MasteryRamp.percent(fraction) / 100);
@@ -49,8 +49,7 @@ class MxMasteryDonut extends StatelessWidget {
         painter: _DonutPainter(
           fraction: fraction,
           arc: fill,
-          // The ramp's progress track, as tokens.json names it for the
-          // countdown ring.
+          // The ramp's progress track, the same as the mastery bar's.
           track: MasteryRamp.track(context.colors),
         ),
         child: Center(
@@ -60,7 +59,7 @@ class MxMasteryDonut extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 percent,
-                style: context.texts.labelSmall?.copyWith(color: foreground),
+                style: context.texts.meta.copyWith(color: foreground),
               ),
             ),
           ),

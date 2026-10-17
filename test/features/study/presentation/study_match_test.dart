@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -172,6 +172,8 @@ void main() {
     expect(_tile(tester, 'term 1').tone, MxChoiceTone.right);
     expect(_tile(tester, 'apple').tone, MxChoiceTone.right);
     expect(await turnKindsOf(env.db, 'ST-01'), isNotEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a second meaning moves the selection (R3)', (tester, env) async {
@@ -186,6 +188,8 @@ void main() {
     expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a second term moves the selection (M1, R3)', (
@@ -203,6 +207,8 @@ void main() {
     expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'term 2').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a meaning, then the wrong term: both flash wrong, the turn is '
@@ -236,15 +242,10 @@ void main() {
   ) async {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
-    final scheme = Theme.of(tester.element(find.text('apple'))).colorScheme;
+    final colors = tester.element(find.text('apple')).colors;
 
-    expect(_groundOf(tester, 'apple'), scheme.surfaceContainerLow);
-    expect(
-      _groundOf(tester, 'term 1'),
-      Theme.of(tester.element(find.text('apple')))
-          .extension<MxColorsExtension>()!
-          .cardSurface,
-    );
+    expect(_groundOf(tester, 'apple'), colors.muted);
+    expect(_groundOf(tester, 'term 1'), colors.card);
   });
 
   libraryTest('tiles take no tap while a wrong pair flashes (BR-STUDY-004)', (

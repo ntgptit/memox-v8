@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The overline that introduces a list, with one optional trailing
@@ -42,7 +42,7 @@ class MxListSectionHeader extends StatelessWidget {
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
-            style: context.texts.labelSmall,
+            style: context.texts.meta,
           ),
         ),
         ?trailing,

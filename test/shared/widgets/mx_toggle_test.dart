@@ -1,184 +1,204 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-const _ringKey = ValueKey('mx-toggle-focus-ring');
+Finder _switch() => find.byType(FSwitch);
 
-// The Material 3 switch: a 52x32 track inside a 60x48 box (4 either side of
-// the track, a 48 touch height), a 16 handle off, 24 on, 28 pressed.
-const _boxSize = Size(60, 48);
-const _trackSize = Size(52, 32);
+FSwitchStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _switch()).switchStyle;
 
-Finder _switch() => find.byType(Switch);
-
-/// What the Switch paints: its one CustomPaint draws the track, its outline
-/// and the handle.
+/// What the switch paints: its one CustomPaint draws the track, the focus
+/// outline and the thumb.
 RenderObject _painted(WidgetTester tester) => tester.renderObject(
-  find.descendant(of: _switch(), matching: find.byType(CustomPaint)),
+  find.descendant(of: _switch(), matching: find.byType(CustomPaint)).first,
 );
 
-/// The Switch's three strokes in paint order: the track, its outline edge and
-/// the handle in [handle] (a 16 circle off, a 24 one on).
-PaintPattern _paintsSwitch({
-  required Color track,
-  required Color edge,
-  required Color handleColor,
-  required RRect handle,
-}) => paints
-  ..rrect(color: track, style: PaintingStyle.fill)
-  ..rrect(color: edge, style: PaintingStyle.stroke)
-  ..rrect(color: handleColor, rrect: handle);
+/// A rounded rect drawn in [color]: the track or the thumb. A canvas keeps
+/// the colour as 8-bit channels.
+bool Function(Symbol, List<dynamic>) _rrectIn(
+  Color color, {
+  PaintingStyle style = PaintingStyle.fill,
+}) =>
+    (name, arguments) =>
+        name == #drawRRect &&
+        (arguments[1] as Paint).color.toARGB32() == color.toARGB32() &&
+        (arguments[1] as Paint).style == style;
+
+/// The switch's track, then its thumb, in paint order.
+PaintPattern _paintsSwitch({required Color track, required Color thumb}) =>
+    paints
+      ..something(_rrectIn(track))
+      ..something(_rrectIn(thumb));
 
 void main() {
-  final scheme = lightColorScheme;
   const dimens = AppDimens();
 
-  testWidgets('is a Material switch at the M3 size, read from the theme', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
+  Widget toggle({
+    bool isOn = false,
+    ValueChanged<bool>? onChanged,
+    bool enabled = true,
+  }) => MxToggle(
+    isOn: isOn,
+    onChanged: enabled ? (onChanged ?? (_) {}) : null,
+    semanticLabel: 'Reminders',
+  );
 
-    expect(tester.getSize(_switch()), _boxSize);
-    expect(tester.widget<Switch>(_switch()).value, isFalse);
-    // No per-widget colours or sizes: the theme's slot is the one source.
-    final sw = tester.widget<Switch>(_switch());
-    expect(sw.thumbColor, isNull);
-    expect(sw.trackColor, isNull);
-    expect(sw.trackOutlineColor, isNull);
-    expect(sw.materialTapTargetSize, isNull);
+  testWidgets("is ForUI's switch, in a box at least 48 wide, holding its "
+      'value and label', (tester) async {
+    await pumpMx(tester, toggle());
+
+    final switchWidget = tester.widget<FSwitch>(_switch());
+    expect(switchWidget.value, isFalse);
+    expect(switchWidget.enabled, isTrue);
+    expect(switchWidget.semanticsLabel, 'Reminders');
+    expect(
+      tester.getSize(find.byType(MxToggle)).width,
+      greaterThanOrEqualTo(dimens.sizeControl),
+    );
+    expect(
+      tester.getSize(find.byType(MxToggle)).width,
+      greaterThanOrEqualTo(tester.getSize(_switch()).width),
+    );
   });
 
-  testWidgets('off: highest track, outline edge, outline handle 16', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
+  testWidgets('the toggle box is 48 tall around the switch', (tester) async {
+    await pumpMx(tester, toggle());
+
+    expect(tester.getSize(find.byType(MxToggle)).height, dimens.sizeControl);
+    expect(
+      tester.getCenter(_switch()).dy,
+      tester.getCenter(find.byType(MxToggle)).dy,
     );
+  });
+
+  testWidgets('off: the track and thumb of the switch style', (tester) async {
+    await pumpMx(tester, toggle());
+    final style = _style(tester);
+
     expect(
       _painted(tester),
       _paintsSwitch(
-        track: scheme.surfaceContainerHighest,
-        edge: scheme.outline,
-        handleColor: scheme.outline,
-        handle: RRect.fromLTRBR(12, 16, 28, 32, const Radius.circular(8)),
+        track: style.trackColor.resolve(<FVariant>{}),
+        thumb: style.thumbColor.resolve(<FVariant>{}),
       ),
     );
   });
 
-  testWidgets('on: primary track, no edge, onPrimary handle 24', (
+  testWidgets('on: the selected track and thumb of the switch style', (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
+    await pumpMx(tester, toggle(isOn: true));
+    final style = _style(tester);
+    final on = <FVariant>{FSwitchVariant.selected};
+
     expect(
       _painted(tester),
       _paintsSwitch(
-        track: scheme.primary,
-        edge: Colors.transparent,
-        handleColor: scheme.onPrimary,
-        handle: RRect.fromLTRBR(28, 12, 52, 36, const Radius.circular(12)),
+        track: style.trackColor.resolve(on),
+        thumb: style.thumbColor.resolve(on),
       ),
+    );
+    expect(
+      style.trackColor.resolve(on),
+      isNot(style.trackColor.resolve(<FVariant>{})),
     );
   });
 
-  testWidgets('a tap reports the flipped value', (tester) async {
-    bool? reported;
-    await pumpMx(
-      tester,
-      MxToggle(
-        isOn: false,
-        onChanged: (v) => reported = v,
-        semanticLabel: 'Reminders',
-      ),
-    );
-    await tester.tap(find.byType(MxToggle));
+  testWidgets('a tap on the switch reports the flipped value once', (
+    tester,
+  ) async {
+    final reported = <bool>[];
+    await pumpMx(tester, toggle(onChanged: reported.add));
+    await tester.tap(_switch());
+    await tester.pumpAndSettle();
 
-    expect(reported, isTrue);
+    expect(reported, [true]);
+  });
+
+  testWidgets('a tap in the box beside the switch flips it too, once', (
+    tester,
+  ) async {
+    final reported = <bool>[];
+    await pumpMx(tester, toggle(isOn: true, onChanged: reported.add));
+    final box = tester.getRect(find.byType(MxToggle));
+    final inner = tester.getRect(_switch());
+    // Inside the 48 box, outside the switch paint.
+    expect(box.height, greaterThan(inner.height));
+    await tester.tapAt(Offset(inner.center.dx, inner.top - 1));
+    await tester.pumpAndSettle();
+
+    expect(reported, [false]);
   });
 
   testWidgets('announced as a labelled toggle with a 48 target', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
+    await pumpMx(tester, toggle(isOn: true));
 
     expect(
-      tester.getSemantics(find.byType(MxToggle)),
-      isSemantics(label: 'Reminders', isToggled: true, hasToggledState: true),
+      tester.getSemantics(find.bySemanticsLabel('Reminders')),
+      isSemantics(
+        label: 'Reminders',
+        isToggled: true,
+        hasToggledState: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+      ),
     );
-    expect(tester.getSize(find.byType(MxToggle)).height, 48);
     handle.dispose();
     await expectAccessibleTargets(tester);
   });
 
-  testWidgets('focus draws the primary ring round the track, offset', (
+  testWidgets("focus draws ForUI's focus colour round the track", (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
-    expect(find.byKey(_ringKey), findsNothing);
+    await pumpMx(tester, toggle());
+    useKeyboardFocusHighlight();
+    final focus = _style(tester).focusColor;
     final before = tester.getRect(_switch());
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
+    expect(
+      _painted(tester),
+      isNot(paints..something(_rrectIn(focus, style: PaintingStyle.stroke))),
     );
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
-    final ring = tester.widget<DecoratedBox>(find.byKey(_ringKey));
-    final shape = (ring.decoration as ShapeDecoration).shape;
     expect(
-      shape,
-      MxFocusRingBorder(
-        base: const StadiumBorder(),
-        ring: BorderSide(color: scheme.primary, width: dimens.strokeFocus),
-        gap: dimens.strokeFocusGap,
-      ),
+      _painted(tester),
+      paints..something(_rrectIn(focus, style: PaintingStyle.stroke)),
     );
-    expect(tester.getSize(find.byKey(_ringKey)), _trackSize);
-    expect(tester.getCenter(find.byKey(_ringKey)), before.center);
     expect(tester.getRect(_switch()), before);
   });
 
-  // M3F-15: the SDK maps an engaged on handle to primaryContainer, which
-  // equals the primary track in this palette: the handle vanished.
-  testWidgets('M3F-15: a pressed on switch keeps its onPrimary handle', (
+  testWidgets('a pressed on switch keeps its thumb and track apart (M3F-15)', (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
+    await pumpMx(tester, toggle(isOn: true));
+    final style = _style(tester);
+    final on = <FVariant>{FSwitchVariant.selected};
     final press = await tester.startGesture(tester.getCenter(_switch()));
     await tester.pumpAndSettle();
 
     expect(
       _painted(tester),
-      paints
-        ..rrect(color: scheme.primary, style: PaintingStyle.fill)
-        ..rrect(color: Colors.transparent, style: PaintingStyle.stroke)
-        ..rrect(color: scheme.onPrimary),
+      _paintsSwitch(
+        track: style.trackColor.resolve(on),
+        thumb: style.thumbColor.resolve(on),
+      ),
     );
+    expect(style.thumbColor.resolve(on), isNot(style.trackColor.resolve(on)));
     await press.up();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('a focused toggle drops its ring when it is rebuilt disabled', (
@@ -197,53 +217,55 @@ void main() {
         ),
       ),
     );
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
-    );
+    useKeyboardFocusHighlight();
+    final focus = _style(tester).focusColor;
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
-    expect(find.byKey(_ringKey), findsOneWidget);
+    expect(
+      _painted(tester),
+      paints..something(_rrectIn(focus, style: PaintingStyle.stroke)),
+    );
 
     onChanged.value = null;
     await tester.pumpAndSettle();
 
-    expect(find.byKey(_ringKey), findsNothing);
+    expect(
+      _painted(tester),
+      isNot(paints..something(_rrectIn(focus, style: PaintingStyle.stroke))),
+    );
   });
 
   testWidgets('disabled: no second dim, the switch dims itself', (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      const MxToggle(isOn: false, onChanged: null, semanticLabel: 'Reminders'),
-    );
+    await pumpMx(tester, toggle(enabled: false));
+    final style = _style(tester);
+    final off = <FVariant>{FFormFieldVariant.disabled};
 
     expect(
       find.ancestor(of: _switch(), matching: find.byType(Opacity)),
       findsNothing,
     );
-    expect(tester.widget<Switch>(_switch()).onChanged, isNull);
+    expect(tester.widget<FSwitch>(_switch()).enabled, isFalse);
     expect(
       _painted(tester),
       _paintsSwitch(
-        track: scheme.surfaceContainerHighest.withValues(
-          alpha: dimens.opacityDisabledContainer,
-        ),
-        edge: scheme.onSurface.withValues(
-          alpha: dimens.opacityDisabledContainer,
-        ),
-        // Material lays the translucent handle over the surface, so the
-        // track does not show through it.
-        handleColor: Color.alphaBlend(
-          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
-          scheme.surface,
-        ),
-        handle: RRect.fromLTRBR(12, 16, 28, 32, const Radius.circular(8)),
+        track: style.trackColor.resolve(off),
+        thumb: style.thumbColor.resolve(off),
       ),
     );
+    expect(
+      style.trackColor.resolve(off),
+      isNot(style.trackColor.resolve(<FVariant>{})),
+    );
+  });
+
+  testWidgets('a disabled toggle takes no tap', (tester) async {
+    await pumpMx(tester, toggle(enabled: false));
+    await tester.tap(find.byType(MxToggle));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
   });
 
   // SW-REV-006: a toggle that cannot change is announced as disabled.
@@ -251,10 +273,7 @@ void main() {
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      const MxToggle(isOn: false, onChanged: null, semanticLabel: 'Reminders'),
-    );
+    await pumpMx(tester, toggle(enabled: false));
     expect(
       tester.getSemantics(find.bySemanticsLabel('Reminders')),
       isSemantics(hasEnabledState: true, isEnabled: false),

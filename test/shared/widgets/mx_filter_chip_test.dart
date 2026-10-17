@@ -1,98 +1,131 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
-import '../../core/theme/token_source.dart' show contrast;
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
-import '../../support/theme_expect.dart';
 
-final _painted = find.descendant(
-  of: find.byType(TextButton),
-  matching: find.byType(Material),
-);
+final _chip = find.byType(FButton);
+
+/// The ForUI outline extra-small button style the chip is built on.
+FButtonStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _chip).buttonStyles.outline.xs;
+
+ShapeDecoration _resolved(WidgetTester tester, Set<FTappableVariant> states) =>
+    _style(tester).decoration.resolve(states) as ShapeDecoration;
+
+Color? _resolvedInk(WidgetTester tester, Set<FTappableVariant> states) =>
+    _style(tester).contentStyle.textStyle.resolve(states).color;
+
+double _contrast(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (light, dark) = la > lb ? (la, lb) : (lb, la);
+  return (light + 0.05) / (dark + 0.05);
+}
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
+  final selected = {FTappableVariant.selected};
+  final disabled = {FTappableVariant.disabled};
 
-  testWidgets('unselected: flat, outlineVariant edge, 32 tall, 8 corners', (
+  testWidgets('unselected: the outline variant, 32 tall inside a 48 target', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
     );
-    final material = tester.widget<Material>(_painted.first);
-    final shape = material.shape! as MxFocusRingBorder;
 
-    expect(tester.getSize(_painted.first).height, 32);
-    expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, scheme.onSurfaceVariant);
+    expect(paintedRect(tester, _chip).height, 32);
+    expect(paintedDecoration(tester, _chip).color, _resolved(tester, {}).color);
+    expect(paintedSide(tester, _chip), isNot(BorderSide.none));
     expect(
-      shape.base,
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: scheme.outlineVariant),
-      ),
+      paintedSide(tester, _chip),
+      (_resolved(tester, {}).shape as OutlinedBorder).side,
     );
+    expect(textColor(tester, find.text('Due')), _resolvedInk(tester, {}));
     expect(find.byIcon(AppIcons.check), findsNothing);
   });
 
-  testWidgets('selected: secondaryContainer, no edge, a leading check', (
+  testWidgets("selected: ForUI's selected look and a leading check", (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxFilterChip(label: 'Due', isSelected: true, onSelected: (_) {}),
     );
-    final material = tester.widget<Material>(_painted.first);
 
-    expect(material.color, scheme.secondaryContainer);
-    expect(material.textStyle!.color, scheme.onSecondaryContainer);
-    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
-    expect(tester.getSize(find.byIcon(AppIcons.check)).width, 18);
     expect(
-      IconTheme.of(tester.element(find.byIcon(AppIcons.check))).color,
-      scheme.onSecondaryContainer,
+      paintedDecoration(tester, _chip).color,
+      _resolved(tester, selected).color,
     );
+    expect(
+      paintedSide(tester, _chip),
+      (_resolved(tester, selected).shape as OutlinedBorder).side,
+    );
+    expect(textColor(tester, find.text('Due')), _resolvedInk(tester, selected));
+    expect(find.byIcon(AppIcons.check), findsOneWidget);
+    expect(
+      iconColor(tester, find.byIcon(AppIcons.check)),
+      _style(tester).contentStyle.iconStyle.resolve(selected).color,
+    );
+    // Selection shows in more than the leading check: the fill or the ink
+    // differs from the resting chip.
+    expect([
+      _resolved(tester, selected).color,
+      _resolvedInk(tester, selected),
+    ], isNot([_resolved(tester, {}).color, _resolvedInk(tester, {})]));
   });
 
-  // Material 3: 8 around the chip, 8 around the label, so 16 to a bare label;
-  // a leading glyph sits 8 in and 8 before the label.
-  testWidgets('the label is inset 16, or 8 + 18 + 8 after a glyph', (
-    tester,
-  ) async {
+  // The label sits after the chip's padding, or after the padding, the glyph
+  // and its gap.
+  testWidgets('the label is inset by the padding, or by padding + glyph + '
+      'gap', (tester) async {
     await pumpMx(
       tester,
-      MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
+      MxFilterChip(
+        label: 'Due this week',
+        isSelected: false,
+        onSelected: (_) {},
+      ),
     );
-    final bare = tester.getTopLeft(_painted.first).dx;
-    expect(tester.getTopLeft(find.text('Due')).dx - bare, 16);
+    final content = _style(tester).contentStyle;
+    final padding = content.padding.resolve(TextDirection.ltr);
+    final bare = paintedRect(tester, _chip);
     expect(
-      tester.getTopRight(_painted.first).dx -
-          tester.getTopRight(find.text('Due')).dx,
-      16,
+      tester.getTopLeft(find.text('Due this week')).dx - bare.left,
+      padding.left,
+    );
+    expect(
+      bare.right - tester.getTopRight(find.text('Due this week')).dx,
+      padding.right,
     );
 
     await pumpMx(
       tester,
       MxFilterChip(
-        label: 'Due',
+        label: 'Due this week',
         icon: AppIcons.filter,
         isSelected: false,
         onSelected: (_) {},
       ),
     );
-    final left = tester.getTopLeft(_painted.first).dx;
-    expect(tester.getTopLeft(find.byIcon(AppIcons.filter)).dx - left, 8);
-    expect(tester.getTopLeft(find.text('Due')).dx - left, 8 + 18 + 8);
+    final left = paintedRect(tester, _chip).left;
+    final glyph = tester.getSize(find.byIcon(AppIcons.filter)).width;
     expect(
-      IconTheme.of(tester.element(find.byIcon(AppIcons.filter))).color,
-      scheme.primary,
+      tester.getTopLeft(find.byIcon(AppIcons.filter)).dx - left,
+      padding.left,
+    );
+    expect(
+      tester.getTopLeft(find.text('Due this week')).dx - left,
+      padding.left + glyph + content.spacing,
     );
   });
 
@@ -111,61 +144,60 @@ void main() {
     expect(find.byIcon(AppIcons.filter), findsNothing);
   });
 
-  testWidgets('keyboard focus draws a primary ring around the 8 corners', (
+  testWidgets("keyboard focus draws ForUI's focus outline round the chip", (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
     );
+    useKeyboardFocusHighlight();
+    final outline = forUiTheme(tester, _chip).style.focusedOutlineStyle;
+    expect(outline.color, colors.primary);
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
-    final shape =
-        tester.widget<Material>(_painted.first).shape! as MxFocusRingBorder;
 
-    expect(shape.ring.color, scheme.primary);
-    expect(shape.ring.width, 2);
-    expect(shape.gap, 2);
     expect(
-      (shape.base as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(8),
+      focusRingRender(tester),
+      paintsFocusRing(outline.color, width: outline.width),
     );
   });
 
-  // M3F-03 (owner 2026-10-15, supersedes SW-REV-001): the resting count is the
-  // unblended onSurfaceVariant, so it meets 4.5:1; labelSmall carries the
-  // quieter hierarchy.
-  testWidgets('the count is onSurfaceVariant resting and the label selected', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxFilterChip(
-        label: 'Due',
-        count: 12,
-        isSelected: false,
-        onSelected: (_) {},
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurfaceVariant,
-    );
+  // M3F-03 (owner 2026-10-15, supersedes SW-REV-001): the count keeps the
+  // label's foreground, so it meets 4.5:1; the meta role carries the quieter
+  // hierarchy.
+  for (final (name, isSelected, onSelected) in [
+    ('resting', false, (bool _) {}),
+    ('selected', true, (bool _) {}),
+    ('disabled', false, null),
+  ]) {
+    testWidgets('the count keeps the label foreground, $name', (tester) async {
+      await pumpMx(
+        tester,
+        MxFilterChip(
+          label: 'Due',
+          count: 12,
+          isSelected: isSelected,
+          onSelected: onSelected,
+        ),
+      );
+      final states = {
+        if (isSelected) FTappableVariant.selected,
+        if (onSelected == null) FTappableVariant.disabled,
+      };
 
-    await pumpMx(
-      tester,
-      MxFilterChip(
-        label: 'Due',
-        count: 12,
-        isSelected: true,
-        onSelected: (_) {},
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSecondaryContainer,
-    );
-  });
+      expect(textColor(tester, find.text('Due')), _resolvedInk(tester, states));
+      expect(
+        textColor(tester, find.text('12')),
+        textColor(tester, find.text('Due')),
+      );
+      expect(
+        tester.widget<Text>(find.text('12')).style!.fontSize,
+        tester.element(find.text('12')).texts.meta.fontSize,
+      );
+    });
+  }
 
   for (final brightness in Brightness.values) {
     testWidgets('M3F-03: the resting count is 4.5:1 on the page and a card '
@@ -181,14 +213,11 @@ void main() {
         brightness: brightness,
       );
       final context = tester.element(find.text('12'));
-      final painted = tester.widget<Text>(find.text('12')).style!.color!;
+      final painted = textColor(tester, find.text('12'))!;
 
-      for (final ground in [
-        Theme.of(context).scaffoldBackgroundColor,
-        context.mxColors.cardSurface,
-      ]) {
+      for (final ground in [context.colors.background, context.colors.card]) {
         final ink = Color.alphaBlend(painted, ground);
-        expect(contrast(ink, ground), greaterThanOrEqualTo(4.5));
+        expect(_contrast(ink, ground), greaterThanOrEqualTo(4.5));
       }
     });
   }
@@ -204,6 +233,7 @@ void main() {
       ),
     );
     await tester.tap(find.byType(MxFilterChip));
+    await tester.pumpAndSettle();
 
     expect(reported, isTrue);
   });
@@ -216,8 +246,18 @@ void main() {
     );
 
     expect(
-      tester.getSemantics(find.byType(MxFilterChip)),
-      isSemantics(label: 'Due', isSelected: true, isButton: true),
+      tester.getSemantics(find.bySemanticsLabel('Due')),
+      matchesSemantics(
+        label: 'Due',
+        isSelected: true,
+        hasSelectedState: true,
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasFocusAction: true,
+      ),
     );
     handle.dispose();
   });
@@ -232,11 +272,12 @@ void main() {
         onSelected: (_) {},
       ),
     );
+    expect(tester.getSize(_chip).height, greaterThanOrEqualTo(48));
     await expectAccessibleTargets(tester);
   });
 
   // DEV-372: the button resolves its own disabled colours; a wrapper dimming
-  // it again left 4.6% container and 14% content.
+  // it again left a doubly faded chip.
   testWidgets('disabled paints the theme disabled colours, dimmed once', (
     tester,
   ) async {
@@ -246,27 +287,30 @@ void main() {
     );
 
     expect(
-      find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(Opacity),
-      ),
+      find.ancestor(of: _chip, matching: find.byType(Opacity)),
       findsNothing,
     );
-    final material = tester.widget<Material>(_painted.first);
-    expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, scheme.onSurface.withValues(alpha: 0.38));
     expect(
-      (material.shape! as OutlinedBorder).side.color,
-      scheme.onSurface.withValues(alpha: 0.12),
+      paintedDecoration(tester, _chip).color,
+      _resolved(tester, disabled).color,
+    );
+    expect(
+      textColor(tester, find.text('Cards')),
+      _resolvedInk(tester, disabled),
+    );
+    expect(
+      paintedSide(tester, _chip),
+      (_resolved(tester, disabled).shape as OutlinedBorder).side,
     );
 
     await pumpMx(
       tester,
       const MxFilterChip(label: 'Cards', isSelected: true, onSelected: null),
     );
+    final both = {FTappableVariant.selected, FTappableVariant.disabled};
     expect(
-      tester.widget<Material>(_painted.first).color,
-      scheme.onSurface.withValues(alpha: 0.12),
+      paintedDecoration(tester, _chip).color,
+      _resolved(tester, both).color,
     );
   });
 
@@ -299,12 +343,13 @@ void main() {
           .overflow,
       TextOverflow.ellipsis,
     );
+    expect(tester.getSize(_chip).width, lessThanOrEqualTo(200));
   });
 
-  // M3F-04: the glyph read `primary`, 2.38:1 on the dark card ground.
+  // M3F-04: the leading glyph is read on a card; 3:1 for a glyph.
   for (final brightness in Brightness.values) {
-    testWidgets('M3F-04: the leading glyph is the accent, 3:1 on a card '
-        '($brightness)', (tester) async {
+    testWidgets('M3F-04: the leading glyph is 3:1 on a card '
+        '(${brightness.name})', (tester) async {
       await pumpMx(
         tester,
         MxFilterChip(
@@ -316,10 +361,10 @@ void main() {
         brightness: brightness,
       );
       final context = tester.element(find.byIcon(AppIcons.filter));
-      final glyph = IconTheme.of(context).color!;
+      final glyph = iconColor(tester, find.byIcon(AppIcons.filter))!;
 
-      expect(glyph, accentOf(context.colors));
-      expect(contrast(glyph, context.mxColors.cardSurface), greaterThan(3));
+      expect(glyph, _style(tester).contentStyle.iconStyle.resolve({}).color);
+      expect(_contrast(glyph, context.colors.card), greaterThan(3));
     });
   }
 }

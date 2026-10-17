@@ -125,6 +125,7 @@ void main() {
     );
     await tester.tap(find.text(_en.settingsStudyDefaults));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the reminder row names the time when on, and opens screen 24', (
@@ -147,6 +148,7 @@ void main() {
     );
     await tester.tap(find.text(_en.settingsReminder));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('reset runs the reset app/ composed; a failure says so and '
@@ -302,6 +304,7 @@ void main() {
     await tester.tap(find.text(_en.settingsLanguage));
 
     expect(opened, ['theme', 'language']);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the account row and the Sync row share one section, the '
@@ -360,6 +363,7 @@ void main() {
     expect(find.text(_en.settingsAdminToolsHint), findsOneWidget);
     await tester.tap(find.text(_en.settingsAdminTools));
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   // Review focus: a token refresh that adds the admin role while the hub

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One node of the card history's timeline (DEV-170, kit "Flashcard
@@ -52,7 +52,7 @@ class CardHistoryRailWidget extends StatelessWidget {
     final colors = context.colors;
     final dimens = context.dimens;
     // The rail sits on the centre of the leading 24.
-    final railStart = (dimens.space24 - dimens.strokeIndicator) / 2;
+    final railStart = (dimens.space24 - dimens.strokeEmphasis) / 2;
     final dotStart = (dimens.space24 - _dotSize) / 2;
     final dotCentre = dotTop + _dotSize / 2;
     final foreground = this.foreground;
@@ -60,11 +60,11 @@ class CardHistoryRailWidget extends StatelessWidget {
       children: [
         PositionedDirectional(
           start: railStart,
-          width: context.dimens.strokeIndicator,
+          width: context.dimens.strokeEmphasis,
           top: isFirst ? dotCentre : 0,
           bottom: isLast ? null : 0,
           height: isLast ? dotCentre : null,
-          child: ColoredBox(color: colors.surfaceContainerHigh),
+          child: ColoredBox(color: colors.muted),
         ),
         PositionedDirectional(
           start: dotStart,
@@ -74,14 +74,12 @@ class CardHistoryRailWidget extends StatelessWidget {
             height: _dotSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: foreground == null
-                  ? colors.surfaceContainerHigh
-                  : colors.surface,
+              color: foreground == null ? colors.muted : colors.background,
               // Non-text, so the edge holds 3:1 on the page (DESIGN.md, The
               // Contrast Floor Rule): the outcome's foreground, or the outline.
               border: Border.all(
-                color: foreground ?? colors.outline,
-                width: context.dimens.strokeControl,
+                color: foreground ?? colors.border,
+                width: context.dimens.strokeEmphasis,
               ),
             ),
           ),

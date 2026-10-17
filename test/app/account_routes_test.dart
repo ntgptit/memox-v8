@@ -31,6 +31,10 @@ import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/users_fakes.dart';
 
+import 'package:forui/forui.dart';
+
+import '../support/forui_expect.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _settle(WidgetTester tester) async {
@@ -105,12 +109,12 @@ void main() {
     expect(find.byType(SignInScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
 
-    await tester.enterText(find.byType(TextField), 'a@example.com');
+    await tester.enterText(find.byType(FTextField), 'a@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
     expect(find.byType(CodeScreen), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await _settle(tester);
     await _settle(tester);
 
@@ -148,7 +152,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AccountScreen), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -168,7 +172,7 @@ void main() {
     expect(find.byType(SignInScreen), findsOneWidget);
     await tester.tap(find.text(_en.accountSendCode)); // the address is filled
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await tester.pumpAndSettle();
 
     expect(
@@ -227,7 +231,7 @@ void main() {
 
     await tester.tap(find.text(_en.accountSendCode));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
     await tester.pumpAndSettle();
 
     expect(
@@ -313,7 +317,7 @@ void main() {
     expect(find.byType(AccountScreen), findsOneWidget);
     expect(find.text(_en.accountOfflineNote), findsNothing);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -387,7 +391,7 @@ void main() {
     await tester.tap(find.text(_en.accountSignIn));
     await _settle(tester);
 
-    await tester.enterText(find.byType(TextField), 'b@example.com');
+    await tester.enterText(find.byType(FTextField), 'b@example.com');
     await tester.tap(find.text(_en.accountSendCode));
     await tester.pumpAndSettle();
 
@@ -400,7 +404,7 @@ void main() {
     );
 
     await tester.enterText(
-      find.descendant(of: layer, matching: find.byType(TextField)),
+      find.descendant(of: layer, matching: find.byType(FTextField)),
       FakeAuthGateway.code,
     );
     await tester.pumpAndSettle();
@@ -448,10 +452,10 @@ void main() {
     expect(find.byType(UsersScreen), findsOneWidget);
     expect(find.text('ann@example.com'), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
@@ -483,7 +487,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.monitoringTitle), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });

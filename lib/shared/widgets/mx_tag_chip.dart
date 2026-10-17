@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A tag as read-only metadata, in two densities: 22 on its own line, 18
@@ -19,33 +20,16 @@ class MxTagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ConstrainedBox(
-    constraints: BoxConstraints(
+    constraints: const BoxConstraints(maxWidth: _maxWidth),
+    child: MxToneBadge(
+      fill: context.colors.secondary,
+      ink: context.colors.mutedForeground,
       minHeight: isDense ? _denseHeight : _height,
-      maxWidth: _maxWidth,
-    ),
-    child: DecoratedBox(
-      decoration: ShapeDecoration(
-        color: context.colors.surfaceContainer,
-        shape: const StadiumBorder(),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                style: context.texts.labelSmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ],
-        ),
+      child: Text(
+        label,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
   );

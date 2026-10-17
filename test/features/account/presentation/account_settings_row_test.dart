@@ -62,6 +62,7 @@ void main() {
     expect(find.text(_en.accountReauthBanner), findsNothing);
     await tester.tap(find.text(_en.accountSignIn));
     expect(opens, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   accountTest('offline, Sign in waits and says when it will work', (
@@ -113,6 +114,7 @@ void main() {
 
     await tester.tap(find.text('a@example.com'));
     expect(accounts, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   accountTest('an expired sign-in puts the banner first; Sign in re-auths', (
@@ -137,6 +139,7 @@ void main() {
     );
     await tester.tap(find.widgetWithText(MxButton, _en.accountSignIn));
     expect(reauths, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a build that cannot sign in shows nothing', (tester, env) async {

@@ -21,7 +21,7 @@ void main() {
       );
       final context = tester.element(find.byIcon(AppIcons.remove));
 
-      expect(IconTheme.of(context).color, context.colors.onSurfaceVariant);
+      expect(IconTheme.of(context).color, context.colors.mutedForeground);
     });
   }
 }

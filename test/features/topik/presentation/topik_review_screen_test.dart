@@ -121,6 +121,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Done'));
     expect(exits.backs, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the question change is announced: the stem is a live region '
@@ -287,6 +288,7 @@ void main() {
     expect(find.text('Your score is still in the summary.'), findsOneWidget);
     await tester.tap(find.text('Back to summary'));
     expect(exits.summaries, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a test whose question set no longer matches the attempt shows '
@@ -322,6 +324,7 @@ void main() {
     expect(find.text("Review isn't available for this test"), findsOneWidget);
     await tester.tap(find.text('Back to summary'));
     expect(exits.summaries, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the attempt deleted elsewhere, or still in progress: missing '

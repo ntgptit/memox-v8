@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -64,7 +64,7 @@ class MxErrorState extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: context.colors.error.tintOver(MxTintBase.of(context)),
-                  borderRadius: BorderRadius.circular(context.dimens.radiusLg),
+                  borderRadius: context.radii.lg,
                 ),
                 child: Center(
                   child: Icon(
@@ -83,15 +83,15 @@ class MxErrorState extends StatelessWidget {
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: context.texts.titleSmall,
+                style: context.texts.itemTitle,
               ),
             ),
             const SizedBox(height: _titleGap),
             Text(
               body,
               textAlign: TextAlign.center,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             if ((retryLabel, onRetry) case (

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -114,13 +114,13 @@ class WelcomeScreen extends ConsumerWidget {
             SizedBox(height: context.dimens.space16),
             MxRouteName(
               isHeader: true,
-              child: Text(l10n.appTitle, style: context.texts.titleLarge),
+              child: Text(l10n.appTitle, style: context.texts.screenTitle),
             ),
             SizedBox(height: context.dimens.space8),
             Text(
               l10n.welcomeLead,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             SizedBox(height: context.dimens.space24),

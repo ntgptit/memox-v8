@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 
 import 'widget_harness.dart';
+import 'theme_harness.dart';
 
 const Duration _indicatorFrame = Duration(milliseconds: 300);
 
@@ -46,6 +47,54 @@ Future<void> expectBoundaryGolden(
   image!.dispose();
 }
 
+/// Like [expectThemedGoldens] for an overlay: [open] shows it from a context
+/// under the app's theme host (a toast, a dialog), the board settles, and the
+/// whole screen is compared with `goldens/<name>_light.png` and
+/// `goldens/<name>_dark.png`. The tree is torn down after each capture, so
+/// the overlay's own timers end with it.
+Future<void> expectThemedOverlayGoldens(
+  WidgetTester tester,
+  String name, {
+  required void Function(BuildContext context) open,
+}) async {
+  await tester.binding.setSurfaceSize(phoneSize);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  tester.view.physicalSize = phoneSize;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  await withRealShadows(() async {
+    for (final (suffix, theme) in [
+      ('light', buildLightTheme()),
+      ('dark', buildDarkTheme()),
+    ]) {
+      late BuildContext page;
+      await tester.pumpWidget(
+        RepaintBoundary(
+          key: goldenBoundaryKey,
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            themeAnimationDuration: Duration.zero,
+            theme: materialHostTheme(theme),
+            builder: mxThemeBuilder(theme),
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  page = context;
+                  return const SizedBox.expand();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      open(page);
+      await tester.pumpAndSettle();
+      await expectBoundaryGolden(tester, 'goldens/${name}_$suffix.png');
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+}
+
 /// Renders [child] on each theme's page ground at 360×800 logical pixels and
 /// compares it, captured at 3x, with `goldens/<name>_light.png` and
 /// `goldens/<name>_dark.png` beside the calling test file.
@@ -73,7 +122,8 @@ Future<void> expectThemedGoldens(
             debugShowCheckedModeBanner: false,
             // Otherwise the second pump still paints the previous theme.
             themeAnimationDuration: Duration.zero,
-            theme: theme,
+            theme: materialHostTheme(theme),
+            builder: mxThemeBuilder(theme),
             home: Scaffold(
               body: Padding(padding: const EdgeInsets.all(16), child: child),
             ),

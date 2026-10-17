@@ -17,6 +17,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
+import '../../../support/forui_expect.dart';
 
 /// Screen 07's app bar and breadcrumb, composed as `app/` composes them (A14).
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -61,15 +62,15 @@ void main() {
     final deckId = await _deck(env, ['annyeong', 'gamsa']);
     await pumpLibraryScreen(tester, env, _screen(deckId));
 
-    expect(find.byTooltip(_en.commonBack), findsOneWidget);
+    expect(byControlLabel(_en.commonBack), findsOneWidget);
     expect(_barText('Words'), findsOneWidget);
-    expect(find.byTooltip(_en.deckActions), findsOneWidget);
+    expect(byControlLabel(_en.deckActions), findsOneWidget);
     expect(find.byType(MxSearchField), findsNothing);
 
-    await tester.tap(find.byTooltip(_en.cardSearchOpen));
+    await tester.tap(byControlLabel(_en.cardSearchOpen));
     await tester.pumpAndSettle();
     expect(find.byType(MxSearchField), findsOneWidget);
-    expect(find.byTooltip(_en.cardSearchClose), findsOneWidget);
+    expect(byControlLabel(_en.cardSearchClose), findsOneWidget);
   });
 
   libraryTest('selecting turns the bar into the selection header (A14)', (
@@ -83,13 +84,13 @@ void main() {
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(_en.cardSelectionClose), findsOneWidget);
+    expect(byControlLabel(_en.cardSelectionClose), findsOneWidget);
     expect(_barText(_en.cardSelectedCount(1)), findsOneWidget);
     expect(
       find.widgetWithText(MxButton, _en.cardSelectAllCount(4)),
       findsOneWidget,
     );
-    expect(find.byTooltip(_en.deckActions), findsNothing);
+    expect(byControlLabel(_en.deckActions), findsNothing);
     expect(find.byType(MxBreadcrumb), findsNothing);
   });
 
@@ -102,7 +103,7 @@ void main() {
       'bap',
     ]);
     await pumpLibraryScreen(tester, env, _screen(deckId));
-    await tester.tap(find.byTooltip(_en.cardSearchOpen));
+    await tester.tap(byControlLabel(_en.cardSearchOpen));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText), 'card');
     await tester.pumpAndSettle();
@@ -132,7 +133,7 @@ void main() {
     }
     await insertCard(env.db, id: 'x', deckId: words.id, front: 'bap');
     await pumpLibraryScreen(tester, env, _screen(words.id));
-    await tester.tap(find.byTooltip(_en.cardSearchOpen));
+    await tester.tap(byControlLabel(_en.cardSearchOpen));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText), 'card');
     await tester.pumpAndSettle();
@@ -161,11 +162,11 @@ void main() {
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip(_en.cardSelectionClose));
+    await tester.tap(byControlLabel(_en.cardSelectionClose));
     await tester.pumpAndSettle();
 
     expect(_barText('Words'), findsOneWidget);
-    expect(find.byTooltip(_en.cardSelectionClose), findsNothing);
+    expect(byControlLabel(_en.cardSelectionClose), findsNothing);
     expect(find.byType(MxBreadcrumb), findsOneWidget);
   });
 

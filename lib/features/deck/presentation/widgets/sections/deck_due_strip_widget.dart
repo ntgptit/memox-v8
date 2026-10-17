@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
@@ -44,7 +44,7 @@ class DeckDueStripWidget extends StatelessWidget {
                   children: [
                     Text(
                       l10n.libraryDueTitle(due),
-                      style: context.texts.titleSmall,
+                      style: context.texts.itemTitle,
                     ),
                     DeckWorkloadLineWidget(
                       overdueCount: level.overdueCount,
@@ -60,7 +60,7 @@ class DeckDueStripWidget extends StatelessWidget {
               if (onOpen != null)
                 IconTheme(
                   data: IconThemeData(
-                    color: context.colors.onSurfaceVariant,
+                    color: context.colors.mutedForeground,
                     size: context.dimens.sizeIconCompact,
                   ),
                   child: const ExcludeSemantics(

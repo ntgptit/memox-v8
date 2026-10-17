@@ -1,8 +1,18 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+// The SDK Scaffold is the screen's layout host only (ADR-026): it places the
+// FAB, resizes the body above the keyboard and carries the bottom bar; every
+// surface it shows is ForUI's or painted from the ForUI theme.
+import 'package:flutter/material.dart'
+    show
+        Durations,
+        Easing,
+        FloatingActionButtonLocation,
+        Scaffold,
+        ScaffoldPrelayoutGeometry;
+import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -52,7 +62,7 @@ class MxAppShell extends StatelessWidget {
   final bool isSession;
 
   /// The [appBar] paints its own ground (MxStudyTopBar does), so the shell
-  /// does not step it to `surfaceContainer` when the body scrolls under it.
+  /// draws no border under it when the body scrolls under it.
   final bool hasOwnAppBarGround;
 
   /// Whether the keyboard is up. Its Scaffold resizes the body above the
@@ -94,7 +104,7 @@ class MxAppShell extends StatelessWidget {
 
   Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
-      backgroundColor: context.colors.surface,
+      backgroundColor: context.colors.background,
       // A compact window gets its full width, up to `sizeContentMax`; from
       // medium the column is centred at `sizeContentMaxWide`, or stays at
       // `sizeContentMax` in a study session; the ground fills the rest (FE-C5).
@@ -156,7 +166,7 @@ class MxAppShell extends StatelessWidget {
 
 /// Tells [builder] whether the body's scroll has moved content under the app
 /// bar: its vertical scroll, not a nested or sideways one (Material 3: the
-/// bar steps from `surface` to `surfaceContainer`).
+/// bar draws its border under it).
 ///
 /// The flag follows scroll updates (a position clamped by content that shrinks
 /// back into the viewport is one), and clears when [bodyIdentity] changes,
@@ -229,9 +239,10 @@ class _ScrolledUnderScopeState extends State<_ScrolledUnderScope> {
   Widget build(BuildContext context) => widget.builder(_isScrolledUnder);
 }
 
-/// The app bar's ground, full-bleed behind the capped column: `surface`, or
-/// `surfaceContainer` once content scrolls under it. The colour eases over
-/// `Durations.short4` unless the platform asks for reduced motion.
+/// The app bar's ground, full-bleed behind the capped column: the page
+/// background, with ForUI's hairline border under it once content scrolls
+/// under it. The border fades in over `Durations.short4` unless the platform
+/// asks for reduced motion.
 class _AppBarGround extends StatelessWidget {
   const _AppBarGround({required this.isScrolledUnder, required this.child});
 
@@ -243,13 +254,23 @@ class _AppBarGround extends StatelessWidget {
     final colors = context.colors;
     return TweenAnimationBuilder<Color?>(
       tween: ColorTween(
-        end: isScrolledUnder ? colors.surfaceContainer : colors.surface,
+        end: isScrolledUnder
+            ? colors.border
+            : colors.border.withValues(alpha: 0),
       ),
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : Durations.short4,
       curve: Easing.standard,
-      builder: (_, color, child) => ColoredBox(color: color!, child: child),
+      builder: (_, edge, child) => DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.background,
+          border: Border(
+            bottom: BorderSide(color: edge!, width: context.hairline),
+          ),
+        ),
+        child: child,
+      ),
       child: child,
     );
   }

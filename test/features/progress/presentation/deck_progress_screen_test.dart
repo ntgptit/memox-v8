@@ -89,6 +89,7 @@ void main() {
 
     expect(taps.decks, [grammar.id]);
     expect(taps.ancestors, [null]);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a deck with no children keeps its total and says it is all of '

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -39,8 +39,8 @@ class TopikLevelRowWidget extends StatelessWidget {
           l10n.topikBothSections,
           count,
         ]),
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
       leading: const MxIconTile(icon: AppIcons.fileText),

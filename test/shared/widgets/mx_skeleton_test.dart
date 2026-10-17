@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -39,29 +39,36 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
-  testWidgets('12 tall, radius 8 (radiusSm), full width, surfaceContainerHigh '
-      'on the page', (tester) async {
+  testWidgets('12 tall, the small radius, full width, the muted ground on the '
+      'page', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxSkeleton()));
 
     expect(tester.getSize(find.byType(MxSkeleton)), const Size(300, 12));
-    expect(_block(tester).color, scheme.surfaceContainerHigh);
-    expect(_block(tester).borderRadius, BorderRadius.circular(8));
+    expect(_block(tester).color, colors.muted);
+    expect(
+      _block(tester).borderRadius,
+      tester.element(find.byType(MxSkeleton)).radii.sm,
+    );
   });
 
   testWidgets('the bar is one step off the ground it sits on, on every '
       'ground, light and dark', (tester) async {
-    for (final (brightness, colors, mx) in [
-      (Brightness.light, lightColorScheme, MxColorsExtension.light),
-      (Brightness.dark, darkColorScheme, MxColorsExtension.dark),
+    for (final (brightness, colors) in [
+      (Brightness.light, appLightColors),
+      (Brightness.dark, appDarkColors),
     ]) {
-      // The grounds MxTintBase carries: the page, a card, a sheet, a dialog.
+      // The grounds MxTintBase carries: the page, a card, a sheet (the page's
+      // colour), a dialog (the card's) and a recessed card. On those of the
+      // page's or the card's colour the bar is `muted`; on a ground that is
+      // `muted` itself, the stronger `border`.
       for (final (name, ground, bar) in [
-        ('page', colors.surface, colors.surfaceContainerHigh),
-        ('card', mx.cardSurface, colors.surfaceContainerHighest),
-        ('sheet', colors.surfaceContainerLow, colors.surfaceContainerHighest),
-        ('dialog', colors.surfaceContainerHigh, colors.surfaceContainerHighest),
+        ('page', colors.background, colors.muted),
+        ('card', colors.card, colors.muted),
+        ('sheet', colors.background, colors.muted),
+        ('dialog', colors.card, colors.muted),
+        ('recessed', colors.muted, colors.border),
       ]) {
         await pumpMx(
           tester,
@@ -90,7 +97,7 @@ void main() {
       const SizedBox(width: 300, child: MxCard(child: MxSkeleton())),
     );
 
-    expect(_block(tester).color, scheme.surfaceContainerHighest);
+    expect(_block(tester).color, colors.muted);
   });
 
   testWidgets('a circle is its height wide with a full radius', (tester) async {

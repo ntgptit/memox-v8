@@ -16,6 +16,8 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/users_fakes.dart';
 
+import 'package:forui/forui.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 const _me = AccountUser(
@@ -172,13 +174,13 @@ void main() {
   libraryTest('no match, and no account at all', (tester, env) async {
     await pump(tester, env);
 
-    await tester.enterText(find.byType(TextField), 'zz');
+    await tester.enterText(find.byType(FTextField), 'zz');
     await tester.pump(const Duration(milliseconds: 400));
     await _settle(tester);
     expect(find.text(_en.usersNoMatch('zz')), findsOneWidget);
 
     roles.users.clear();
-    await tester.enterText(find.byType(TextField), '');
+    await tester.enterText(find.byType(FTextField), '');
     await tester.pump(const Duration(milliseconds: 400));
     await _settle(tester);
     expect(find.text(_en.usersNone), findsOneWidget);
@@ -202,6 +204,6 @@ void main() {
     await pump(tester, env);
 
     expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
+    expect(find.byType(FTextField), findsNothing);
   });
 }

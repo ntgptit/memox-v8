@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/import_option_sheet_widget.dart';
@@ -49,8 +49,8 @@ class ImportMappingRowWidget extends StatelessWidget {
               children: [
                 Text(
                   l10n.importColumnName(letter),
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
                 if (header case final text? when text.trim().isNotEmpty)
@@ -58,15 +58,15 @@ class ImportMappingRowWidget extends StatelessWidget {
                     text,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: context.texts.titleMedium,
+                    style: context.texts.sectionTitle,
                   ),
                 if (sample case final text?)
                   Text(
                     text,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
               ],

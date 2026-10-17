@@ -1,82 +1,108 @@
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_component_themes.dart';
-import 'package:memox/core/theme/app_surface_themes.dart';
+import 'package:flutter/material.dart' as sdk;
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-/// The light theme: its scheme, its extension and its accent.
-ThemeData buildLightTheme() => _build(
-  scheme: lightColorScheme,
-  mx: MxColorsExtension.light,
-  accent: lightColorScheme.primary,
+/// The light theme: ForUI's touch theme on the app palette and type scale.
+/// Built once; every caller shares it.
+FThemeData buildLightTheme() => _light;
+
+/// The dark theme, authored on its own palette rather than as a filter over
+/// light. Built once; every caller shares it.
+FThemeData buildDarkTheme() => _dark;
+
+final FThemeData _light = _build(appLightColors, 'MemoX Light');
+final FThemeData _dark = _build(appDarkColors, 'MemoX Dark');
+
+/// The ForUI theme of [brightness]: what the composition root and the test
+/// harnesses select by the resolved theme mode.
+FThemeData themeFor(sdk.Brightness brightness) => switch (brightness) {
+  sdk.Brightness.light => buildLightTheme(),
+  sdk.Brightness.dark => buildDarkTheme(),
+};
+
+FThemeData _build(FColors colors, String label) => FThemeData(
+  debugLabel: label,
+  colors: colors,
+  touch: true,
+  typography: AppTypography.build(colors),
+  extensions: const [AppDimens()],
 );
 
-/// The dark theme, authored on its own rather than as a filter over light.
-/// Its accent is the lighter fixed step, as `primary` on the dark page is
-/// only 3.01:1.
-ThemeData buildDarkTheme() => _build(
-  scheme: darkColorScheme,
-  mx: MxColorsExtension.dark,
-  accent: darkColorScheme.primaryFixedDim,
-);
-
-ThemeData _build({
-  required ColorScheme scheme,
-  required MxColorsExtension mx,
-  required Color accent,
-}) {
-  // The base supplies Material's default slots, already inked onSurface.
-  final base = ThemeData(colorScheme: scheme);
-  final texts = AppTypography.bind(base.textTheme);
-  final tokens = ThemeTokens(
-    scheme: scheme,
-    mx: mx,
-    texts: texts,
-    accent: accent,
+/// The SDK Material theme the app's infrastructure host reads, derived one
+/// way from [theme] (ADR-026): `MaterialApp.router` (go_router's page
+/// transitions), the `Scaffold` that `MxAppShell` lays out with, and the
+/// `RefreshIndicator` of the two pull-to-refresh lists. ForUI owns every
+/// visible component; this only gives those hosts the same ground, ink and
+/// type so nothing flashes Material's defaults. It has no component themes
+/// and nothing reads it back.
+sdk.ThemeData materialHostTheme(FThemeData theme) {
+  final colors = theme.colors;
+  final scheme = sdk.ColorScheme(
+    brightness: colors.brightness,
+    primary: colors.primary,
+    onPrimary: colors.primaryForeground,
+    secondary: colors.secondary,
+    onSecondary: colors.secondaryForeground,
+    error: colors.error,
+    onError: colors.errorForeground,
+    surface: colors.background,
+    onSurface: colors.foreground,
+    onSurfaceVariant: colors.mutedForeground,
+    outline: colors.border,
+    outlineVariant: colors.border,
   );
-  return base.copyWith(
-    textTheme: texts,
-    // Read directly by CircleAvatar, FlexibleSpaceBar and others.
-    primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
-    scaffoldBackgroundColor: scheme.surface,
-    // InkWell rows (MxRowInk and the rows built on it) press in the theme's
-    // foreground at the pressed overlay, not Material's grey (SW-REV-007).
-    splashColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
-    highlightColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
-    // The hover and focus layers of the same rows: the tokens' state layers,
-    // not the SDK's black or white at 4% and 12% (M3F-13).
-    hoverColor: tokens.onSurfaceAt(tokens.dimens.opacityHover),
-    focusColor: tokens.onSurfaceAt(tokens.dimens.opacityFocus),
-    // A glyph with no IconTheme ancestor is a supporting icon (M3F-12).
-    iconTheme: IconThemeData(
-      color: scheme.onSurfaceVariant,
-      size: tokens.dimens.sizeIcon,
+  final type = _hostTextTheme(theme.typography);
+  return sdk.ThemeData(
+    colorScheme: scheme,
+    // Every slot is a ForUI step, so the default text style a host Material
+    // (the Scaffold) sets under ForUI's is ForUI's, with no Material letter
+    // spacing merged in from the typography geometry.
+    typography: sdk.Typography(
+      black: type,
+      white: type,
+      englishLike: type,
+      dense: type,
+      tall: type,
     ),
-    // Set, never left to the platform, which makes linux, windows and macOS
-    // compact; `platform:` would change far more (M3F-14).
-    visualDensity: VisualDensity.standard,
-    materialTapTargetSize: MaterialTapTargetSize.padded,
-    extensions: [mx, tokens.dimens],
-    cardTheme: cardTheme(tokens),
-    searchBarTheme: searchBarTheme(tokens),
-    dividerTheme: dividerTheme(tokens),
-    filledButtonTheme: filledButtonTheme(tokens),
-    outlinedButtonTheme: outlinedButtonTheme(tokens),
-    textButtonTheme: textButtonTheme(tokens),
-    iconButtonTheme: iconButtonTheme(tokens),
-    floatingActionButtonTheme: floatingActionButtonTheme(tokens),
-    navigationBarTheme: navigationBarTheme(tokens),
-    navigationRailTheme: navigationRailTheme(tokens),
-    progressIndicatorTheme: progressIndicatorTheme(tokens),
-    chipTheme: chipTheme(tokens),
-    switchTheme: switchTheme(tokens),
-    sliderTheme: sliderTheme(tokens),
-    segmentedButtonTheme: segmentedButtonTheme(tokens),
-    inputDecorationTheme: inputDecorationTheme(tokens),
-    dialogTheme: dialogTheme(tokens),
-    bottomSheetTheme: bottomSheetTheme(tokens),
-    snackBarTheme: snackBarTheme(tokens),
-    tooltipTheme: tooltipTheme(tokens),
+    textTheme: type,
+    scaffoldBackgroundColor: colors.background,
+    canvasColor: colors.background,
+    // ForUI draws every press and focus state; the host draws no ripple.
+    splashFactory: sdk.NoSplash.splashFactory,
+    textSelectionTheme: sdk.TextSelectionThemeData(
+      cursorColor: colors.primary,
+      selectionColor: colors.primary.withValues(alpha: 0.4),
+      selectionHandleColor: colors.primary,
+    ),
+    visualDensity: sdk.VisualDensity.standard,
+    materialTapTargetSize: sdk.MaterialTapTargetSize.padded,
+  );
+}
+
+/// The SDK text theme of [typography]: each Material slot on the ForUI step
+/// ForUI's own Material bridge picks for it (`toApproximateMaterialTheme`),
+/// inked in the step's foreground. `bodyMedium`, the host's default text,
+/// is ForUI's default text (body `sm`).
+sdk.TextTheme _hostTextTheme(FTypography typography) {
+  final display = typography.display;
+  final body = typography.body;
+  return sdk.TextTheme(
+    displayLarge: display.xl4,
+    displayMedium: display.xl3,
+    displaySmall: display.xl2,
+    headlineLarge: display.xl3,
+    headlineMedium: display.xl2,
+    headlineSmall: display.xl,
+    titleLarge: body.lg,
+    titleMedium: body.md,
+    titleSmall: body.sm,
+    labelLarge: body.md,
+    labelMedium: body.sm,
+    labelSmall: body.xs,
+    bodyLarge: body.md,
+    bodyMedium: body.sm,
+    bodySmall: body.xs,
   );
 }

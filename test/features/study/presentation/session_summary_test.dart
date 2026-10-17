@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
@@ -87,6 +87,7 @@ void main() {
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     await tester.tap(find.widgetWithText(MxButton, _en.summaryStudyAgain));
     expect((done, again), (1, 1));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Night: a finished session is a tint over the Night surface, so '
@@ -101,7 +102,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text(_en.summaryReviewFinished)).style?.color,
-      darkColorScheme.onSurface,
+      appDarkColors.foreground,
     );
   });
 
@@ -405,8 +406,8 @@ void main() {
       tester
           .element(overline)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
+          .meta
+          .copyWith(color: tester.element(overline).colors.mutedForeground),
     );
     expect(
       text.semanticsLabel,

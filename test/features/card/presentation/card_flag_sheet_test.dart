@@ -5,6 +5,8 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_flag_shee
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
+import '../../../support/theme_harness.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
 void main() {
@@ -13,7 +15,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: buildLightTheme(),
+        theme: materialHostTheme(buildLightTheme()),
+        builder: mxThemeBuilder(buildLightTheme()),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(body: CardFlagSheetWidget()),

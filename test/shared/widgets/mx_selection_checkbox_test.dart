@@ -1,64 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/app_icons.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
-import '../../support/theme_expect.dart';
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-BoxDecoration _box(WidgetTester tester) =>
+final _checkbox = find.byType(MxSelectionCheckbox);
+
+ShapeDecoration _box(WidgetTester tester) =>
     tester
             .widget<DecoratedBox>(
               find.descendant(
-                of: find.byType(MxSelectionCheckbox),
+                of: _checkbox,
                 matching: find.byType(DecoratedBox),
               ),
             )
             .decoration
-        as BoxDecoration;
+        as ShapeDecoration;
+
+FCheckboxStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _checkbox).checkboxStyle;
 
 void main() {
-  final scheme = lightColorScheme;
-
-  // Material 3 checkbox: an 18 box, a 2 corner, a 2px onSurfaceVariant edge.
-  testWidgets('unchecked: an 18 box, 2 corner, 2px onSurfaceVariant edge', (
+  // ForUI's checkbox, painted only: the row around it is the tap target.
+  testWidgets('unchecked: the style size, the card ground, a muted edge', (
     tester,
   ) async {
     await pumpMx(tester, const MxSelectionCheckbox(isChecked: false));
+    final style = _style(tester);
 
     expect(
-      tester.getSize(find.byType(MxSelectionCheckbox)),
-      const Size.square(18),
+      tester.getSize(
+        find.descendant(of: _checkbox, matching: find.byType(DecoratedBox)),
+      ),
+      Size.square(style.size),
     );
-    expect(_box(tester).color, isNull);
+    expect(_box(tester), style.decoration.resolve(<FVariant>{}));
+    expect(_box(tester).color, appLightColors.card);
     expect(
-      _box(tester).border,
-      Border.all(color: scheme.onSurfaceVariant, width: 2),
+      (_box(tester).shape as OutlinedBorder).side.color,
+      appLightColors.mutedForeground,
     );
-    expect(_box(tester).borderRadius, BorderRadius.circular(2));
-    expect(find.byIcon(AppIcons.check), findsNothing);
+    expect(find.byType(Icon), findsNothing);
   });
 
-  testWidgets('checked: accent fill, 14 onAccent check, no border (I2)', (
-    tester,
-  ) async {
+  testWidgets('checked: the primary fill, the primary-foreground check, no '
+      'edge', (tester) async {
     await pumpMx(tester, const MxSelectionCheckbox(isChecked: true));
+    await tester.pumpAndSettle();
+    final style = _style(tester);
+    final checked = <FVariant>{FCheckboxVariant.selected};
 
-    expect(_box(tester).color, accentOf(scheme));
-    expect(_box(tester).color, scheme.primary);
-    expect(_box(tester).border, isNull);
-    expect(_box(tester).borderRadius, BorderRadius.circular(2));
+    expect(_box(tester), style.decoration.resolve(checked));
+    expect(_box(tester).color, appLightColors.primary);
+    expect((_box(tester).shape as OutlinedBorder).side, BorderSide.none);
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.check)).color,
-      scheme.onPrimary,
+      iconColor(tester, find.byType(Icon)),
+      appLightColors.primaryForeground,
     );
-    expect(tester.getSize(find.byIcon(AppIcons.check)).width, 14);
+    expect(
+      tester.getSize(find.byType(Icon)).width,
+      lessThanOrEqualTo(style.size),
+    );
   });
 
-  // Dark `primary` on a sheet is 2.46:1; the fill is the lighter accent step
-  // and its check the matching on-colour.
-  testWidgets('dark checked: primaryFixedDim fill, onPrimaryFixed check', (
+  // The dark primary reads on a sheet through ForUI's palette.
+  testWidgets('dark checked: the dark primary fill and its foreground', (
     tester,
   ) async {
     await pumpMx(
@@ -66,11 +77,49 @@ void main() {
       const MxSelectionCheckbox(isChecked: true),
       brightness: Brightness.dark,
     );
+    await tester.pumpAndSettle();
 
-    expect(_box(tester).color, darkColorScheme.primaryFixedDim);
+    expect(_box(tester).color, appDarkColors.primary);
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.check)).color,
-      darkColorScheme.onPrimaryFixed,
+      iconColor(tester, find.byType(Icon)),
+      appDarkColors.primaryForeground,
     );
+  });
+
+  testWidgets('it is painted only: out of the semantics tree and out of '
+      'reach of a pointer', (tester) async {
+    await pumpMx(tester, const MxSelectionCheckbox(isChecked: true));
+
+    expect(
+      find.descendant(of: _checkbox, matching: find.byType(ExcludeSemantics)),
+      findsWidgets,
+    );
+    final ignoring = tester.widget<IgnorePointer>(
+      find
+          .descendant(of: _checkbox, matching: find.byType(IgnorePointer))
+          .first,
+    );
+    expect(ignoring.ignoring, isTrue);
+  });
+
+  testWidgets('it takes no focus of its own: the row is the one tab stop', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxSelectionCheckbox(isChecked: false));
+    useKeyboardFocusHighlight();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+
+    final focused = FocusManager.instance.primaryFocus?.context;
+    final inside =
+        focused != null &&
+        find
+            .descendant(
+              of: _checkbox,
+              matching: find.byElementPredicate((e) => e == focused),
+            )
+            .evaluate()
+            .isNotEmpty;
+    expect(inside, isFalse);
   });
 }

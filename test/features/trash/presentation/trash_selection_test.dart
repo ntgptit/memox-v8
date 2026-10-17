@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -17,6 +18,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -71,7 +73,7 @@ void main() {
 
     // One label for one action, as on Card list (owner 2026-10-08).
     expect(_en.trashSelectionClose, _en.cardSelectionClose);
-    await _tap(tester, find.byTooltip(_en.trashSelectionClose));
+    await _tap(tester, byControlLabel(_en.trashSelectionClose));
     expect(find.text(_en.libraryTrash), findsOneWidget);
     expect(find.byType(MxFilterChip), findsNWidgets(3));
   });
@@ -156,7 +158,7 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, const TrashScreen());
 
-    await _tap(tester, find.byTooltip(_en.trashEntryActions('Food')));
+    await _tap(tester, byControlLabel(_en.trashEntryActions('Food')));
     await _tap(tester, find.text(_en.trashDeletePermanently));
     expect(find.text(_en.trashPurgeDecksTitle(1)), findsOneWidget);
     await _tap(tester, _inDialog(_en.trashPurgeConfirm));
@@ -316,7 +318,8 @@ void main() {
       return dims.fold(1, (value, dim) => value * dim.opacity);
     }
 
-    expect(opacityOf('Basics'), closeTo(0.38, 0.001));
+    final dimmed = tester.element(find.text('Basics')).colors.disabledOpacity;
+    expect(opacityOf('Basics'), closeTo(dimmed, 0.001));
     expect(opacityOf('meokda · eat'), 1);
   });
 

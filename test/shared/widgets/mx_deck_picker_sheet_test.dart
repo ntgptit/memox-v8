@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -27,7 +27,7 @@ MxDeckPickerSheet _picker(
 
 void main() {
   testWidgets(
-    'head: a titleSmall title and a bodyMedium rule, space24 in and 20 down',
+    'head: an item-title title and a body rule, space24 in and 52 down',
     (tester) async {
       await pumpMx(
         tester,
@@ -38,14 +38,14 @@ void main() {
       final texts = tester.element(find.text('Move to deck')).texts;
       expect(
         tester.widget<Text>(find.text('Move to deck')).style!.fontSize,
-        texts.titleSmall!.fontSize,
+        texts.itemTitle.fontSize,
       );
       expect(
         tester
             .widget<Text>(find.text('Cards keep their progress.'))
             .style!
             .fontSize,
-        texts.bodyMedium!.fontSize,
+        texts.body.fontSize,
       );
       // The handle's 48 target, then the head's 4.
       expect(
@@ -80,6 +80,7 @@ void main() {
       expect(rows.last.subtitle, 'Holds other decks');
       expect(find.byType(MxDividedColumn), findsOneWidget);
       await tester.tap(find.text('Kana'));
+      await tester.pumpAndSettle();
       expect(picked, 'Kana');
       expect(
         tester.widget<MxButton>(find.byType(MxButton)).tone,
@@ -119,6 +120,7 @@ void main() {
       lessThanOrEqualTo(800 * 0.85),
     );
     await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
     expect(dismissed, 1);
   });
   testWidgets('loading keeps the head where the loaded sheet draws it', (
@@ -200,7 +202,9 @@ void main() {
       MxButtonTone.outline,
     );
     await tester.tap(find.widgetWithText(MxButton, 'Retry'));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
+    await tester.pumpAndSettle();
     expect((retries, dismissed), (1, 1));
   });
 }

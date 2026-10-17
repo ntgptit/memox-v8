@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _dotKey = ValueKey('mx-status-dot');
@@ -20,17 +18,17 @@ Color? _fill(WidgetTester tester, Finder finder) =>
     };
 
 void main() {
-  const mx = MxColorsExtension.light;
-  final scheme = lightColorScheme;
+  const mx = MxStatusColors.light;
+  final colors = appLightColors;
 
   testWidgets(
     'the status fixes the dot and fill; the label is its foreground',
     (tester) async {
       for (final (status, color, ink) in [
-        (MxCardStatus.newCard, scheme.outline, scheme.onSurfaceVariant),
-        (MxCardStatus.learning, mx.warningContainer, mx.warning),
-        (MxCardStatus.reviewing, accentOf(scheme), accentOf(scheme)),
-        (MxCardStatus.mastered, mx.successContainer, mx.success),
+        (MxCardStatus.newCard, colors.mutedForeground, colors.mutedForeground),
+        (MxCardStatus.learning, mx.warningFill, mx.warning),
+        (MxCardStatus.reviewing, colors.primary, colors.primary),
+        (MxCardStatus.mastered, mx.successFill, mx.success),
       ]) {
         await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
         final pill = find
@@ -40,9 +38,9 @@ void main() {
             )
             .first;
 
-        expect(_fill(tester, pill), color.tintOver(scheme.surface));
+        expect(_fill(tester, pill), color.tintOver(colors.background));
         expect(_fill(tester, find.byKey(_dotKey)), color);
-        expect(tester.widget<Text>(find.text('State')).style!.color, ink);
+        expect(textColor(tester, find.text('State')), ink);
       }
     },
   );

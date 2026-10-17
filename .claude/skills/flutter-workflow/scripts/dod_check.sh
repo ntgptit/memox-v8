@@ -26,11 +26,11 @@
 # to print 977 lines (about 100 KB) that whoever ran the gate had to read past.
 #
 # **`--changed` checks what the diff can reach.** On a plan that is not the
-# full suite, `m3_lint` lints the changed `lib/` files only, and the guard's
+# full suite, `ui_lint` lints the changed `lib/` files only, and the guard's
 # and the hooks' own tests run only when a path they read changed
 # (`changed_under` below). A
-# changed file can still give an unchanged one an M3 violation (the rules
-# resolve types), and a plan with no lib/ Dart change runs no m3_lint, so no
+# changed file can still give an unchanged one a UI lint violation (the rules
+# resolve types), and a plan with no lib/ Dart change runs no ui_lint, so no
 # allowlist expiry either: the full gate, with no flag, runs every step over
 # the whole tree and is the one that counts before the PR.
 #
@@ -341,14 +341,16 @@ else
   FAILED+=("hook tests unavailable: $HOOK_TESTS")
 fi
 
-# The design system: generated theme code, DESIGN.md frontmatter and the
-# impeccable token part must equal what design/tokens.json generates, and no
-# name listed in tools/design/removed_symbols.json may remain in lib/ or test/.
-# Its own tests run beside it.
+# The design system (ADR-026): the closed theme file list and ThemeContext
+# getters, colour values only in the palette files, no value in DESIGN.md's
+# prose, and no name listed in tools/design/removed_symbols.json left in lib/
+# or test/. Its own tests run beside it; that DESIGN.md's frontmatter and the
+# impeccable token part equal the production theme is
+# test/tools/design_doc_test.dart's, in the suite.
 DESIGN_CHECK="$REPO_ROOT/tools/design/check.py"
 DESIGN_TESTS="$REPO_ROOT/tools/design/tests"
 if [[ -n "$PY" && -f "$DESIGN_CHECK" ]]; then
-  plan design_tokens "design tokens in sync, removed names gone" "$PY '$DESIGN_CHECK'"
+  plan design_tokens "theme structure and palette, removed names gone" "$PY '$DESIGN_CHECK'"
 else
   FAILED+=("design check unavailable: $DESIGN_CHECK")
 fi
@@ -359,29 +361,29 @@ else
   FAILED+=("design tooling tests unavailable: $DESIGN_TESTS")
 fi
 
-# Material 3 static rules (M3L00..M3L08), resolved against package:flutter, so
-# an alias or a local function of the same name changes nothing. Fixtures and
-# the allowlist live in tools/m3_lint; the rule table is in
-# docs/shared/design/m3-adoption-ledger.md.
+# ForUI boundary rules (UIL00..UIL06), resolved against package:flutter,
+# material_ui and forui, so an alias or a local function of the same name
+# changes nothing. Fixtures and the allowlist live in tools/ui_lint; the rule
+# table is in docs/forui-migration/FORUI_ARCHITECTURE.md.
 if [[ $SCOPED -eq 1 ]]; then
   # The changed hand-written Dart under lib/ that still exists. Resolving the
   # whole of lib/ costs about a minute, so a scoped plan lints these alone.
-  M3_TARGETS=()
+  UI_TARGETS=()
   while IFS= read -r -d '' changed_path; do
     [[ "$changed_path" == lib/*.dart && "$changed_path" != *.g.dart && -f "$changed_path" ]] \
-      && M3_TARGETS+=("$changed_path")
+      && UI_TARGETS+=("$changed_path")
   done <"$WORK/changed-paths.nul"
 fi
 if ! command -v dart >/dev/null 2>&1; then
-  FAILED+=("m3_lint unavailable: dart is not on PATH")
+  FAILED+=("ui_lint unavailable: dart is not on PATH")
 elif [[ $SCOPED -eq 0 ]]; then
-  plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"
-elif [[ ${#M3_TARGETS[@]} -gt 0 ]]; then
-  printf -v M3_QUOTED " %q" "${M3_TARGETS[@]}"
-  plan m3_lint "Material 3 AST rules (tools/m3_lint, ${#M3_TARGETS[@]} changed files)" \
-    "dart run tools/m3_lint/m3_lint.dart$M3_QUOTED"
+  plan ui_lint "ForUI boundary rules (tools/ui_lint)" "dart run tools/ui_lint/ui_lint.dart"
+elif [[ ${#UI_TARGETS[@]} -gt 0 ]]; then
+  printf -v UI_QUOTED " %q" "${UI_TARGETS[@]}"
+  plan ui_lint "ForUI boundary rules (tools/ui_lint, ${#UI_TARGETS[@]} changed files)" \
+    "dart run tools/ui_lint/ui_lint.dart$UI_QUOTED"
 else
-  SCOPED_OUT+=("m3_lint: no Dart file under lib/ changed")
+  SCOPED_OUT+=("ui_lint: no Dart file under lib/ changed")
 fi
 
 # The guard's own probes, and they belong wherever the guard runs. A rule that

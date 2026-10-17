@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/presentation/states/interval_span_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';

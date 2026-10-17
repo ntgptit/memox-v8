@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -165,10 +165,8 @@ class _Marker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = isEnd
-        ? context.texts.bodyMedium!.copyWith(
-            color: context.colors.onSurfaceVariant,
-          )
-        : context.texts.labelMedium!;
+        ? context.texts.body.copyWith(color: context.colors.mutedForeground)
+        : context.texts.label;
     // A cycle mark keeps a section's space from the answer above; the end
     // mark sits close under the last answer, as the kit's does.
     final above = switch ((isFirst, isEnd)) {

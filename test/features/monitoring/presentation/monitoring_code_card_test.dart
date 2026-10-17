@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_code_card_widget.dart';
 
 import '../../../support/widget_harness.dart';
@@ -22,8 +21,8 @@ void main() {
         .style!;
 
     expect(style.fontFamily, AppTypography.monoFamily);
-    expect(style.fontSize, context.texts.bodyMedium!.fontSize);
-    expect(style.height, context.texts.bodyMedium!.height);
+    expect(style.fontSize, context.texts.body.fontSize);
+    expect(style.height, context.texts.body.height);
   });
 
   testWidgets('a stack trace frame number is mono in the accent', (
@@ -40,6 +39,6 @@ void main() {
     final frame = tester.widget<Text>(find.text('#0'));
 
     expect(frame.style!.fontFamily, AppTypography.monoFamily);
-    expect(frame.style!.color, context.accentColor);
+    expect(frame.style!.color, context.colors.primary);
   });
 }

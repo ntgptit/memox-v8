@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The ground a fade dissolves into: the page, a raised card, or the
@@ -73,10 +73,10 @@ class _MxScrollFadeState extends State<MxScrollFade> {
   }
 
   Color _ground(BuildContext context) => switch (widget.ground) {
-    MxScrollFadeGround.page => context.colors.surface,
+    MxScrollFadeGround.page => context.colors.background,
     // The card's own ground, so the fade dissolves into the card.
-    MxScrollFadeGround.raised => context.mxColors.cardSurface,
-    MxScrollFadeGround.recessed => context.colors.surfaceContainerLow,
+    MxScrollFadeGround.raised => context.colors.card,
+    MxScrollFadeGround.recessed => context.colors.muted,
   };
 
   @override

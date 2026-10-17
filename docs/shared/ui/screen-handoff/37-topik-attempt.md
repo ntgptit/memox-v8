@@ -91,7 +91,7 @@ Taking a test in Practice mode (UC-TOPIK-003, BR-TOPIK-010…BR-TOPIK-017, BR-TO
 - The seek bar is one node: "Audio position", value "{position} / {length}" (`topik_audio_bar_test.dart::the seek bar says where it is, of how long`); play/pause have their own labels.
 - Each grid cell is one node: "Question {no}, answered / not answered", selected when current (`topik_attempt_widgets_test.dart::the grid…`).
 - Reduced motion: the pane collapses at once (no animation); the sheets follow `showMxBottomSheet`.
-- Keyboard focus ring on the options: none yet, as on Guess and Match (DEV-391, the choice surface's focus ring).
+- Keyboard: Tab reaches each option and Enter picks it; ForUI's focus outline is drawn outside the tile, whole and on the page ground, picked or not (`mx_choice_tile_test.dart`, `topik_attempt_focus_ring_test.dart::Tab gives each of the four options a whole ring, picked or not (light|dark)`).
 
 ## Rulings
 

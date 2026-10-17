@@ -132,7 +132,7 @@ void main() {
         overrides: accountOverrides(world),
         hasMark: true,
         before: () async {
-          await tester.enterText(find.byType(TextField), 'a@');
+          await tester.enterText(find.byType(EditableText), 'a@');
           await tester.tap(find.text(_en.accountSendCode));
           await _settle(tester);
           await _rest(tester);
@@ -160,7 +160,7 @@ void main() {
         'code_wrong',
         overrides: accountOverrides(world),
         before: () async {
-          await tester.enterText(find.byType(TextField), '000000');
+          await tester.enterText(find.byType(EditableText), '000000');
           await _settle(tester);
         },
       );

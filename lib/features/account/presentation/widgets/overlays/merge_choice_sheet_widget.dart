@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -149,7 +149,7 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
           email == null
               ? l10n.accountTakenGoogle
               : l10n.accountTakenEmail(email),
-          style: context.texts.titleSmall,
+          style: context.texts.itemTitle,
         ),
       ),
       footer: MxSheetActions(

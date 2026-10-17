@@ -1,35 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_row_ink.dart';
 
-import '../../support/theme_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _bodyKey = ValueKey('card-body');
 const _dimens = AppDimens();
 
-Material _surface(WidgetTester tester) => tester.widget<Material>(
-  find
-      .descendant(of: find.byType(MxCard), matching: find.byType(Material))
-      .first,
-);
+ShapeDecoration _surface(WidgetTester tester) =>
+    paintedDecoration(tester, find.byType(MxCard));
 
-RoundedRectangleBorder _shape(WidgetTester tester) =>
-    _surface(tester).shape! as RoundedRectangleBorder;
+RoundedSuperellipseBorder _shape(WidgetTester tester) =>
+    _surface(tester).shape as RoundedSuperellipseBorder;
+
+FThemeData _theme(WidgetTester tester) =>
+    forUiTheme(tester, find.byType(MxCard));
 
 void main() {
   for (final brightness in Brightness.values) {
     final isLight = brightness == Brightness.light;
-    final scheme = isLight ? lightColorScheme : darkColorScheme;
-    final mx = isLight ? MxColorsExtension.light : MxColorsExtension.dark;
+    final colors = isLight ? appLightColors : appDarkColors;
+    final mx = isLight ? MxStatusColors.light : MxStatusColors.dark;
 
     group(brightness.name, () {
       testWidgets(
-        'the card surface, medium radius, padding, no edge, no shadow',
+        "ForUI's card ground, large radius and hairline edge, padding, no "
+        'shadow',
         (tester) async {
           await pumpMx(
             tester,
@@ -37,13 +40,19 @@ void main() {
             brightness: brightness,
           );
 
-          expect(_surface(tester).color, mx.cardSurface);
-          expect(_surface(tester).elevation, 0);
+          expect(_surface(tester).color, colors.card);
+          expect(_surface(tester).shadows, isNull);
           expect(
             _shape(tester).borderRadius,
-            BorderRadius.circular(_dimens.radiusMd),
+            _theme(tester).style.borderRadius.lg,
           );
-          expect(_shape(tester).side, BorderSide.none);
+          expect(
+            _shape(tester).side,
+            BorderSide(
+              color: colors.border,
+              width: _theme(tester).style.borderWidth,
+            ),
+          );
           expect(
             tester.getTopLeft(find.byKey(_bodyKey)) -
                 tester.getTopLeft(find.byType(MxCard)),
@@ -63,9 +72,9 @@ void main() {
 
         expect(
           _surface(tester).color,
-          accentOf(scheme).tintOver(scheme.surface),
+          colors.primary.tintOver(colors.background),
         );
-        expect(_shape(tester).side, BorderSide.none);
+        expect(_shape(tester).side.color, colors.border);
       });
 
       testWidgets('warning, success and danger cards tint their colour over '
@@ -81,24 +90,19 @@ void main() {
           ),
           brightness: brightness,
         );
-        final colors = tester
-            .widgetList<Material>(
-              find.descendant(
-                of: find.byType(MxCard),
-                matching: find.byType(Material),
-              ),
-            )
-            .map((material) => material.color)
-            .toList();
+        final grounds = [
+          for (final card in find.byType(MxCard).evaluate())
+            paintedDecoration(tester, find.byWidget(card.widget)).color,
+        ];
 
-        expect(colors, [
-          mx.warning.tintOver(scheme.surface),
-          mx.success.tintOver(scheme.surface),
-          scheme.error.tintOver(scheme.surface),
+        expect(grounds, [
+          mx.warning.tintOver(colors.background),
+          mx.success.tintOver(colors.background),
+          colors.error.tintOver(colors.background),
         ]);
       });
 
-      testWidgets('recessed: the container-low ground, flat, no edge', (
+      testWidgets('recessed: the muted ground, flat, the hairline edge', (
         tester,
       ) async {
         await pumpMx(
@@ -107,9 +111,9 @@ void main() {
           brightness: brightness,
         );
 
-        expect(_surface(tester).color, scheme.surfaceContainerLow);
-        expect(_shape(tester).side, BorderSide.none);
-        expect(_surface(tester).elevation, 0);
+        expect(_surface(tester).color, colors.muted);
+        expect(_shape(tester).side.color, colors.border);
+        expect(_surface(tester).shadows, isNull);
       });
 
       testWidgets('selected: a primary control-weight edge (screen 07 rows)', (
@@ -123,23 +127,26 @@ void main() {
 
         expect(
           _shape(tester).side,
-          BorderSide(color: scheme.primary, width: _dimens.strokeControl),
+          BorderSide(
+            color: colors.primary,
+            width: _theme(tester).style.borderWidth * 2,
+          ),
         );
-        expect(_surface(tester).color, mx.cardSurface);
+        expect(_surface(tester).color, colors.card);
       });
     });
   }
 
-  testWidgets('full bleed: no padding, clipped, the row ripple on the card', (
-    tester,
-  ) async {
+  testWidgets('full bleed: no padding, clipped, a tappable row works on the '
+      'card', (tester) async {
+    var taps = 0;
     await pumpMx(
       tester,
       MxCard(
         isFullBleed: true,
-        child: InkWell(
+        child: MxRowInk(
           key: _bodyKey,
-          onTap: () {},
+          onTap: () => taps++,
           child: const SizedBox(height: 48),
         ),
       ),
@@ -149,17 +156,25 @@ void main() {
       tester.getTopLeft(find.byKey(_bodyKey)),
       tester.getTopLeft(find.byType(MxCard)),
     );
-    expect(_surface(tester).clipBehavior, Clip.antiAlias);
-    // Review Focus 1: the nearest Material above the row is the card's, so
-    // the ripple paints on the card instead of under its fill.
     expect(
-      tester.widget<Material>(
-        find
-            .ancestor(of: find.byKey(_bodyKey), matching: find.byType(Material))
-            .first,
-      ),
-      same(_surface(tester)),
+      tester
+          .widget<ClipPath>(
+            find.descendant(
+              of: find.byType(MxCard),
+              matching: find.byType(ClipPath),
+            ),
+          )
+          .clipBehavior,
+      Clip.antiAlias,
     );
+    // The row sits inside the card's width and answers a tap.
+    expect(
+      tester.getSize(find.byKey(_bodyKey)).width,
+      tester.getSize(find.byType(MxCard)).width,
+    );
+    await tester.tap(find.byKey(_bodyKey));
+    await tester.pumpAndSettle();
+    expect(taps, 1);
   });
 
   test('a card takes one tone at most', () {

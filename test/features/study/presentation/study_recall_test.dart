@@ -2,8 +2,8 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -12,10 +12,12 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
+import '../../../support/forui_expect.dart' show textColor;
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -120,6 +122,7 @@ void main() {
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('remembered', null));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('Forgot records a wrong answer and moves on', (
@@ -138,6 +141,7 @@ void main() {
 
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('forgotten', null));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('at zero the turn counts as forgot, is announced, and waits for '
@@ -169,6 +173,7 @@ void main() {
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
     handle.dispose();
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the clock stops in the background and saves its time; it '
@@ -254,25 +259,28 @@ void main() {
     final id = await _recall(env);
     await pumpLibraryScreen(tester, env, _screen(id));
     final bar = find.byType(MxStudyTopBar);
-    final fill = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.descendant(
-          of: bar,
-          matching: find.byType(FractionallySizedBox),
-        ),
-        matching: find.byType(ColoredBox),
-      ),
-    );
+    // ForUI paints the track, then the fill, as decorated boxes.
+    final fill =
+        tester
+                .widgetList<DecoratedBox>(
+                  find.descendant(
+                    of: find.descendant(
+                      of: bar,
+                      matching: find.byType(MxLinearProgress),
+                    ),
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .last
+                .decoration
+            as ShapeDecoration;
     final chip = find.descendant(
       of: bar,
       matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
     );
 
-    expect(fill.color, lightColorScheme.primary);
-    expect(
-      tester.widget<Text>(chip).style?.color,
-      tester.element(chip).accentColor,
-    );
+    expect(fill.color, appLightColors.primary);
+    expect(textColor(tester, chip), tester.element(chip).colors.primary);
   });
 
   libraryTest('the self-check labels show whole at normal size (Impeccable '
@@ -291,6 +299,7 @@ void main() {
         reason: label,
       );
     }
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a double tap on Show the meaning answers nothing: Forgot and '
@@ -316,6 +325,7 @@ void main() {
     await tester.tap(find.text(_en.studyRecallRemembered));
     await _settle(tester);
     expect(find.text('term 2'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a tap in the instant the clock runs out does not skip the '

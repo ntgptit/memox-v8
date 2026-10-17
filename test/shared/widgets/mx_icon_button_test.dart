@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/paint_clip.dart';
 import '../../support/widget_harness.dart';
 
-final _painted = find.descendant(
-  of: find.byType(IconButton),
-  matching: find.byType(Material),
-);
+final _button = find.byType(FButton);
+
+FButtonStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, _button).buttonStyles.ghost.lg;
 
 void main() {
+  const dimens = AppDimens();
+
   testWidgets('a round sizeControl box with a sizeIcon glyph', (tester) async {
     await pumpMx(
       tester,
@@ -28,20 +31,25 @@ void main() {
       ),
     );
 
-    const dimens = AppDimens();
-    expect(tester.getSize(_painted.first), Size.square(dimens.sizeControl));
+    expect(paintedRect(tester, _button).size, Size.square(dimens.sizeControl));
     expect(
       tester.getSize(find.byIcon(AppIcons.more)),
       Size.square(dimens.sizeIcon),
     );
     expect(
-      tester.getSize(find.byType(IconButton)).height,
+      tester.getSize(_button).height,
+      greaterThanOrEqualTo(dimens.sizeControl),
+    );
+    expect(
+      tester.getSize(_button).width,
       greaterThanOrEqualTo(dimens.sizeControl),
     );
     await expectAccessibleTargets(tester);
   });
 
-  testWidgets('the glyph is onSurface on no fill', (tester) async {
+  testWidgets('the glyph is in the ghost icon colour on no fill', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxIconButton(
@@ -50,15 +58,16 @@ void main() {
         onPressed: () {},
       ),
     );
-    final glyph = tester.element(find.byIcon(AppIcons.search));
 
-    expect(IconTheme.of(glyph).color, lightColorScheme.onSurface);
-    expect(tester.widget<Material>(_painted.first).color?.a ?? 0, 0);
+    expect(
+      iconColor(tester, find.byIcon(AppIcons.search)),
+      _style(tester).iconContentStyle.iconStyle.resolve({}).color,
+    );
+    expect(paintedDecoration(tester, _button).color, isNull);
   });
 
-  testWidgets('the semantic label names the control and a tap fires', (
-    tester,
-  ) async {
+  testWidgets('the semantic label names the control on one node that keeps '
+      'the tap and the long press, and a tap fires', (tester) async {
     final handle = tester.ensureSemantics();
     var taps = 0;
     await pumpMx(
@@ -69,43 +78,29 @@ void main() {
         onPressed: () => taps++,
       ),
     );
-    // IconButton exposes the name as its semantics tooltip, which TalkBack
-    // reads as the control's name.
+    final node = tester.getSemantics(find.bySemanticsLabel('Close'));
+
+    // The tooltip's long press is merged into the labelled node.
     expect(
-      tester.getSemantics(find.byType(IconButton)),
-      isSemantics(tooltip: 'Close', isButton: true),
+      node,
+      matchesSemantics(
+        label: 'Close',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+        hasLongPressAction: true,
+      ),
     );
-    await tester.tap(find.byTooltip('Close'));
+    await tester.tap(find.bySemanticsLabel('Close'));
+    await tester.pumpAndSettle();
 
     expect(taps, 1);
     handle.dispose();
   });
 
-  testWidgets('disabled follows the disabled opacity', (tester) async {
-    await pumpMx(
-      tester,
-      const MxIconButton(
-        icon: AppIcons.close,
-        semanticLabel: 'Close',
-        onPressed: null,
-      ),
-    );
-    final context = tester.element(find.byIcon(AppIcons.close));
-
-    expect(
-      IconTheme.of(context).color,
-      context.colors.onSurface.withValues(
-        alpha: context.dimens.opacityDisabledContent,
-      ),
-    );
-  });
-
-  // M3F-07: the ring was the circle's own 2px edge (`side`), flush with the
-  // container; the buttons draw it `strokeFocusGap` outside.
-  testWidgets('M3F-07: a focused icon button draws its ring offset', (
-    tester,
-  ) async {
-    const dimens = AppDimens();
+  testWidgets('a long press shows the label as a tooltip', (tester) async {
     await pumpMx(
       tester,
       MxIconButton(
@@ -114,51 +109,87 @@ void main() {
         onPressed: () {},
       ),
     );
-    RenderBox painter() => tester.renderObject<RenderBox>(
-      find
-          .descendant(of: _painted.first, matching: find.byType(CustomPaint))
-          .first,
-    );
-    bool isRing(Symbol name, List<dynamic> arguments) =>
-        name == #drawPath &&
-        (arguments[1] as Paint).color.toARGB32() ==
-            lightColorScheme.primary.toARGB32() &&
-        (arguments[1] as Paint).style == PaintingStyle.stroke;
+    expect(find.text('Close'), findsNothing);
 
-    expect(painter(), isNot(paints..something(isRing)));
+    await tester.longPress(_button);
+    await tester.pumpAndSettle();
 
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
+    expect(find.text('Close'), findsOneWidget);
+    // The tooltip hides itself after a while.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(find.text('Close'), findsNothing);
+  });
+
+  testWidgets('disabled takes the ForUI disabled glyph and ignores taps', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxIconButton(
+        icon: AppIcons.close,
+        semanticLabel: 'Close',
+        onPressed: null,
+      ),
     );
+    final resting = _style(tester).iconContentStyle.iconStyle.resolve({});
+    final disabled = _style(tester).iconContentStyle.iconStyle
+        .resolve({FTappableVariant.disabled});
+
+    expect(disabled.color, isNot(resting.color));
+    expect(iconColor(tester, find.byIcon(AppIcons.close)), disabled.color);
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Close')),
+      matchesSemantics(
+        label: 'Close',
+        isButton: true,
+        hasEnabledState: true,
+        hasSelectedState: true,
+        hasLongPressAction: true,
+      ),
+    );
+    handle.dispose();
+  });
+
+  // M3F-07: the ring is drawn outside the circle, not flush with its edge.
+  testWidgets("M3F-07: a focused icon button draws ForUI's focus outline "
+      'offset round it', (tester) async {
+    await pumpMx(
+      tester,
+      MxIconButton(
+        icon: AppIcons.close,
+        semanticLabel: 'Close',
+        onPressed: () {},
+      ),
+    );
+    useKeyboardFocusHighlight();
+    final outline = forUiTheme(tester, _button).style.focusedOutlineStyle;
+    final ring = find.descendant(
+      of: _button,
+      matching: find.byType(FFocusedOutline),
+    );
+    expect(
+      tester.renderObject(ring.first),
+      isNot(paintsFocusRing(outline.color, width: outline.width)),
+    );
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
-    // The ring's centre line: the gap and half the stroke outside the circle.
-    final ringCentre = (Offset.zero & painter().size).inflate(
-      dimens.strokeFocusGap + dimens.strokeFocus / 2,
-    );
     expect(
-      painter(),
-      paints..something((name, arguments) {
-        if (!isRing(name, arguments)) return false;
-        final bounds = (arguments[0] as Path).getBounds();
-        return (arguments[1] as Paint).strokeWidth == dimens.strokeFocus &&
-            (bounds.left - ringCentre.left).abs() < 0.01 &&
-            (bounds.top - ringCentre.top).abs() < 0.01 &&
-            (bounds.right - ringCentre.right).abs() < 0.01 &&
-            (bounds.bottom - ringCentre.bottom).abs() < 0.01;
-      }),
+      focusRingRender(tester),
+      paintsFocusRing(outline.color, width: outline.width),
     );
+    expect(outline.spacing, greaterThan(0));
+    // Focus shows the tooltip after its delay; let it come and go.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('M3F-07: the offset ring is not clipped in an app bar or a row', (
     tester,
   ) async {
-    const dimens = AppDimens();
-    final reach = dimens.strokeFocusGap + dimens.strokeFocus;
     await pumpMxPage(
       tester,
       Scaffold(
@@ -191,13 +222,10 @@ void main() {
         ),
       ),
     );
+    final outline = forUiTheme(tester, _button.first).style.focusedOutlineStyle;
+    final reach = outline.spacing + outline.width;
     for (var i = 0; i < 3; i++) {
-      final painted = find
-          .descendant(
-            of: find.byType(IconButton).at(i),
-            matching: find.byType(Material),
-          )
-          .first;
+      final painted = _button.at(i);
       expect(
         clipsAway(tester, painted, tester.getRect(painted).inflate(reach)),
         isFalse,

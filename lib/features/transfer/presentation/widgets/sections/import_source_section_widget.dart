@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
@@ -277,12 +277,12 @@ class _SourceChip extends StatelessWidget {
                       isFile ? draft.fileName ?? '' : l10n.importSourcePaste,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: context.texts.titleMedium,
+                      style: context.texts.sectionTitle,
                     ),
                     Text(
                       meta,
-                      style: context.texts.bodyMedium?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.body.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                     ),
                   ],
@@ -347,8 +347,8 @@ class _ReadingCard extends StatelessWidget {
         MxSpinner(size: MxSpinnerSize.large, semanticLabel: label),
         Text(
           label,
-          style: context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.body.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ],

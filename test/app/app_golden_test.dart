@@ -9,6 +9,7 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../support/forui_expect.dart';
 import '../support/deck_fixtures.dart';
 import '../support/golden_harness.dart';
 import '../support/library_harness.dart';
@@ -74,10 +75,10 @@ void main() {
         await _pumpApp(tester, env, brightness);
         await tester.tap(find.text(en.navSettings));
         await tester.pumpAndSettle();
-        await tester.tap(find.byTooltip(en.openGallery));
+        await tester.tap(byControlLabel(en.openGallery));
         await _settleFrames(tester);
         if (brightness == Brightness.dark) {
-          await tester.tap(find.byTooltip('Dark theme'));
+          await tester.tap(byControlLabel('Dark theme'));
           await _settleFrames(tester);
         }
         await expectBoundaryGolden(

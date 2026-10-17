@@ -53,6 +53,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 - The options scroll with the prompt once they outgrow the screen at large text, and a soft fade over the bottom edge says more is below; each is at least 48 tall (C4).
 - A term word too wide for the prompt is drawn just small enough to stay whole; the term wraps between words and never ellipsizes (FE-A6 D19).
 - The options ease into their tones, surface and foreground together (standard duration; at once under Remove animations).
+- Keyboard: Tab reaches each option and Enter picks it; ForUI's focus outline is drawn outside the option and the column leaves its reach (`focusOutlineReach`) above and below, so the scroll view never cuts it (`study_choice_focus_ring_test.dart::Guess: Tab gives each of the five options a whole ring…`).
 
 ## Copy
 

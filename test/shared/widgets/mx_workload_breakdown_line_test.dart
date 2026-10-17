@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../support/widget_harness.dart';
@@ -52,29 +49,32 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
         .firstWhere((span) => span.text == term)
         .style;
 
-/// One line of the breakdown: the labelMedium role's size times its height.
+TextStyle _label(WidgetTester tester) =>
+    tester.element(find.byType(MxWorkloadBreakdownLine)).texts.label;
+
+/// One line of the breakdown: the label role's size times its height.
 double _lineHeight(WidgetTester tester) {
-  final role = tester
-      .element(find.byType(MxWorkloadBreakdownLine))
-      .texts
-      .labelMedium!;
+  final role = tester.element(find.byType(MxWorkloadBreakdownLine)).texts.label;
   return role.fontSize! * role.height!;
 }
 
 void main() {
-  final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  final colors = appLightColors;
+  const mx = MxStatusColors.light;
 
   testWidgets('all three terms in order, each in its colour', (tester) async {
     await pumpMx(tester, _line());
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
     expect(_termStyle(tester, '3 overdue')!.color, mx.warning);
-    expect(_termStyle(tester, '5 today')!.color, accentOf(scheme));
-    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
-    expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w400);
-    expect(_root(tester).style!.fontWeight, FontWeight.w400);
-    expect(_root(tester).style!.color, scheme.onSurfaceVariant);
+    expect(_termStyle(tester, '5 today')!.color, colors.primary);
+    expect(_termStyle(tester, '2 new')!.color, colors.mutedForeground);
+    // Every term, coloured or muted, sets in the label role's one weight.
+    final weight = _label(tester).fontWeight;
+    expect(_termStyle(tester, '3 overdue')!.fontWeight, weight);
+    expect(_termStyle(tester, '2 new')!.fontWeight, weight);
+    expect(_root(tester).style!.fontWeight, weight);
+    expect(_root(tester).style!.color, colors.mutedForeground);
   });
 
   testWidgets('a zero term drops with its separator (RF4)', (tester) async {
@@ -138,7 +138,7 @@ void main() {
     );
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new · 4 scheduled');
-    expect(_termStyle(tester, '4 scheduled')!.color, scheme.onSurfaceVariant);
+    expect(_termStyle(tester, '4 scheduled')!.color, colors.mutedForeground);
 
     await pumpMx(
       tester,
@@ -238,8 +238,8 @@ void main() {
     expect(text.overflow, isNot(TextOverflow.ellipsis));
   });
 
-  testWidgets('a statement keeps a zero term, muted at 400, and never falls '
-      'back (BR-STUDY-076)', (tester) async {
+  testWidgets('a statement keeps a zero term, muted in the label weight, and '
+      'never falls back (BR-STUDY-076)', (tester) async {
     await pumpMx(
       tester,
       _line(overdue: 0, today: 0, fresh: 2, shouldKeepZeroTerms: true),
@@ -247,10 +247,10 @@ void main() {
 
     expect(_plain(tester), '0 overdue · 0 today · 2 new');
     for (final zero in ['0 overdue', '0 today']) {
-      expect(_termStyle(tester, zero)!.color, scheme.onSurfaceVariant);
-      expect(_termStyle(tester, zero)!.fontWeight, FontWeight.w400);
+      expect(_termStyle(tester, zero)!.color, colors.mutedForeground);
+      expect(_termStyle(tester, zero)!.fontWeight, _label(tester).fontWeight);
     }
-    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
+    expect(_termStyle(tester, '2 new')!.color, colors.mutedForeground);
 
     await pumpMx(
       tester,
@@ -282,8 +282,8 @@ void main() {
           .toList();
       expect(glyphs, [
         (AppIcons.overdue, mx.warning),
-        (AppIcons.dueNow, scheme.onSurfaceVariant),
-        (AppIcons.newCards, scheme.onSurfaceVariant),
+        (AppIcons.dueNow, colors.mutedForeground),
+        (AppIcons.newCards, colors.mutedForeground),
       ]);
       final semantics = tester.widget<Semantics>(
         find

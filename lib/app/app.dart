@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialApp, ThemeMode;
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/app_lifecycle_hooks.dart';
+import 'package:memox/app/app_theme_host.dart';
 import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/account_redirect.dart';
 import 'package:memox/app/router/app_router.dart';
@@ -168,22 +171,33 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     // change keeps the stack and the scroll position (BR-SETTINGS-005).
     final settings =
         ref.watch(appSettingsProvider).value ?? widget.initialSettings;
+    final themeMode = _themeMode(settings?.theme);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: buildLightTheme(),
-      darkTheme: buildDarkTheme(),
-      themeMode: _themeMode(settings?.theme),
+      // The SDK Material host only (ADR-026): ForUI's theme is the one the
+      // widgets read, set over the router below.
+      theme: materialHostTheme(buildLightTheme()),
+      darkTheme: materialHostTheme(buildDarkTheme()),
+      themeMode: themeMode,
       locale: _locale(settings?.language),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        FLocalizations.delegate,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: _router,
-      // Account UI spec U4: the transition layer sits above the router,
-      // with the router's Back dispatcher to take priority over.
-      builder: (context, child) => AccountLayerHostWidget(
-        backButtons: _router.backButtonDispatcher,
-        dialogNavigator: _router.routerDelegate.navigatorKey,
-        child: child!,
+      // The ForUI theme sits above the Navigator, so routes, dialogs and
+      // sheets inherit it. Account UI spec U4: the transition layer sits
+      // above the router, with the router's Back dispatcher to take priority
+      // over.
+      builder: (context, child) => AppThemeHost(
+        brightness: resolveBrightness(context, themeMode),
+        child: AccountLayerHostWidget(
+          backButtons: _router.backButtonDispatcher,
+          dialogNavigator: _router.routerDelegate.navigatorKey,
+          child: child!,
+        ),
       ),
     );
   }

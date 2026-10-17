@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
@@ -121,7 +121,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
           onTap: () => setState(() => _choice = index),
           builder: (foreground) => Text(
             label,
-            style: context.texts.bodyLarge?.copyWith(color: foreground),
+            style: context.texts.content.copyWith(color: foreground),
           ),
         ),
       MxDividedColumn(

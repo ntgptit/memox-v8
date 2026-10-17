@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
@@ -194,8 +194,8 @@ class _TagRow extends StatelessWidget {
         title: tag.name,
         trailing: Text(
           context.l10n.cardTagFilterCount(tag.cardCount),
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.meta.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
         onTap: onTap,

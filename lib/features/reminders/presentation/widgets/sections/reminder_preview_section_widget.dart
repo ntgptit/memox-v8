@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/reminders/domain/models/reminder_digest_model.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_preview_digest_provider.dart';

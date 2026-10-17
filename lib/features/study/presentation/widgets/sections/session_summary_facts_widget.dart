@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -47,8 +47,8 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 leading: const MxIconTile(icon: AppIcons.learned),
                 trailing: Text(
                   l10n.studyCount(summaryFinishedCount(view, summary)),
-                  style: context.texts.bodyLarge?.copyWith(
-                    color: colors.onSurface,
+                  style: context.texts.content.copyWith(
+                    color: colors.foreground,
                   ),
                 ),
               ),
@@ -57,8 +57,8 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 leading: const MxIconTile(icon: AppIcons.cardDeck),
                 trailing: Text(
                   l10n.studyCount(summary.answeredCardCount),
-                  style: context.texts.bodyLarge?.copyWith(
-                    color: colors.onSurface,
+                  style: context.texts.content.copyWith(
+                    color: colors.foreground,
                   ),
                 ),
               ),
@@ -67,8 +67,8 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 // The kit wraps this line; the row's own subtitle is one.
                 meta: Text(
                   l10n.summaryFactWrongSub(turns),
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
                 // The glyph takes its value's tone (kit ResultRow).
@@ -80,10 +80,10 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 ),
                 trailing: Text(
                   l10n.summaryWrongOf(wrong, turns),
-                  style: context.texts.bodyLarge?.copyWith(
+                  style: context.texts.content.copyWith(
                     color: wrong > 0
-                        ? context.mxColors.warning
-                        : colors.onSurface,
+                        ? context.status.warning
+                        : colors.foreground,
                   ),
                 ),
               ),

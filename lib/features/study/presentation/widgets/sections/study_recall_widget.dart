@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -208,7 +208,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
                       children: [
                         StudyWholeWordTextWidget(
                           widget.item.front,
-                          style: context.texts.displaySmall!,
+                          style: context.texts.term,
                         ),
                         StudySpeakButtonWidget(
                           text: widget.item.front,
@@ -314,16 +314,14 @@ class _Meaning extends StatelessWidget {
         Text(
           meaning,
           textAlign: TextAlign.center,
-          style: context.texts.bodyLarge,
+          style: context.texts.content,
         ),
         if (isTimedOut)
           Text(
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.mxColors.warning,
-            ),
+            style: context.texts.meta.copyWith(color: context.status.warning),
           ),
       ],
     );

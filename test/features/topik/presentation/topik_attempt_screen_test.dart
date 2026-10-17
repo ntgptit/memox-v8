@@ -25,6 +25,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/topik_attempt_screen_fixtures.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_fakes.dart';
+import '../../../support/forui_expect.dart';
 
 /// The attempt store with an answer that fails, as a locked database does.
 final class _FailingAnswer implements TopikAttemptRepository {
@@ -136,7 +137,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('2 / 50'), findsOneWidget);
     topikWait(env, 4);
-    await tester.tap(find.byTooltip('Previous'));
+    await tester.tap(byControlLabel('Previous'));
     await tester.pumpAndSettle();
     expect(find.text('1 / 50'), findsOneWidget);
     await tester.tap(find.text('Questions'));
@@ -205,7 +206,7 @@ void main() {
     await tester.tap(find.text('① 보기 1'));
     await tester.pumpAndSettle();
     topikWait(env, 5);
-    await tester.tap(find.byTooltip('Close'));
+    await tester.tap(byControlLabel('Close'));
     expect(exits.closes, 1);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
@@ -316,7 +317,7 @@ void main() {
     );
     // Close is disabled, not a live no-op: the bar's callback is null, and
     // TalkBack reads it as disabled.
-    final close = find.byTooltip('Close');
+    final close = byControlLabel('Close');
     expect(
       tester
           .widget<MxIconButton>(

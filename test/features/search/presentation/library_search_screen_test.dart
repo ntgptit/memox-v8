@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/di/search_repository_provider.dart';
@@ -239,6 +239,7 @@ void main() {
     expect(find.text(_en.searchHoldsNothing('Korean')), findsOneWidget);
     await tester.tap(find.text(_en.searchHoldsNothing('English › Vocabulary')));
     expect(opened, academic.id);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('no match names what is searched; clearing returns to the '
@@ -267,6 +268,7 @@ void main() {
 
     expect(find.byType(MxEmptyState), findsNothing);
     expect(find.text(_en.searchFinds.toUpperCase()), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a card row opens the card (step 6)', (tester, env) async {
@@ -282,6 +284,7 @@ void main() {
     await tester.tap(find.byType(SearchCardHitRowWidget));
 
     expect(opened, 'c');
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a rename elsewhere updates the path in place (A3)', (
@@ -334,6 +337,7 @@ void main() {
       scrollable: _results,
     );
     expect(find.widgetWithText(MxBadge, '51'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a failed first page is the error state; retry reads again '
@@ -389,6 +393,7 @@ void main() {
     expect(find.byType(MxInlineBanner), findsOneWidget);
     expect(find.text(_en.searchLoadMoreFailed), findsOneWidget);
     expect(find.byType(SearchCardHitRowWidget), findsWidgets);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('while it searches, the header names no query, so nothing the '

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
@@ -103,17 +103,6 @@ class _MxSkeletonState extends State<MxSkeleton>
     super.dispose();
   }
 
-  /// One tonal step off the ground the bar sits on. On the page that is
-  /// `surfaceContainerHigh`; a card, a sheet and a dialog are grounds at or
-  /// beside that step, where it would vanish, so they take the next one.
-  Color _barColor(BuildContext context) {
-    final colors = context.colors;
-    if (MxTintBase.of(context) == colors.surface) {
-      return colors.surfaceContainerHigh;
-    }
-    return colors.surfaceContainerHighest;
-  }
-
   @override
   Widget build(BuildContext context) {
     final shape = SizedBox(
@@ -121,10 +110,10 @@ class _MxSkeletonState extends State<MxSkeleton>
       height: widget.height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: _barColor(context),
-          borderRadius: BorderRadius.circular(
-            widget.isCircle ? widget.height / 2 : context.dimens.radiusSm,
-          ),
+          color: MxTintBase.stepOf(context),
+          borderRadius: widget.isCircle
+              ? BorderRadius.circular(widget.height / 2)
+              : context.radii.sm,
         ),
       ),
     );

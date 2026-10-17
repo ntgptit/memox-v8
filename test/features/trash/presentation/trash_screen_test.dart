@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -19,6 +19,7 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -137,7 +138,7 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
 
-    await tester.tap(find.byTooltip(_en.trashEntryActions('meokda · eat')));
+    await tester.tap(byControlLabel(_en.trashEntryActions('meokda · eat')));
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -220,7 +221,7 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
 
-    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.tap(byControlLabel(_en.commonDismissNote));
     await tester.pumpAndSettle();
     expect(find.text(_en.trashNote), findsNothing);
 

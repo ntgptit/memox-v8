@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-Finder _hairlines() => find.byType(Divider);
+Finder _hairlines() => find.byType(FDivider);
 
 void main() {
   testWidgets('n children get n - 1 hairlines, 1 tall, between them', (
@@ -31,8 +31,9 @@ void main() {
     );
   });
 
-  testWidgets('the hairline is the divider role, inset 16 on each side (M3 '
-      'inset divider)', (tester) async {
+  testWidgets('the hairline is ForUI\'s divider, inset 16 on each side', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -46,17 +47,20 @@ void main() {
       ),
     );
     final column = tester.getRect(find.byType(MxDividedColumn));
-    final line = find.descendant(
-      of: find.byType(Divider),
-      matching: find.byType(DecoratedBox),
-    );
-    final edge =
-        ((tester.widget<DecoratedBox>(line).decoration as BoxDecoration).border!
-                as Border)
-            .bottom;
+    final line = find
+        .descendant(of: _hairlines().first, matching: find.byType(ColoredBox))
+        .first;
+    final style = forUiTheme(
+      tester,
+      find.byType(MxDividedColumn),
+    ).dividerStyles.horizontal;
 
-    expect(edge.color, MxColorsExtension.light.divider);
-    expect(edge.color, isNot(lightColorScheme.outlineVariant));
+    // ForUI's divider in the palette's border, one hairline of height.
+    expect(
+      tester.widget<ColoredBox>(line).color,
+      forUiTheme(tester, find.byType(MxDividedColumn)).colors.border,
+    );
+    expect(tester.getSize(line).height, style.width);
     expect(tester.getRect(line).left - column.left, 16);
     expect(column.right - tester.getRect(line).right, 16);
   });

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../../support/theme_expect.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
+import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 
-// A glyph reads in the accent colour; the tag chip is the Material 3 input chip.
+// A glyph reads in the accent colour; the tag chip is the shared ForUI chip.
 void main() {
-  final accent = accentOf(darkColorScheme);
+  final accent = appDarkColors.primary;
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(
@@ -31,10 +33,10 @@ void main() {
     expect(glyphColor(tester, CardAddDetailsWidget), accent);
   });
 
-  // Material 3 unselected input chip: no fill, onSurfaceVariant label and
-  // remove glyph.
+  // The removable tag is the shared chip at rest: ForUI's extra-small outline
+  // button, its fill, label and glyph.
   libraryTest(
-    'a removable tag chip: no fill, onSurfaceVariant label and glyph',
+    'a removable tag chip: the outline chip\'s fill, label and glyph',
     (tester, env) async {
       await pumpLibraryScreen(
         tester,
@@ -44,27 +46,18 @@ void main() {
         ),
         brightness: Brightness.dark,
       );
-      final fill =
-          tester
-                  .widget<DecoratedBox>(
-                    find
-                        .descendant(
-                          of: find.byType(CardRemovableTagChipWidget),
-                          matching: find.byType(DecoratedBox),
-                        )
-                        .first,
-                  )
-                  .decoration
-              as ShapeDecoration;
+      final chip = find.byType(CardRemovableTagChipWidget);
+      final style = _chipStyle(tester, chip);
+      final fill = paintedDecoration(tester, chip);
 
-      expect(fill.color, isNull);
+      expect(fill.color, (style.decoration.base as ShapeDecoration).color);
       expect(
         glyphColor(tester, CardRemovableTagChipWidget),
-        darkColorScheme.onSurfaceVariant,
+        style.contentStyle.iconStyle.base.color,
       );
       expect(
-        tester.widget<Text>(find.text('verb')).style!.color,
-        darkColorScheme.onSurfaceVariant,
+        textColor(tester, find.text('verb')),
+        style.contentStyle.textStyle.base.color,
       );
     },
   );
@@ -94,9 +87,9 @@ void main() {
     handle.dispose();
   });
 
-  // Material 3 input chip: 32 tall, an 8 corner with a 1dp outlineVariant
-  // edge, an 18 remove glyph, and the whole 48 area removes the tag.
-  libraryTest('a removable tag chip: the M3 input chip geometry', (
+  // A keyboard or switch user reaches the chip and removes the tag with
+  // Enter, as with every other chip (ForUI's tappable focus and activate).
+  libraryTest('a removable tag chip: focus and Enter remove it', (
     tester,
     env,
   ) async {
@@ -113,20 +106,78 @@ void main() {
         ),
       ),
     );
-    final chip = find.descendant(
-      of: find.byType(CardRemovableTagChipWidget),
-      matching: find.byType(DecoratedBox),
-    );
-    final decoration =
-        tester.widget<DecoratedBox>(chip.first).decoration as ShapeDecoration;
-
-    expect(tester.getSize(chip.first).height, 32);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final focused = FocusManager.instance.primaryFocus!.context!;
     expect(
-      decoration.shape,
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: lightColorScheme.outlineVariant),
+      find
+          .descendant(
+            of: find.byType(CardRemovableTagChipWidget),
+            matching: find.byWidget(focused.widget),
+          )
+          .evaluate(),
+      isNotEmpty,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(removed, 1);
+  });
+
+  // SW-REV-005: one container node per chip, so the tag row never merges
+  // the chips into one label.
+  libraryTest('a removable tag chip: each chip is its own node', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: MergeSemantics(
+          child: Row(
+            children: [
+              CardRemovableTagChipWidget(name: 'verb', onRemove: () {}),
+              CardRemovableTagChipWidget(name: 'noun', onRemove: () {}),
+            ],
+          ),
+        ),
       ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(RegExp('verb'))),
+      isSemantics(isButton: true, hasTapAction: true),
+    );
+    expect(find.bySemanticsLabel(RegExp('verb.*noun')), findsNothing);
+    handle.dispose();
+  });
+
+  // The shared chip: 32 tall with ForUI's outline edge and glyph, and the
+  // whole 48 area removes the tag.
+  libraryTest('a removable tag chip: the chip geometry', (tester, env) async {
+    var removed = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: Center(
+          child: CardRemovableTagChipWidget(
+            name: 'verb',
+            onRemove: () => removed++,
+          ),
+        ),
+      ),
+    );
+    final chip = find.byType(CardRemovableTagChipWidget);
+    final decoration = paintedDecoration(tester, chip);
+
+    final style = _chipStyle(tester, find.byType(CardRemovableTagChipWidget));
+
+    expect(paintedRect(tester, chip).height, 32);
+    // The 32 box drawn inset in its 48 target keeps ForUI's outline shape.
+    expect(
+      (decoration.shape as MxInsetShapeBorder).base,
+      (style.decoration.base as ShapeDecoration).shape,
     );
     expect(
       tester
@@ -137,7 +188,7 @@ void main() {
             ),
           )
           .width,
-      18,
+      style.contentStyle.iconStyle.base.size,
     );
     expect(
       tester.getSize(find.byType(CardRemovableTagChipWidget)).height,
@@ -145,7 +196,16 @@ void main() {
     );
     // A tap on the chip's top edge, outside the 32 box but inside the 48
     // area, still removes the tag.
-    await tester.tapAt(tester.getTopLeft(chip.first) + const Offset(20, -6));
+    await tester.tapAt(
+      paintedRect(tester, chip).topLeft + const Offset(20, -6),
+    );
     expect(removed, 1);
   });
+}
+
+/// The style ForUI gives the extra-small outline button the chip is drawn in.
+FButtonStyle _chipStyle(WidgetTester tester, Finder chip) {
+  final context = tester.element(chip);
+  return FTheme.of(context).buttonStyles.outline
+      .resolve({context.platformVariant, FButtonSizeVariant.xs});
 }

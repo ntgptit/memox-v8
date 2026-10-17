@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -88,7 +88,7 @@ class _ChooseAllRow extends StatelessWidget {
         children: [
           Text(
             l10n.importDecksTakenNames(groups.length),
-            style: context.texts.titleMedium,
+            style: context.texts.sectionTitle,
           ),
           MxSegmentedTray<ImportSectionChoice>(
             segments: [

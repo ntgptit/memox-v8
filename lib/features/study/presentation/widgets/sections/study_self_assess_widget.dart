@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -152,14 +152,14 @@ class _TermFace extends StatelessWidget {
           Text(
             item.front,
             textAlign: TextAlign.center,
-            style: context.texts.displaySmall,
+            style: context.texts.term,
           ),
           if (pronunciation != null)
             Text(
               pronunciation,
               textAlign: TextAlign.center,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           StudySpeakButtonWidget(text: item.front, language: speechLanguage),
@@ -196,14 +196,14 @@ class _MeaningFace extends StatelessWidget {
           Text(
             item.back,
             textAlign: TextAlign.center,
-            style: context.texts.bodyLarge,
+            style: context.texts.content,
           ),
           if (hasExample && example != null)
             Text(
               example,
               textAlign: TextAlign.center,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
         ],

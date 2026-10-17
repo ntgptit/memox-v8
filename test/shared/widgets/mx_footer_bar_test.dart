@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('8 / 16 / 16 + inset padding around a block action', (
     tester,
@@ -55,7 +55,7 @@ void main() {
     expect(bar.right - button.right, 24);
   });
 
-  testWidgets('surface fill with a 1px divider top border', (tester) async {
+  testWidgets('page fill with a hairline divider top border', (tester) async {
     await pumpMx(tester, const MxFooterBar(child: SizedBox(height: 48)));
     final decoration =
         tester
@@ -70,10 +70,13 @@ void main() {
                 .decoration
             as BoxDecoration;
 
-    expect(decoration.color, scheme.surface);
+    expect(decoration.color, colors.background);
     expect(
       (decoration.border! as Border).top,
-      BorderSide(color: MxColorsExtension.light.divider),
+      BorderSide(
+        color: colors.border,
+        width: forUiTheme(tester, find.byType(MxFooterBar)).style.borderWidth,
+      ),
     );
   });
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -20,17 +21,21 @@ void main() {
         '${tone.name}, ${brightness.name}: the label reads 4.5:1 on its '
         'ground in a dialog',
         (tester) async {
+          final colors = brightness == Brightness.light
+              ? appLightColors
+              : appDarkColors;
+          // A dialog's content is tinted over the dialog's own ground.
           await pumpMx(
             tester,
-            SizedBox(
-              width: 160,
-              child: MxOutcomeTile(label: 'Label', body: 'Body', tone: tone),
+            MxTintBase(
+              color: colors.card,
+              child: SizedBox(
+                width: 160,
+                child: MxOutcomeTile(label: 'Label', body: 'Body', tone: tone),
+              ),
             ),
             brightness: brightness,
           );
-          final scheme = brightness == Brightness.light
-              ? lightColorScheme
-              : darkColorScheme;
           final label = tester.widget<Text>(find.text('Label'));
           final box = tester.widget<DecoratedBox>(
             find
@@ -42,7 +47,7 @@ void main() {
           );
           final ground = Color.alphaBlend(
             (box.decoration as BoxDecoration).color!,
-            scheme.surfaceContainerHigh,
+            colors.card,
           );
 
           expect(
@@ -72,11 +77,11 @@ void main() {
 
       expect(
         tester.widget<Text>(find.text('Kept')).style!.color,
-        context.mxColors.success,
+        context.status.success,
       );
       expect(
         tester.widget<Text>(find.text('Lost')).style!.color,
-        context.mxColors.warning,
+        context.status.warning,
       );
     },
   );

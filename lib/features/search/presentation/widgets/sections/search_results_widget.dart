@@ -100,8 +100,8 @@ class SearchResultsWidget extends StatelessWidget {
         Text(
           metaDots(l10n.searchFooter),
           textAlign: TextAlign.center,
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.meta.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ],

@@ -7,6 +7,7 @@ import 'package:memox/features/trash/presentation/providers/trash_entries_provid
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../../../support/forui_expect.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
@@ -21,7 +22,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 Future<void> _openRestore(WidgetTester tester, String name) async {
-  await tester.tap(find.byTooltip(_en.trashEntryActions(name)));
+  await tester.tap(byControlLabel(_en.trashEntryActions(name)));
   await _settle(tester);
   await tester.tap(find.text(_en.trashRestore));
   await _settle(tester);
@@ -53,7 +54,7 @@ void main() {
       await seedTrash(env);
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
-        await tester.tap(find.byTooltip(_en.trashEntryActions('meokda · eat')));
+        await tester.tap(byControlLabel(_en.trashEntryActions('meokda · eat')));
         await _settle(tester);
         await expectBoundaryGolden(tester, 'goldens/trash_actions_$theme.png');
       });
@@ -126,7 +127,7 @@ void main() {
       );
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
-        await tester.tap(find.byTooltip(_en.trashEntryActions('Food')));
+        await tester.tap(byControlLabel(_en.trashEntryActions('Food')));
         await _settle(tester);
         await tester.tap(find.text(_en.trashDeletePermanently));
         await _settle(tester);

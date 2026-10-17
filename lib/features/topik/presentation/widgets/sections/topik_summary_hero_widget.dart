@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
@@ -43,15 +43,15 @@ class TopikSummaryHeroWidget extends StatelessWidget {
                   l10n.topikLevelName(attempt.level),
                   l10n.topikSectionName(attempt.section),
                 ]),
-                style: context.texts.titleMedium,
+                style: context.texts.sectionTitle,
               ),
               Text(
                 metaTerms([
                   l10n.topikDateTime(attempt.startedAt),
                   l10n.duration(attempt.totalTimeMs),
                 ]),
-                style: context.texts.labelMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.label.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
             ],
@@ -70,7 +70,7 @@ class TopikSummaryHeroWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.topikOfTotal(summary.score, summary.maxScore),
-                    style: context.texts.displayMedium,
+                    style: context.texts.figure,
                   ),
                 ),
                 TopikScoreDonutWidget(

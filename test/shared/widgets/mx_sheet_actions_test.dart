@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -59,7 +61,10 @@ void main() {
 
       expect(tester.widget<MxButton>(_button('Preparing')).isLoading, isTrue);
       await tester.tap(_button('Cancel'));
+      await tester.pump(const Duration(milliseconds: 200));
       expect(cancelled, 1);
+      // The spinner keeps turning; take it off before the test ends.
+      await tester.pumpWidget(const SizedBox());
     },
   );
 
@@ -139,13 +144,14 @@ void main() {
 
     expect(tester.widget<MxButton>(_button('Move')).onPressed, isNull);
     await tester.tap(_button('Cancel'));
+    await tester.pumpAndSettle();
     expect(cancels, 1);
   });
 
   testWidgets('in a sheet: a divider rule on top, then 8 16 16', (
     tester,
   ) async {
-    final rule = MxColorsExtension.light.divider;
+    final rule = appLightColors.border;
     await pumpMx(
       tester,
       _width(
@@ -158,22 +164,30 @@ void main() {
         ),
       ),
     );
-    final edge =
-        (tester
-                        .widget<DecoratedBox>(
-                          find
-                              .descendant(
-                                of: find.byType(MxSheetActions),
-                                matching: find.byType(DecoratedBox),
-                              )
-                              .first,
-                        )
-                        .decoration
-                    as BoxDecoration)
-                .border!
-            as Border;
+    final divider = find.descendant(
+      of: find.byType(MxSheetActions),
+      matching: find.byType(FDivider),
+    );
+    final context = tester.element(find.byType(MxSheetActions));
+    final origin = tester.getTopLeft(find.byType(MxSheetActions));
 
-    expect(edge.top, BorderSide(color: rule));
+    expect(
+      tester
+          .widget<ColoredBox>(
+            find.descendant(of: divider, matching: find.byType(ColoredBox)),
+          )
+          .color,
+      rule,
+    );
+    expect(
+      tester.getRect(divider),
+      Rect.fromLTWH(
+        origin.dx,
+        origin.dy,
+        tester.getSize(find.byType(MxSheetActions)).width,
+        context.hairline,
+      ),
+    );
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),
@@ -297,6 +311,7 @@ void main() {
       const Offset(16, 8),
     );
     await tester.tap(_button('Done'));
+    await tester.pumpAndSettle();
     expect(taps, 1);
 
     await pumpMx(

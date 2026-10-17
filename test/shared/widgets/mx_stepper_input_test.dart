@@ -2,15 +2,27 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
 import '../../support/focus_ring_expect.dart';
-import '../../support/theme_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _valueKey = ValueKey('mx-stepper-value');
 const _tick = Duration(milliseconds: 1);
+
+/// A widget test that lets ForUI's press and tooltip timers run out before it
+/// ends: a tap or a hold leaves them pending.
+void _test(String description, Future<void> Function(WidgetTester) body) =>
+    testWidgets(description, (tester) async {
+      await body(tester);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+    });
 
 /// A stepper bounded to 1…[max] that records what it receives.
 class _Bounded extends StatefulWidget {
@@ -39,18 +51,28 @@ class _BoundedState extends State<_Bounded> {
   );
 }
 
+/// The step button named [label]: ForUI's icon button, found by its name.
+Finder _button(String label) => find.byWidgetPredicate(
+  (widget) => widget is FButton && widget.semanticsLabel == label,
+  description: 'FButton named $label',
+);
+
+/// The text field that appears while the number is typed.
+final _field = find.byType(FTextField);
+
 int _value(WidgetTester tester) =>
     tester.state<_BoundedState>(find.byType(_Bounded)).value;
 
 void main() {
-  testWidgets('a tap steps once; a hold repeats after its delay, then at '
+  _test('a tap steps once; a hold repeats after its delay, then at '
       'its interval, and stops on release', (tester) async {
     await pumpMx(tester, const _Bounded());
-    await tester.tap(find.byTooltip('More cards'));
+    await tester.tap(_button('More cards'));
+    await tester.pumpAndSettle();
     expect(_value(tester), 21);
 
     final hold = await tester.startGesture(
-      tester.getCenter(find.byTooltip('More cards')),
+      tester.getCenter(_button('More cards')),
     );
     await tester.pump(mxStepperRepeatDelay - _tick);
     expect(_value(tester), 21);
@@ -64,54 +86,53 @@ void main() {
     await tester.pump(mxStepperRepeatDelay * 2);
     // Releasing a hold is not one more tap.
     expect(_value(tester), 24);
+    await tester.pumpAndSettle();
   });
 
-  testWidgets('a hold that turns into a scroll never repeats', (tester) async {
+  _test('a hold that turns into a scroll never repeats', (tester) async {
     await pumpMx(tester, const _Bounded());
     final drag = await tester.startGesture(
-      tester.getCenter(find.byTooltip('More cards')),
+      tester.getCenter(_button('More cards')),
     );
     // Past touch slop: the finger is scrolling the page, not holding +.
     await drag.moveBy(const Offset(0, kTouchSlop * 2));
     await tester.pump(mxStepperRepeatDelay * 2);
     await drag.up();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(_value(tester), 20);
   });
 
-  testWidgets('a hold stops at the bound the caller sets', (tester) async {
+  _test('a hold stops at the bound the caller sets', (tester) async {
     await pumpMx(tester, const _Bounded(max: 22));
     final hold = await tester.startGesture(
-      tester.getCenter(find.byTooltip('More cards')),
+      tester.getCenter(_button('More cards')),
     );
     await tester.pump(mxStepperRepeatDelay);
     for (var i = 0; i < 5; i++) {
       await tester.pump(mxStepperRepeatInterval);
     }
     await hold.up();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(_value(tester), 22);
   });
 
-  testWidgets('tapping the number types a value; Done submits it', (
-    tester,
-  ) async {
+  _test('tapping the number types a value; Done submits it', (tester) async {
     final submitted = <String>[];
     await pumpMx(tester, _Bounded(onSubmitted: submitted.add));
     await tester.tap(find.byKey(_valueKey));
     await tester.pump();
 
-    await tester.enterText(find.byType(TextField), '150');
+    await tester.enterText(_field, '150');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
     expect(submitted, ['150']);
-    expect(find.byType(TextField), findsNothing);
+    expect(_field, findsNothing);
   });
 
-  testWidgets('the number being typed has no edge of its own: the box draws '
+  _test('the number being typed has no edge of its own: the box draws '
       'the one edge, and the theme\'s field edges do not reach it (M3F-16)', (
     tester,
   ) async {
@@ -120,51 +141,50 @@ void main() {
     await tester.pump();
 
     final decoration = tester
-        .widget<InputDecorator>(find.byType(InputDecorator))
+        .widget<mu.InputDecorator>(find.byType(mu.InputDecorator))
         .decoration;
-    // The box's own accent hairline is the typing indicator, and the only
+    // The box's own primary hairline is the typing indicator, and the only
     // edge while typing.
     final box = tester.widget<DecoratedBox>(find.byKey(_valueKey));
     final edge = (box.decoration as BoxDecoration).border! as Border;
-    expect(edge.top.color, accentOf(lightColorScheme));
-    expect(edge.top.width, 1);
-    expect(decoration.border, InputBorder.none);
-    for (final border in [
-      decoration.enabledBorder,
-      decoration.focusedBorder,
-      decoration.disabledBorder,
-      decoration.errorBorder,
-      decoration.focusedErrorBorder,
+    final context = tester.element(find.byKey(_valueKey));
+    expect(edge.top.color, appLightColors.primary);
+    expect(edge.top.width, context.hairline);
+    final resolved =
+        decoration.border! as mu.WidgetStateProperty<mu.InputBorder>;
+    for (final states in [
+      <mu.WidgetState>{},
+      {mu.WidgetState.focused},
+      {mu.WidgetState.disabled},
+      {mu.WidgetState.error},
     ]) {
-      expect(border, isNull);
+      expect(resolved.resolve(states), mu.InputBorder.none, reason: '$states');
     }
   });
 
-  testWidgets('leaving the field submits what was typed; only digits go in', (
+  _test('leaving the field submits what was typed; only digits go in', (
     tester,
   ) async {
     final submitted = <String>[];
     await pumpMx(tester, _Bounded(onSubmitted: submitted.add));
     await tester.tap(find.byKey(_valueKey));
     await tester.pump();
-    await tester.enterText(find.byType(TextField), '2a50');
+    await tester.enterText(_field, '2a50');
     FocusManager.instance.primaryFocus!.unfocus();
     await tester.pump();
 
     expect(submitted, ['250']);
   });
 
-  testWidgets('without onValueSubmitted the number cannot be typed', (
-    tester,
-  ) async {
+  _test('without onValueSubmitted the number cannot be typed', (tester) async {
     await pumpMx(tester, const _Bounded());
     await tester.tap(find.byKey(_valueKey), warnIfMissed: false);
     await tester.pump();
 
-    expect(find.byType(TextField), findsNothing);
+    expect(_field, findsNothing);
   });
 
-  testWidgets('the number is one TalkBack node: its name, its value and Edit', (
+  _test('the number is one TalkBack node: its name, its value and Edit', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
@@ -183,9 +203,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the editable number is a full touch target in a row', (
-    tester,
-  ) async {
+  _test('the editable number is a full touch target in a row', (tester) async {
     final handle = tester.ensureSemantics();
     // As in a settings row: no height to fill, so the number sizes itself.
     await pumpMx(
@@ -203,35 +221,45 @@ void main() {
   // M3F-06: the number was a GestureDetector in a Semantics, so Tab skipped
   // it. It now takes keyboard focus with the shared 2px primary ring.
   for (final brightness in Brightness.values) {
-    final focusScheme = brightness == Brightness.light
-        ? lightColorScheme
-        : darkColorScheme;
-    testWidgets('M3F-06: Tab reaches the number, which draws the 2px primary '
-        'ring and opens on Enter (${brightness.name})', (tester) async {
+    _test('M3F-06: Tab reaches the number, which draws the primary '
+        'focus outline and opens on Enter (${brightness.name})', (
+      tester,
+    ) async {
       await pumpMx(
         tester,
         _Bounded(onSubmitted: (_) {}),
         brightness: brightness,
       );
       useKeyboardFocusHighlight();
+      final outline = forUiTheme(
+        tester,
+        find.byKey(_valueKey),
+      ).style.focusedOutlineStyle;
+      final ring = find.descendant(
+        of: find.byType(MxStepper),
+        matching: find.byType(FFocusedOutline),
+      );
       expect(
-        tester.renderObject(find.byKey(_valueKey)),
-        isNot(paintsFocusRing(focusScheme.primary)),
+        tester.renderObject(ring.first),
+        isNot(paintsFocusRing(outline.color, width: outline.width)),
       );
 
       await tabTo(tester, find.byKey(_valueKey));
 
       expect(FocusManager.instance.primaryFocus?.hasFocus, isTrue);
-      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
-      expect(find.byType(TextField), findsNothing);
+      expect(
+        focusRingRender(tester),
+        paintsFocusRing(outline.color, width: outline.width),
+      );
+      expect(_field, findsNothing);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
-      expect(find.byType(TextField), findsOneWidget);
+      expect(_field, findsOneWidget);
     });
   }
 
-  testWidgets('M3F-06: a number that cannot be edited takes no focus', (
+  _test('M3F-06: a number that cannot be edited takes no focus', (
     tester,
   ) async {
     await pumpMx(tester, const _Bounded());

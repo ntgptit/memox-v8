@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -50,7 +51,7 @@ Map<String, String> _captions(AppLocalizations l10n) => {
 
 void main() {
   final theme = buildLightTheme();
-  final style = theme.textTheme.labelSmall!;
+  final style = MxTextRoles(theme.typography).meta;
   final width = _phone - 2 * const AppDimens().space16;
 
   for (final locale in const [Locale('en'), Locale('vi')]) {

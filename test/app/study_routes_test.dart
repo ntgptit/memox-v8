@@ -31,6 +31,7 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -43,7 +44,7 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 Future<void> _back(WidgetTester tester) =>
-    _tap(tester, find.byTooltip(_en.commonBack));
+    _tap(tester, byControlLabel(_en.commonBack));
 
 /// Korean › Words › Verbs, with Grammar beside Words.
 Future<void> _seed(LibraryEnv env) async {
@@ -62,7 +63,7 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     // The sheet's row, not the bottom nav's Study tab.
     await _tap(
       tester,
@@ -92,7 +93,7 @@ void main() {
     await _tap(tester, find.text('Lesson'));
 
     Future<void> openEntry() async {
-      await _tap(tester, find.byTooltip(_en.deckActions));
+      await _tap(tester, byControlLabel(_en.deckActions));
       await _tap(
         tester,
         find.descendant(
@@ -144,7 +145,7 @@ void main() {
     expect(find.byType(StudySessionScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
 
-    await _tap(tester, find.byTooltip(_en.studySessionClose));
+    await _tap(tester, byControlLabel(_en.studySessionClose));
     await _tap(tester, find.text(_en.studyExitStop));
     await _tap(tester, find.text(_en.summaryDone));
 
@@ -184,7 +185,7 @@ void main() {
     expect(find.byType(StudySessionScreen), findsOneWidget);
 
     // Recall's clock ticks, so frames are pumped by hand (never settle).
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(find.text(_en.studyExitStop));

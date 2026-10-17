@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../support/widget_harness.dart';
@@ -26,31 +24,34 @@ BoxDecoration _tile(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  testWidgets('three steps: 28/8/16, 36/12/20, 44/12/20', (tester) async {
+  testWidgets('three steps: 28 small, 36 medium, 44 large', (tester) async {
     for (final (size, box, radius, glyph) in [
-      (MxIconTileSize.small, 28.0, 8.0, 16.0),
-      (MxIconTileSize.medium, 36.0, 12.0, 20.0),
-      (MxIconTileSize.large, 44.0, 12.0, 20.0),
+      (MxIconTileSize.small, 28.0, (BuildContext c) => c.radii.sm, 16.0),
+      (MxIconTileSize.medium, 36.0, (BuildContext c) => c.radii.md, 20.0),
+      (MxIconTileSize.large, 44.0, (BuildContext c) => c.radii.md, 20.0),
     ]) {
       await pumpMx(tester, MxIconTile(icon: AppIcons.folder, size: size));
 
       expect(tester.getSize(find.byType(MxIconTile)), Size.square(box));
-      expect(_tile(tester).borderRadius, BorderRadius.circular(radius));
+      expect(
+        _tile(tester).borderRadius,
+        radius(tester.element(find.byType(MxIconTile))),
+      );
       expect(tester.widget<Icon>(find.byType(Icon)).size, glyph);
     }
   });
 
-  testWidgets('default: the accent tinted over the surface, the accent glyph', (
+  testWidgets('default: the primary tinted over the page, the primary glyph', (
     tester,
   ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
     expect(
       _tile(tester).color,
-      accentOf(lightColorScheme).tintOver(lightColorScheme.surface),
+      appLightColors.primary.tintOver(appLightColors.background),
     );
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
-      accentOf(lightColorScheme),
+      appLightColors.primary,
     );
 
     await pumpMx(
@@ -62,7 +63,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       _tile(tester).color,
-      accentOf(darkColorScheme).tintOver(darkColorScheme.surface),
+      appDarkColors.primary.tintOver(appDarkColors.background),
     );
   });
 
@@ -71,7 +72,7 @@ void main() {
   ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder, seed: _seed));
 
-    expect(_tile(tester).color, _seed.tintOver(lightColorScheme.surface));
+    expect(_tile(tester).color, _seed.tintOver(appLightColors.background));
     expect(tester.widget<Icon>(find.byType(Icon)).color, _seed);
   });
 
@@ -107,12 +108,12 @@ void main() {
         tester,
         const MxIconTile(icon: AppIcons.lockOpen, tone: MxIconTileTone.primary),
       );
-      final scheme = lightColorScheme;
+      final colors = appLightColors;
 
-      expect(_tile(tester).color, scheme.primary);
+      expect(_tile(tester).color, colors.primary);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lockOpen)).color,
-        scheme.onPrimary,
+        colors.primaryForeground,
       );
     },
   );
@@ -125,10 +126,10 @@ void main() {
         const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
       );
 
-      expect(_tile(tester).color, MxColorsExtension.light.warningContainer);
+      expect(_tile(tester).color, MxStatusColors.light.warningFill);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        MxColorsExtension.light.onWarningContainer,
+        MxStatusColors.light.onWarningFill,
       );
     },
   );
@@ -157,14 +158,14 @@ void main() {
           MxIconTile(icon: AppIcons.check, tone: tone),
           brightness: brightness,
         );
-        final scheme = brightness == Brightness.light
-            ? lightColorScheme
-            : darkColorScheme;
+        final colors = brightness == Brightness.light
+            ? appLightColors
+            : appDarkColors;
         final fill = _tile(tester).color!;
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 
         expect(
-          _ratio(fill, scheme.surface),
+          _ratio(fill, colors.background),
           lessThan(1.5),
           reason: 'a soft tint, not a solid fill',
         );

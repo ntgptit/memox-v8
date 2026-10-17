@@ -18,6 +18,7 @@ import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/forui_expect.dart';
 
 // BR-STUDY-078…082, BR-SETTINGS-009; study speech spec §5.
 
@@ -130,7 +131,7 @@ void main() {
     expect(speech.spoken, [(_front(tester), SpeechLanguage.enUs)]);
     // The label names the language it reads in (critique 2026-10-07).
     expect(
-      find.byTooltip(_en.studySpeakTermIn(_en.speechLanguageName('enUs'))),
+      byControlLabel(_en.studySpeakTermIn(_en.speechLanguageName('enUs'))),
       findsOneWidget,
     );
 
@@ -151,7 +152,7 @@ void main() {
     await _pump(tester, env, id, speech);
 
     final label = _en.studySpeakVoiceMissing(_en.speechLanguageName('koKr'));
-    expect(find.byTooltip(label), findsOneWidget);
+    expect(byControlLabel(label), findsOneWidget);
     final speaker = find.descendant(
       of: find.byType(StudySpeakButtonWidget),
       matching: find.byType(MxIconButton),
@@ -181,7 +182,7 @@ void main() {
     final stopsBefore = speech.stops;
 
     // ✕ then Stop: the session is abandoned and the summary shows.
-    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.studyExitStop));
     await tester.pumpAndSettle();

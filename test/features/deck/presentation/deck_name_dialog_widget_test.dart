@@ -6,8 +6,11 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 
+import '../../../support/forui_expect.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -54,7 +57,9 @@ void main() {
     expect(find.text(_en.deckNameHint), findsOneWidget);
     expect(
       tester.getBottomLeft(find.text(_en.deckNameHint)).dy,
-      lessThan(tester.getTopLeft(find.byType(TextField)).dy),
+      lessThanOrEqualTo(
+        tester.getTopLeft(fieldBox(find.byType(FTextField))).dy,
+      ),
     );
   });
 

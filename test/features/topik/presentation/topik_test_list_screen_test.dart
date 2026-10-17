@@ -146,6 +146,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(_rowTitles().first);
     expect(opened, ['topik2-96-reading']);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a section with no test is a calm empty state with no sort '

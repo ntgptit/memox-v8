@@ -37,9 +37,7 @@ class SessionContextLineWidget extends StatelessWidget {
       maxLines: _maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
-      style: context.texts.labelSmall?.copyWith(
-        color: context.colors.onSurfaceVariant,
-      ),
+      style: context.texts.meta.copyWith(color: context.colors.mutedForeground),
     ),
   );
 }

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -48,8 +48,8 @@ class MxNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final style = context.texts.bodyMedium!.copyWith(
-      color: context.colors.onSurfaceVariant,
+    final style = context.texts.body.copyWith(
+      color: context.colors.mutedForeground,
     );
     // The glyph centres on the first line at any text scale.
     final firstLine =
@@ -67,7 +67,7 @@ class MxNote extends StatelessWidget {
           child: Icon(
             icon,
             size: context.dimens.sizeIconInline,
-            color: colors.onSurfaceVariant,
+            color: colors.mutedForeground,
           ),
         ),
         Expanded(child: Text(text, style: style)),
@@ -87,19 +87,19 @@ class MxNote extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        color: colors.muted,
+        borderRadius: context.radii.md,
         border: Border.all(
-          color: context.colors.outlineVariant,
-          width: context.dimens.strokeHairline,
+          color: context.colors.border,
+          width: context.hairline,
         ),
       ),
       child: Padding(
         // A DecoratedBox border does not inset its child, so the padding
         // starts after the hairline, as in the kit's CSS box.
         padding: EdgeInsets.symmetric(
-          horizontal: context.dimens.space12 + context.dimens.strokeHairline,
-          vertical: _verticalPadding + context.dimens.strokeHairline,
+          horizontal: context.dimens.space12 + context.hairline,
+          vertical: _verticalPadding + context.hairline,
         ),
         child: line,
       ),

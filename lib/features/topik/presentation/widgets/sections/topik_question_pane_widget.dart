@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -34,7 +34,7 @@ class TopikQuestionPaneWidget extends StatelessWidget {
           SizedBox(height: dimens.space16),
           Text(
             l10n.topikQuestionStem(question.no, question.stemKo),
-            style: context.texts.bodyLarge,
+            style: context.texts.content,
           ),
           SizedBox(height: dimens.space16),
           for (final option in question.options) ...[
@@ -69,7 +69,7 @@ class TopikQuestionPaneWidget extends StatelessWidget {
         children: [
           Text(
             [topikCircled(option.idx), ?option.textKo].join(' '),
-            style: context.texts.bodyLarge?.copyWith(color: foreground),
+            style: context.texts.content.copyWith(color: foreground),
           ),
           if (option.image case final image?)
             Image.asset(image, fit: BoxFit.contain, excludeFromSemantics: true),

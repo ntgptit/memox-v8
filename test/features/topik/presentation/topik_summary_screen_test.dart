@@ -15,6 +15,7 @@ import '../../../support/topik_attempt_screen_fixtures.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
 import '../../../support/widget_harness.dart';
+import '../../../support/forui_expect.dart';
 
 final class _Exits {
   final reviews = <int?>[];
@@ -95,6 +96,7 @@ void main() {
     await tester.tap(find.text('Done'));
     expect(exits.reviews, [1, null]);
     expect(exits.dones, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('a filter narrows the chart and the rows; an empty one says so '
@@ -171,10 +173,10 @@ void main() {
     await reveal(tester, find.text('Question 1'));
 
     expect(findPlainTextContaining('Right answer'), findsWidgets);
-    await tester.tap(find.byTooltip('Hide answers'));
+    await tester.tap(byControlLabel('Hide answers'));
     await tester.pumpAndSettle();
     expect(findPlainTextContaining('Right answer'), findsNothing);
-    await tester.tap(find.byTooltip('Show answers'));
+    await tester.tap(byControlLabel('Show answers'));
     await tester.pumpAndSettle();
     expect(findPlainTextContaining('Right answer'), findsWidgets);
   });
@@ -214,6 +216,7 @@ void main() {
     expect(find.text("This attempt isn't here any more"), findsOneWidget);
     await tester.tap(find.text('Back to the test'));
     expect(exits.dones, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('an attempt in progress has no summary', (tester, env) async {

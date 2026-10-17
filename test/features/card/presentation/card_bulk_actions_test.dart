@@ -412,6 +412,7 @@ void main() {
             .hasFlag(SemanticsFlag.isEnabled),
         isTrue,
       );
+      await tester.pump(const Duration(milliseconds: 200));
     },
   );
 }

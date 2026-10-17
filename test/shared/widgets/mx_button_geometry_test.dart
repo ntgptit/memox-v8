@@ -1,91 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 // What MxButton measures and paints around its label: the side padding per
-// tone, the leading glyph and its gap, and the focus ring (Material 3).
+// tone, the leading glyph and its gap, and the focus outline. ForUI owns the
+// numbers; the tests read them from the theme's button style.
 
-final _painted = find.descendant(
-  of: find.byType(TextButton),
-  matching: find.byType(Material),
-);
+final _button = find.byType(FButton);
+
+/// The ForUI style [tone] is built on, at the large touch size. The soft
+/// danger and warning tones are ForUI's size styles with their own colours,
+/// so their geometry is the primary button's.
+FButtonStyle _style(WidgetTester tester, MxButtonTone tone) {
+  final styles = forUiTheme(tester, _button).buttonStyles;
+  return switch (tone) {
+    MxButtonTone.secondary => styles.secondary,
+    MxButtonTone.outline => styles.outline,
+    MxButtonTone.text => styles.ghost,
+    MxButtonTone.destructive => styles.destructive,
+    MxButtonTone.primary ||
+    MxButtonTone.dangerTint ||
+    MxButtonTone.warning => styles.primary,
+  }.lg;
+}
 
 void main() {
-  final scheme = lightColorScheme;
-
-  testWidgets('a leading glyph is painted at 18, 8 before the label', (
-    tester,
-  ) async {
-    const dimens = AppDimens();
+  testWidgets('a leading glyph is painted at the style icon size, one gap '
+      'before the label', (tester) async {
     await pumpMx(
       tester,
       MxButton(label: 'Add', icon: AppIcons.add, onPressed: () {}),
     );
+    final content = _style(tester, MxButtonTone.primary).contentStyle;
 
     expect(
       tester.getSize(find.byIcon(AppIcons.add)),
-      Size.square(dimens.sizeIconButton),
+      Size.square(content.iconStyle.resolve({}).size!),
     );
-    expect(dimens.sizeIconButton, 18);
     expect(
       tester.getRect(find.text('Add')).left -
           tester.getRect(find.byIcon(AppIcons.add)).right,
-      dimens.space8,
+      content.spacing,
     );
   });
 
-  testWidgets('horizontal padding: 12 for the text tone, 24 for the rest', (
+  testWidgets('horizontal padding is the style padding, per tone', (
     tester,
   ) async {
-    const dimens = AppDimens();
     for (final tone in MxButtonTone.values) {
-      await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
-      final box = tester.getRect(_painted.first);
-      final label = tester.getRect(find.text('Go'));
-      final side = tone == MxButtonTone.text ? dimens.space12 : dimens.space24;
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save changes', tone: tone, onPressed: () {}),
+      );
+      final box = paintedRect(tester, _button);
+      final label = tester.getRect(find.text('Save changes'));
+      final padding = _style(
+        tester,
+        tone,
+      ).contentStyle.padding.resolve(TextDirection.ltr);
 
-      expect(label.left - box.left, side, reason: '$tone start');
-      expect(box.right - label.right, side, reason: '$tone end');
+      expect(label.left - box.left, padding.left, reason: '$tone start');
+      expect(box.right - label.right, padding.right, reason: '$tone end');
     }
   });
 
-  // Material 3: a leading glyph takes the start side from 24 to 16 (text:
-  // 12 start, 16 end).
-  testWidgets('with a leading glyph the start side is closer: 16, text 12', (
-    tester,
-  ) async {
-    const dimens = AppDimens();
+  // A leading glyph sits at the start padding, the label after it and its
+  // gap, and the end side keeps the padding.
+  testWidgets('with a leading glyph the glyph starts at the padding, the '
+      'label follows one gap after it', (tester) async {
     for (final tone in MxButtonTone.values) {
       await pumpMx(
         tester,
         MxButton(label: 'Go', tone: tone, icon: AppIcons.add, onPressed: () {}),
       );
-      final box = tester.getRect(_painted.first);
+      final box = paintedRect(tester, _button);
       final glyph = tester.getRect(find.byIcon(AppIcons.add));
       final label = tester.getRect(find.text('Go'));
-      final isText = tone == MxButtonTone.text;
+      final content = _style(tester, tone).contentStyle;
+      final padding = content.padding.resolve(TextDirection.ltr);
 
-      expect(
-        glyph.left - box.left,
-        isText ? dimens.space12 : dimens.space16,
-        reason: '$tone start',
-      );
-      expect(
-        box.right - label.right,
-        isText ? dimens.space16 : dimens.space24,
-        reason: '$tone end',
-      );
+      expect(glyph.left - box.left, padding.left, reason: '$tone start');
+      expect(label.left - glyph.right, content.spacing, reason: '$tone gap');
+      expect(box.right - label.right, padding.right, reason: '$tone end');
     }
   });
 
-  testWidgets('a focused button draws a 2dp primary ring 2dp outside its '
-      'container, on a primary fill too', (tester) async {
-    const dimens = AppDimens();
+  testWidgets("a focused button draws ForUI's focus outline, on a primary "
+      'fill too', (tester) async {
     for (final tone in MxButtonTone.values) {
       await pumpMx(
         tester,
@@ -96,56 +103,29 @@ void main() {
           onPressed: () {},
         ),
       );
+      useKeyboardFocusHighlight();
       await tester.pumpAndSettle();
-      final painter = tester.renderObject<RenderBox>(
-        find
-            .descendant(of: _painted.first, matching: find.byType(CustomPaint))
-            .first,
-      );
-      // The painter shares the container's box, in its own coordinates.
-      final container = Offset.zero & painter.size;
-      final ringCentre = container.inflate(
-        dimens.strokeFocusGap + dimens.strokeFocus / 2,
-      );
-      expect(painter.size, tester.getSize(_painted.first), reason: '$tone');
+      final outline = forUiTheme(tester, _button).style.focusedOutlineStyle;
 
       expect(
-        painter,
-        paints..something((name, arguments) {
-          if (name != #drawPath) return false;
-          final paint = arguments[1] as Paint;
-          final bounds = (arguments[0] as Path).getBounds();
-          return paint.color.toARGB32() == scheme.primary.toARGB32() &&
-              paint.style == PaintingStyle.stroke &&
-              paint.strokeWidth == dimens.strokeFocus &&
-              (bounds.left - ringCentre.left).abs() < 0.01 &&
-              (bounds.top - ringCentre.top).abs() < 0.01 &&
-              (bounds.right - ringCentre.right).abs() < 0.01 &&
-              (bounds.bottom - ringCentre.bottom).abs() < 0.01;
-        }),
+        focusRingRender(tester),
+        paintsFocusRing(outline.color, width: outline.width),
         reason: '$tone',
       );
     }
   });
 
-  testWidgets('an unfocused button paints no ring', (tester) async {
+  testWidgets('an unfocused button paints no outline', (tester) async {
     await pumpMx(tester, MxButton(label: 'Go', onPressed: () {}));
-    final painter = tester.renderObject(
-      find
-          .descendant(of: _painted.first, matching: find.byType(CustomPaint))
-          .first,
+    final outline = forUiTheme(tester, _button).style.focusedOutlineStyle;
+    final ring = find.descendant(
+      of: _button,
+      matching: find.byType(FFocusedOutline),
     );
 
     expect(
-      painter,
-      isNot(
-        paints..something(
-          (name, arguments) =>
-              name == #drawPath &&
-              (arguments[1] as Paint).color.toARGB32() ==
-                  scheme.primary.toARGB32(),
-        ),
-      ),
+      tester.renderObject(ring.first),
+      isNot(paintsFocusRing(outline.color, width: outline.width)),
     );
   });
 }

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:flutter/material.dart' show Durations, Easing;
+import 'package:flutter/widgets.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// A hidden study face (16a, 19): the kit's still placeholder bar until
 /// [isShown], then [child] fading and rising in (16a Motion); at once under
@@ -49,9 +50,9 @@ class _HiddenBar extends StatelessWidget {
       size: _size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          // One step off the face it sits on (cardSurface or the recessed
-          // ground), where surfaceContainerHigh equals cardSurface in dark.
-          color: context.colors.surfaceContainerHighest,
+          // One step off the face it sits on, the card or the recessed
+          // muted ground.
+          color: MxTintBase.stepOf(context),
           borderRadius: BorderRadius.circular(_size.height / 2),
         ),
       ),

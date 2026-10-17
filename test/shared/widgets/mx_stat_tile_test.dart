@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../support/widget_harness.dart';
@@ -41,8 +38,8 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('primary takes the primary text, muted the variant text, plain '
-      'the surface ink', (tester) async {
+  testWidgets('primary takes the primary text, muted the muted text, plain '
+      'the foreground', (tester) async {
     await pumpMx(
       tester,
       const Column(
@@ -63,16 +60,16 @@ void main() {
     );
     Color? ink(String value) =>
         tester.widget<Text>(find.text(value)).style?.color;
-    final scheme = lightColorScheme;
+    final colors = appLightColors;
 
-    expect(ink('1'), accentOf(scheme));
-    expect(ink('2'), scheme.onSurface);
-    expect(ink('3'), scheme.onSurfaceVariant);
+    expect(ink('1'), colors.primary);
+    expect(ink('2'), colors.foreground);
+    expect(ink('3'), colors.mutedForeground);
   });
 
   // DEV-231 (UI-REV-002): a boxed tile sits on the muted fill, not the
   // card's own ground, so it stays a visible box on the study-entry card.
-  testWidgets('a boxed tile fills with surfaceContainerLow', (tester) async {
+  testWidgets('a boxed tile fills with the muted ground', (tester) async {
     await pumpMx(
       tester,
       const MxStatTile(
@@ -84,10 +81,7 @@ void main() {
     final box = tester.widget<DecoratedBox>(
       find.ancestor(of: find.text('4'), matching: find.byType(DecoratedBox)),
     );
-    expect(
-      (box.decoration as BoxDecoration).color,
-      lightColorScheme.surfaceContainerLow,
-    );
+    expect((box.decoration as BoxDecoration).color, appLightColors.muted);
   });
 
   testWidgets('the label is upper-cased and a boxed tile does not clip', (
@@ -141,8 +135,8 @@ void main() {
       tester
           .element(label)
           .texts
-          .labelSmall
-          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
+          .meta
+          .copyWith(color: tester.element(label).colors.mutedForeground),
     );
   });
 }

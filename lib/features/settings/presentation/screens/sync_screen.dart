@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
@@ -157,7 +157,7 @@ class _SyncingRow extends StatelessWidget {
       excludeSemantics: true,
       child: SizedBox(
         // The button it stands in for (critique 2026-09-30 part 3d-2).
-        height: context.dimens.sizeButton,
+        height: context.dimens.sizeControl,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: context.dimens.space8,
@@ -165,8 +165,8 @@ class _SyncingRow extends StatelessWidget {
             const MxSpinner(),
             Text(
               label,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

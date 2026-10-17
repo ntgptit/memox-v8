@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import '../../../support/forui_expect.dart';
+
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
@@ -86,7 +88,7 @@ void main() {
         await pumpLibraryGolden(tester, env, _screen(deckId), brightness);
         await tester.tap(find.byKey(const ValueKey('mx-stepper-value')));
         await tester.pump();
-        await tester.enterText(find.byType(TextField), '0');
+        await tester.enterText(find.byType(EditableText), '0');
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await _settle(tester);
         await shot(tester, 'invalid');
@@ -106,7 +108,7 @@ void main() {
           brightness,
           overrides: [settingsRepositoryProvider.overrideWithValue(store)],
         );
-        await tester.tap(find.byTooltip(_en.settingsMoreCards));
+        await tester.tap(byControlLabel(_en.settingsMoreCards));
         await tester.pump();
         await tester.tap(find.text(_en.cardSave));
         await tester.pump();
@@ -122,7 +124,7 @@ void main() {
       final deckId = await _seed(env, rootConfig: _override);
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen(deckId), brightness);
-        await tester.tap(find.byTooltip(_en.settingsMoreCards));
+        await tester.tap(byControlLabel(_en.settingsMoreCards));
         await tester.pump();
         await tester.tap(find.text(_en.cardSave));
         await _settle(tester);
@@ -145,7 +147,7 @@ void main() {
         );
         await tester.tap(find.byType(MxToggle));
         await tester.pump();
-        await tester.tap(find.byTooltip(_en.settingsMoreCards));
+        await tester.tap(byControlLabel(_en.settingsMoreCards));
         await tester.pump();
         await tester.tap(find.text(_en.cardSave));
         await _settle(tester);

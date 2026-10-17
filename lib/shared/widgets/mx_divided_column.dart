@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Rows stacked with an inset divider between them and none after the last:
@@ -6,9 +7,9 @@ import 'package:memox/core/theme/theme_context.dart';
 /// full-bleed card holds its rows in one; a row draws no edge of its own.
 /// A long, paged list keeps its rows lazy with [divided] instead.
 ///
-/// The line is the theme's divider (the `divider` role, one hairline) and,
-/// as Material 3's inset divider does inside a list, starts and ends 16 in,
-/// at the rows' own content edge.
+/// The line is ForUI's [FDivider] in the palette's `border`, the colour of
+/// every hairline (ForUI's own divider is the fainter `secondary`), inset 16
+/// at each end, at the rows' own content edge.
 class MxDividedColumn extends StatelessWidget {
   const MxDividedColumn({super.key, required this.children});
 
@@ -36,8 +37,12 @@ class _InsetDivider extends StatelessWidget {
   const _InsetDivider();
 
   @override
-  Widget build(BuildContext context) => Divider(
-    indent: context.dimens.space16,
-    endIndent: context.dimens.space16,
+  Widget build(BuildContext context) => FDivider(
+    style: FDividerStyleDelta.delta(
+      color: context.colors.border,
+      padding: EdgeInsetsGeometryDelta.value(
+        EdgeInsetsDirectional.symmetric(horizontal: context.dimens.space16),
+      ),
+    ),
   );
 }

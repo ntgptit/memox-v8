@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -19,7 +21,7 @@ MxToggle _toggle() =>
 
 void main() {
   testWidgets(
-    'a 36 tile centred in the 40 column; titleSmall label; sub 4 below',
+    'a 36 tile centred in the 40 column; item-title label; sub 2 below',
     (tester) async {
       await pumpMx(
         tester,
@@ -38,12 +40,12 @@ void main() {
       expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 72);
       expect(
         tester.widget<Text>(find.text('Daily reminder')).style,
-        tester.element(find.text('Daily reminder')).texts.titleSmall,
+        tester.element(find.text('Daily reminder')).texts.itemTitle,
       );
       expect(
         tester.getTopLeft(find.text('One nudge a day')).dy -
             tester.getBottomLeft(find.text('Daily reminder')).dy,
-        4,
+        2,
       );
       expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
     },
@@ -77,7 +79,7 @@ void main() {
 
     await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
-    expect(find.byType(InkWell), findsNothing);
+    expect(find.byType(FTappable), findsNothing);
   });
 
   testWidgets('a trailing toggle does not grow the row (Task 3 rule)', (
@@ -161,7 +163,7 @@ void main() {
     );
   });
 
-  testWidgets('dimmed at 0.38 while unavailable', (tester) async {
+  testWidgets('dimmed while unavailable', (tester) async {
     var taps = 0;
     await pumpMx(
       tester,
@@ -181,7 +183,7 @@ void main() {
             ),
           )
           .opacity,
-      0.38,
+      appLightColors.disabledOpacity,
     );
   });
   testWidgets('at normal text the trailing control stays beside the label', (
@@ -234,7 +236,7 @@ void main() {
             ),
           )
           .opacity,
-      0.38,
+      appLightColors.disabledOpacity,
     );
   });
 

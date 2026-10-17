@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -46,14 +46,14 @@ class CardHistoryEventWidget extends StatelessWidget {
       _ when isLapse => (
         MxBadgeTone.warning,
         AppIcons.lapses,
-        context.mxColors.warning,
+        context.status.warning,
       ),
       ReviewKind.relearning => (
         MxBadgeTone.neutral,
         AppIcons.repeat,
-        colors.onSurfaceVariant,
+        colors.mutedForeground,
       ),
-      _ => (MxBadgeTone.success, AppIcons.check, context.mxColors.success),
+      _ => (MxBadgeTone.success, AppIcons.check, context.status.success),
     };
     final meta = _meta(l10n, locale, foreground);
     // The dot centres on the header row, which the two-line time sets:
@@ -63,9 +63,7 @@ class CardHistoryEventWidget extends StatelessWidget {
           context.dimens.space24 +
           CardHistoryRailWidget.dotTopOn(
             context,
-            context.texts.labelSmall!.copyWith(
-              color: context.colors.onSurfaceVariant,
-            ),
+            context.texts.meta.copyWith(color: context.colors.mutedForeground),
             lines: 2,
           ),
       foreground: foreground,
@@ -92,24 +90,21 @@ class CardHistoryEventWidget extends StatelessWidget {
                   children: [
                     Text(
                       l10n.ago(entry.answeredAt, now),
-                      style: context.texts.labelSmall,
+                      style: context.texts.meta,
                     ),
                     Text(
                       DateFormat.MMMd(locale)
                           .add_Hm()
                           .format(entry.answeredAt.toLocal()),
-                      style: context.texts.labelSmall?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.meta.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            Text(
-              l10n.cardHistoryKind(entry.kind),
-              style: context.texts.bodyMedium,
-            ),
+            Text(l10n.cardHistoryKind(entry.kind), style: context.texts.body),
             if (meta.isNotEmpty)
               Wrap(
                 spacing: context.dimens.space12,
@@ -175,10 +170,8 @@ class _Meta extends StatelessWidget {
     final foreground = this.foreground;
     final icon = this.icon;
     final style = foreground == null
-        ? context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
-          )
-        : context.texts.labelMedium?.copyWith(color: foreground);
+        ? context.texts.body.copyWith(color: context.colors.mutedForeground)
+        : context.texts.label.copyWith(color: foreground);
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,
@@ -189,7 +182,7 @@ class _Meta extends StatelessWidget {
             child: Icon(
               icon,
               size: context.dimens.sizeIconInline,
-              color: context.colors.onSurfaceVariant,
+              color: context.colors.mutedForeground,
             ),
           ),
         Flexible(child: Text(text, style: style)),

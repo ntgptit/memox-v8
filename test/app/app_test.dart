@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/app.dart';
 import 'package:memox/app/router/app_router.dart';
@@ -17,6 +17,7 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/study_fixtures.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -160,7 +161,7 @@ void main() {
 
     expect(
       tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
-      darkColorScheme.surface,
+      appDarkColors.background,
     );
   });
 
@@ -188,7 +189,7 @@ void main() {
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(_en.openGallery), findsOneWidget);
+    expect(byControlLabel(_en.openGallery), findsOneWidget);
   });
 
   libraryTest('without the gallery there is no route and no action', (
@@ -199,7 +200,7 @@ void main() {
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(_en.openGallery), findsNothing);
+    expect(byControlLabel(_en.openGallery), findsNothing);
     final router = buildAppRouter(hasGallery: false);
     addTearDown(router.dispose);
     expect(

@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_chip_row.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/paint_clip.dart';
 import '../../support/widget_harness.dart';
 
-const _dimens = AppDimens();
-final _reach = _dimens.strokeFocusGap + _dimens.strokeFocus;
+/// How far ForUI's focus outline reaches beyond the chip it surrounds.
+double _reach(WidgetTester tester) {
+  final outline = forUiTheme(
+    tester,
+    find.byType(MxChipRow),
+  ).style.focusedOutlineStyle;
+  return outline.spacing + outline.width;
+}
 
 Widget _row() => Padding(
   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -24,7 +31,7 @@ Widget _row() => Padding(
 Finder _painted(String label) => find
     .descendant(
       of: find.widgetWithText(MxFilterChip, label),
-      matching: find.byType(Material),
+      matching: find.byType(FButton),
     )
     .first;
 
@@ -36,7 +43,7 @@ void main() {
     final chip = _painted('Filter 0');
 
     expect(
-      clipsAway(tester, chip, tester.getRect(chip).inflate(_reach)),
+      clipsAway(tester, chip, tester.getRect(chip).inflate(_reach(tester))),
       isFalse,
     );
   });
@@ -55,7 +62,7 @@ void main() {
     final chip = _painted('Filter 7');
 
     expect(
-      clipsAway(tester, chip, tester.getRect(chip).inflate(_reach)),
+      clipsAway(tester, chip, tester.getRect(chip).inflate(_reach(tester))),
       isFalse,
     );
   });
@@ -79,7 +86,7 @@ void main() {
     final first = _painted('Filter 0');
 
     expect(
-      clipsAway(tester, first, tester.getRect(first).inflate(_reach)),
+      clipsAway(tester, first, tester.getRect(first).inflate(_reach(tester))),
       isTrue,
     );
   });

@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Easing;
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A session screen's actions after an in-place swap (critique 2026-09-30

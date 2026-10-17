@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -37,8 +37,8 @@ class ImportPreviewRowWidget extends StatelessWidget {
             Text(
               '${row.rowNumber}',
               semanticsLabel: l10n.importRowNumber(row.rowNumber),
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             Expanded(
@@ -53,14 +53,14 @@ class ImportPreviewRowWidget extends StatelessWidget {
                           : draft.front.trim(),
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: context.texts.titleMedium,
+                      style: context.texts.sectionTitle,
                     ),
                     Text(
                       back.isEmpty ? l10n.importRowEmptyCell : back,
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: context.texts.bodyMedium?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.body.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                     ),
                   ],
@@ -68,11 +68,11 @@ class ImportPreviewRowWidget extends StatelessWidget {
                     Text(
                       note,
                       style: row.kind == ImportRowKind.invalid
-                          ? context.texts.labelSmall?.copyWith(
-                              color: context.mxColors.warning,
+                          ? context.texts.meta.copyWith(
+                              color: context.status.warning,
                             )
-                          : context.texts.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
+                          : context.texts.body.copyWith(
+                              color: context.colors.mutedForeground,
                             ),
                     ),
                 ],
@@ -96,14 +96,14 @@ class _Mark extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final (icon, color) = switch (kind) {
-      ImportRowKind.ready => (AppIcons.check, context.mxColors.success),
+      ImportRowKind.ready => (AppIcons.check, context.status.success),
       // The legend badge's glyph; an X would read as a dismiss control.
-      ImportRowKind.invalid => (AppIcons.alert, context.mxColors.warning),
+      ImportRowKind.invalid => (AppIcons.alert, context.status.warning),
       ImportRowKind.duplicateInDeck || ImportRowKind.duplicateInSource => (
         AppIcons.cardDeck,
-        colors.onSurfaceVariant,
+        colors.mutedForeground,
       ),
-      ImportRowKind.blank => (AppIcons.remove, colors.onSurfaceVariant),
+      ImportRowKind.blank => (AppIcons.remove, colors.mutedForeground),
     };
     return Semantics(
       label: label,

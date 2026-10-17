@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_code_card_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_detail_header_widget.dart';

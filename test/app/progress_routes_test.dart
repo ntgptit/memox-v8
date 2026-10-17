@@ -13,6 +13,7 @@ import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/progress_screen_fixtures.dart';
+import '../support/forui_expect.dart';
 
 // Screen 22's levels in the app (FE-A9 D1, D4, D5; UC-PROGRESS-002 step 5).
 
@@ -68,12 +69,12 @@ void main() {
       findsOneWidget,
     );
 
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(
       find.descendant(of: find.byType(MxAppBar), matching: find.text('Korean')),
       findsOneWidget,
     );
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(ProgressScreen), findsOneWidget);
     expect(find.byType(DeckProgressScreen), findsNothing);
   });

@@ -46,6 +46,7 @@ void main() {
     await tester.scrollUntilVisible(line, 200);
     await tester.tap(line);
     expect(opened, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('the Sync row hides when the status stream fails (spec §6)', (
@@ -72,6 +73,7 @@ void main() {
     statuses.addError(StateError('database closed'));
     await tester.pump();
     expect(line, findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   Finder syncTile() => find.ancestor(

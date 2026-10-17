@@ -1,7 +1,7 @@
 # MemoX V8 guard rules — domain: design_token
 #
-# The visual system (`DESIGN.md`): no hardcoded colours, text styles or
-# padding — everything comes from design tokens.
+# The visual system (`DESIGN.md`, ADR-026): no hardcoded colours, text styles
+# or padding — everything comes from the ForUI theme and the app palette.
 #
 # Scope note: these run on `ui_surfaces` (features/*/presentation + shared), NOT
 # on lib/app/** or lib/core/theme/**. lib/core/theme is where raw values are
@@ -21,7 +21,7 @@ rules:
     enabled: true
     message: >-
       No hardcoded colours in product UI. Use the theme's roles
-      (`context.colors`, `context.mxColors`, `context.accentColor`) so light,
+      (`context.colors`, ForUI's FColors, and `context.status`) so light,
       dark and contrast stay correct in one place; a tint is
       `ColorTint.tintOver`.
     scopes:
@@ -37,8 +37,9 @@ rules:
       - ui
     fix:
       hint: >-
-        Use a ColorScheme or MxColorsExtension role; a colour none fits is a
-        Design System change (design/tokens.json, docs/agent/visual-change.md).
+        Use an FColors or MxStatusColors role; a colour none fits is a
+        Design System change (lib/core/theme/app_palette.dart,
+        docs/agent/visual-change.md).
 
   - id: memox.design_token.no_raw_text_style
     type: regex
@@ -129,8 +130,8 @@ rules:
     severity: error
     enabled: true
     message: >-
-      No hardcoded corner radius in product UI. Use `context.dimens.radius*`,
-      or `StadiumBorder` for a full radius.
+      No hardcoded corner radius in product UI. Use `context.radii` (ForUI's
+      FBorderRadius scale), or `StadiumBorder` for a full radius.
     scopes:
       - ui_surfaces
     patterns:
@@ -141,20 +142,20 @@ rules:
       - design-token
       - ui
 
-  # A stroke width is a design decision with named tokens
-  # (`context.dimens.strokeHairline`, `strokeControl`, `strokeFocus`,
-  # `strokeIndicator`); a literal beside `strokeWidth:` or `width:` on a border
-  # is a width nobody named. `Border.all(color:)` with no width is legal —
-  # Flutter's default IS the hairline.
+  # A stroke width is a design decision with names (`context.hairline`, ForUI's
+  # border width, and `context.dimens.strokeEmphasis`); a literal beside
+  # `strokeWidth:` or `width:` on a border is a width nobody named.
+  # `Border.all(color:)` with no width is legal — Flutter's default IS the
+  # hairline.
   - id: memox.design_token.no_raw_stroke_width
     type: regex
     severity: error
     enabled: true
     message: >-
-      No literal stroke width. `context.dimens.stroke*` names the scale —
-      hairline, control, focus, indicator — so a border or an arc is one of
-      four weights, not a number typed at the site. A width none of them fits
-      is a Design System change (design/tokens.json).
+      No literal stroke width. `context.hairline` (ForUI's border width) and
+      `context.dimens.strokeEmphasis` name the two weights, so a border or an
+      arc is one of them, not a number typed at the site. A width neither
+      fits is a Design System change (lib/core/theme/app_dimens.dart).
     scopes:
       - ui_and_theme_surfaces
     patterns:
@@ -164,20 +165,20 @@ rules:
       - memox-v8
       - design-token
 
-  # ADR-022: "this mode uses role A, that one role B" is a getter in
-  # `theme_rules.dart` (`accentColor`, `deckIconColor`). Anywhere else a
-  # branch on brightness picks a colour or a size behind the theme's back,
-  # and the two modes drift apart. `app_theme.dart` builds light and dark by
-  # two calls, so it never branches either.
+  # ADR-026: a colour that differs by mode is a palette value: the light and
+  # the dark FColors in `app_palette.dart` and `MxStatusColors.light`/`.dark`
+  # already differ on it. Anywhere else a branch on brightness picks a colour
+  # or a size behind the theme's back, and the two modes drift apart. The
+  # palette files, `app_theme.dart` and `app_theme_host.dart` (which resolves
+  # the system mode) are excluded by scope.
   - id: memox.design_token.no_brightness_branch
     type: regex
     severity: error
     enabled: true
     message: >-
-      No branching on brightness outside lib/core/theme/theme_rules.dart. A
-      colour or size that differs by mode is a rule there (`context.accentColor`,
-      `context.deckIconColor`) or a role the two generated themes already
-      differ on.
+      No branching on brightness outside the theme. A colour that differs by
+      mode is a palette role the light and the dark FColors (or
+      MxStatusColors) already differ on; read the role instead.
     scopes:
       - brightness_branch_surfaces
     patterns:
@@ -189,7 +190,7 @@ rules:
       - memox-v8
       - design-token
 
-  # ADR-022 and CLAUDE.md: a removed theme name never comes back, in any form.
+  # ADR-026 and CLAUDE.md: a removed theme name never comes back, in any form.
   # The removed names themselves are refused by
   # `tools/design/removed_symbols.json` (hook, check.py); this rule refuses the
   # shapes a comeback takes in the theme — a typedef, a deprecated alias, a
@@ -201,7 +202,8 @@ rules:
     message: >-
       No alias in lib/core/theme: no `typedef`, no `@Deprecated` name, no
       `export … show`, no getter that only forwards another name. Fix the
-      callers instead (tools/design/codemod.py for the mechanical renames).
+      callers instead (the replacement is named in
+      tools/design/removed_symbols.json).
     scopes:
       - theme_files
     patterns:

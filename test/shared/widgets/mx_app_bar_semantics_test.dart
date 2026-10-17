@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 
@@ -69,9 +70,7 @@ void main() {
 
     expect(
       subtitle.style,
-      context.texts.labelMedium?.copyWith(
-        color: context.colors.onSurfaceVariant,
-      ),
+      context.texts.label.copyWith(color: context.colors.mutedForeground),
     );
     expect(subtitle.maxLines, 1);
     expect(subtitle.overflow, TextOverflow.ellipsis);
@@ -135,15 +134,16 @@ void main() {
     );
   });
 
-  testWidgets('M3F-08: the theme platform decides, as in the SDK AppBar', (
+  testWidgets("M3F-08: the theme's platform decides, as in the SDK AppBar", (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
       Builder(
-        builder: (context) => Theme(
-          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+        builder: (context) => FTheme(
+          data: FTheme.of(context),
+          platform: FPlatformVariant.iOS,
           child: const MxAppBar(title: 'Library'),
         ),
       ),

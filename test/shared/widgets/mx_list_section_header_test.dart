@@ -17,7 +17,7 @@ void main() {
       await pumpMx(tester, _width(const MxListSectionHeader(label: 'Hôm nay')));
       final text = tester.widget<Text>(find.text('HÔM NAY'));
 
-      expect(text.style, tester.element(find.text('HÔM NAY')).texts.labelSmall);
+      expect(text.style, tester.element(find.text('HÔM NAY')).texts.meta);
       expect(
         tester.getSemantics(find.text('HÔM NAY')),
         isSemantics(label: 'Hôm nay'),

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -20,8 +20,9 @@ final class MxBreadcrumbSegment {
 /// segment. The row scrolls horizontally, opens scrolled to its end so the
 /// current level is always in view, and starts at the gutter when it fits.
 /// A deep path fades its start edge while ancestors are scrolled out of
-/// view (DEV-306); each stays a reachable button to TalkBack. An ancestor
-/// is a `MxRowInk`: its ripple and its focus ring are the shared row's.
+/// view (DEV-306); each stays a reachable button to TalkBack. The path is
+/// ForUI's [FBreadcrumb]: its press feedback, focus outline and "selected"
+/// announcement for the current level are the package's.
 class MxBreadcrumb extends StatelessWidget {
   const MxBreadcrumb({super.key, required this.segments})
     : assert(segments.length > 0, 'a path has at least the current level');
@@ -30,10 +31,13 @@ class MxBreadcrumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chevronColor = context.colors.outline;
+    final dimens = context.dimens;
+    final colors = context.colors;
+    final texts = context.texts;
+    final ancestor = texts.label.copyWith(color: colors.mutedForeground);
     // Ruling R4: the row is a 48 touch band, not 2 + text + 8.
     return SizedBox(
-      height: context.dimens.sizeControl,
+      height: dimens.sizeControl,
       child: LayoutBuilder(
         builder: (context, constraints) => MxScrollFade(
           axis: Axis.horizontal,
@@ -44,22 +48,36 @@ class MxBreadcrumb extends StatelessWidget {
               constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: context.dimens.space4,
+                child: FBreadcrumb(
+                  // The 48 target is each item's own child, so ForUI's crumb
+                  // padding is zero.
+                  style: FBreadcrumbStyleDelta.delta(
+                    textStyle: FVariants(
+                      ancestor,
+                      variants: {
+                        [FTappableVariant.hovered, FTappableVariant.pressed]:
+                            ancestor.copyWith(color: colors.foreground),
+                        [FTappableVariant.selected]: texts.itemTitle,
+                      },
+                    ),
+                    iconStyle: IconThemeDataDelta.delta(
+                      color: colors.border,
+                      size: dimens.sizeIconInline,
+                    ),
+                    padding: const EdgeInsetsGeometryDelta.value(
+                      EdgeInsets.zero,
+                    ),
+                  ),
+                  divider: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: dimens.space4),
+                    child: const Icon(AppIcons.chevronRight),
+                  ),
                   children: [
-                    for (final (index, segment) in segments.indexed) ...[
-                      if (index > 0)
-                        Icon(
-                          AppIcons.chevronRight,
-                          size: context.dimens.sizeIconInline,
-                          color: chevronColor,
-                        ),
+                    for (final (index, segment) in segments.indexed)
                       _Segment(
                         segment: segment,
                         isCurrent: index == segments.length - 1,
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -79,31 +97,21 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isCurrent) {
-      return Text(segment.label, style: context.texts.titleSmall);
-    }
-    final target = MxRowInk(
-      onTap: segment.onTap,
+    final target = FBreadcrumbItem(
+      current: isCurrent,
+      onPress: isCurrent ? null : segment.onTap,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: context.dimens.sizeControl,
           minHeight: context.dimens.sizeControl,
         ),
-        child: Center(
-          widthFactor: 1,
-          child: Text(
-            segment.label,
-            style: context.texts.labelMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
-            ),
-          ),
-        ),
+        child: Center(widthFactor: 1, child: Text(segment.label)),
       ),
     );
-    // A tappable ancestor is already a button (`MxRowInk`); one without a tap
-    // stays a button to TalkBack, reachable even while scrolled out of view
+    if (isCurrent || segment.onTap != null) return target;
+    // ForUI leaves a crumb without a press as plain text; an ancestor stays
+    // a button to TalkBack, reachable even while scrolled out of view
     // (DEV-306).
-    if (segment.onTap != null) return target;
     return Semantics(button: true, child: target);
   }
 }

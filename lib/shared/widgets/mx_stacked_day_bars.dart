@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
@@ -85,10 +85,10 @@ class MxStackedDayBars extends StatelessWidget {
                       maxLines: 1,
                       // The current day reads in the full ink; the weight is
                       // the role's, so colour carries the distinction.
-                      style: context.texts.labelSmall?.copyWith(
+                      style: context.texts.meta.copyWith(
                         color: day.isCurrent
-                            ? context.colors.onSurface
-                            : context.colors.onSurfaceVariant,
+                            ? context.colors.foreground
+                            : context.colors.mutedForeground,
                       ),
                     ),
                   ),
@@ -108,7 +108,7 @@ class MxStackedDayBars extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final unit = constraints.maxHeight / most;
-        final round = Radius.circular(context.dimens.radiusXs);
+        final round = context.radii.xs2.topLeft;
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,

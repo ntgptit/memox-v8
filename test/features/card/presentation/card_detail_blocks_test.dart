@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
@@ -69,10 +68,7 @@ void main() {
 
     final label = find.text(_en.cardFieldExample);
     // A read-only field label: sentence case (critique 2026-09-30 part 2).
-    expect(
-      tester.widget<Text>(label).style,
-      tester.element(label).texts.labelMedium,
-    );
+    expect(tester.widget<Text>(label).style, tester.element(label).texts.label);
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [
       find.descendant(of: field, matching: find.byType(Icon)),
@@ -137,15 +133,12 @@ void main() {
               (box.decoration! as BoxDecoration).color == color,
         )
         .length;
-    final scheme = darkColorScheme;
+    final colors = appDarkColors;
 
-    expect(
-      MxColorsExtension.dark.cardSurface,
-      isNot(MasteryRamp.track(scheme)),
-    );
+    expect(colors.card, isNot(MasteryRamp.track(colors)));
     // Boxes 1-3 are filled; 4-8 are the track.
-    expect(bars(scheme.primary), 3);
-    expect(bars(MasteryRamp.track(scheme)), 5);
+    expect(bars(colors.primary), 3);
+    expect(bars(MasteryRamp.track(colors)), 5);
   });
 
   libraryTest('an eight-box card shows its box on the ramp and its facts', (
@@ -177,12 +170,12 @@ void main() {
       tester
           .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
           .texts
-          .labelSmall
-          ?.copyWith(
+          .meta
+          .copyWith(
             color: tester
                 .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
                 .colors
-                .onSurfaceVariant,
+                .mutedForeground,
           ),
     );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);

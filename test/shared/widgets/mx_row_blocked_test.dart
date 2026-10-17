@@ -38,7 +38,7 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byTooltip('Deck actions'), warnIfMissed: false);
+      await tester.tap(find.byType(MxIconButton), warnIfMissed: false);
       await tester.tap(find.text('Grammar'), warnIfMissed: false);
       expect((rowTaps, menuTaps), (0, 0));
 
@@ -54,8 +54,8 @@ void main() {
         ),
       );
       expect(
-        tester.getSemantics(find.byTooltip('Deck actions')),
-        isSemantics(tooltip: 'Deck actions', hasTapAction: false),
+        tester.getSemantics(find.bySemanticsLabel('Deck actions')),
+        isSemantics(label: 'Deck actions', hasTapAction: false),
       );
       handle.dispose();
     },
@@ -79,15 +79,15 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.byTooltip('Deck actions'), warnIfMissed: false);
+    await tester.tap(find.byType(MxIconButton), warnIfMissed: false);
     expect(menuTaps, 0);
     expect(
       tester.getSemantics(find.text('Grammar')),
       isSemantics(label: 'Grammar', hasEnabledState: true, isEnabled: false),
     );
     expect(
-      tester.getSemantics(find.byTooltip('Deck actions')),
-      isSemantics(tooltip: 'Deck actions', hasTapAction: false),
+      tester.getSemantics(find.bySemanticsLabel('Deck actions')),
+      isSemantics(label: 'Deck actions', hasTapAction: false),
     );
     handle.dispose();
   });

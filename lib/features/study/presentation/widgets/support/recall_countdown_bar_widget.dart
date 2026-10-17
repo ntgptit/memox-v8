@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/mastery_ramp.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 /// Screen 19's turn clock: its caption, the seconds left of the turn, and a
 /// thin track that drains. It measures one turn, not the session (the top
@@ -31,18 +31,14 @@ class RecallCountdownBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final trackHeight = context.dimens.sizeTrack;
     final left = remainingMs.clamp(0, recallTurnMs);
     final seconds = (left / _msPerSecond).ceil();
     final fraction = MediaQuery.disableAnimationsOf(context)
         ? seconds * _msPerSecond / recallTurnMs
         : left / recallTurnMs;
     final foreground = isTimedOut
-        ? context.mxColors.warning
-        : colors.onSurfaceVariant;
-    final fill = isTimedOut
-        ? context.mxColors.warningContainer
-        : colors.onSurfaceVariant;
+        ? context.status.warning
+        : colors.mutedForeground;
     return Semantics(
       container: true,
       label: caption,
@@ -65,33 +61,22 @@ class RecallCountdownBarWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     caption,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: foreground,
-                    ),
+                    style: context.texts.meta.copyWith(color: foreground),
                   ),
                 ),
                 Text(
                   l10n.studyRecallClock(seconds, recallTurnMs ~/ _msPerSecond),
-                  style: context.texts.labelSmall?.copyWith(color: foreground),
+                  style: context.texts.meta.copyWith(color: foreground),
                 ),
               ],
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(trackHeight / 2),
-              child: SizedBox(
-                height: trackHeight,
-                child: ColoredBox(
-                  color: MasteryRamp.track(colors),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: FractionallySizedBox(
-                      widthFactor: fraction,
-                      heightFactor: 1,
-                      child: ColoredBox(color: fill),
-                    ),
-                  ),
-                ),
-              ),
+            // Instant: an ease would lag the clock it draws.
+            MxLinearProgress(
+              value: fraction,
+              tone: isTimedOut
+                  ? MxProgressTone.warning
+                  : MxProgressTone.neutral,
+              isInstant: true,
             ),
           ],
         ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One series of a chart: its legend label and its fill.
@@ -43,8 +43,8 @@ class MxChartLegend extends StatelessWidget {
       ),
       Text(
         entry.label,
-        style: context.texts.labelSmall?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.meta.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
     ],

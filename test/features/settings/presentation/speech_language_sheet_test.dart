@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 import '../../../support/fake_speech_synthesizer.dart';
+import '../../../support/theme_harness.dart';
 
 // Study speech spec §6, D5, D12.
 
@@ -27,7 +28,8 @@ Future<Future<SpeechLanguage?>> _open(
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
-        theme: buildLightTheme(),
+        theme: materialHostTheme(buildLightTheme()),
+        builder: mxThemeBuilder(buildLightTheme()),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
@@ -91,7 +93,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(

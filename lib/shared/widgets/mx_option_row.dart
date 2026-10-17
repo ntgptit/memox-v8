@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
-/// A single-choice row (algorithm, study mode, direction). The radio is the
-/// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
-/// with a dot when selected. The whole row is the target. Dividers are the
-/// list's (`MxDividedColumn`, DEV-305). Its height is the Material 3 list
-/// item: 56 with a title alone, 72 with a description. Focus draws the
-/// shared row ring (`MxRowInk`).
+/// A single-choice row (algorithm, study mode, direction). The radio is
+/// ForUI's [FRadio], painted only: the whole row is the target, which keeps
+/// a 48 touch target ForUI's radio alone does not have. Dividers are the
+/// list's (`MxDividedColumn`, DEV-305). It is 56 tall with a title alone, 72
+/// with a description. Focus draws ForUI's outline on the row (`MxRowInk`).
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -89,14 +89,14 @@ class MxOptionRow extends StatelessWidget {
                         _dim(
                           context,
                           isDim,
-                          Text(title, style: context.texts.titleSmall),
+                          Text(title, style: context.texts.itemTitle),
                         ),
                         if (description case final text?) ...[
                           const SizedBox(height: _descriptionGap),
                           Text(
                             text,
-                            style: context.texts.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
+                            style: context.texts.body.copyWith(
+                              color: context.colors.mutedForeground,
                             ),
                           ),
                         ],
@@ -114,46 +114,19 @@ class MxOptionRow extends StatelessWidget {
   }
 
   static Widget _dim(BuildContext context, bool isDim, Widget child) => isDim
-      ? Opacity(opacity: context.dimens.opacityDisabledContent, child: child)
+      ? Opacity(opacity: context.colors.disabledOpacity, child: child)
       : child;
 }
 
-/// The Material 3 radio, drawn rather than built from `Radio` (whose 40 box
-/// would grow every row): a ring stroked `strokeControl`, and a dot when
-/// selected. A stroke glyph, so the selected colour is the accent (it reads 3:1
-/// on a sheet where dark `primary` does not).
+/// ForUI's radio, drawn for the row that owns its tap and its semantics.
 class _Radio extends StatelessWidget {
   const _Radio({required this.isSelected});
 
   final bool isSelected;
 
   @override
-  Widget build(BuildContext context) {
-    final dimens = context.dimens;
-    final color = isSelected
-        ? context.accentColor
-        : context.colors.onSurfaceVariant;
-    return DecoratedBox(
-      key: const ValueKey('mx-option-radio'),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: color, width: dimens.strokeControl),
-      ),
-      child: SizedBox.square(
-        dimension: dimens.sizeSelectionControl,
-        child: isSelected
-            ? Center(
-                child: DecoratedBox(
-                  key: const ValueKey('mx-option-radio-dot'),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color,
-                  ),
-                  child: SizedBox.square(dimension: dimens.sizeRadioDot),
-                ),
-              )
-            : null,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => KeyedSubtree(
+    key: const ValueKey('mx-option-radio'),
+    child: mxPaintedOnly(FRadio(value: isSelected, onChange: (_) {})),
+  );
 }

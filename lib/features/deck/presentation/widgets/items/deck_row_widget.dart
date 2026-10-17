@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -58,7 +58,7 @@ class DeckRowWidget extends StatelessWidget {
                             tile.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.texts.titleSmall,
+                            style: context.texts.itemTitle,
                           ),
                         ),
                         if (tile.dueCount > 0)
@@ -67,8 +67,8 @@ class DeckRowWidget extends StatelessWidget {
                     ),
                     Text(
                       deckTileMeta(tile, l10n),
-                      style: context.texts.bodyMedium?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.body.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                     ),
                   ],

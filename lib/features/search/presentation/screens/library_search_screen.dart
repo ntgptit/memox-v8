@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
@@ -36,23 +36,22 @@ class LibrarySearchScreen extends ConsumerStatefulWidget {
 
 class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
   late final _query = TextEditingController(text: widget.initialQuery);
-  final _focus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // The person came here to type (step 1), or with a term to search.
+    // A term given on arrival is searched; the field itself takes focus
+    // (step 1: the person came here to type).
+    if (widget.initialQuery.isEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _focus.requestFocus();
-      if (widget.initialQuery.isNotEmpty) _search(widget.initialQuery);
+      _search(widget.initialQuery);
     });
   }
 
   @override
   void dispose() {
     _query.dispose();
-    _focus.dispose();
     super.dispose();
   }
 
@@ -70,12 +69,12 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
         isTitleField: true,
-        // The field names the route, as the SDK AppBar names any title
-        // (DEV-393): TalkBack announces the search on arrival.
-        isTitleWidgetRouteName: true,
         titleWidget: MxSearchField(
+          // The field names the route, as the SDK AppBar names any title
+          // (DEV-393): TalkBack announces the search on arrival.
+          isRouteName: true,
           controller: _query,
-          focusNode: _focus,
+          isAutofocused: true,
           hintText: l10n.searchFieldHint,
           clearLabel: l10n.searchClear,
           onChanged: _search,

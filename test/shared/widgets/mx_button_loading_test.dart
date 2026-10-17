@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
-import '../../core/theme/token_source.dart' show contrast;
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 // MxButton while its work runs, and what TalkBack reads of it.
 
-final _painted = find.descendant(
-  of: find.byType(TextButton),
-  matching: find.byType(Material),
-);
+final _button = find.byType(FButton);
 
-// The painter is private to the spinner, so the ring colour is read untyped.
-Color _ringColor(WidgetTester tester) {
-  final paint = tester.widget<CustomPaint>(
-    find.descendant(
-      of: find.byType(MxSpinner),
-      matching: find.byType(CustomPaint),
-    ),
-  );
-  return (paint.painter! as dynamic).color as Color;
+double contrast(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (light, dark) = la > lb ? (la, lb) : (lb, la);
+  return (light + 0.05) / (dark + 0.05);
 }
+
+// The glyph's ink is the icon theme ForUI's progress draws with.
+Color _ringColor(WidgetTester tester) =>
+    spinnerIconTheme(tester, find.byType(MxSpinner)).color!;
 
 void main() {
   // Work in progress is not a control that cannot be used: a caller that
@@ -37,22 +35,44 @@ void main() {
         tester,
         MxButton(label: 'Save', tone: tone, onPressed: () {}),
       );
-      final resting = tester.widget<Material>(_painted.first);
+      final resting = paintedDecoration(tester, _button);
+      final restingEdge = paintedSide(tester, _button);
 
       await pumpMx(
         tester,
         MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: null),
       );
-      final loading = tester.widget<Material>(_painted.first);
+      final loading = paintedDecoration(tester, _button);
 
       expect(find.byType(MxSpinner), findsOneWidget, reason: '$tone');
       expect(loading.color, resting.color, reason: '$tone fill');
-      expect(loading.shape, resting.shape, reason: '$tone edge');
-      expect(
-        loading.textStyle?.color,
-        resting.textStyle?.color,
-        reason: '$tone',
+      expect(paintedSide(tester, _button), restingEdge, reason: '$tone edge');
+      // The spinner keeps turning; take it off before the test ends.
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
+
+  testWidgets('loading keeps the resting foreground and spinner colour, '
+      'even with onPressed null', (tester) async {
+    for (final tone in MxButtonTone.values) {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save', tone: tone, onPressed: () {}),
       );
+      final restingInk = textColor(tester, find.text('Save'));
+
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: null),
+      );
+
+      expect(
+        textColor(tester, find.text('Save')),
+        restingInk,
+        reason: '$tone label',
+      );
+      expect(_ringColor(tester), restingInk, reason: '$tone spinner');
+      await tester.pumpWidget(const SizedBox());
     }
   });
 
@@ -61,17 +81,19 @@ void main() {
   ) async {
     var taps = 0;
     await pumpMx(tester, MxButton(label: 'Save changes', onPressed: () {}));
-    final restingWidth = tester.getSize(_painted.first).width;
+    final restingWidth = tester.getSize(_button).width;
 
     await pumpMx(
       tester,
       MxButton(label: 'Save changes', isLoading: true, onPressed: () => taps++),
     );
     await tester.tap(find.byType(MxButton), warnIfMissed: false);
+    await tester.pump(const Duration(seconds: 1));
 
-    expect(tester.getSize(_painted.first).width, restingWidth);
+    expect(tester.getSize(_button).width, restingWidth);
     expect(find.byType(MxSpinner), findsOneWidget);
     expect(taps, 0);
+    await tester.pumpWidget(const SizedBox());
   });
 
   // M3F-02 (owner 2026-10-15, supersedes ruling O2): the spinner is drawn in
@@ -91,17 +113,16 @@ void main() {
           ),
           brightness: brightness,
         );
-        final material = tester.widget<Material>(_painted.first);
-        final ground = Theme.of(tester.element(find.byType(MxSpinner)))
-            .scaffoldBackgroundColor;
+        final ground = forUiTheme(tester, _button).colors.background;
         final fill = Color.alphaBlend(
-          material.color ?? Colors.transparent,
+          paintedDecoration(tester, _button).color ?? Colors.transparent,
           ground,
         );
         final ring = _ringColor(tester);
 
         expect(contrast(ring, fill), greaterThanOrEqualTo(3));
-        expect(ring, material.textStyle!.color);
+        expect(ring, textColor(tester, find.text('Save')));
+        await tester.pumpWidget(const SizedBox());
       });
     }
   }
@@ -114,6 +135,7 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Save'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
     handle.dispose();
   });
 
@@ -139,6 +161,7 @@ void main() {
         hasTapAction: true,
         hasEnabledState: true,
         isEnabled: true,
+        hasSelectedState: true,
       ),
     );
 
@@ -153,7 +176,12 @@ void main() {
     );
     expect(
       tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
-      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+      isSemantics(
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
+        hasSelectedState: true,
+      ),
     );
     handle.dispose();
   });
@@ -194,14 +222,16 @@ void main() {
                   ),
                 );
 
+                final painted = paintedRect(tester, _button);
                 expect(
                   tester.getCenter(find.byType(MxSpinner)).dx,
-                  closeTo(tester.getCenter(_painted.first).dx, 0.01),
+                  closeTo(painted.center.dx, 0.01),
                 );
                 expect(
                   tester.getCenter(find.byType(MxSpinner)).dy,
-                  closeTo(tester.getCenter(_painted.first).dy, 0.01),
+                  closeTo(painted.center.dy, 0.01),
                 );
+                await tester.pumpWidget(const SizedBox());
               },
             );
           }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';

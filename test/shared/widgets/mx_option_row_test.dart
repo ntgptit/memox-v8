@@ -1,69 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/focus_ring_expect.dart';
-import '../../support/theme_expect.dart';
-
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _radioKey = ValueKey('mx-option-radio');
-const _dotKey = ValueKey('mx-option-radio-dot');
+const _dimens = AppDimens();
 
-Border _ring(WidgetTester tester) =>
-    (tester.widget<DecoratedBox>(find.byKey(_radioKey)).decoration
-                as BoxDecoration)
-            .border!
-        as Border;
+/// The radio's painted circles: the ring first, then the indicator.
+Finder _circles() => find.descendant(
+  of: find.byKey(_radioKey),
+  matching: find.byWidgetPredicate(
+    (widget) =>
+        widget is DecoratedBox &&
+        widget.decoration is BoxDecoration &&
+        (widget.decoration as BoxDecoration).shape == BoxShape.circle,
+  ),
+);
 
-BoxDecoration _dot(WidgetTester tester) =>
-    tester.widget<DecoratedBox>(find.byKey(_dotKey)).decoration
-        as BoxDecoration;
+BoxDecoration _ring(WidgetTester tester) =>
+    tester.widget<DecoratedBox>(_circles().first).decoration as BoxDecoration;
+
+Finder _dot() => _circles().last;
+
+BoxDecoration _dotDecoration(WidgetTester tester) =>
+    tester.widget<DecoratedBox>(_dot()).decoration as BoxDecoration;
+
+FRadioStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, find.byKey(_radioKey)).radioStyle;
 
 void main() {
-  final scheme = lightColorScheme;
-
-  // Material 3 radio: an 18 ring stroked 2, a 9 dot (inner radius 4.5) when
-  // selected; the unselected ring is onSurfaceVariant.
-  testWidgets('unselected: a 2px onSurfaceVariant ring, no dot', (
+  // ForUI's radio, painted only: a ring in the muted foreground, and an
+  // indicator in the primary colour that grows when selected.
+  testWidgets('unselected: the ring in the muted foreground, no indicator', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
+    final style = _style(tester);
+
     expect(
-      _ring(tester).top,
-      BorderSide(color: scheme.onSurfaceVariant, width: 2),
+      (_ring(tester).border! as Border).top,
+      BorderSide(
+        color: appLightColors.mutedForeground,
+        width: style.borderWidth,
+      ),
     );
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
-    expect(find.byKey(_dotKey), findsNothing);
+    expect(tester.getSize(_dot()), Size.zero);
   });
 
-  testWidgets('selected: the same 2px ring and a 9 dot, both accent', (
-    tester,
-  ) async {
+  testWidgets('selected: the same ring and an indicator, in the primary '
+      'colour', (tester) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: accentOf(scheme), width: 2));
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
-    expect(tester.getSize(find.byKey(_dotKey)), const Size.square(9));
-    expect(_dot(tester).color, accentOf(scheme));
-    expect(_dot(tester).shape, BoxShape.circle);
+    await tester.pumpAndSettle();
+    final style = _style(tester);
+
     expect(
-      tester.getCenter(find.byKey(_dotKey)),
-      tester.getCenter(find.byKey(_radioKey)),
+      (_ring(tester).border! as Border).top.color,
+      appLightColors.mutedForeground,
     );
+    expect(_dotDecoration(tester).color, appLightColors.primary);
+    expect(_dotDecoration(tester).shape, BoxShape.circle);
+    expect(tester.getSize(_dot()), Size.square(style.indicatorSize));
+    expect(tester.getCenter(_dot()), tester.getCenter(_circles().first));
   });
 
-  // The ring is a stroke glyph, so it reads the accent colour.
-  // The dark primary reads 2.46:1 on a sheet, below the 3:1 of a state.
-  testWidgets('dark: the selected ring and dot are the accent colour', (
+  testWidgets('dark: the selected indicator is the primary, the ring muted', (
     tester,
   ) async {
     await pumpMx(
@@ -71,15 +85,18 @@ void main() {
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
       brightness: Brightness.dark,
     );
-    expect(_ring(tester).top.color, accentOf(darkColorScheme));
-    expect(_dot(tester).color, accentOf(darkColorScheme));
+    await tester.pumpAndSettle();
+    expect(_dotDecoration(tester).color, appDarkColors.primary);
 
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
       brightness: Brightness.dark,
     );
-    expect(_ring(tester).top.color, darkColorScheme.onSurfaceVariant);
+    expect(
+      (_ring(tester).border! as Border).top.color,
+      appDarkColors.mutedForeground,
+    );
   });
 
   testWidgets('56 tall, 72 with a description; a long one grows the row', (
@@ -97,7 +114,7 @@ void main() {
       ),
     );
     final short = tester.getSize(find.byType(MxOptionRow)).height;
-    expect(short, 56);
+    expect(short, _dimens.sizeListRow);
 
     await pumpMx(
       tester,
@@ -111,7 +128,10 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(MxOptionRow)).height, 72);
+    expect(
+      tester.getSize(find.byType(MxOptionRow)).height,
+      _dimens.sizeListRowTwoLine,
+    );
 
     await pumpMx(
       tester,
@@ -127,7 +147,10 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(MxOptionRow)).height, greaterThan(72));
+    expect(
+      tester.getSize(find.byType(MxOptionRow)).height,
+      greaterThan(_dimens.sizeListRowTwoLine),
+    );
   });
 
   testWidgets('a tap selects; announced as a checked exclusive option', (
@@ -140,21 +163,41 @@ void main() {
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () => taps++),
     );
     await tester.tap(find.byType(MxOptionRow));
+    await tester.pumpAndSettle();
 
     expect(taps, 1);
     expect(
-      tester.getSemantics(find.byType(MxOptionRow)),
+      tester.getSemantics(find.bySemanticsLabel('SM-2')),
       isSemantics(
         label: 'SM-2',
         isChecked: true,
         hasCheckedState: true,
         isInMutuallyExclusiveGroup: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        hasSelectedState: true,
+        isFocusable: true,
+        hasFocusAction: true,
       ),
     );
     handle.dispose();
   });
 
-  testWidgets('disabled at 0.38', (tester) async {
+  testWidgets('the row is a 48 target', (tester) async {
+    await pumpMx(
+      tester,
+      MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
+    );
+
+    expect(
+      tester.getSize(find.byType(MxOptionRow)).height,
+      greaterThanOrEqualTo(_dimens.sizeControl),
+    );
+    await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('disabled at the theme disabled opacity', (tester) async {
     await pumpMx(
       tester,
       const MxOptionRow(title: 'A', isSelected: false, onSelected: null),
@@ -168,7 +211,7 @@ void main() {
             ),
           )
           .opacity,
-      0.38,
+      appLightColors.disabledOpacity,
     );
   });
 
@@ -237,7 +280,7 @@ void main() {
       const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
     );
     expect(
-      tester.getSemantics(find.text('SM-2')),
+      tester.getSemantics(find.bySemanticsLabel('SM-2')),
       isSemantics(hasEnabledState: true, isEnabled: false),
     );
     handle.dispose();
@@ -252,13 +295,11 @@ void main() {
         title: 'SM-2',
         isSelected: false,
         onSelected: null,
-        trailing: TextButton(
-          onPressed: () => taps++,
-          child: const Text('Info'),
-        ),
+        trailing: MxButton(label: 'Info', onPressed: () => taps++),
       ),
     );
     await tester.tap(find.text('Info'), warnIfMissed: false);
+    await tester.pumpAndSettle();
     expect(taps, 0);
     expect(
       find.ancestor(of: find.text('SM-2'), matching: find.byType(Opacity)),
@@ -266,13 +307,13 @@ void main() {
     );
   });
 
-  // M3F-05: the row was a bare InkWell, so a keyboard user saw only the
-  // theme's focus layer. MxRowInk draws the shared 2px primary ring.
+  // M3F-05: the row draws ForUI's focus outline for a keyboard user
+  // (MxRowInk).
   for (final brightness in Brightness.values) {
-    final focusScheme = brightness == Brightness.light
-        ? lightColorScheme
-        : darkColorScheme;
-    testWidgets('M3F-05: a focused row draws the 2px primary ring '
+    final focusColors = brightness == Brightness.light
+        ? appLightColors
+        : appDarkColors;
+    testWidgets('M3F-05: a focused row draws the primary focus outline '
         '(${brightness.name})', (tester) async {
       var taps = 0;
       await pumpMx(
@@ -281,17 +322,39 @@ void main() {
         brightness: brightness,
       );
       useKeyboardFocusHighlight();
+      final outline = forUiTheme(
+        tester,
+        find.byType(MxOptionRow),
+      ).style.focusedOutlineStyle;
+      expect(outline.color, focusColors.primary);
       expect(
         tester.renderObject(find.byType(MxOptionRow)),
-        isNot(paintsFocusRing(focusScheme.primary)),
+        isNot(paintsFocusRing(outline.color, width: outline.width)),
       );
 
       await tabTo(tester, find.text('SM-2'));
 
-      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+      expect(
+        focusRingRender(tester),
+        paintsFocusRing(outline.color, width: outline.width),
+      );
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
       expect(taps, 1);
     });
+  }
+
+  /// Whether the node holding primary focus sits inside the row.
+  bool focusIsInRow(WidgetTester tester) {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    if (focused == null) return false;
+    return find
+        .descendant(
+          of: find.byType(MxOptionRow),
+          matching: find.byElementPredicate((e) => e == focused),
+        )
+        .evaluate()
+        .isNotEmpty;
   }
 
   testWidgets('M3F-05: a row that cannot be picked takes no focus', (
@@ -303,11 +366,33 @@ void main() {
     );
     useKeyboardFocusHighlight();
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(
-      tester.renderObject(find.byType(MxOptionRow)),
-      isNot(paintsFocusRing(lightColorScheme.primary)),
+    expect(focusIsInRow(tester), isFalse);
+  });
+
+  testWidgets('the whole row is one tab stop: the painted radio takes no '
+      'focus of its own', (tester) async {
+    await pumpMx(
+      tester,
+      MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
+    useKeyboardFocusHighlight();
+    final stops = <Rect>{};
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      if (focusIsInRow(tester)) {
+        stops.add(
+          tester.getRect(
+            find.byElementPredicate(
+              (e) => e == FocusManager.instance.primaryFocus!.context,
+            ),
+          ),
+        );
+      }
+    }
+
+    expect(stops, hasLength(1));
   });
 }

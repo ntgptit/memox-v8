@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show SelectableText, SelectionArea;
+import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart' show SelectedContent;
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 enum _CardKind { code, prose, error, stackTrace }
 
@@ -72,21 +72,21 @@ class MonitoringCodeCardWidget extends StatelessWidget {
     return switch (_kind) {
       _CardKind.code => SelectableText(
         text,
-        style: context.texts.bodyMedium?.copyWith(
+        style: context.texts.body.copyWith(
           fontFamily: AppTypography.monoFamily,
         ),
       ),
-      _CardKind.prose => SelectableText(text, style: context.texts.bodyMedium),
+      _CardKind.prose => SelectableText(text, style: context.texts.body),
       _CardKind.error => SelectableText.rich(
         TextSpan(
           children: [
             if (type.isNotEmpty)
-              TextSpan(text: type, style: context.texts.titleSmall),
+              TextSpan(text: type, style: context.texts.itemTitle),
             if (type.isNotEmpty && text.isNotEmpty) const TextSpan(text: '\n'),
             if (text.isNotEmpty) TextSpan(text: text),
           ],
         ),
-        style: context.texts.bodyMedium,
+        style: context.texts.body,
       ),
       // One frame per row: the #n in a fixed cell, so a wrapped line hangs
       // under the frame's text (critique 2026-09-30 part 3d-2, E11). Still
@@ -94,12 +94,12 @@ class MonitoringCodeCardWidget extends StatelessWidget {
       _CardKind.stackTrace => SelectionArea(
         child: _StackTrace(
           text: text,
-          style: context.texts.bodyMedium!.copyWith(
+          style: context.texts.body.copyWith(
             fontFamily: AppTypography.monoFamily,
           ),
-          frameStyle: context.texts.bodyMedium!.copyWith(
+          frameStyle: context.texts.body.copyWith(
             fontFamily: AppTypography.monoFamily,
-            color: context.accentColor,
+            color: context.colors.primary,
           ),
         ),
       ),

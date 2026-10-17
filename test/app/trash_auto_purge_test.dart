@@ -7,6 +7,7 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -62,7 +63,7 @@ void main() {
       'drops it in place (UC-TRASH-001 A4)', (tester, env) async {
     await _seedDeleted(env, trashRetention - const Duration(hours: 1));
     await pumpMemoxApp(tester, env);
-    await tester.tap(find.byTooltip(_en.libraryTrash));
+    await tester.tap(byControlLabel(_en.libraryTrash));
     await tester.pumpAndSettle();
     expect(find.text('bap · rice'), findsOneWidget);
 
@@ -83,7 +84,7 @@ void main() {
     expect(await _batches(env), 1);
 
     env.clock.current = libraryToday.add(const Duration(hours: 2));
-    await tester.tap(find.byTooltip(_en.libraryTrash));
+    await tester.tap(byControlLabel(_en.libraryTrash));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.trashEmptyTitle), findsOneWidget);

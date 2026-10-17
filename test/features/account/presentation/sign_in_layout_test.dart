@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -11,7 +13,6 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 import '../../../support/account_harness.dart';
-import '../../../support/field_edge_expect.dart';
 import '../../../support/library_harness.dart';
 
 // Screen 30's layout balance (spec 2026-10-05-sign-in-layout-balance, DEV-166).
@@ -36,10 +37,22 @@ void main() {
       overrides: accountOverrides(world),
     );
 
+    // The edge ForUI's field decorator paints at rest.
     final decoration = tester
-        .widget<InputDecorator>(find.byType(InputDecorator))
+        .widget<mu.InputDecorator>(
+          find.descendant(
+            of: find.byType(FTextField),
+            matching: find.byType(mu.InputDecorator),
+          ),
+        )
         .decoration;
-    expect(edgeIn(decoration, {}).borderSide.color, lightColorScheme.outline);
+    final edge =
+        mu.WidgetStateProperty.resolveAs<mu.InputBorder?>(
+              decoration.border,
+              {},
+            )!
+            as mu.OutlineInputBorder;
+    expect(edge.borderSide.color, appLightColors.border);
   });
 
   accountTest('the way-out dialog leaves 24 dp between its banner and the '

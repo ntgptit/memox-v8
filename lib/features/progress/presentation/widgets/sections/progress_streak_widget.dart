@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -38,8 +38,8 @@ class ProgressStreakWidget extends StatelessWidget {
           Text(
             l10n.progressStreak.toUpperCase(),
             semanticsLabel: l10n.progressStreak,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space12),
@@ -65,7 +65,7 @@ class ProgressStreakWidget extends StatelessWidget {
     final isLive = streak.days > 0;
     final current = _StreakTile(
       icon: AppIcons.streak,
-      tint: isLive ? context.mxColors.warning : null,
+      tint: isLive ? context.status.warning : null,
       tone: isLive ? MxIconTileTone.tinted : MxIconTileTone.neutral,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),
@@ -129,8 +129,8 @@ class _StreakTile extends StatelessWidget {
     // so two fit side by side on a phone.
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        color: context.colors.muted,
+        borderRadius: context.radii.md,
       ),
       child: Padding(
         padding: EdgeInsets.all(context.dimens.space12),
@@ -145,16 +145,16 @@ class _StreakTile extends StatelessWidget {
                   Text(
                     label.toUpperCase(),
                     semanticsLabel: label,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.meta.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                   SizedBox(height: context.dimens.space4),
-                  Text(value, style: context.texts.titleSmall),
+                  Text(value, style: context.texts.itemTitle),
                   Text(
                     sub,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.meta.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ],

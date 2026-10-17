@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../../support/focus_ring_expect.dart';
-import '../../support/paint_clip.dart';
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _destinations = [
@@ -36,9 +33,10 @@ const _destinations = [
   ),
 ];
 
-Finder _pill(String label) => find.descendant(
-  of: find.ancestor(of: find.text(label), matching: find.bySubtype<InkWell>()),
-  matching: find.byType(Ink),
+/// The tappable cell of the destination labelled [label].
+Finder _cell(String label) => find.ancestor(
+  of: find.text(label),
+  matching: find.byType(FBottomNavigationBarItem),
 );
 
 MxBottomNav _nav({int selected = 0, ValueChanged<int>? onSelected}) =>
@@ -48,21 +46,28 @@ MxBottomNav _nav({int selected = 0, ValueChanged<int>? onSelected}) =>
       onSelected: onSelected ?? (_) {},
     );
 
-void main() {
-  final scheme = lightColorScheme;
+FBottomNavigationBarStyle _style(WidgetTester tester) =>
+    forUiTheme(tester, find.byType(MxBottomNav)).bottomNavigationBarStyle;
 
-  testWidgets('sizeNav tall with no inset, plus the inset with one', (
-    tester,
-  ) async {
-    final height = const AppDimens().sizeNav;
+void main() {
+  final colors = appLightColors;
+
+  testWidgets('the bar is its cells and ForUI padding tall, plus the inset '
+      'with one', (tester) async {
     await pumpMx(tester, _nav());
-    expect(tester.getSize(find.byType(MxBottomNav)).height, height);
+    final padding = _style(tester).padding.vertical;
+    final cell = tester.getSize(_cell('Library')).height;
+    expect(cell, greaterThanOrEqualTo(48));
+    expect(tester.getSize(find.byType(MxBottomNav)).height, cell + padding);
 
     await pumpMx(tester, _nav(), padding: const EdgeInsets.only(bottom: 24));
-    expect(tester.getSize(find.byType(MxBottomNav)).height, height + 24);
+    expect(
+      tester.getSize(find.byType(MxBottomNav)).height,
+      cell + padding + 24,
+    );
   });
 
-  testWidgets('a flat bar: the surface, a divider on top, no glass', (
+  testWidgets('a flat bar: the background, a divider on top, no glass', (
     tester,
   ) async {
     await pumpMx(tester, _nav());
@@ -76,197 +81,85 @@ void main() {
     );
     final decoration = bar.decoration as BoxDecoration;
 
-    expect(decoration.color, scheme.surface);
-    expect(
-      (decoration.border! as Border).top.color,
-      MxColorsExtension.light.divider,
-    );
+    expect(decoration, _style(tester).decoration);
+    expect(decoration.color, colors.background);
+    expect((decoration.border! as Border).top.color, colors.border);
     expect(find.byType(BackdropFilter), findsNothing);
   });
 
   testWidgets('four equal columns', (tester) async {
     await pumpMx(tester, _nav());
     final widths = [
-      for (final d in _destinations)
-        tester
-            .getSize(
-              find.ancestor(
-                of: find.text(d.label),
-                matching: find.bySubtype<InkWell>(),
-              ),
-            )
-            .width,
+      for (final d in _destinations) tester.getSize(_cell(d.label)).width,
     ];
 
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination: filled glyph on the pill, label in '
-      'onSurface', (tester) async {
+  testWidgets('the selected destination: glyph and label in primary, '
+      'the others muted', (tester) async {
     await pumpMx(tester, _nav(selected: 1));
 
-    expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
-    expect(find.byIcon(AppIcons.study), findsNothing);
+    // The selected glyph is the resting one: selection shows in colour and
+    // weight, not in a second glyph.
+    expect(AppIcons.studySelected, AppIcons.study);
+    expect(find.byIcon(AppIcons.study), findsOneWidget);
+    expect(iconColor(tester, find.byIcon(AppIcons.study)), colors.primary);
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      scheme.onSecondaryContainer,
+      IconTheme.of(tester.element(find.byIcon(AppIcons.study))).weight,
+      700,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
-      scheme.onSurfaceVariant,
+      iconColor(tester, find.byIcon(AppIcons.library)),
+      colors.mutedForeground,
     );
+    expect(textColor(tester, find.text('Study')), colors.primary);
+    expect(textColor(tester, find.text('Library')), colors.mutedForeground);
     expect(
-      tester.widget<Text>(find.text('Study')).style!.color,
-      scheme.onSurface,
-    );
-    expect(
-      tester.widget<Text>(find.text('Library')).style!.color,
-      scheme.onSurfaceVariant,
+      DefaultTextStyle.of(tester.element(find.text('Study'))).style.fontWeight,
+      FontWeight.bold,
     );
   });
 
-  testWidgets('the pill is the indicator size on secondaryContainer', (
-    tester,
-  ) async {
-    await pumpMx(tester, _nav());
-
-    expect(
-      (tester.widget<Ink>(_pill('Library')).decoration! as ShapeDecoration)
-          .color,
-      scheme.secondaryContainer,
-    );
-    expect(
-      tester.getSize(_pill('Library')),
-      Size(
-        const AppDimens().sizeNavIndicatorWidth,
-        const AppDimens().sizeNavIndicatorHeight,
+  testWidgets('moving the selection moves the primary colour', (tester) async {
+    final host = ValueNotifier(0);
+    addTearDown(host.dispose);
+    await pumpMx(
+      tester,
+      ValueListenableBuilder(
+        valueListenable: host,
+        builder: (_, selected, _) => _nav(selected: selected),
       ),
     );
-  });
+    expect(textColor(tester, find.text('Library')), colors.primary);
+    expect(textColor(tester, find.text('Study')), colors.mutedForeground);
 
-  group('selection animates the pill', () {
-    final host = ValueNotifier(0);
-    Widget animated() => ValueListenableBuilder(
-      valueListenable: host,
-      builder: (_, selected, _) => _nav(selected: selected),
+    host.value = 1;
+    await tester.pumpAndSettle();
+
+    expect(iconColor(tester, find.byIcon(AppIcons.study)), colors.primary);
+    expect(
+      iconColor(tester, find.byIcon(AppIcons.library)),
+      colors.mutedForeground,
     );
-
-    setUp(() => host.value = 0);
-
-    testWidgets('colour and width ease over medium2', (tester) async {
-      await pumpMx(tester, animated());
-      final restColor =
-          (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration)
-              .color!;
-      expect(restColor.a, 0);
-
-      host.value = 1;
-      await tester.pump();
-      await tester.pump(Durations.medium2 ~/ 2);
-      final width = tester.getSize(_pill('Study')).width;
-      final midColor =
-          (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration)
-              .color!;
-      expect(width, greaterThan(const AppDimens().sizeNavIndicatorWidth * 0.4));
-      expect(width, lessThan(const AppDimens().sizeNavIndicatorWidth));
-      expect(midColor.a, inExclusiveRange(0, 1));
-
-      await tester.pump(Durations.medium2);
-      expect(
-        tester.getSize(_pill('Study')).width,
-        const AppDimens().sizeNavIndicatorWidth,
-      );
-      expect(
-        (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration)
-            .color,
-        scheme.secondaryContainer,
-      );
-      // The pill it left is gone.
-      expect(
-        (tester.widget<Ink>(_pill('Library')).decoration! as ShapeDecoration)
-            .color!
-            .a,
-        0,
-      );
-    });
-
-    testWidgets('reduced motion: the pill is final after one frame', (
-      tester,
-    ) async {
-      await pumpMx(
-        tester,
-        Builder(
-          builder: (context) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(disableAnimations: true),
-            child: animated(),
-          ),
-        ),
-      );
-      host.value = 1;
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 1));
-
-      expect(
-        (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration)
-            .color,
-        scheme.secondaryContainer,
-      );
-      expect(
-        tester.getSize(_pill('Study')).width,
-        const AppDimens().sizeNavIndicatorWidth,
-      );
-    });
+    expect(textColor(tester, find.text('Study')), colors.primary);
+    expect(textColor(tester, find.text('Library')), colors.mutedForeground);
   });
 
-  testWidgets('the tap target is the whole cell, as tall as the bar', (
+  testWidgets('the tap target is the whole cell, as tall as the bar content', (
     tester,
   ) async {
     int? picked;
     await pumpMx(tester, _nav(onSelected: (i) => picked = i));
-    final cell = tester.getRect(
-      find.ancestor(
-        of: find.text('Progress'),
-        matching: find.bySubtype<InkWell>(),
-      ),
-    );
+    final cell = tester.getRect(_cell('Progress'));
 
-    expect(cell.height, const AppDimens().sizeNav);
+    expect(cell.height, greaterThanOrEqualTo(48));
     await tester.tapAt(cell.topLeft + const Offset(1, 1));
-    expect(picked, 2);
-  });
-
-  testWidgets('the ripple is clipped to the pill, not the cell', (
-    tester,
-  ) async {
-    await pumpMx(tester, _nav());
-    final cell = tester.getRect(
-      find.ancestor(
-        of: find.text('Progress'),
-        matching: find.bySubtype<InkWell>(),
-      ),
-    );
-    final pill = tester.getRect(_pill('Progress'));
-    // The ink paints in the cell's own coordinates.
-    final inks = find.byWidgetPredicate(
-      (widget) => widget.runtimeType.toString() == '_InkFeatures',
-    );
-
-    final gesture = await tester.startGesture(pill.center);
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(
-      tester.renderObject(inks.first),
-      paints..clipPath(
-        pathMatcher: isPathThat(
-          includes: [pill.center - cell.topLeft],
-          excludes: [
-            const Offset(1, 1),
-            (cell.bottomRight - cell.topLeft) - const Offset(1, 1),
-          ],
-        ),
-      ),
-    );
-    await gesture.up();
     await tester.pumpAndSettle();
+    expect(picked, 2);
+    await tester.tapAt(cell.bottomRight - const Offset(1, 1));
+    await tester.pumpAndSettle();
+    expect(picked, 2);
   });
 
   testWidgets('a tap reports the index; the selected item is marked', (
@@ -276,25 +169,36 @@ void main() {
     int? picked;
     await pumpMx(tester, _nav(onSelected: (i) => picked = i));
     await tester.tap(find.text('Progress'));
+    await tester.pumpAndSettle();
 
     expect(picked, 2);
     expect(
       tester.getSemantics(find.text('Library')),
-      // M3F-09: the label now ends with the destination's position.
+      // The label ends with the destination's position, as ForUI reads it.
       isSemantics(
         label: 'Library\nTab 1 of 4',
         isSelected: true,
+        hasSelectedState: true,
         isButton: true,
       ),
     );
     handle.dispose();
   });
 
-  // M3F-09: the SDK NavigationBar gives each destination the tab role and
-  // "Tab i of n", and the bar the tab bar role. Selected and button stay.
-  testWidgets('M3F-09: each destination is a tab named with its position', (
+  // The tab shell resets a branch to its root on a re-tap of the current
+  // tab; ForUI's bar reports that tap, with no equality guard.
+  testWidgets('a re-tap of the selected destination still reports it', (
     tester,
   ) async {
+    final picked = <int>[];
+    await pumpMx(tester, _nav(selected: 1, onSelected: picked.add));
+    await tester.tap(find.text('Study'));
+    await tester.pumpAndSettle();
+
+    expect(picked, [1]);
+  });
+
+  testWidgets('each destination is named with its position', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(tester, _nav(selected: 1));
 
@@ -302,7 +206,6 @@ void main() {
       tester.getSemantics(find.text('Study')),
       isSemantics(
         label: 'Study\nTab 2 of 4',
-        role: SemanticsRole.tab,
         isButton: true,
         isSelected: true,
         hasSelectedState: true,
@@ -313,7 +216,6 @@ void main() {
       tester.getSemantics(find.text('Settings')),
       isSemantics(
         label: 'Settings\nTab 4 of 4',
-        role: SemanticsRole.tab,
         isButton: true,
         isSelected: false,
         hasSelectedState: true,
@@ -323,44 +225,23 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('M3F-09: the bar is a tab bar whose children are the tabs', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
+  testWidgets('the cells are accessible targets', (tester) async {
     await pumpMx(tester, _nav());
-
-    final bar = tester.getSemantics(
-      find.byWidgetPredicate(
-        (w) => w is Semantics && w.properties.role == SemanticsRole.tabBar,
-      ),
-    );
-    expect(bar.getSemanticsData().role, SemanticsRole.tabBar);
-    var tabs = 0;
-    bar.visitChildren((child) {
-      expect(child.getSemanticsData().role, SemanticsRole.tab);
-      tabs++;
-      return true;
-    });
-    expect(tabs, _destinations.length);
-    expect(tester.takeException(), isNull);
-    handle.dispose();
+    await expectAccessibleTargets(tester);
   });
 
   test('selectedIndex outside the destinations is rejected', () {
     expect(() => _nav(selected: 4), throwsAssertionError);
   });
 
-  // M3F-05: the cell's InkWell drew only the theme's focus layer on the pill,
-  // 1.3:1 against the bar. The ring is `MxFocusRingBorder` on the pill's
-  // stadium, `strokeFocusGap` outside it, as the toggle's is on its track.
   for (final brightness in Brightness.values) {
-    final focusScheme = brightness == Brightness.light
-        ? lightColorScheme
-        : darkColorScheme;
+    final focusColors = brightness == Brightness.light
+        ? appLightColors
+        : appDarkColors;
     // Library is the selected destination, Study is not.
     for (final label in ['Library', 'Study']) {
-      testWidgets('M3F-05: the focused $label pill draws the 2px primary '
-          'ring (${brightness.name})', (tester) async {
+      testWidgets('the focused $label cell draws ForUI\'s focus outline '
+          '(${brightness.name})', (tester) async {
         int? picked;
         await pumpMx(
           tester,
@@ -368,68 +249,30 @@ void main() {
           brightness: brightness,
         );
         useKeyboardFocusHighlight();
+        final outline = forUiTheme(
+          tester,
+          find.byType(MxBottomNav),
+        ).style.focusedOutlineStyle;
+        expect(outline.color, focusColors.primary);
+        final ring = find.descendant(
+          of: _cell(label),
+          matching: find.byType(FFocusedOutline),
+        );
         expect(
-          tester.renderObject(find.byType(MxBottomNav)),
-          isNot(paintsFocusRing(focusScheme.primary)),
+          tester.renderObject(ring),
+          isNot(paintsFocusRing(outline.color, width: outline.width)),
         );
 
         await tabTo(tester, find.text(label));
 
-        expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+        expect(
+          tester.renderObject(ring),
+          paintsFocusRing(outline.color, width: outline.width),
+        );
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
         expect(picked, label == 'Library' ? 0 : 1);
       });
     }
   }
-
-  testWidgets('M3F-05: the ring hugs the pill, offset by strokeFocusGap, and '
-      'no clip cuts it', (tester) async {
-    const dimens = AppDimens();
-    await pumpMx(tester, _nav());
-    useKeyboardFocusHighlight();
-    await tabTo(tester, find.text('Study'));
-
-    final cell = tester.getRect(
-      find.ancestor(
-        of: find.text('Study'),
-        matching: find.bySubtype<InkWell>(),
-      ),
-    );
-    final pill = tester.getRect(_pill('Study'));
-    final pillWidth = dimens.sizeNavIndicatorWidth;
-    final pillHeight = dimens.sizeNavIndicatorHeight;
-    // The ring's centre line: the gap and half the stroke outside the pill.
-    final reach = dimens.strokeFocusGap + dimens.strokeFocus / 2;
-    final ringCentre = Rect.fromCenter(
-      center: pill.center - cell.topLeft,
-      width: pillWidth + 2 * reach,
-      height: pillHeight + 2 * reach,
-    );
-    expect(
-      focusedRender(tester),
-      paints..something((name, arguments) {
-        final paint = arguments.whereType<Paint>().firstOrNull;
-        if (name != #drawPath || paint == null) return false;
-        if (paint.color.toARGB32() != lightColorScheme.primary.toARGB32()) {
-          return false;
-        }
-        final bounds = (arguments[0] as Path).getBounds();
-        return (bounds.left - ringCentre.left).abs() < 0.01 &&
-            (bounds.top - ringCentre.top).abs() < 0.01 &&
-            (bounds.right - ringCentre.right).abs() < 0.01 &&
-            (bounds.bottom - ringCentre.bottom).abs() < 0.01;
-      }),
-    );
-    expect(
-      clipsAway(
-        tester,
-        find.ancestor(
-          of: find.text('Study'),
-          matching: find.bySubtype<InkWell>(),
-        ),
-        pill.inflate(dimens.strokeFocusGap + dimens.strokeFocus),
-      ),
-      isFalse,
-    );
-  });
 }

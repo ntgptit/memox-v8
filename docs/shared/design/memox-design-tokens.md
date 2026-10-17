@@ -1,4 +1,4 @@
-> Chỉ dùng mục 2.3, 3, 5, 6, 9; giá trị chuẩn nằm ở `design/tokens.json`
+> Hồ sơ lịch sử (Design System "Flashcard Color Tokens", 2026-10-13). Từ ADR-026, giá trị chuẩn là theme ForUI trong `lib/core/theme/`; file này không còn là nguồn.
 
 # MemoX V8 — Token spec "Flashcard Color Tokens" (bản chốt)
 

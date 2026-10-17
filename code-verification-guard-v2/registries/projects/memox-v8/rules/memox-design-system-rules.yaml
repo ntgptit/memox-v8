@@ -57,8 +57,8 @@ rules:
       primitive (`MxCard`, `MxListRow`, `MxIconButton`, `MxFab`, `MxOptionRow`,
       `MxToggle`, dialogs through `showMxDialog`, …) so the component's visual
       grammar has one owner. A widget with no Mx wrapper yet goes through the
-      admission rule in the flutter-theme-design skill first — wrapper, tests,
-      then guard — never raw-first.
+      admission rule in the forui-shared-widgets skill first — an Mx facade on
+      ForUI, its tests, then the feature — never raw-first.
     scopes:
       - presentation_files
     patterns:
@@ -188,11 +188,10 @@ rules:
     enabled: true
     message: >-
       No `styleFrom(` in widgets — feature or shared. `styleFrom` builds flat
-      WidgetStatePropertyAll values that shadow the theme's resolvers for
-      every state at once, so a pressed or disabled state stops showing. State
-      pairs come from `buttonStyle` (`app_component_themes.dart`) or a
-      ButtonStyle with explicit resolveWith; V8 calls `styleFrom` nowhere, the
-      theme included.
+      Material values that shadow every state at once, so a pressed or
+      disabled state stops showing. State styles come from ForUI's variant
+      styles (`FVariants`, a style delta in the Mx widget); V8 calls
+      `styleFrom` nowhere, the theme included.
     scopes:
       - widget_ui_files
     patterns:
@@ -201,17 +200,16 @@ rules:
       - memox-v8
       - design-system
 
-  # The weight belongs to the role: the generated TextTheme (excluded here as
-  # a `.g.dart`) is the one place `fontWeight:` is written.
+  # The weight belongs to the role: `MxTextRoles` in `app_typography.dart` sets
+  # it through `_weighted`, never as a `fontWeight: FontWeight.` argument.
   - id: memox_v8.design_system.no_bare_font_weight
     type: regex
     severity: error
     enabled: true
     message: >-
       Never set `fontWeight:` by hand. A weight is part of its role in
-      `design/tokens.json` and reaches the code only through the generated
-      `TextTheme`; the fonts ship the 400, 500 and 600 the roles use, so any
-      other weight is synthesised.
+      `MxTextRoles` (lib/core/theme/app_typography.dart); the fonts ship the
+      400, 500 and 600 the roles use, so any other weight is synthesised.
     scopes:
       - typography_and_theme_surfaces
     patterns:
@@ -221,7 +219,7 @@ rules:
       - design-system
       - typography
 
-  # A widget reads a role; it changes only its colour or its face (ADR-022).
+  # A widget reads a role; it changes only its colour or its face (ADR-026).
   # The scope is the whole UI surface: features *and* `lib/shared/`. File
   # mode, because `dart format` writes a `copyWith(` over several lines and a
   # line-scoped pattern could not see its arguments.
@@ -241,7 +239,7 @@ rules:
       `copyWith(fontFamily: AppTypography.monoFamily)`, or both in one
       call; never a second `copyWith(` or an `apply(`. A size, weight,
       height or spacing the roles cannot express is a Design System change:
-      `design/tokens.json`, then `tools/design/generate.py`
+      a role in `lib/core/theme/app_typography.dart`
       (docs/agent/visual-change.md).
     scopes:
       - ui_surfaces
@@ -287,64 +285,91 @@ rules:
       - memox-v8
       - design-system
 
-  # `ColorScheme` is the 45 Material 3 colour roles — 26 standard, 19 add-on —
-  # and the guard locks the names to that list by allowlist, in both
-  # directions. The SDK's constructor accepts a few more names
-  # (three deprecated roles and a tint mechanism it resolves for itself), and
-  # any name that is not on the list is a finding, so none of them has to be
-  # spelled here to stay out. `brightness` is the one non-role argument the
-  # constructor takes.
-  #
-  # Argument side, file mode: the callee is the unnamed constructor, one of
-  # the four brightness-named constructors, or `copyWith` on one of the three
-  # identifiers the codebase gives a scheme (`scheme`, `colors`,
-  # `colorScheme`); `fromSeed` is not a role list and is left to the scheme
-  # header's own argument. The balanced-paren walk stops at a bare `(` or
-  # `)`, so an unbalanced paren in a comment inside the call shortens what is
-  # checked rather than leaking the check into the code after it. The first
-  # pattern reads an argument at the start of its own line, which is where
-  # `dart format` puts every argument of a call this long — and where a
-  # comment never starts with an identifier and a colon; the second covers a
-  # call written on one line.
-  - id: memox_v8.design_system.color_scheme_arguments_are_m3_roles
+  # ADR-026: `context.colors` is ForUI's FColors, and the guard locks the
+  # names read from it to FColors' roles and its two state helpers (`hover`,
+  # `disable`), by allowlist: a Material 3 role name (`onSurfaceVariant`,
+  # `surfaceContainerHigh`) on it is the old theme coming back. Comment lines
+  # are exempt because prose names files such as `colors.css`; `?.` is
+  # accepted so a nullable palette is not a way around the rule. A semantic
+  # colour is `context.status` (MxStatusColors), not an FColors role.
+  - id: memox_v8.design_system.colors_reads_are_forui_roles
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Read `context.colors` (ForUI FColors) through one of its roles:
+      background, foreground, primary, primaryForeground, secondary,
+      secondaryForeground, muted, mutedForeground, destructive, error,
+      errorForeground, card, border, barrier, or `hover(…)` / `disable(…)`.
+      A Material 3 role name is the removed theme; success, warning and info
+      are `context.status`.
+    scopes:
+      - dart_lib
+    patterns:
+      - '^(?!\s*//).*?\bcolors\??\.(?!(?:brightness|systemOverlayStyle|barrier|background|foreground|primaryForeground|primary|secondaryForeground|secondary|mutedForeground|muted|destructiveForeground|destructive|errorForeground|error|card|border|hoverLighten|hoverDarken|disabledOpacity|hover|disable|extension|copyWith)\b)[A-Za-z_]\w*'
+    tags:
+      - memox-v8
+      - design-system
+
+  # The SDK host theme (`materialHostTheme` in app_theme.dart, the only
+  # `ColorScheme` lib/ builds; tools/ui_lint UIL05 keeps the rest out) is
+  # mapped from FColors onto the 45 Material 3 roles, plus `brightness`. Any
+  # other argument name is a deprecated role or a mechanism the SDK resolves
+  # for itself. File mode: `dart format` puts every argument of a call this
+  # long on its own line.
+  - id: memox_v8.design_system.host_scheme_arguments_are_m3_roles
     type: regex
     mode: file
     severity: error
     enabled: true
     message: >-
-      A `ColorScheme` is built from the 45 Material 3 colour roles only (26
-      standard + 19 add-on), plus `brightness`. Any other argument name is
-      either a deprecated role or a mechanism the SDK already resolves — do
-      not pass it; this rule's allowlist is the set.
+      The SDK host `ColorScheme` is built from the 45 Material 3 colour roles
+      only, plus `brightness`, each mapped from an FColors role. Any other
+      argument name is a deprecated role or a mechanism the SDK resolves.
     scopes:
       - dart_lib
     patterns:
-      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?^\s+(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
-      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\([^()\n]*?\b(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
+      - '(?:\b(?:sdk\.)?ColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\bcolorScheme\??\.copyWith)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?^\s+(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
     tags:
       - memox-v8
       - design-system
 
-  # Read side, line mode: on the three identifiers the codebase gives a
-  # scheme, a member must be one of the 45 roles, `brightness`, or
-  # `copyWith`. Comment lines are exempt because prose names files such as
-  # `colors.css`. `?.` is accepted so a nullable scheme is not a way around
-  # the rule. `context.colors.<role>` and `theme.colorScheme.<role>` are the
-  # shapes this catches; a scheme held under another name is a naming
-  # finding first.
-  - id: memox_v8.design_system.color_scheme_reads_are_m3_roles
+  # ADR-026: features compose the Mx widgets; ForUI is the component system
+  # under them, not a second vocabulary beside them. The same boundary is
+  # tools/ui_lint UIL06, resolved; this rule says it at edit time.
+  - id: memox_v8.design_system.no_forui_in_features
     type: regex
     severity: error
     enabled: true
     message: >-
-      Read a `ColorScheme` through one of its 45 Material 3 role names (or
-      `brightness` / `copyWith`). Anything else is a deprecated role, a
-      mechanism the SDK resolves for itself, or a typo — name the role you
-      mean, e.g. `onSurface`, `surfaceContainerHighest`.
+      No `package:forui` in feature code. Compose the Mx widgets in
+      lib/shared/widgets; a ForUI component a feature needs is a new or
+      extended Mx widget first.
     scopes:
-      - dart_lib
+      - presentation_files
     patterns:
-      - '^(?!\s*//).*?\b(?:scheme|colors|colorScheme)\??\.(?!(?:brightness|copyWith|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\b)[A-Za-z_]\w*'
+      - '^\s*import\s+.package:forui/'
+    tags:
+      - memox-v8
+      - design-system
+
+  # ADR-026: Material is infrastructure (the app host, page routes, motion
+  # constants), imported by name. A whole `material.dart` import brings back
+  # the Material components ForUI replaced. tools/ui_lint UIL03 checks the
+  # names; this rule catches the whole import at edit time.
+  - id: memox_v8.design_system.material_imported_by_name
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import Material only through a `show` list of infrastructure names
+      (MaterialApp, Scaffold in MxAppShell, MaterialPageRoute,
+      RefreshIndicator, Durations, Easing, …; tools/ui_lint/ui_rules.dart).
+      UI is ForUI through the Mx widgets.
+    scopes:
+      - ui_surfaces
+    patterns:
+      - '^\s*import\s+.package:(?:flutter/material\.dart|material_ui/material_ui\.dart).\s*;'
     tags:
       - memox-v8
       - design-system

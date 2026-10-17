@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 import 'dart:async';
 
@@ -20,6 +19,7 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/starter_screen_fixtures.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/forui_expect.dart';
 
 // Screen 03 (FE-B4, UC-STARTER-001): the ten kit states.
 
@@ -167,6 +167,7 @@ void main() {
         )
         .getSingle();
     expect(opened, rootId.read<String>('id'));
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('adding: the options and Cancel lock and the add spins; the '
@@ -188,7 +189,8 @@ void main() {
       isNull,
     );
     await tester.tapAt(const Offset(180, 40));
-    await tester.pump();
+    // Past the exit animation a pop would start, which still draws the rows.
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(MxOptionRow), findsNWidgets(2));
     // A drag down does not close it either (final review #1).
     // The locked rows ignore pointers; the drag lands on the sheet behind.
@@ -297,6 +299,7 @@ void main() {
     expect(find.byType(MxEmptyState), findsOneWidget);
     await tester.tap(find.text(_en.starterCreateDeck));
     expect(creates, 1);
+    await tester.pump(const Duration(milliseconds: 200));
   });
 
   libraryTest('loading, then loadFailed with Retry; the message carries no '
@@ -340,7 +343,7 @@ void main() {
       '(critique 2026-09-30)', (tester, env) async {
     await _pump(tester, env, StarterLibraryFake(env));
 
-    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.tap(byControlLabel(_en.commonDismissNote));
     await tester.pumpAndSettle();
     expect(find.text(_en.starterNote), findsNothing);
 
@@ -357,10 +360,10 @@ void main() {
     final label = find.text(_en.starterSheetAlgorithmLabel);
     final required = find.text(_en.starterSheetRequired);
     final texts = tester.element(label).texts;
-    expect(tester.widget<Text>(label).style, texts.labelMedium);
+    expect(tester.widget<Text>(label).style, texts.label);
     expect(
       tester.widget<Text>(required).style,
-      texts.bodyMedium?.copyWith(color: tester.element(label).accentColor),
+      texts.body.copyWith(color: tester.element(label).colors.primary),
     );
   });
 }
