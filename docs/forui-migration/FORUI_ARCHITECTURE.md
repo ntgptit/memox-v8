@@ -1,6 +1,6 @@
 # ForUI architecture
 
-The decision is [ADR-025](../shared/decisions/ADR-025-forui-la-he-component-giao-dien.md).
+The decision is [ADR-026](../shared/decisions/ADR-026-forui-la-he-component-giao-dien.md).
 This page is how it is built and what keeps it that way.
 
 ## Layers

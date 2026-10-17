@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 /// The status colours ForUI's [FColors] has no role for: success, warning and
 /// info, which carry learning progress, mastery and right or wrong answers
-/// (ADR-025). It rides on the palette's `FColors.extensions`, read as
+/// (ADR-026). It rides on the palette's `FColors.extensions`, read as
 /// `context.status`.
 ///
 /// Each status has an ink, the text and glyph colour that keeps 4.5:1 on the

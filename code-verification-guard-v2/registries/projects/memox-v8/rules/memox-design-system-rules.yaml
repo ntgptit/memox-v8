@@ -219,7 +219,7 @@ rules:
       - design-system
       - typography
 
-  # A widget reads a role; it changes only its colour or its face (ADR-025).
+  # A widget reads a role; it changes only its colour or its face (ADR-026).
   # The scope is the whole UI surface: features *and* `lib/shared/`. File
   # mode, because `dart format` writes a `copyWith(` over several lines and a
   # line-scoped pattern could not see its arguments.
@@ -285,7 +285,7 @@ rules:
       - memox-v8
       - design-system
 
-  # ADR-025: `context.colors` is ForUI's FColors, and the guard locks the
+  # ADR-026: `context.colors` is ForUI's FColors, and the guard locks the
   # names read from it to FColors' roles and its two state helpers (`hover`,
   # `disable`), by allowlist: a Material 3 role name (`onSurfaceVariant`,
   # `surfaceContainerHigh`) on it is the old theme coming back. Comment lines
@@ -334,7 +334,7 @@ rules:
       - memox-v8
       - design-system
 
-  # ADR-025: features compose the Mx widgets; ForUI is the component system
+  # ADR-026: features compose the Mx widgets; ForUI is the component system
   # under them, not a second vocabulary beside them. The same boundary is
   # tools/ui_lint UIL06, resolved; this rule says it at edit time.
   - id: memox_v8.design_system.no_forui_in_features
@@ -353,7 +353,7 @@ rules:
       - memox-v8
       - design-system
 
-  # ADR-025: Material is infrastructure (the app host, page routes, motion
+  # ADR-026: Material is infrastructure (the app host, page routes, motion
   # constants), imported by name. A whole `material.dart` import brings back
   # the Material components ForUI replaced. tools/ui_lint UIL03 checks the
   # names; this rule catches the whole import at edit time.

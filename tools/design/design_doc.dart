@@ -1,6 +1,6 @@
 // Renders DESIGN.md's frontmatter and the token part of
 // .impeccable/design.json from the production ForUI themes, so both documents
-// state the values the app is built from (ADR-025): the palette in
+// state the values the app is built from (ADR-026): the palette in
 // lib/core/theme/app_palette.dart and mx_status_colors.dart, the type scale in
 // app_typography.dart, the spacing in app_dimens.dart and ForUI's own radii
 // and component styles. test/tools/design_doc_test.dart compares the

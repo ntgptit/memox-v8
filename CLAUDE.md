@@ -81,7 +81,7 @@ Tier 2 work on a screen:
 | Knowledge | Home |
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
-| The visual system | the ForUI theme in `lib/core/theme/` (palette in `app_palette.dart`); `DESIGN.md`'s frontmatter is rendered from it ([ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)) |
+| The visual system | the ForUI theme in `lib/core/theme/` (palette in `app_palette.dart`); `DESIGN.md`'s frontmatter is rendered from it ([ADR-026](docs/shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)) |
 | How to change the look | [docs/agent/visual-change.md](docs/agent/visual-change.md) |
 | A screen's layout, states, transitions, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
@@ -188,14 +188,14 @@ asked. Without the connector, tell the owner and record progress nowhere else.
   `npx supabase db start` then `npx supabase test db`.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
 - **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md),
-  [ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)):
+  [ADR-026](docs/shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)):
   the ForUI theme in `lib/core/theme/` > the reviewed goldens > a screen's
   detail file. The "Mobile UI Kit v3" artifact is retired and never read. A BR
   or UC beats all three. `DESIGN.md`'s frontmatter is rendered from the theme;
   a PR that changes the visual system changes `lib/core/theme/` and rewrites it
   (`MEMOX_WRITE_DESIGN_DOCS=1` on `test/tools/design_doc_test.dart`), and one
   that changes a screen updates its detail file and its row in the screen index.
-- **ForUI draws the UI** ([ADR-025](docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)):
+- **ForUI draws the UI** ([ADR-026](docs/shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)):
   features compose `Mx*` widgets only; `package:forui` stays in
   `lib/core/theme/`, `lib/shared/` and `lib/app/`; Material is infrastructure,
   imported by name (`tools/ui_lint`).

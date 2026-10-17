@@ -1,4 +1,4 @@
-// Symbol-aware ForUI boundary rules (UIL00..UIL06, ADR-025). A symbol counts
+// Symbol-aware ForUI boundary rules (UIL00..UIL06, ADR-026). A symbol counts
 // by the library its element comes from (package:flutter/, package:material_ui/
 // or package:forui/), so an import alias or a local function with a Flutter
 // name changes nothing. The rule table is in docs/forui-migration/FORUI_ARCHITECTURE.md.
@@ -459,7 +459,7 @@ class _UiVisitor extends RecursiveAstVisitor<void> {
       _report(
         'UIL03',
         node.offset,
-        '$uri without `show`; ForUI and the Mx widgets draw the UI (ADR-025)',
+        '$uri without `show`; ForUI and the Mx widgets draw the UI (ADR-026)',
       );
       return;
     }
@@ -528,7 +528,7 @@ class _UiVisitor extends RecursiveAstVisitor<void> {
       'UIL02',
       node.offset,
       '${owner ?? callee.name}${isAdaptive ? '.adaptive' : ''} is a '
-          'Cupertino or adaptive substitute; Android, ForUI only (ADR-025)',
+          'Cupertino or adaptive substitute; Android, ForUI only (ADR-026)',
     );
   }
 

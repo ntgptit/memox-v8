@@ -5,7 +5,7 @@ live in Dart under `lib/core/theme/`; the `DESIGN.md` frontmatter and the token
 part of `.impeccable/design.json` are rendered from the production theme
 (`test/tools/design_doc_test.dart`). How to change the look is
 `docs/agent/visual-change.md`
-([ADR-025](../../../../docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)).
+([ADR-026](../../../../docs/shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)).
 Never copy a hex, a size or a duration into code, a test or a document.
 
 ## Where things live

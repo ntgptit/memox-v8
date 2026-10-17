@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Design-system gate (ADR-025).
+"""Design-system gate (ADR-026).
 
   check.py --symbols   removed theme names/paths still present in lib/ or test/
   check.py             everything: symbols, unfilled replacements, the theme's
@@ -56,7 +56,7 @@ def symbol_problems(root: Path) -> list[str]:
 
 
 THEME_DIR = Path("lib/core/theme")
-# ADR-025: the closed list of theme files. The palette files are the only
+# ADR-026: the closed list of theme files. The palette files are the only
 # Dart that writes a colour value.
 THEME_FILES = frozenset({
     "app_theme.dart", "app_palette.dart", "app_typography.dart", "app_dimens.dart",
@@ -76,7 +76,7 @@ def theme_file_problems(root: Path) -> list[str]:
     for path in sorted(p for p in theme.rglob("*") if p.is_file()):
         relative = path.relative_to(theme)
         if relative.parent != Path(".") or relative.name not in THEME_FILES:
-            problems.append(f"{THEME_DIR / relative}: not an allowed theme file (ADR-025)")
+            problems.append(f"{THEME_DIR / relative}: not an allowed theme file (ADR-026)")
     return problems
 
 

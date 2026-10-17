@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-// The SDK Scaffold is the screen's layout host only (ADR-025): it places the
+// The SDK Scaffold is the screen's layout host only (ADR-026): it places the
 // FAB, resizes the body above the keyboard and carries the bottom bar; every
 // surface it shows is ForUI's or painted from the ForUI theme.
 import 'package:flutter/material.dart'

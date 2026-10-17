@@ -1,5 +1,5 @@
 {
-  "_note": "Names deleted from the theme. A key is matched as a whole word in lib/ and test/ Dart; a key starting with 're:' is a regex. Every entry names its replacement (ADR-025: ForUI FColors, MxStatusColors, MxTextRoles, AppDimens, FBorderRadius).",
+  "_note": "Names deleted from the theme. A key is matched as a whole word in lib/ and test/ Dart; a key starting with 're:' is a regex. Every entry names its replacement (ADR-026: ForUI FColors, MxStatusColors, MxTextRoles, AppDimens, FBorderRadius).",
   "symbols": {
     "MxSemanticColors": "context.status (MxStatusColors) or context.colors (ForUI FColors)",
     "semanticColors": "context.status",

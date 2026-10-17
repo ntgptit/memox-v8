@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 
-// The one place colour values are written (ADR-025). ForUI's neutral
+// The one place colour values are written (ADR-026). ForUI's neutral
 // palette is the base; three values differ from it, each for a reason:
 // - `primary` is MemoX indigo, the brand, instead of near-black. Dark mode
 //   takes the light step, so an accent glyph or label reads on the dark

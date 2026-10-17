@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
-/// The app's own geometry, read as `context.dimens` (ADR-025): the spacing
+/// The app's own geometry, read as `context.dimens` (ADR-026): the spacing
 /// scale, screen margins, layout breakpoints and the few sizes a shared
 /// widget lays out by. Component geometry (button, field, chip and control
 /// sizes, radii, borders, focus rings, state layers) is ForUI's and is read

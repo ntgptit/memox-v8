@@ -1,13 +1,13 @@
 ---
 name: forui-shared-widgets
-description: The contract for this app's Mx* shared widgets on ForUI and for the ForUI theme in lib/core/theme/ (ADR-025). Use when building or changing an Mx* widget, the palette, the type scale or the theme host (BUILD); when a feature needs a component the Mx set does not have (ADMIT); when auditing shared widgets for states, 48dp targets, semantics, overlays or theme parity (AUDIT); when fixing a confirmed shared-widget defect (FIX). Not for values (lib/core/theme/ owns them) or a screen's layout (its detail file owns it).
+description: The contract for this app's Mx* shared widgets on ForUI and for the ForUI theme in lib/core/theme/ (ADR-026). Use when building or changing an Mx* widget, the palette, the type scale or the theme host (BUILD); when a feature needs a component the Mx set does not have (ADMIT); when auditing shared widgets for states, 48dp targets, semantics, overlays or theme parity (AUDIT); when fixing a confirmed shared-widget defect (FIX). Not for values (lib/core/theme/ owns them) or a screen's layout (its detail file owns it).
 ---
 
 # ForUI shared widgets
 
 The app is drawn with ForUI 0.27.6; features compose the `Mx*` widgets in
 `lib/shared/widgets/`, which are built on ForUI components
-([ADR-025](../../../docs/shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)).
+([ADR-026](../../../docs/shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)).
 This skill is the procedure for keeping that layer correct. Values are not
 written here: they live in `lib/core/theme/` and are named in `DESIGN.md`.
 

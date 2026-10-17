@@ -3,7 +3,7 @@
 Reads tools/design/removed_symbols.json. Refuses (exit 2) a write that
 - puts a removed name into Dart under lib/, test/ or integration_test/,
 - writes to a path the file lists as deleted (the old generated theme,
-  design/tokens.json and its generator among them, ADR-025).
+  design/tokens.json and its generator among them, ADR-026).
 Any environment problem exits 0: the gate's grep (check.py --symbols) is the
 real backstop, and tests/ notice a hook that has stopped working.
 """
@@ -44,7 +44,7 @@ def verdict(tool_input: dict) -> str | None:
     if listed:
         return (
             f"'{listed}' đã bị xoá. Không tạo lại; giá trị theme nằm ở "
-            "lib/core/theme (app_palette.dart, ADR-025)."
+            "lib/core/theme (app_palette.dart, ADR-026)."
         )
 
     if not relative.endswith(".dart") or not relative.startswith(DART_ROOTS):

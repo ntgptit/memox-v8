@@ -4,7 +4,7 @@ import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 
-/// The one way UI code reads the theme: the ForUI theme in scope (ADR-025).
+/// The one way UI code reads the theme: the ForUI theme in scope (ADR-026).
 /// A feature reads these and never imports ForUI for them.
 extension ThemeContext on BuildContext {
   /// ForUI's colour roles.

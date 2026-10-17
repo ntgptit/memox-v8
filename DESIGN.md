@@ -159,7 +159,7 @@ components:
 
 **Creative North Star: "The Quiet Study Desk"**
 
-MemoX should feel like a quiet, focused study space. The app is drawn with ForUI (ADR-025): one ForUI theme in a light and a dark palette, cards on a neutral page, and one accent that means "act". The values live in Dart: the palette in `lib/core/theme/app_palette.dart` and `mx_status_colors.dart`, the type scale in `app_typography.dart`, the spacing in `app_dimens.dart`, and ForUI's own radii, border width and component styles. The frontmatter above is rendered from the production theme (`test/tools/design_doc_test.dart`); this prose names roles and never restates a value. To change the look, follow `docs/agent/visual-change.md`.
+MemoX should feel like a quiet, focused study space. The app is drawn with ForUI (ADR-026): one ForUI theme in a light and a dark palette, cards on a neutral page, and one accent that means "act". The values live in Dart: the palette in `lib/core/theme/app_palette.dart` and `mx_status_colors.dart`, the type scale in `app_typography.dart`, the spacing in `app_dimens.dart`, and ForUI's own radii, border width and component styles. The frontmatter above is rendered from the production theme (`test/tools/design_doc_test.dart`); this prose names roles and never restates a value. To change the look, follow `docs/agent/visual-change.md`.
 
 - Content is always more prominent than chrome.
 - Hierarchy and spacing create structure before decoration does.

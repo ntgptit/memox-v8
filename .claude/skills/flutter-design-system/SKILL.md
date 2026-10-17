@@ -14,7 +14,7 @@ done once.
 
 Nothing in `features/` may contain a raw colour, text style, padding value,
 radius, elevation, icon size or duration. They come from the ForUI theme, whose
-values live in Dart under `lib/core/theme/` (ADR-025). **No value is written in
+values live in Dart under `lib/core/theme/` (ADR-026). **No value is written in
 this skill, in code, in a test or in a document:** change the look by following
 `docs/agent/visual-change.md`, never by editing a value in place.
 

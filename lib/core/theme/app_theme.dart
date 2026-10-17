@@ -31,7 +31,7 @@ FThemeData _build(FColors colors, String label) => FThemeData(
 );
 
 /// The SDK Material theme the app's infrastructure host reads, derived one
-/// way from [theme] (ADR-025): `MaterialApp.router` (go_router's page
+/// way from [theme] (ADR-026): `MaterialApp.router` (go_router's page
 /// transitions), the `Scaffold` that `MxAppShell` lays out with, and the
 /// `RefreshIndicator` of the two pull-to-refresh lists. ForUI owns every
 /// visible component; this only gives those hosts the same ground, ink and

@@ -1,6 +1,6 @@
 # MemoX V8 guard rules — domain: design_token
 #
-# The visual system (`DESIGN.md`, ADR-025): no hardcoded colours, text styles
+# The visual system (`DESIGN.md`, ADR-026): no hardcoded colours, text styles
 # or padding — everything comes from the ForUI theme and the app palette.
 #
 # Scope note: these run on `ui_surfaces` (features/*/presentation + shared), NOT
@@ -165,7 +165,7 @@ rules:
       - memox-v8
       - design-token
 
-  # ADR-025: a colour that differs by mode is a palette value: the light and
+  # ADR-026: a colour that differs by mode is a palette value: the light and
   # the dark FColors in `app_palette.dart` and `MxStatusColors.light`/`.dark`
   # already differ on it. Anywhere else a branch on brightness picks a colour
   # or a size behind the theme's back, and the two modes drift apart. The
@@ -190,7 +190,7 @@ rules:
       - memox-v8
       - design-token
 
-  # ADR-025 and CLAUDE.md: a removed theme name never comes back, in any form.
+  # ADR-026 and CLAUDE.md: a removed theme name never comes back, in any form.
   # The removed names themselves are refused by
   # `tools/design/removed_symbols.json` (hook, check.py); this rule refuses the
   # shapes a comeback takes in the theme — a typedef, a deprecated alias, a

@@ -5,7 +5,7 @@ import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 
-// WCAG 2 contrast of the palette's pairs (ADR-025): text keeps 4.5:1 and a
+// WCAG 2 contrast of the palette's pairs (ADR-026): text keeps 4.5:1 and a
 // glyph or control edge 3:1, in both modes, on the grounds the widgets draw
 // them on. No exception is recorded: a pair below its floor is a palette
 // change in lib/core/theme/app_palette.dart.

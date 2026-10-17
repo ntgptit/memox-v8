@@ -2,7 +2,7 @@ import 'package:flutter/painting.dart';
 import 'package:forui/forui.dart';
 
 /// The app's [FTypography]: ForUI's touch type scale set in Be Vietnam Pro,
-/// with Noto Sans KR as the Korean fallback (both bundled, OFL; ADR-025).
+/// with Noto Sans KR as the Korean fallback (both bundled, OFL; ADR-026).
 ///
 /// The sizes are ForUI's touch sizes. The line heights are not: ForUI sets
 /// 12 and 14 at 1.0 and 1.25, which clips stacked Vietnamese diacritics

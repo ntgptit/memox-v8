@@ -9,7 +9,7 @@ phase by phase, with the decisions taken along the way. Branch
 | Phase | Work | Outcome |
 |---|---|---|
 | 1–2 Baseline and audit | Clean worktree of `a4f56ce2`; full gate and goldens run there; `SOURCE_AUDIT.md` | Baseline gate PASS (4745 tests), goldens PASS; APK build blocked by the network (see `MIGRATION_VERIFICATION.md`) |
-| 3 Decision | ADR-025; `FORUI_ARCHITECTURE.md` | ForUI 0.27.6 pinned; Material kept as one-way infrastructure |
+| 3 Decision | ADR-026; `FORUI_ARCHITECTURE.md` | ForUI 0.27.6 pinned; Material kept as one-way infrastructure |
 | 5 Theme and root | `lib/core/theme/` rebuilt on `FThemeData`; `AppThemeHost` in `MaterialApp.router`'s builder | One palette file, one status-colour file, the type scale, `AppDimens`; Light/Dark/System through `themeMode` |
 | 6 Shared widgets | The `Mx*` widgets rebuilt on ForUI components (inventory in `SHARED_WIDGET_INVENTORY.md`) | Public contracts kept, except the four breaking changes listed in the inventory |
 | 7 Call sites and tests | A codemod renamed theme reads in `lib/` and `test/`; the test harness moved onto the ForUI host; every test file migrated (three parallel test agents, then the defects they found fixed in `lib/`) | Tests assert ForUI's resolved styles, not Material values |

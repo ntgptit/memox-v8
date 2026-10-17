@@ -175,7 +175,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      // The SDK Material host only (ADR-025): ForUI's theme is the one the
+      // The SDK Material host only (ADR-026): ForUI's theme is the one the
       // widgets read, set over the router below.
       theme: materialHostTheme(buildLightTheme()),
       darkTheme: materialHostTheme(buildDarkTheme()),

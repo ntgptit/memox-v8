@@ -7,7 +7,7 @@ import 'package:memox/core/theme/app_theme.dart';
 import '../../tools/design/design_doc.dart';
 
 // DESIGN.md's frontmatter and the token part of .impeccable/design.json are
-// rendered from the production ForUI themes (ADR-025); the committed files
+// rendered from the production ForUI themes (ADR-026); the committed files
 // must equal that rendering. Rewrite them after a palette, type or spacing
 // change with:
 //   MEMOX_WRITE_DESIGN_DOCS=1 flutter test test/tools/design_doc_test.dart

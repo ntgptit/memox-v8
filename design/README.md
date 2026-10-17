@@ -1,6 +1,6 @@
 # design/
 
-The design values no longer live here. Since ADR-025 the app is drawn with ForUI
+The design values no longer live here. Since ADR-026 the app is drawn with ForUI
 and its values are Dart in `lib/core/theme/`:
 
 - colours: `app_palette.dart` (the two ForUI `FColors`) and `mx_status_colors.dart`;

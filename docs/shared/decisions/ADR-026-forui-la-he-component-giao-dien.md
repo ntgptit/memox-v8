@@ -1,5 +1,5 @@
 ---
-id: ADR-025
+id: ADR-026
 title: ForUI là hệ component giao diện; Material chỉ còn là hạ tầng
 status: active
 superseded_by:

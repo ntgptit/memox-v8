@@ -18,7 +18,7 @@ import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-// Spec 2026-09-27 D2, on ForUI (ADR-025): in dark, primary is the light step,
+// Spec 2026-09-27 D2, on ForUI (ADR-026): in dark, primary is the light step,
 // so primary as text, icon or focus ring reads on the dark page without a
 // separate ink; fills, edges and tints keep primary.
 void main() {

@@ -2,7 +2,7 @@
 
 How to change a colour, a size, a font or any other visual value. The app is drawn
 with ForUI, and the values live in Dart under `lib/core/theme/`
-([ADR-025](../shared/decisions/ADR-025-forui-la-he-component-giao-dien.md)). Everything
+([ADR-026](../shared/decisions/ADR-026-forui-la-he-component-giao-dien.md)). Everything
 else is rendered from that theme or checked against it.
 
 1. Change the value where it lives:

@@ -19,7 +19,7 @@ import '../support/library_harness.dart';
 import '../support/forui_expect.dart';
 
 // The theme gates that run through the production root (`MemoxApp` with its
-// real theme mode), never through a test-built MaterialApp (ADR-025): the
+// real theme mode), never through a test-built MaterialApp (ADR-026): the
 // mode picks the ForUI theme, the routes and overlays the root navigator
 // shows inherit it, and the SDK host theme follows it.
 

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/assets.dart';
 
 /// Every glyph the app draws, mapped once, by meaning, to ForUI's Lucide set
-/// (ADR-025). One concept, one glyph. Lucide has no filled variants, so a
+/// (ADR-026). One concept, one glyph. Lucide has no filled variants, so a
 /// navigation destination's selected glyph is the resting one: the selected
 /// state is carried by colour and the indicator, never by the glyph alone.
 abstract final class AppIcons {

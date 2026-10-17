@@ -15,7 +15,7 @@ Brightness resolveBrightness(BuildContext context, ThemeMode mode) =>
       ThemeMode.system => MediaQuery.platformBrightnessOf(context),
     };
 
-/// Puts the app's ForUI theme of [brightness] over [child] (ADR-025). It sits
+/// Puts the app's ForUI theme of [brightness] over [child] (ADR-026). It sits
 /// in `MaterialApp.builder`, above the Navigator, so every route, dialog,
 /// sheet and overlay below inherits the one theme; a theme placed in a screen
 /// would not reach the routes the root navigator shows.

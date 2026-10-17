@@ -390,7 +390,7 @@
   ],
   "narrative": {
     "northStar": "The Quiet Study Desk",
-    "overview": "MemoX should feel like a quiet, focused study space. It is drawn with ForUI in a light and a dark palette built from one theme in lib/core/theme (ADR-025): a calm neutral page, cards with a hairline edge, and one accent that means \"act\". Component philosophy: \"Calm and exact\".",
+    "overview": "MemoX should feel like a quiet, focused study space. It is drawn with ForUI in a light and a dark palette built from one theme in lib/core/theme (ADR-026): a calm neutral page, cards with a hairline edge, and one accent that means \"act\". Component philosophy: \"Calm and exact\".",
     "keyCharacteristics": [
       "One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve text roles on ForUI's type scale.",
       "Neutral grounds: background for the page, card for cards, muted for recessed grounds, each edge a border hairline.",

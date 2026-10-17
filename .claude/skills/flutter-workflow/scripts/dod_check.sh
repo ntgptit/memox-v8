@@ -341,7 +341,7 @@ else
   FAILED+=("hook tests unavailable: $HOOK_TESTS")
 fi
 
-# The design system (ADR-025): the closed theme file list and ThemeContext
+# The design system (ADR-026): the closed theme file list and ThemeContext
 # getters, colour values only in the palette files, no value in DESIGN.md's
 # prose, and no name listed in tools/design/removed_symbols.json left in lib/
 # or test/. Its own tests run beside it; that DESIGN.md's frontmatter and the
