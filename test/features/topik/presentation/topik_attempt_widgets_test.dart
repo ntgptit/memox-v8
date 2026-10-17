@@ -2,6 +2,8 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/domain/models/topik_audio_model.dart';
@@ -34,11 +36,13 @@ void main() {
     LibraryEnv env,
     Widget child, {
     FakeTopikAudioRepository? player,
+    Brightness brightness = Brightness.light,
   }) async {
     await pumpLibraryScreen(
       tester,
       env,
       Scaffold(body: child),
+      brightness: brightness,
       overrides: [
         topikAudioRepositoryProvider.overrideWithValue(
           player ?? FakeTopikAudioRepository(),
@@ -350,6 +354,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(picks.last, isA<TopikGridSubmit>());
     handle.dispose();
+  });
+
+  libraryTest('the grid in dark: an answered number is the accent mark on '
+      'the primary tint (owner ruling 2026-10-17)', (tester, env) async {
+    await host(
+      tester,
+      env,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => showTopikQuestionGrid(
+            context,
+            questionNos: const [1, 2],
+            answered: const {2},
+            current: 1,
+          ),
+          child: const Text('open'),
+        ),
+      ),
+      brightness: Brightness.dark,
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    final dark = appDarkColors;
+    expect(
+      textColor(tester, find.text('2')),
+      dark.extension<MxStatusColors>().accentMark,
+    );
+    expect(textColor(tester, find.text('1')), dark.foreground);
   });
 
   libraryTest('a collapse carried into a group with nothing to hide keeps '

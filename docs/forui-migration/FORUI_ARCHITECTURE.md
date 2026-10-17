@@ -23,7 +23,7 @@ host (lib/app/app_theme_host.dart, MaterialApp.router)   infrastructure only
 | Piece | File | Notes |
 |---|---|---|
 | Palette | `lib/core/theme/app_palette.dart` | `appLightColors`, `appDarkColors` (`FColors`). Light: ForUI neutral base, `primary` MemoX indigo, `mutedForeground` and `error`/`destructive` adjusted for contrast. Dark: the navy page and the indigo from before the migration, every other value computed from them and written as hex; dark `primary` as text is a recorded contrast exception (owner ruling 2026-10-17). |
-| Status colours | `lib/core/theme/mx_status_colors.dart` | `MxStatusColors` (`success`, `warning`, `info` and their fills), an `FColors` extension. |
+| Status colours | `lib/core/theme/mx_status_colors.dart` | `MxStatusColors` (`success`, `warning`, `info` and their fills, `accentMark`), an `FColors` extension. |
 | Type | `lib/core/theme/app_typography.dart` | `AppTypography.build(colors)` → `FTypography` (Be Vietnam Pro, Noto Sans KR fallback); `MxTextRoles`, the twelve roles. |
 | Dimens | `lib/core/theme/app_dimens.dart` | `AppDimens`, spacing, margins and layout sizes; an `FThemeData` extension. Radii and border width are ForUI's (`context.radii`, `context.hairline`). |
 | Theme | `lib/core/theme/app_theme.dart` | `buildLightTheme()`, `buildDarkTheme()`, `themeFor(brightness)`; `materialHostTheme(theme)` for the SDK host, derived from `FColors` and the ForUI type scale. |

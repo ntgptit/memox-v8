@@ -89,17 +89,30 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final muted = context.colors.mutedForeground;
     final terms = [
-      (overdueCount, overdueLabel, context.status.warning, AppIcons.overdue),
-      (todayCount, todayLabel, context.colors.primary, AppIcons.dueNow),
-      (newCount, newLabel, context.colors.mutedForeground, AppIcons.newCards),
+      (
+        overdueCount,
+        overdueLabel,
+        context.status.warning,
+        context.status.warning,
+        AppIcons.overdue,
+      ),
+      // The today glyph is an accent icon; its words stay primary.
+      (
+        todayCount,
+        todayLabel,
+        context.colors.primary,
+        context.status.accentMark,
+        AppIcons.dueNow,
+      ),
+      (newCount, newLabel, muted, muted, AppIcons.newCards),
       if (scheduledLabel case final label?)
-        (scheduledCount, label, muted, null),
+        (scheduledCount, label, muted, muted, null),
     ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();
     if (hasIcons) return _GlyphStatement(terms: terms, fallback: fallback);
     // Only the Scheduled term has no glyph. Without an overdue, today or new
     // term the fallback still says nothing is due, and Scheduled follows it
     // (critique 2026-09-30 part 3b review).
-    final isFallbackShown = !terms.any((term) => term.$4 != null);
+    final isFallbackShown = !terms.any((term) => term.$5 != null);
     return Text.rich(
       TextSpan(
         style: context.texts.label.copyWith(
@@ -109,7 +122,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
           // "1,248 cards · nothing due" is a line of terms too.
           if (isFallbackShown)
             TextSpan(text: canWrap ? metaLine(fallback) : fallback),
-          for (final (index, (count, label, ink, _)) in terms.indexed) ...[
+          for (final (index, (count, label, ink, _, _)) in terms.indexed) ...[
             if (index > 0 || isFallbackShown)
               TextSpan(text: canWrap ? metaTermSeparator : _separator),
             TextSpan(
@@ -134,7 +147,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   }
 }
 
-typedef _Term = (int, String Function(int), Color, IconData?);
+/// A term: its count, its words, the words' colour, the glyph's colour and
+/// the glyph.
+typedef _Term = (int, String Function(int), Color, Color, IconData?);
 
 /// The terms as units in a [Wrap]: a centred glyph, then the words and the
 /// dot that follows them. A unit wider than the line wraps its own words.
@@ -155,8 +170,9 @@ class _GlyphStatement extends StatelessWidget {
         ),
       );
     }
-    final statement = [for (final (count, label, _, _) in terms) label(count)]
-        .join(MxWorkloadBreakdownLine._separator);
+    final statement = [
+      for (final (count, label, _, _, _) in terms) label(count),
+    ].join(MxWorkloadBreakdownLine._separator);
     return Semantics(
       label: statement,
       excludeSemantics: true,
@@ -164,7 +180,8 @@ class _GlyphStatement extends StatelessWidget {
         spacing: context.dimens.space4,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          for (final (index, (count, label, ink, glyph)) in terms.indexed)
+          for (final (index, (count, label, ink, glyphInk, glyph))
+              in terms.indexed)
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -172,7 +189,7 @@ class _GlyphStatement extends StatelessWidget {
                   Icon(
                     icon,
                     size: context.dimens.sizeIconInline,
-                    color: count > 0 ? ink : muted,
+                    color: count > 0 ? glyphInk : muted,
                   ),
                   SizedBox(width: context.dimens.space4),
                 ],

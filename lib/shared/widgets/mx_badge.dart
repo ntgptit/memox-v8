@@ -57,6 +57,7 @@ class MxBadge extends StatelessWidget {
       (true, _) => colors.primaryForeground,
       (false, MxBadgeTone.warning) => status.warning,
       (false, MxBadgeTone.mastery) => status.success,
+      (false, MxBadgeTone.primary) => status.accentMark,
       (false, _) => toneColor,
     };
     return MxToneBadge(

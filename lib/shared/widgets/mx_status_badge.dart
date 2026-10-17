@@ -42,14 +42,18 @@ class MxStatusBadge extends StatelessWidget {
     final ink = switch (status) {
       MxCardStatus.newCard => context.colors.mutedForeground,
       MxCardStatus.learning => context.status.warning,
-      MxCardStatus.reviewing => context.colors.primary,
+      MxCardStatus.reviewing => context.status.accentMark,
       MxCardStatus.mastered => context.status.success,
     };
+    // The reviewing dot is an accent mark; its tint keeps primary.
+    final dot = status == MxCardStatus.reviewing
+        ? context.status.accentMark
+        : color;
     if (isDot) {
       return Semantics(
         container: true,
         label: label,
-        child: _Dot(color: color, size: _bareDot),
+        child: _Dot(color: dot, size: _bareDot),
       );
     }
     return MxToneBadge(
@@ -63,7 +67,7 @@ class MxStatusBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: context.dimens.space4,
         children: [
-          _Dot(color: color, size: _pillDot),
+          _Dot(color: dot, size: _pillDot),
           Text(label, maxLines: 1, softWrap: false),
         ],
       ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 /// How long a toast stays: the platform's 4 seconds.
@@ -239,7 +240,14 @@ class _ToastViewState extends State<_ToastView>
                     liveRegion: true,
                     child: ConstrainedBox(
                       constraints: style.toastStyles.primary.constraints,
+                      // The message reads as a banner message, below
+                      // ForUI's 16 title (owner ruling 2026-10-17).
                       child: FToast(
+                        style: FToastStyleDelta.delta(
+                          titleTextStyle: TextStyleDelta.value(
+                            context.texts.label,
+                          ),
+                        ),
                         title: Text(widget.message),
                         suffix: widget.action,
                       ),

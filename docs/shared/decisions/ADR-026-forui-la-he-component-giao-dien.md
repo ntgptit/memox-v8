@@ -33,7 +33,9 @@ system Material riêng.
   với `primary` indigo MemoX; dark giữ nền navy `#0A082D` và `primary` `#564BCB` như
   trước khi migrate, các giá trị dark còn lại tính từ hai màu đó và ghi thẳng mã
   hex, theo quyết định của chủ sở hữu ngày 2026-10-17) và `mx_status_colors.dart`
-  (success, warning, info). Thang chữ là
+  (success, warning, info và `accentMark`: icon nhấn và chữ trên nền tint của
+  `primary`, bằng `primary` ở light và bằng màu chữ ở dark, quyết định ngày
+  2026-10-17). Thang chữ là
   `AppTypography` (`FTypography`, Be Vietnam Pro) với 12 role `MxTextRoles`; khoảng
   cách và kích thước bố cục là `AppDimens`; bo góc, độ dày viền và bóng là của ForUI.
   `design/tokens.json`, `generate.py`, `codemod.py` và `lib/core/theme/generated/`

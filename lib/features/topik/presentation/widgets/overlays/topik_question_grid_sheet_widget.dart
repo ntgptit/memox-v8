@@ -170,7 +170,9 @@ class _GridCell extends StatelessWidget {
               child: Text(
                 '$no',
                 style: context.texts.button.copyWith(
-                  color: isAnswered ? accent : colors.foreground,
+                  color: isAnswered
+                      ? context.status.accentMark
+                      : colors.foreground,
                 ),
               ),
             ),
