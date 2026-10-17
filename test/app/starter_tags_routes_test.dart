@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 import '../support/starter_screen_fixtures.dart';
 import '../support/tag_fixtures.dart';
 

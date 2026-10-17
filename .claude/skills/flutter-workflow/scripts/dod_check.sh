@@ -26,9 +26,9 @@
 # to print 977 lines (about 100 KB) that whoever ran the gate had to read past.
 #
 # **`--changed` checks what the diff can reach.** On a plan that is not the
-# full suite (no tooling, theme, core or app-shell path changed), `m3_lint`
-# lints the changed `lib/` files only, and the guard's and the hooks' own tests
-# are left out: every path they read promotes the plan to the full suite. A
+# full suite, `m3_lint` lints the changed `lib/` files only, and the guard's
+# and the hooks' own tests run only when a path they read changed
+# (`changed_under` below). A
 # changed file can still give an unchanged one an M3 violation (the rules
 # resolve types), and a plan with no lib/ Dart change runs no m3_lint, so no
 # allowlist expiry either: the full gate, with no flag, runs every step over
@@ -194,7 +194,9 @@ if [[ $CHANGED -eq 1 ]]; then
   {
     # Include type changes (`T`), otherwise a mixed docs + script-to-symlink
     # change can hide the high-risk path and incorrectly select docs-only.
-    git diff --name-only --diff-filter=ACMRTD -z "$BASE_REF" --
+    # --no-renames: a moved file lists its old path too, which may be the one
+    # that selects more (a file moved out of lib/core/theme/).
+    git diff --name-only --no-renames --diff-filter=ACMRTD -z "$BASE_REF" --
     git ls-files --others --exclude-standard -z
   } >"$WORK/changed-paths.nul"
   PLAN_BUILDER="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/build_verification_plan.py"
@@ -207,6 +209,22 @@ if [[ $CHANGED -eq 1 ]]; then
   NEEDS_STATIC="$(read_plan_bool needs_static)"
   NEEDS_HOST_TESTS="$(read_plan_bool needs_host_tests)"
   [[ "$(read_plan_bool full_suite)" == "1" ]] || SCOPED=1
+fi
+
+# changed_under PREFIX... : whether a changed path starts with one of them.
+# Always true outside a scoped `--changed` plan.
+changed_under() {
+  [[ $SCOPED -eq 0 ]] && return 0
+  local changed_path prefix
+  while IFS= read -r -d '' changed_path; do
+    for prefix in "$@"; do
+      [[ "$changed_path" == "$prefix"* ]] && return 0
+    done
+  done <"$WORK/changed-paths.nul"
+  return 1
+}
+
+if [[ $CHANGED -eq 1 ]]; then
   "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); print('verification plan:', p['risk'], '·', len(p['test_files']), 'test files'); [print('  -', r) for r in p['reasons']]" "$PLAN_JSON"
 fi
 
@@ -314,8 +332,8 @@ fi
 # The design-token hook exits 0 on any error by design, so a hook that has
 # stopped loading its rules looks like a clean file; its tests are what notice.
 HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"
-if [[ $SCOPED -eq 1 ]]; then
-  SCOPED_OUT+=("hook tests: no hook or guard path changed")
+if ! changed_under .claude/hooks/ .claude/settings.json code-verification-guard-v2/ tools/design/removed_symbols; then
+  SCOPED_OUT+=("hook tests: no hook, hook setting or guard path changed")
 elif [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
   plan hook_tests "hook tests" \
     "$PY -m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'"
@@ -386,9 +404,8 @@ if [[ -z "$GUARD_PY" ]]; then
 fi
 GUARD_PY="${GUARD_PY:-$PY}"
 GUARD_TESTS="$REPO_ROOT/code-verification-guard-v2/tests"
-if [[ $NEEDS_STATIC -eq 0 ]]; then
-  :
-elif [[ $SCOPED -eq 1 ]]; then
+# By path, not by needs_static: a guard README is read by its ruleset test.
+if ! changed_under code-verification-guard-v2/; then
   SCOPED_OUT+=("guard self-tests: no guard path changed")
 elif [[ ! -d "$GUARD_TESTS" ]]; then
   FAILED+=("guard self-tests missing at $GUARD_TESTS")

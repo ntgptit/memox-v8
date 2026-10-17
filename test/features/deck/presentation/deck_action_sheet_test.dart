@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));

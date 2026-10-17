@@ -4,6 +4,7 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/log_entry.dart';
 
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 final class _FlushCountingSink implements LogSink {
   final events = <String>[];

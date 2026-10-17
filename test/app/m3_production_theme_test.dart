@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import '../support/approved_palette.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 // The M3 gates that run through the production root (`MemoxApp` with its real
 // theme mode), never through a test-built MaterialApp. Ledger DSD-27 (the

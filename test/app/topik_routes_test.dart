@@ -16,6 +16,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 import '../support/topik_attempt_screen_fixtures.dart';
 import '../support/topik_fakes.dart';
 import '../support/topik_screen_fixtures.dart';

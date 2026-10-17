@@ -15,6 +15,7 @@ import 'package:memox/core/network/supabase_config.dart';
 
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 

@@ -17,22 +17,27 @@ gives each run) and prints their paths, one per line.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
+import statistics
 import sys
 from pathlib import Path
 
 from build_verification_plan import (
     GOLDEN_TAGS,
     LEADING_TRIVIA,
+    discover_goldens,
     discover_tests,
-    discover_worktree_dart_files,
     is_golden_only_test,
     normalize_path,
 )
 
 
 BUNDLE_DIR = ".dart_tool/memox_test_bundles"
+# Each test file's time in the last run that reached it (test_report.py
+# writes it), for balancing the bundles. Local, never committed.
+TIMINGS_FILE = ".dart_tool/memox_test_timings.json"
 BUNDLES_ENV = "MEMOX_TEST_BUNDLES"
 # **At most eight by default.** Each bundle is a `flutter_tester` of ~300 MB
 # beside the analyzer and the guard, and 8 bundles already measured slower
@@ -86,17 +91,6 @@ def bundle_count(env_value: str | None, cpu_count: int | None) -> int:
             "files one by one then, so this script should not have been called"
         )
     return count
-
-
-def discover_goldens(root: Path) -> set[str]:
-    """Every golden-only test file under `test/`."""
-    return {
-        path
-        for path in discover_worktree_dart_files(root)
-        if path.startswith("test/")
-        and path.endswith("_test.dart")
-        and is_golden_only_test(root / path)
-    }
 
 
 def expand_targets(root: Path, targets: list[str], *, goldens: bool = False) -> list[str]:
@@ -175,14 +169,46 @@ def select_files(root: Path, files: list[str], *, goldens: bool = False) -> list
     return kept
 
 
-def partition(files: list[str], count: int) -> list[list[str]]:
-    """Deal [files] out in turn over [count] bundles; empty bundles are dropped.
+def partition(
+    files: list[str], count: int, weights: dict[str, float] | None = None
+) -> list[list[str]]:
+    """Split [files] over [count] bundles; empty bundles are dropped.
 
-    Sorted input gives the same bundles on every run, and dealing in turn
-    measured balanced (60–87 s per bundle over the whole suite, spec §3.1).
+    With [weights] (each file's time in the last run, `load_timings`), the
+    heaviest file goes first into the lightest bundle, so one bundle does not
+    end up holding the slow ones: dealt in turn, the full suite ran one bundle
+    for 150 s beside three of about 105 s (2026-10-16). A file with no time
+    weighs the median. Without weights, files are dealt in turn, as before.
+    Either way the same input gives the same bundles.
     """
-    buckets = [files[index::count] for index in range(count)]
-    return [bucket for bucket in buckets if bucket]
+    known = [weights[path] for path in files if weights and path in weights]
+    if not known:
+        buckets = [files[index::count] for index in range(count)]
+        return [bucket for bucket in buckets if bucket]
+    median = statistics.median(known)
+    weight = {path: weights.get(path, median) for path in files}
+    buckets: list[list[str]] = [[] for _ in range(count)]
+    loads = [0.0] * count
+    for path in sorted(files, key=lambda item: (-weight[item], item)):
+        lightest = min(range(count), key=lambda index: (loads[index], index))
+        buckets[lightest].append(path)
+        loads[lightest] += weight[path]
+    return [sorted(bucket) for bucket in buckets if bucket]
+
+
+def load_timings(root: Path) -> dict[str, float]:
+    """The per-file times test_report.py kept from earlier runs, or none."""
+    try:
+        raw = json.loads((root / TIMINGS_FILE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        str(path): float(millis)
+        for path, millis in raw.items()
+        if isinstance(millis, (int, float))
+    }
 
 
 def _dart_string(value: str) -> str:
@@ -267,7 +293,7 @@ def write_bundles(
         stale.unlink()
     with_config = (root / TEST_CONFIG).is_file()
     written: list[str] = []
-    for index, bucket in enumerate(partition(files, count)):
+    for index, bucket in enumerate(partition(files, count, load_timings(root))):
         relative = f"{directory}/bundle_{index}_test.dart"
         (root / relative).write_text(
             render_bundle(bucket, with_config=with_config, up=up, goldens=goldens),

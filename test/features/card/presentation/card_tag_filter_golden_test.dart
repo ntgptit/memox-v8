@@ -11,6 +11,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 
 // Screen 07's tag filter (FE-B2 spec D3, D14), which the kit does not draw:
 // the sheet with none, one and several tags chosen, the list it filters,

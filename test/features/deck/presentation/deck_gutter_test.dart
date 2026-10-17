@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 
 // M3F-19: the Library's search field and the card pages' loading header sit
 // on the screen margin, as the app bar and the breadcrumb they stand beside.

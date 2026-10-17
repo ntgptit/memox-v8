@@ -27,6 +27,8 @@ TOP_DEFAULT = 10
 # goldens, the golden run (run_goldens.sh) passes `--tags golden`.
 RERUN_FLAGS_DEFAULT = "--exclude-tags golden"
 BUNDLE_MARKER = "memox_test_bundles/"
+# bundle_tests.py reads it to balance the next run (its TIMINGS_FILE).
+TIMINGS_FILE = ".dart_tool/memox_test_timings.json"
 
 
 @dataclass
@@ -134,6 +136,30 @@ def _origin(test: dict, suite: str, groups: dict[int, str]) -> tuple[str, str]:
     return suite, name
 
 
+def write_timings(summary: RunSummary, path: Path) -> None:
+    """Merge each file's test time in this run into [path], which
+    bundle_tests.py balances the next run's bundles with. A missing or torn
+    file is replaced; the report is never stopped by it."""
+    millis: dict[str, int] = defaultdict(int)
+    for result in summary.results:
+        if result.file != "?":
+            millis[result.file] += result.millis
+    if not millis:
+        return
+    try:
+        earlier = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(earlier, dict):
+            earlier = {}
+    except (OSError, ValueError):
+        earlier = {}
+    earlier.update(millis)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(earlier, sort_keys=True, indent=0) + "\n", encoding="utf-8")
+    except OSError:
+        pass
+
+
 def render(summary: RunSummary, top: int, rerun_flags: str = RERUN_FLAGS_DEFAULT) -> str:
     counted = [result for result in summary.results if not result.skipped]
     lines = [
@@ -183,6 +209,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=str(Path.cwd()))
     parser.add_argument("--top", type=int, default=TOP_DEFAULT)
     parser.add_argument("--rerun-flags", default=RERUN_FLAGS_DEFAULT)
+    parser.add_argument(
+        "--timings", type=Path,
+        help="where to merge each file's time (default: TIMINGS_FILE under --root)",
+    )
     args = parser.parse_args(argv)
     try:
         lines = args.report.read_text(encoding="utf-8").splitlines()
@@ -191,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"test report unavailable: {error}")
         return 0
     print(render(summary, args.top, args.rerun_flags))
+    write_timings(summary, args.timings or Path(args.root) / TIMINGS_FILE)
     return 0
 
 

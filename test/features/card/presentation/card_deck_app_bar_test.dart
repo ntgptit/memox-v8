@@ -16,6 +16,7 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 
 /// Screen 07's app bar and breadcrumb, composed as `app/` composes them (A14).
 final _en = lookupAppLocalizations(const Locale('en'));

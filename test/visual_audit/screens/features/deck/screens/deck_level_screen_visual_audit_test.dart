@@ -3,6 +3,7 @@ import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart'
 import '../../../../../support/card_fixtures.dart';
 import '../../../../../support/deck_fixtures.dart';
 import '../../../../../support/library_harness.dart';
+import '../../../../../support/deck_screen_harness.dart';
 import '../../../../screen_audit.dart';
 
 void main() {

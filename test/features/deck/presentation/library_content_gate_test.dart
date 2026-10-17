@@ -22,6 +22,7 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/deck_screen_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));

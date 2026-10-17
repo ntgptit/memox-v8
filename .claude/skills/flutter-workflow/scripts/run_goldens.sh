@@ -8,6 +8,12 @@
 #   --update   rewrite the committed pictures (`--update-goldens`) instead of
 #              comparing against them. Never on Windows (CLAUDE.md).
 #   --report   where the JSON report goes; CI counts the goldens from it.
+#   --changed  only the golden files the diff against --base (default:
+#              origin/master) can move a pixel in (build_verification_plan.py
+#              --goldens): every golden for the theme, tokens, strings, fonts or
+#              test config; none for docs or tooling. Compare and --update both
+#              take it. The full run, without it, is the one before a PR.
+#   --base     the comparison ref for --changed
 #   MEMOX_TEST_BUNDLES=<n>  at most n processes: n bundles for a comparison,
 #           n files at a time for --update (a memory-limited Docker VM sets it)
 #   MEMOX_TEST_BUNDLES=0  compare file by file, as before 2026-10-02.
@@ -37,6 +43,8 @@ set -uo pipefail
 
 UPDATE=0
 REPORT=""
+CHANGED=0
+BASE_REF="origin/master"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --update) UPDATE=1 ;;
@@ -44,6 +52,12 @@ while [[ $# -gt 0 ]]; do
       shift
       [[ $# -gt 0 ]] || { echo "--report requires a path" >&2; exit 2; }
       REPORT="$1"
+      ;;
+    --changed) CHANGED=1 ;;
+    --base)
+      shift
+      [[ $# -gt 0 ]] || { echo "--base requires a git ref" >&2; exit 2; }
+      BASE_REF="$1"
       ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -59,6 +73,29 @@ for candidate in python python3; do
   command -v "$candidate" >/dev/null 2>&1 && { PY="$candidate"; break; }
 done
 [[ -n "$PY" ]] || { echo "python is required to select the golden files" >&2; exit 1; }
+
+# **What to compare.** `test` is every golden file; --changed narrows it to the
+# ones the diff reaches, the same changed paths dod_check.sh --changed reads.
+TARGETS=(test)
+if [[ $CHANGED -eq 1 ]]; then
+  git rev-parse --verify "$BASE_REF^{commit}" >/dev/null 2>&1 \
+    || { echo "cannot resolve --base ref: $BASE_REF" >&2; exit 2; }
+  CHANGED_PATHS="$(mktemp)"
+  {
+    git diff --name-only --no-renames --diff-filter=ACMRTD -z "$BASE_REF" --
+    git ls-files --others --exclude-standard -z
+  } >"$CHANGED_PATHS"
+  GOLDEN_PLAN="$("$PY" "$SCRIPTS/build_verification_plan.py" --root "$REPO_ROOT" --nul \
+    --paths-file "$CHANGED_PATHS" --goldens)" || { rm -f "$CHANGED_PATHS"; exit 1; }
+  rm -f "$CHANGED_PATHS"
+  mapfile -t TARGETS < <("$PY" -c 'import json,sys; p=json.loads(sys.argv[1]); print("\n".join(["test"] if p["everything"] else p["files"]))' "$GOLDEN_PLAN")
+  "$PY" -c 'import json,sys; p=json.loads(sys.argv[1]); print("golden plan:", "every golden" if p["everything"] else "%d golden files" % len(p["files"])); [print("  -", r) for r in p["reasons"]]' "$GOLDEN_PLAN"
+  TARGETS=("${TARGETS[@]%$'\r'}")
+  if [[ -z "${TARGETS[0]:-}" ]]; then
+    echo "goldens: no golden file reaches this change; the full run before the PR compares them all"
+    exit 0
+  fi
+fi
 
 # Repo-relative, and one directory per run, for the reasons dod_check.sh gives.
 RUN_DIR=".dart_tool/memox_test_bundles/golden-$$"
@@ -83,7 +120,7 @@ else
 fi
 
 if [[ $UPDATE -eq 1 || "${MEMOX_TEST_BUNDLES:-}" == "0" ]]; then
-  if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --list test)"; then
+  if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --list "${TARGETS[@]}")"; then
     exit 1
   fi
   mapfile -t files <<<"$listed"
@@ -95,7 +132,7 @@ if [[ $UPDATE -eq 1 || "${MEMOX_TEST_BUNDLES:-}" == "0" ]]; then
   TZ=UTC flutter test --no-pub -r failures-only --tags golden "${update_flag[@]}" -j "$JOBS" \
     --file-reporter "json:$REPORT" "${files[@]}"
 else
-  if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --out "$RUN_DIR" test)"; then
+  if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --out "$RUN_DIR" "${TARGETS[@]}")"; then
     exit 1
   fi
   mapfile -t bundles <<<"$listed"

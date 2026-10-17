@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/app_harness.dart';
 
 // FE-C5: the tab shell shows a rail from 600 dp, and a bar when the window is
 // short (spec 2026-09-28-tablet-rail-design.md D1, D2, D7).

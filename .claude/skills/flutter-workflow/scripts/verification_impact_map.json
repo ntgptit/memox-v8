@@ -89,29 +89,70 @@
     "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [
-    ".claude/hooks/",
-    "code-verification-guard-v2/",
-    ".github/",
-    ".claude/skills/flutter-workflow/scripts/",
-    "lib/app/",
     "lib/core/theme/",
     "lib/l10n/",
+    "design/",
+    "assets/",
+    "drift_schemas/",
+    "test/support/fonts/"
+  ],
+  "full_scope_files": [
+    ".claude/skills/flutter-workflow/scripts/bundle_tests.py",
+    ".claude/skills/flutter-workflow/scripts/run_tests.sh",
+    ".fvmrc",
+    "analysis_options.yaml",
+    "build.yaml",
+    "dart_test.yaml",
+    "l10n.yaml",
+    "pubspec.lock",
+    "pubspec.yaml",
+    "test/flutter_test_config.dart"
+  ],
+  "tooling_prefixes": [
+    ".claude/",
+    ".github/",
+    ".impeccable/",
+    "code-verification-guard-v2/",
+    "tools/",
     "integration_test/",
     "e2e/",
+    "supabase/",
     "android/",
     "ios/",
     "linux/",
     "macos/",
     "web/",
-    "windows/"
+    "windows/",
+    "memox-api-services/"
   ],
-  "full_scope_files": [
-    ".fvmrc",
-    "analysis_options.yaml",
-    "build.yaml",
-    "dart_test.yaml",
-    "pubspec.lock",
-    "pubspec.yaml"
+  "file_readers": {
+    "lib/": [
+      "test/architecture/",
+      "test/app/app_bootstrap_test.dart",
+      "test/app/l10n_test.dart",
+      "test/core/network/supabase_client_test.dart",
+      "test/visual_audit/screens/screen_audit_coverage_test.dart"
+    ],
+    "design/": [
+      "test/core/theme/token_contrast_test.dart",
+      "test/core/theme/token_source.dart",
+      "test/support/approved_palette.dart"
+    ],
+    "docs/shared/data/schema.md": ["test/support/invariant_queries.dart"],
+    "drift_schemas/": ["test/database/schema_test.dart"],
+    "supabase/migrations/": ["test/core/database/schema_constants_parity_test.dart"],
+    "assets/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"],
+    "pubspec.yaml": ["test/tools/topik_content_assets_test.dart"],
+    "android/": ["test/app/android_manifest_test.dart", "test/app/android_signing_test.dart"],
+    ".github/": ["test/app/android_signing_test.dart"],
+    ".gitignore": ["test/app/android_signing_test.dart"],
+    "tools/m3_lint/": ["test/tools/m3_lint_test.dart"],
+    "tools/topik/": ["test/tools/topik_content_assets_test.dart", "test/tools/topik_lint_test.dart"]
+  },
+  "golden_scope_files": [
+    ".claude/skills/flutter-testing/scripts/golden.Dockerfile",
+    ".claude/skills/flutter-workflow/scripts/prepare_test_fonts.sh",
+    ".claude/skills/flutter-workflow/scripts/run_goldens.sh"
   ],
   "inert_prefixes": [
     ".vscode/",
