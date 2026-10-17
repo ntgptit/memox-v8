@@ -55,6 +55,15 @@ final class TopikAttemptSummary {
 
   int get unansweredCount => questionCount - answeredCount;
 
+  /// The time spent over all the questions, divided by the number of
+  /// questions (a blank one counts in the divisor), in whole milliseconds;
+  /// 0 when no question took any time.
+  int get averageTimeMs {
+    if (questionCount == 0) return 0;
+    final total = answers.fold(0, (sum, a) => sum + a.timeSpentMs);
+    return total ~/ questionCount;
+  }
+
   List<TopikAttemptAnswer> answersFor(TopikAnswerFilter filter) {
     final wanted = switch (filter) {
       TopikAnswerFilter.all => null,

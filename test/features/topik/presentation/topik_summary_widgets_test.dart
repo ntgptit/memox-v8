@@ -1,7 +1,9 @@
 import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -17,6 +19,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_summary
 import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
@@ -141,16 +144,55 @@ void main() {
     expect(labels, ['Wrong', 'Unanswered', 'Correct']);
   });
 
-  libraryTest('the figures: accuracy, answered, unanswered, and the longest '
-      'with its real number (critique S1)', (tester, env) async {
+  libraryTest('the figures: average per Q, answered, unanswered, and '
+      'the longest with its real number (owner 2026-10-17)', (
+    tester,
+    env,
+  ) async {
     await host(tester, env, TopikSummaryFiguresWidget(summary: summary));
 
-    expect(find.text('66%'), findsOneWidget);
+    // (65 + 125 + 0 + 30) s over 4 questions.
+    expect(find.text('55s'), findsOneWidget);
+    expect(find.text('AVERAGE PER Q'), findsOneWidget);
+    expect(find.text('ACCURACY'), findsNothing);
     expect(find.text('3'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2m 05s'), findsOneWidget);
     expect(find.text('LONGEST · Q32'), findsOneWidget);
   });
+
+  for (final (locale, labels) in [
+    (const Locale('en'), ['AVERAGE PER Q', 'LONGEST · Q32']),
+    (const Locale('vi'), ['TRUNG BÌNH/CÂU', 'LÂU NHẤT · CÂU 32']),
+  ]) {
+    libraryTest('every figure label keeps one line at 360 dp in '
+        '${locale.languageCode}', (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: SingleChildScrollView(
+            child: TopikSummaryFiguresWidget(summary: summary),
+          ),
+        ),
+        locale: locale,
+      );
+      await tester.pumpAndSettle();
+
+      for (final label in labels) {
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find.text(label),
+        );
+        final lines = (paragraph.size.height / paragraph.preferredLineHeight)
+            .round();
+        expect(
+          lines,
+          1,
+          reason: '$label wraps: ${paragraph.size.width} dp wide',
+        );
+      }
+    });
+  }
 
   libraryTest('no time on any question: Longest shows a dash and reads '
       '"None" (Q-P6-5)', (tester, env) async {
@@ -158,13 +200,16 @@ void main() {
     final blank = _summary([_answer(31, ms: 0), _answer(32, ms: 0)]);
     await host(tester, env, TopikSummaryFiguresWidget(summary: blank));
 
-    expect(find.text('–'), findsOneWidget);
-    expect(
-      tester.getSemantics(
-        find.byWidgetPredicate((w) => w is MxStatTile && w.label == 'Longest'),
-      ),
-      matchesSemantics(label: 'Longest', value: 'None'),
-    );
+    // Both time figures have no value: a dash that reads "None".
+    expect(find.text('–'), findsNWidgets(2));
+    for (final label in ['Longest', 'Average per Q']) {
+      expect(
+        tester.getSemantics(
+          find.byWidgetPredicate((w) => w is MxStatTile && w.label == label),
+        ),
+        matchesSemantics(label: label, value: 'None'),
+      );
+    }
     handle.dispose();
   });
 
@@ -197,9 +242,8 @@ void main() {
     expect(picks, [TopikAnswerFilter.correct]);
   });
 
-  libraryTest('the chart: a bar per question with its real number, one node '
-      'each, and a tap opens it (critique S4)', (tester, env) async {
-    final handle = tester.ensureSemantics();
+  libraryTest('the chart: a bar per question with its real number and a '
+      'status glyph, and a tap opens it (critique S4)', (tester, env) async {
     final opened = <int>[];
     await host(
       tester,
@@ -210,14 +254,80 @@ void main() {
     for (final no in [31, 32, 33, 34]) {
       expect(find.text('$no'), findsOneWidget);
     }
-    expect(find.bySemanticsLabel('Question 32, Wrong, 2m 05s'), findsOneWidget);
+    // A second channel besides colour, in the text role of the bar's status.
+    final theme = Theme.of(tester.element(find.byType(MxChartLegend)));
+    final glyphs = tester
+        .widgetList<Icon>(
+          find.descendant(
+            of: find.byType(TopikQuestionBarChartWidget),
+            matching: find.byType(Icon),
+          ),
+        )
+        .toList();
     expect(
-      find.bySemanticsLabel('Question 33, Unanswered, 0s'),
-      findsOneWidget,
+      [for (final g in glyphs) g.icon],
+      [AppIcons.check, AppIcons.close, AppIcons.remove, AppIcons.check],
     );
+    expect(glyphs[1].color, theme.colorScheme.error);
+    expect(glyphs[2].color, theme.colorScheme.onSurfaceVariant);
     await tester.tap(find.text('32'));
     expect(opened, [32]);
+  });
+
+  libraryTest('the chart is one TalkBack node; its bars are hidden from the '
+      'tree (owner 2026-10-17, ruling S4)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await host(
+      tester,
+      env,
+      TopikQuestionBarChartWidget(answers: answers, onOpen: (_) {}),
+    );
+
+    expect(
+      find.bySemanticsLabel(
+        'Time per question, 4 questions, longest question 32 2m 05s',
+      ),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel(RegExp('^Question 3')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^31|^32')), findsNothing);
     handle.dispose();
+  });
+
+  libraryTest('the chart with no time recorded names no longest question', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await host(
+      tester,
+      env,
+      TopikQuestionBarChartWidget(
+        answers: [_answer(31, ms: 0), _answer(32, ms: 0)],
+        onOpen: (_) {},
+      ),
+    );
+
+    expect(
+      find.bySemanticsLabel('Time per question, 2 questions, no time recorded'),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
+  libraryTest('a long chart fades its right edge while more lies past it '
+      '(owner 2026-10-17)', (tester, env) async {
+    await host(
+      tester,
+      env,
+      TopikQuestionBarChartWidget(
+        answers: [for (var no = 1; no <= 40; no++) _answer(no, selected: 1)],
+        onOpen: (_) {},
+      ),
+    );
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
+    expect(find.byKey(MxScrollFade.leadingKey), findsNothing);
   });
 
   libraryTest('an answer row: yours, the right one and the time; the eye '
@@ -250,6 +360,17 @@ void main() {
       findsOneWidget,
     );
     expect(findPlainText('Not answered · 0s'), findsOneWidget);
+    // TalkBack gets plain digits, not "circled digit three" (owner
+    // 2026-10-17); the glyphs stay on screen.
+    final spoken = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((t) => t.semanticsLabel)
+        .whereType<String>()
+        .toList();
+    expect(spoken, [
+      'Your answer 3, Right answer 1, 2m 05s',
+      'Not answered, 0s',
+    ]);
     final badges = tester.widgetList<MxBadge>(find.byType(MxBadge)).toList();
     expect(
       [for (final b in badges) b.tone],

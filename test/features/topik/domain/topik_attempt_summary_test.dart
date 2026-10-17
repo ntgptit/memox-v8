@@ -102,6 +102,25 @@ void main() {
     expect(summary.longest, isNull);
   });
 
+  test(
+    'the average counts blank questions in the divisor (owner 2026-10-17)',
+    () {
+      final summary = topikAttemptSummaryOf(
+        _detail([
+          _answer(1, selected: 1, timeMs: 1000),
+          _answer(2, selected: 1, timeMs: 2000),
+          _answer(3, selected: 1, timeMs: 3000),
+          _answer(4),
+        ]),
+      );
+      expect(summary.averageTimeMs, 1500);
+      expect(
+        topikAttemptSummaryOf(_detail([_answer(1), _answer(2)])).averageTimeMs,
+        0,
+      );
+    },
+  );
+
   test('per type, and the weakest among types with two questions', () {
     final summary = topikAttemptSummaryOf(
       _detail([

@@ -38,7 +38,6 @@ class TopikReviewQuestionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dimens = context.dimens;
-    final selected = answer.selectedIdx;
     return MxScreenScroll(
       children: [
         SizedBox(height: dimens.space16),
@@ -60,20 +59,23 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           _option(context, option),
           SizedBox(height: dimens.space8),
         ],
-        Text(
-          metaTerms([
-            if (selected == null)
-              l10n.topikNotAnswered
-            else
-              l10n.topikYourAnswer(topikCircled(selected)),
-            l10n.topikRightAnswer(topikCircled(_right)),
-          ]),
-          style: context.texts.labelMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
-        ),
+        _answerMeta(context),
         ..._support(context),
       ],
+    );
+  }
+
+  Widget _answerMeta(BuildContext context) {
+    final meta = context.l10n.topikAnswerMeta(
+      selected: answer.selectedIdx,
+      right: _right,
+    );
+    return Text(
+      meta.shown,
+      semanticsLabel: meta.spoken,
+      style: context.texts.labelMedium?.copyWith(
+        color: context.colors.onSurfaceVariant,
+      ),
     );
   }
 
