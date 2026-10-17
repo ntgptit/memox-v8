@@ -51,9 +51,9 @@ class MxListRow extends StatelessWidget {
   /// Usually an MxIconTile at the small step; any widget may replace it.
   final Widget? leading;
 
-  /// Gives [leading] a `sizeControl`-wide column, so a leading whose width
-  /// follows its content (a badge of 1 to 3 digits) does not move the title
-  /// from one row to the next. Off, the leading takes its own width: an icon
+  /// Gives [leading] a `sizeListRow`-wide column (56 dp: a "#100" badge is
+  /// about 55), so a leading whose width follows its content (a badge of 1
+  /// to 3 digits) does not move the title from one row to the next. Off, the leading takes its own width: an icon
   /// tile is narrower than the column and stays on the screen margin.
   final bool hasStableLeading;
 
@@ -178,7 +178,7 @@ class MxListRow extends StatelessWidget {
 
   Widget _column(BuildContext context, Widget lead) => hasStableLeading
       ? ConstrainedBox(
-          constraints: BoxConstraints(minWidth: context.dimens.sizeControl),
+          constraints: BoxConstraints(minWidth: context.dimens.sizeListRow),
           child: Align(
             alignment: AlignmentDirectional.centerStart,
             widthFactor: 1,

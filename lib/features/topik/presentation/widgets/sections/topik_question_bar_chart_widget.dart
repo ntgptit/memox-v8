@@ -59,8 +59,11 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
+                // The cells touch: each bar is centred in its `sizeControl`
+                // cell, so at the compact column (328 dp, 6.83 cells) the
+                // seventh bar always peeks under the fade (audit
+                // 2026-10-17, P2-1).
                 crossAxisAlignment: CrossAxisAlignment.end,
-                spacing: dimens.space4,
                 children: [
                   for (final answer in answers)
                     _Bar(
@@ -150,6 +153,7 @@ class _Bar extends StatelessWidget {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
+                  key: ValueKey('topik-chart-fill-${answer.questionNo}'),
                   width: dimens.space12,
                   height: max(dimens.space4, fullHeight * share),
                   child: DecoratedBox(

@@ -120,6 +120,26 @@ void main() {
     },
   );
 
+  test('a sub-second average is shown as one second, not "0s"', () {
+    // 45 000 ms over 50 questions: 900 ms.
+    final summary = topikAttemptSummaryOf(
+      _detail([
+        _answer(1, selected: 1, timeMs: 45000),
+        for (var no = 2; no <= 50; no++) _answer(no),
+      ]),
+    );
+    expect(summary.averageTimeMs, Duration.millisecondsPerSecond);
+    // Above a second it is the average, rounded to the millisecond.
+    final longer = topikAttemptSummaryOf(
+      _detail([
+        _answer(1, selected: 1, timeMs: 1000),
+        _answer(2, selected: 1, timeMs: 2000),
+        _answer(3, selected: 1, timeMs: 2000),
+      ]),
+    );
+    expect(longer.averageTimeMs, 1667); // 1666.67
+  });
+
   test('per type, and the weakest among types with two questions', () {
     final summary = topikAttemptSummaryOf(
       _detail([

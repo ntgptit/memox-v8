@@ -9,6 +9,7 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -356,7 +357,7 @@ void main() {
   // A badge of 1 to 3 digits leads the TOPIK test rows: the title column must
   // not follow its width (impeccable 2026-10-17).
   testWidgets('hasStableLeading: leadings of 20 and 36 start the title at the '
-      'same x, a control wide from the row start', (tester) async {
+      'same x, a list row wide from the row start', (tester) async {
     Widget row(Key key, double lead, {bool isStable = true}) => MxListRow(
       key: key,
       title: 'Title',
@@ -372,12 +373,42 @@ void main() {
     final second = tester.getTopLeft(titles.at(1)).dx;
 
     expect(first, second);
-    // 16 inset + the 48 column + the 12 gap.
-    expect(first, 16 + const AppDimens().sizeControl + 12);
+    // 16 inset + the list-row column + the 12 gap.
+    expect(first, 16 + const AppDimens().sizeListRow + 12);
     expect(
       tester.getTopLeft(find.byKey(const ValueKey('lead-20.0'))).dx,
       tester.getTopLeft(find.byKey(_first)).dx + 16,
       reason: 'the leading stays on the screen margin',
+    );
+  });
+
+  testWidgets('hasStableLeading holds a "#100" badge as well as a "#96" one', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        const Column(
+          children: [
+            MxListRow(
+              title: 'Title',
+              hasStableLeading: true,
+              leading: MxBadge(label: '#96'),
+            ),
+            MxListRow(
+              title: 'Title',
+              hasStableLeading: true,
+              leading: MxBadge(label: '#100'),
+            ),
+          ],
+        ),
+      ),
+    );
+    final titles = find.text('Title');
+
+    expect(
+      tester.getTopLeft(titles.at(0)).dx,
+      tester.getTopLeft(titles.at(1)).dx,
     );
   });
 

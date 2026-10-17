@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
@@ -54,12 +56,15 @@ final class TopikAttemptSummary {
   int get unansweredCount => questionCount - answeredCount;
 
   /// The time spent over all the questions, divided by the number of
-  /// questions (a blank one counts in the divisor), in whole milliseconds;
-  /// 0 when no question took any time.
+  /// questions (a blank one counts in the divisor), to the nearest
+  /// millisecond; 0 when no question took any time. An average under a
+  /// second is one second, so the figure never reads "0s" beside a longest
+  /// question that took time.
   int get averageTimeMs {
     if (questionCount == 0) return 0;
     final total = answers.fold(0, (sum, a) => sum + a.timeSpentMs);
-    return total ~/ questionCount;
+    if (total == 0) return 0;
+    return max(Duration.millisecondsPerSecond, (total / questionCount).round());
   }
 
   List<TopikAttemptAnswer> answersFor(TopikAnswerFilter filter) {
