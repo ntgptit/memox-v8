@@ -70,6 +70,7 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
         (state) => state.logs.value?.total ?? 0,
       ),
     );
+    final listController = ref.watch(monitoringListControllerProvider.notifier);
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.monitoringTitle,
@@ -85,9 +86,7 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
             MxIconButton(
               icon: AppIcons.retry,
               semanticLabel: l10n.monitoringRefresh,
-              onPressed: () => unawaited(
-                ref.read(monitoringListControllerProvider.notifier).refresh(),
-              ),
+              onPressed: () => unawaited(listController.refresh()),
             ),
         ],
       ),
