@@ -48,4 +48,25 @@ void main() {
       },
     );
   }
+
+  for (final (mode, theme) in [
+    ('light', buildLightTheme()),
+    ('dark', buildDarkTheme()),
+  ]) {
+    test('$mode: the selected radio dot is the accent mark, its ring '
+        'unchanged', () {
+      final radio = theme.radioStyle;
+      final mark = theme.colors.extension<MxStatusColors>().accentMark;
+      expect(radio.indicatorColor.resolve({}), mark);
+      expect(
+        radio.indicatorColor.resolve({FRadioVariant.disabled}),
+        theme.colors.disable(mark),
+      );
+      expect(
+        radio.indicatorColor.resolve({FRadioVariant.error}),
+        theme.colors.error,
+      );
+      expect(radio.borderColor.resolve({}), theme.colors.mutedForeground);
+    });
+  }
 }

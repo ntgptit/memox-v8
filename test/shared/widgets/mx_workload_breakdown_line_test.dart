@@ -50,11 +50,11 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
         .style;
 
 TextStyle _label(WidgetTester tester) =>
-    tester.element(find.byType(MxWorkloadBreakdownLine)).texts.label;
+    tester.element(find.byType(MxWorkloadBreakdownLine)).texts.meta;
 
-/// One line of the breakdown: the label role's size times its height.
+/// One line of the breakdown: the meta role's size times its height.
 double _lineHeight(WidgetTester tester) {
-  final role = tester.element(find.byType(MxWorkloadBreakdownLine)).texts.label;
+  final role = tester.element(find.byType(MxWorkloadBreakdownLine)).texts.meta;
   return role.fontSize! * role.height!;
 }
 
@@ -69,12 +69,20 @@ void main() {
     expect(_termStyle(tester, '3 overdue')!.color, mx.warning);
     expect(_termStyle(tester, '5 today')!.color, colors.primary);
     expect(_termStyle(tester, '2 new')!.color, colors.mutedForeground);
-    // Every term, coloured or muted, sets in the label role's one weight.
+    // Every term, coloured or muted, sets in the meta role's one weight.
     final weight = _label(tester).fontWeight;
     expect(_termStyle(tester, '3 overdue')!.fontWeight, weight);
     expect(_termStyle(tester, '2 new')!.fontWeight, weight);
     expect(_root(tester).style!.fontWeight, weight);
     expect(_root(tester).style!.color, colors.mutedForeground);
+  });
+
+  testWidgets('the line sets at the meta size, 12 at 500, below the row '
+      'title (owner ruling 2026-10-17)', (tester) async {
+    await pumpMx(tester, _line());
+
+    expect(_root(tester).style!.fontSize, 12);
+    expect(_root(tester).style!.fontWeight, FontWeight.w500);
   });
 
   testWidgets('a zero term drops with its separator (RF4)', (tester) async {

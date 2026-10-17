@@ -182,8 +182,8 @@ MemoX should feel like a quiet, focused study space. The app is drawn with ForUI
 An indigo accent on ForUI's neutral field, a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
 
 ### Primary
-- **Accent** (`primary`): the primary button, the FAB, the selected tab's label, chip, radio and checkbox, progress, the focus outline, and accent text. It is the same indigo in light and dark; in dark it sits on the MemoX navy page, and every other dark value is computed from those two colours.
-- **Accent Mark** (`context.status.accentMark`): an accent icon or glyph (an icon tile's glyph, a dot, a check, the selected tab's icon, a spinner) and the label on the Accent Tint (a badge, the study mode chip, an answered TOPIK cell). It is `primary` in light and the dark `foreground` in dark, where the indigo is too dark to read on the navy page (owner ruling 2026-10-17).
+- **Accent** (`primary`): the primary button, the FAB, the selected tab's label, chip, the selected radio's ring and the checkbox, progress, the focus outline, and accent text. It is the same indigo in light and dark; in dark it sits on the MemoX navy page, and every other dark value is computed from those two colours.
+- **Accent Mark** (`context.status.accentMark`): an accent icon or glyph (an icon tile's glyph, a dot, a check, the selected tab's icon, the selected radio's dot, a spinner) and the label on the Accent Tint (a badge, the study mode chip, an answered TOPIK cell). It is `primary` in light and the dark `foreground` in dark, where the indigo is too dark to read on the navy page (owner ruling 2026-10-17).
 - **On Accent** (`primaryForeground`): text and glyphs on an accent fill.
 - **Accent Tint** (`primary.tintOver(MxTintBase.of(context))`): the hero card and the accent's tinted grounds.
 
@@ -307,7 +307,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 - **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
 
 ### Study-specific
-- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine**, the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
+- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `meta` role, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
 
 ### Data Display
 - **MxSelectableCardRow** (a card that is one item of a list: the press layer over all of it, the checkbox while selecting, one TalkBack node with its checked state), **MxListRow** and **MxSettingsRow** (`sizeListRow` for one line, `sizeListRowTwoLine` with a subtitle), **MxRowInk** (ForUI's tappable: the `secondary` press layer and ForUI's focus outline across a row).

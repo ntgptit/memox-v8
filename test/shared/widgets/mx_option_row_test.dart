@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
@@ -77,16 +78,18 @@ void main() {
     expect(tester.getCenter(_dot()), tester.getCenter(_circles().first));
   });
 
-  testWidgets('dark: the selected indicator is the primary, the ring muted', (
-    tester,
-  ) async {
+  testWidgets('dark: the selected indicator is the accent mark, the ring '
+      'muted (owner ruling 2026-10-17)', (tester) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
       brightness: Brightness.dark,
     );
     await tester.pumpAndSettle();
-    expect(_dotDecoration(tester).color, appDarkColors.primary);
+    expect(
+      _dotDecoration(tester).color,
+      appDarkColors.extension<MxStatusColors>().accentMark,
+    );
 
     await pumpMx(
       tester,
