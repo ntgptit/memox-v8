@@ -352,4 +352,54 @@ void main() {
       greaterThanOrEqualTo(const AppDimens().sizeControl),
     );
   });
+
+  // A badge of 1 to 3 digits leads the TOPIK test rows: the title column must
+  // not follow its width (impeccable 2026-10-17).
+  testWidgets('hasStableLeading: leadings of 20 and 36 start the title at the '
+      'same x, a control wide from the row start', (tester) async {
+    Widget row(Key key, double lead, {bool isStable = true}) => MxListRow(
+      key: key,
+      title: 'Title',
+      hasStableLeading: isStable,
+      leading: SizedBox(key: ValueKey('lead-$lead'), width: lead, height: 22),
+    );
+    await pumpMx(
+      tester,
+      _width(Column(children: [row(_first, 20), row(_second, 36)])),
+    );
+    final titles = find.text('Title');
+    final first = tester.getTopLeft(titles.at(0)).dx;
+    final second = tester.getTopLeft(titles.at(1)).dx;
+
+    expect(first, second);
+    // 16 inset + the 48 column + the 12 gap.
+    expect(first, 16 + const AppDimens().sizeControl + 12);
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('lead-20.0'))).dx,
+      tester.getTopLeft(find.byKey(_first)).dx + 16,
+      reason: 'the leading stays on the screen margin',
+    );
+  });
+
+  testWidgets('without hasStableLeading the leading keeps its own width', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        const Column(
+          children: [
+            MxListRow(title: 'Title', leading: SizedBox(width: 20, height: 22)),
+            MxListRow(title: 'Title', leading: SizedBox(width: 36, height: 22)),
+          ],
+        ),
+      ),
+    );
+    final titles = find.text('Title');
+
+    expect(
+      tester.getTopLeft(titles.at(1)).dx - tester.getTopLeft(titles.at(0)).dx,
+      16,
+    );
+  });
 }

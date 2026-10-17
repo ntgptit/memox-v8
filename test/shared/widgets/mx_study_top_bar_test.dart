@@ -10,14 +10,15 @@ import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 import '../../support/route_naming.dart';
 import '../../support/widget_harness.dart';
 
-MxStudyTopBar _bar({int current = 3, int total = 10}) => MxStudyTopBar(
-  modeLabel: 'Review',
-  current: current,
-  total: total,
-  counterLabel: '$current / $total',
-  closeLabel: 'Close session',
-  onClose: () {},
-);
+MxStudyTopBar _bar({int current = 3, int total = 10, bool isClosable = true}) =>
+    MxStudyTopBar(
+      modeLabel: 'Review',
+      current: current,
+      total: total,
+      counterLabel: '$current / $total',
+      closeLabel: 'Close session',
+      onClose: isClosable ? () {} : null,
+    );
 
 double _fill(WidgetTester tester) => tester
     .widget<FractionallySizedBox>(find.byType(FractionallySizedBox))
@@ -132,6 +133,38 @@ void main() {
 
     expect(closed, 1);
     await expectAccessibleTargets(tester);
+  });
+
+  // A held session (submitting) shows Close as disabled, not as a live
+  // no-op (screen 37).
+  testWidgets('onClose null: Close is a disabled node and fires nothing', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _bar(isClosable: false));
+    await tester.tap(find.byTooltip('Close session'));
+
+    expect(
+      tester.getSemantics(find.byTooltip('Close session')),
+      isSemantics(
+        tooltip: 'Close session',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
+      ),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('the counter is a polite live region', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _bar());
+
+    expect(
+      tester.getSemantics(find.text('3 / 10')),
+      isSemantics(label: '3 / 10', isLiveRegion: true),
+    );
+    handle.dispose();
   });
 
   for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
