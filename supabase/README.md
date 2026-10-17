@@ -38,6 +38,14 @@ is mirrored, so a direct `UPDATE` on it is not proven there). `supabase test db`
 on the full stack stays the reference: the `supabase migrations` workflow runs
 it before `db push`, which is the first proof of the Storage path.
 
+`bash tools/supabase/topik_concurrency_check.sh` is the two-connection check that pgTAP
+cannot make (one transaction, one connection): on the local Supabase CLI stack
+(`DB_URL`, default `127.0.0.1:54322`) two admin sessions race a publish of the same
+content version and a draft save naming the same `updatedAt`, and the loser must wait
+for the winner's lock and then fail with `VERSION_MISMATCH`. It is run by hand, never by
+the gate or CI, and refuses (exit 2) any `DB_URL` whose host is not `127.0.0.1` or
+`localhost`: it commits rows, and a published version is immutable.
+
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
