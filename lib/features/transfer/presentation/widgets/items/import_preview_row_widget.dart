@@ -78,7 +78,12 @@ class ImportPreviewRowWidget extends StatelessWidget {
                 ],
               ),
             ),
-            _Mark(kind: row.kind, label: note ?? l10n.importRowReady),
+            // The note's text already says it: the mark speaks only for a
+            // ready row, which has no note (audit 2026-10-17).
+            _Mark(
+              kind: row.kind,
+              label: note == null ? l10n.importRowReady : null,
+            ),
           ],
         ),
       ),
@@ -87,10 +92,12 @@ class ImportPreviewRowWidget extends StatelessWidget {
 }
 
 class _Mark extends StatelessWidget {
-  const _Mark({required this.kind, required this.label});
+  const _Mark({required this.kind, this.label});
 
   final ImportRowKind kind;
-  final String label;
+
+  /// What TalkBack hears for the mark; null when the row's text says it.
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +112,12 @@ class _Mark extends StatelessWidget {
       ),
       ImportRowKind.blank => (AppIcons.remove, colors.mutedForeground),
     };
-    return Semantics(
-      label: label,
-      child: IconTheme.merge(
-        data: IconThemeData(color: color, size: context.dimens.sizeIconCompact),
-        child: Icon(icon),
-      ),
+    final mark = IconTheme.merge(
+      data: IconThemeData(color: color, size: context.dimens.sizeIconCompact),
+      child: Icon(icon),
     );
+    final label = this.label;
+    if (label == null) return ExcludeSemantics(child: mark);
+    return Semantics(label: label, child: mark);
   }
 }
