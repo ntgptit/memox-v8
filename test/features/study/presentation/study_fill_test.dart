@@ -375,4 +375,24 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
   });
+
+  libraryTest('on a short phone with the keyboard open the answer field '
+      'stays whole on screen (audit 2026-10-17, STUDYB-9)', (
+    tester,
+    env,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(360, 800)
+      ..devicePixelRatio = 1
+      ..viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.reset);
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump();
+
+    final field = tester.getRect(find.byType(EditableText));
+    expect(field.top, greaterThanOrEqualTo(0));
+    expect(field.bottom, lessThanOrEqualTo(800 - 300));
+    expect(tester.takeException(), isNull);
+  });
 }
