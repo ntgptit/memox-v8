@@ -11,8 +11,8 @@ final class MxBarSeries {
 }
 
 /// A chart's legend: a dot of each series' colour beside its label, wrapping
-/// at the column's edge. The chart's own nodes tell TalkBack what each mark
-/// is, so the legend says nothing to it.
+/// at the column's edge. The chart exposes one summary node to TalkBack, and
+/// the legend is silent: colour is never the only cue on screen.
 class MxChartLegend extends StatelessWidget {
   const MxChartLegend({super.key, required this.series});
 

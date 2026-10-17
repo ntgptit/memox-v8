@@ -54,7 +54,6 @@ TopikAttemptSummary _summary(List<TopikAttemptAnswer> answers) {
     correctCount: correct.length,
     questionCount: answers.length,
     answeredCount: answered,
-    accuracyPercent: answered == 0 ? 0 : correct.length * 100 ~/ answered,
     longest: answers.reduce((a, b) => b.timeSpentMs > a.timeSpentMs ? b : a),
     typeStats: const [
       TopikTypeStat(type: TopikQuestionType.r1Topic, correct: 2, total: 2),
@@ -289,7 +288,7 @@ void main() {
 
     expect(
       find.bySemanticsLabel(
-        'Time per question, 4 questions, longest question 32 2m 05s',
+        'Time per question, 4 questions, longest question 32: 2m 05s',
       ),
       findsOneWidget,
     );
@@ -405,7 +404,6 @@ void main() {
       correctCount: 2,
       questionCount: 2,
       answeredCount: 2,
-      accuracyPercent: 100,
       longest: answers.first,
       typeStats: const [
         TopikTypeStat(type: TopikQuestionType.r1Topic, correct: 2, total: 2),

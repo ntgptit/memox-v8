@@ -27,7 +27,6 @@ final class TopikAttemptSummary {
     required this.correctCount,
     required this.questionCount,
     required this.answeredCount,
-    required this.accuracyPercent,
     required this.longest,
     required this.typeStats,
     required this.weakestType,
@@ -39,7 +38,6 @@ final class TopikAttemptSummary {
   final int correctCount;
   final int questionCount;
   final int answeredCount;
-  final int accuracyPercent;
 
   /// The question that took the most time, ties to the lower number; null
   /// when no question took any time.
@@ -102,17 +100,17 @@ TopikAttemptSummary topikAttemptSummaryOf(TopikAttemptDetail detail) {
     correctCount: correctCount,
     questionCount: attempt.questionCount,
     answeredCount: answeredCount,
-    accuracyPercent:
-        (2 * correctCount * 100 + attempt.questionCount) ~/
-        (2 * attempt.questionCount),
-    longest: _longestOf(answers),
+    longest: longestAnswerOf(answers),
     typeStats: typeStats,
     weakestType: _weakestOf(typeStats),
     answers: answers,
   );
 }
 
-TopikAttemptAnswer? _longestOf(List<TopikAttemptAnswer> byNumber) {
+/// The answer that took the most time, ties to the first in [byNumber]
+/// (question order); null when none took any. The chart applies it to the
+/// answers a filter leaves, so the tie rule lives here once.
+TopikAttemptAnswer? longestAnswerOf(List<TopikAttemptAnswer> byNumber) {
   TopikAttemptAnswer? longest;
   for (final answer in byNumber) {
     if (answer.timeSpentMs <= (longest?.timeSpentMs ?? 0)) continue;

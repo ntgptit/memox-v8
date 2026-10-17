@@ -222,6 +222,23 @@ void main() {
     expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
   });
 
+  libraryTest('a question that fits its pane shows no fade', (
+    tester,
+    env,
+  ) async {
+    await host(
+      tester,
+      env,
+      TopikQuestionPaneWidget(
+        question: reading.questions.first,
+        selectedIdx: null,
+        onPick: (_) {},
+      ),
+    );
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
+  });
+
   libraryTest('a listening group: the audio stays when collapsed; the script '
       'shows with its translation in the UI language', (tester, env) async {
     final group = listening.groups.first;

@@ -150,7 +150,7 @@
   "topikWrong": "Sai",
   "topikCorrect": "Đúng",
   "topikTimePerQuestion": "Thời gian mỗi câu",
-  "topikChartSummary": "{count, plural, other{Thời gian mỗi câu, {count} câu, lâu nhất câu {no} {duration}}}",
+  "topikChartSummary": "{count, plural, other{Thời gian mỗi câu, {count} câu, lâu nhất câu {no}: {duration}}}",
   "topikChartSummaryNoTime": "{count, plural, other{Thời gian mỗi câu, {count} câu, chưa ghi thời gian}}",
   "topikAveragePerQuestion": "Trung bình/câu",
   "topikQuestionTitle": "Câu {no}",

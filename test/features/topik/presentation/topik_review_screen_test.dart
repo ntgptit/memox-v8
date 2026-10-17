@@ -123,6 +123,38 @@ void main() {
     expect(exits.backs, 1);
   });
 
+  libraryTest('the question change is announced: the stem is a live region '
+      'whose label follows Next (WCAG 4.1.3)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id);
+
+    final live = find.byWidgetPredicate(
+      (w) => w is Semantics && (w.properties.liveRegion ?? false),
+    );
+    String stemOf() => tester
+        .widget<Text>(find.descendant(of: live, matching: find.byType(Text)))
+        .data!;
+    final first = stemOf();
+    expect(
+      tester.getSemantics(live),
+      isSemantics(label: first, isLiveRegion: true),
+    );
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    final second = stemOf();
+    expect(second, isNot(first));
+    expect(
+      tester.getSemantics(live),
+      isSemantics(label: second, isLiveRegion: true),
+    );
+    handle.dispose();
+  });
+
   libraryTest('a filter opens its first question, even when the one shown is '
       'in it (UC-TOPIK-005 A3)', (tester, env) async {
     final done = await topikSeedSubmitted(

@@ -14,7 +14,7 @@ code: [lib/features/topik/domain/usecases/watch_topik_summary_use_case.dart, lib
 ## Main flow
 
 **Main flow:**
-1. Hệ thống mở Summary (màn 38): tên đề và phần thi, ngày giờ, thời lượng, điểm `score / max_score`, donut số câu đúng, Accuracy, Answered, Unanswered, Longest (BR-TOPIK-023, BR-TOPIK-025).
+1. Hệ thống mở Summary (màn 38): tên đề và phần thi, ngày giờ, thời lượng, điểm `score / max_score`, donut số câu đúng, thời gian trung bình mỗi câu (tổng thời gian / số câu; chủ dự án 2026-10-17, audit Impeccable: Accuracy luôn bằng score theo công thức nên bỏ; tỉ lệ đúng đọc ở donut), Answered, Unanswered, Longest (BR-TOPIK-023, BR-TOPIK-025).
 2. Biểu đồ thời gian từng câu cuộn ngang: một cột mỗi câu, chiều cao theo thời gian, màu theo trạng thái (đúng, sai, bỏ trống), kèm chú giải màu. Chạm một cột mở Review ở câu đó (UC-TOPIK-005); không có tooltip.
 3. Danh sách câu theo số câu thật, mỗi câu một hàng: số câu, Your answer và Right answer là số lựa chọn ①–④ (không phải văn bản), thời gian và nhãn trạng thái Correct, Wrong hoặc Unanswered; chạm hàng mở Review ở câu đó (BR-TOPIK-023).
 4. Thống kê theo dạng câu: đúng / tổng cho mỗi dạng và dạng yếu nhất (BR-TOPIK-024).

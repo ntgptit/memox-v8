@@ -74,7 +74,6 @@ void main() {
     expect(summary.correctCount, 2);
     expect(summary.answeredCount, 3);
     expect(summary.unansweredCount, 1);
-    expect(summary.accuracyPercent, 50);
     expect(
       summary.longest!.questionNo,
       2,
@@ -168,29 +167,6 @@ void main() {
         _detail([_answer(1, selected: 1), _answer(2, selected: 1)]),
       ).weakestType,
       isNull,
-    );
-  });
-
-  test('accuracy is a whole percent, rounded half up (BR-TOPIK-023)', () {
-    expect(
-      topikAttemptSummaryOf(
-        _detail([
-          _answer(1, selected: 1),
-          _answer(2, selected: 1),
-          _answer(3, selected: 2),
-        ]),
-      ).accuracyPercent,
-      67, // 66.67
-    );
-    expect(
-      topikAttemptSummaryOf(
-        _detail([
-          _answer(1, selected: 1),
-          _answer(2, selected: 2),
-          _answer(3, selected: 2),
-        ]),
-      ).accuracyPercent,
-      33, // 33.33
     );
   });
 

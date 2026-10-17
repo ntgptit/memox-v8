@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -37,7 +38,7 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final dimens = context.dimens;
     final l10n = context.l10n;
-    final longest = _longestOf(answers);
+    final longest = longestAnswerOf(answers);
     final longestMs = longest?.timeSpentMs ?? 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,17 +90,6 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
       ],
     );
   }
-}
-
-/// The question that took the most time, ties to the first; null when none
-/// took any.
-TopikAttemptAnswer? _longestOf(List<TopikAttemptAnswer> answers) {
-  TopikAttemptAnswer? longest;
-  for (final answer in answers) {
-    if (answer.timeSpentMs <= (longest?.timeSpentMs ?? 0)) continue;
-    longest = answer;
-  }
-  return longest;
 }
 
 const _legendOrder = [

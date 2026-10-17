@@ -53,9 +53,15 @@ class TopikReviewQuestionWidget extends StatelessWidget {
             ),
             SizedBox(height: dimens.space16),
           ],
-          Text(
-            l10n.topikQuestionStem(question.no, question.stemKo),
-            style: context.texts.bodyLarge,
+          // A polite live region: Next, Previous and a filter change the
+          // question while focus stays on the footer, and TalkBack says the
+          // new "{no}. {stem}" (WCAG 4.1.3; 39 has no study bar counter).
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              l10n.topikQuestionStem(question.no, question.stemKo),
+              style: context.texts.bodyLarge,
+            ),
           ),
           SizedBox(height: dimens.space16),
           for (final option in question.options) ...[

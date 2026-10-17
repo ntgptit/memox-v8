@@ -736,7 +736,7 @@
   "@topikTimePerQuestion": {
     "description": "Screen 38: the chart's header."
   },
-  "topikChartSummary": "{count, plural, =1{Time per question, 1 question, longest question {no} {duration}} other{Time per question, {count} questions, longest question {no} {duration}}}",
+  "topikChartSummary": "{count, plural, =1{Time per question, 1 question, longest question {no}: {duration}} other{Time per question, {count} questions, longest question {no}: {duration}}}",
   "@topikChartSummary": {
     "placeholders": {
       "count": {
