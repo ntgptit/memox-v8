@@ -2,6 +2,10 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(282);
+-- 18 proves the read paths as they will be once the owner opens the read gate
+-- (ADR-025 #5); 20_topik_master_contract.sql proves the gate as it ships (admins only).
+create or replace function private.topik_can_read_content() returns boolean
+language sql stable set search_path = '' as $$ select true $$;
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -513,12 +517,12 @@ select ok((select bool_and(c > p) from (select (e->>'catalogVersion')::bigint c,
       coalesce(lag((e->>'catalogVersion')::bigint) over (order by n), 0) p
     from jsonb_array_elements(public.topik_catalog(0)->'entries') with ordinality t(e, n)) s),
   'catalog versions strictly increase');
-select is((public.topik_catalog(0)->'entries'->0) - 'catalogVersion' - 'checksum',
+select is((public.topik_catalog(0)->'entries'->0) - 'catalogVersion' - 'checksum' - 'sha256' - 'bytes',
   '{"testId": "topik2-96-listening", "status": "published", "contentVersion": 1, "media": [{"path": "topik2-96-listening/1/a.mp3", "size": 3, "eTag": "\"abc\""}], "level": "topik2",
-    "round": 96, "section": "listening", "titleKo": "제96회", "tags": []}'::jsonb,
+    "round": 96, "section": "listening", "titleKo": "제96회", "tags": [], "schemaVersion": 1}'::jsonb,
   'an entry carries its identity fields, its media and no tags without supporting content');
 select is(public.topik_catalog(0)->'entries'->0->>'checksum',
-  md5(public.topik_test_content('topik2-96-listening', 1)::text), 'and the checksum of the stored json');
+  md5(public.topik_test_content('topik2-96-listening', 1)->>'document'), 'and the checksum of the stored json');
 select is(public.topik_catalog(0)->'entries'->2->>'contentVersion', '5', 'a test is listed at its current version');
 select is(public.topik_catalog(0)->>'more', 'false', 'one page');
 select is(public.topik_catalog(0)->>'next', public.topik_catalog(0)->'entries'->2->>'catalogVersion',
