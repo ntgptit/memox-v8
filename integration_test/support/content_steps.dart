@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 
+import '../../test/support/forui_expect.dart';
 import 'device_app.dart';
 
 // Library steps through the UI, as a person takes them (FE-D3 spec D9). The
@@ -130,7 +132,7 @@ Future<void> createCard(
     () => _editorField(tester, 0).controller.text.isEmpty,
     'the saved card empties the form',
   );
-  await tester.tap(find.byTooltip(l10n.cardClose));
+  await tester.tap(byControlLabel(l10n.cardClose));
   await waitGone(tester, find.byType(CardEditorScreen));
   await waitFor(tester, find.text(front));
 }
@@ -149,7 +151,7 @@ Future<void> _typeExample(WidgetTester tester, String example) async {
   }
   await waitFor(tester, hint);
   final field = find.descendant(
-    of: find.ancestor(of: hint, matching: find.byType(TextField)),
+    of: find.ancestor(of: hint, matching: find.byType(FTextField)),
     matching: find.byType(EditableText),
   );
   await tester.ensureVisible(field);
@@ -175,7 +177,7 @@ Future<void> _saveAndReturn(WidgetTester tester) async {
   final l10n = l10nOf(tester);
   await tapText(tester, l10n.cardSaveChanges);
   await waitGone(tester, find.text(l10n.cardSaveChanges));
-  await tester.tap(find.byTooltip(l10n.commonBack).first);
+  await tester.tap(byControlLabel(l10n.commonBack).first);
   await tester.pump(const Duration(milliseconds: 500));
 }
 
@@ -195,7 +197,7 @@ Future<void> editCardBack(
 Future<void> flagCard(WidgetTester tester, String front) async {
   final l10n = l10nOf(tester);
   await _editCard(tester, front);
-  await tester.tap(find.byTooltip(l10n.cardFlagLabel));
+  await tester.tap(byControlLabel(l10n.cardFlagLabel));
   await tester.pump();
   await _saveAndReturn(tester);
 }
