@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -22,6 +24,11 @@ import 'package:forui/forui.dart';
 // BR-STUDY-063, BR-STUDY-064; FE-A6 P4 rulings F1–F4, V1, V4, V6, V7, V10.
 
 final _en = lookupAppLocalizations(const Locale('en'));
+
+/// The footer hint's glyph (critique 2026-10-02, F7).
+IconData _hintIcon(WidgetTester tester) => tester
+    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
+    .icon;
 
 StudySessionScreen _screen(String id) => StudySessionScreen(
   sessionId: id,
@@ -71,6 +78,16 @@ void main() {
     await _settle(tester);
     expect(await _loggedTurns(env), 0);
     expect(find.text('apple'), findsOneWidget);
+  });
+
+  libraryTest('the input hint takes the info glyph, as every mode\'s '
+      'instruction does (critique 2026-10-02 F7; audit 2026-10-17)', (
+    tester,
+    env,
+  ) async {
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    expect(_hintIcon(tester), AppIcons.info);
   });
 
   libraryTest('the field has focus when the turn opens (V7)', (
@@ -130,6 +147,9 @@ void main() {
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
     expect(find.textContaining(_en.studyFillHintWrong), findsOneWidget);
+    // Wrong takes the repeat glyph, as Recall's timeout and Match's wrong
+    // pair do (critique 2026-10-02 F7; audit 2026-10-17).
+    expect(_hintIcon(tester), AppIcons.repeat);
     expect(find.byType(FTextField), findsNothing);
     expect(
       tester.takeAnnouncements().map((a) => a.message),

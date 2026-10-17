@@ -5594,7 +5594,7 @@
   },
   "studyRecallHintRevealed": "The next card follows automatically",
   "@studyRecallHintRevealed": {
-    "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed."
+    "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed; vi matches the English (audit 2026-10-17)."
   },
   "studyRecallHintTimedOut": "This card comes back in a later round",
   "@studyRecallHintTimedOut": {
@@ -5685,9 +5685,13 @@
   "@studyHomeResume": {
     "description": "Screen handoff 13 (FE-A8): takes the session up (UC-STUDY-002)."
   },
-  "studyHomeResumeRefused": "This session can't be continued any more",
+  "studyHomeResumeRefused": "That session has ended. Its answers are kept.",
   "@studyHomeResumeRefused": {
-    "description": "Screen handoff 13 (FE-A8): toast when Resume is refused (H3)."
+    "description": "Screen handoff 13 (H3, S8): toast when Resume is refused, local-first (audit 2026-10-17)."
+  },
+  "studyHomeResumeFailed": "Your answers are kept. Couldn't resume the session, so try again.",
+  "@studyHomeResumeFailed": {
+    "description": "Screen handoff 13: toast when Resume cannot be written, local-first (audit 2026-10-17)."
   },
   "studyHomeWaiting": "Waiting for you",
   "@studyHomeWaiting": {

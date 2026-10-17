@@ -54,6 +54,8 @@ class StudyEntryBannerWidget extends StatelessWidget {
           : MxBannerTone.warning,
       title: title,
       message: message,
+      // The body's 12 gaps space it among the choices.
+      hasBottomMargin: false,
     );
   }
 }

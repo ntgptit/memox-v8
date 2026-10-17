@@ -351,6 +351,22 @@ void main() {
     expect(find.text(_en.studyHomeResumeRefused), findsOneWidget);
   });
 
+  libraryTest('a Resume that cannot be written says so, local-first, and '
+      'opens nothing (audit 2026-10-17)', (tester, env) async {
+    final taps = _Taps();
+    await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
+    await pumpLibraryScreen(tester, env, _screen(taps));
+    await _settle(tester);
+    env.sessions.isResumeLocked = true;
+
+    await tester.tap(find.text(_en.studyHomeResume));
+    await _settle(tester);
+
+    expect(taps.sessions, isEmpty);
+    expect(find.text(_en.studyHomeResumeFailed), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
   libraryTest('nothing overflows, each row is at '
       'least 48 tall, and no row cuts a count (BR-STUDY-076)', (
     tester,
