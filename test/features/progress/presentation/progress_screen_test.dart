@@ -379,7 +379,9 @@ void main() {
     await _settle(tester);
 
     await tester.tap(await _row(tester, 'IELTS Academic Word List'));
-    await tester.tap(await _row(tester, _en.progressAllDecks));
+    await _row(tester, _en.progressAllDecks);
+    // On its label: the static row has no target of its own to miss.
+    await tester.tap(find.text(_en.progressAllDecks));
 
     expect(taps.decks, hasLength(1));
     await tester.pump(const Duration(milliseconds: 200));
