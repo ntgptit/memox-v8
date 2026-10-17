@@ -236,7 +236,7 @@ void main() {
       );
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-        tester.element(find.byIcon(AppIcons.inbox)).mxColors.warning,
+        tester.element(find.byIcon(AppIcons.inbox)).context.status.warning,
       );
     },
   );

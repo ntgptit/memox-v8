@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
@@ -8,7 +8,6 @@ import 'package:memox/features/card/presentation/widgets/support/card_list_label
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
 const int _shownTags = 2;
@@ -68,10 +67,10 @@ class _Content extends StatelessWidget {
     CardDisplayStatus status,
   ) {
     return switch (status) {
-      CardDisplayStatus.newCard => context.colors.onSurfaceVariant,
-      CardDisplayStatus.beginning => context.mxColors.warning,
-      CardDisplayStatus.reviewing => context.accentColor,
-      CardDisplayStatus.mastered => context.mxColors.success,
+      CardDisplayStatus.newCard => context.colors.mutedForeground,
+      CardDisplayStatus.beginning => context.status.warning,
+      CardDisplayStatus.reviewing => context.colors.primary,
+      CardDisplayStatus.mastered => context.status.success,
     };
   }
 
@@ -89,14 +88,14 @@ class _Content extends StatelessWidget {
           item.front,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.titleMedium,
+          style: context.texts.sectionTitle,
         ),
         Text(
           item.back,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.body.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
         SizedBox(height: context.dimens.space4),
@@ -109,7 +108,7 @@ class _Content extends StatelessWidget {
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: context.texts.labelSmall?.copyWith(
+              style: context.texts.meta.copyWith(
                 color: _statusForeground(context, status),
               ),
             ),
@@ -118,8 +117,8 @@ class _Content extends StatelessWidget {
             if (tags.length > _shownTags)
               Text(
                 l10n.cardMoreTags(tags.length - _shownTags),
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
           ],
@@ -145,7 +144,7 @@ class _Trailing extends StatelessWidget {
       if (item.isFlagged)
         IconTheme.merge(
           data: IconThemeData(
-            color: context.colors.onSurface,
+            color: context.colors.foreground,
             size: context.dimens.sizeIconInline,
           ),
           child: Icon(

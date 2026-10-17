@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -41,8 +41,8 @@ class StudyFaceCardWidget extends StatelessWidget {
             child: Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ),

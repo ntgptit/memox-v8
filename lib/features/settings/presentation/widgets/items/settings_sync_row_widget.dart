@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';

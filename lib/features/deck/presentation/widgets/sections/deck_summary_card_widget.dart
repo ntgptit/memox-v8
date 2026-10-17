@@ -57,8 +57,8 @@ class DeckSummaryCardWidget extends StatelessWidget {
                     Text(
                       overline.toUpperCase(),
                       semanticsLabel: overline,
-                      style: context.texts.labelSmall?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.meta.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                     ),
                     Text(
@@ -67,7 +67,7 @@ class DeckSummaryCardWidget extends StatelessWidget {
                         subDecks: level.deckCount,
                         cards: cards,
                       ),
-                      style: context.texts.titleSmall,
+                      style: context.texts.itemTitle,
                     ),
                     MxWorkloadBreakdownLine(
                       overdueCount: level.overdueCount,

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -15,7 +15,6 @@ import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// The scheduler a copy of [entry] studies under (UC-STARTER-001 step 6;
 /// kit 03 `choose`). Completes with what the add did, or null when the
@@ -87,14 +86,14 @@ class _StarterAlgorithmSheetWidgetState
           children: [
             Text(
               l10n.starterSheetTitle(widget.entry.title),
-              style: context.texts.titleSmall,
+              style: context.texts.itemTitle,
             ),
             // The lock, before the choice (BR-SRS-003; critique 2026-09-30
             // part 3d-2, E6). The card above states the counts.
             Text(
               l10n.deckSchedulerNote,
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
             SizedBox(height: context.dimens.space8),
@@ -106,12 +105,12 @@ class _StarterAlgorithmSheetWidgetState
               children: [
                 Text(
                   l10n.starterSheetAlgorithmLabel,
-                  style: context.texts.labelMedium,
+                  style: context.texts.label,
                 ),
                 Text(
                   l10n.starterSheetRequired,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.accentColor,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.primary,
                   ),
                 ),
               ],

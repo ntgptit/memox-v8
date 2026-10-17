@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -49,7 +49,7 @@ class _MonitoringDetailScreenState
 
   /// The failed-change toast while it shows. Its Retry acts on this page, so
   /// it leaves with the page (final review I1).
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? _failureToast;
+  MxSnackbarController? _failureToast;
 
   String get logId => widget.logId;
   bool get isLocal => widget.isLocal;

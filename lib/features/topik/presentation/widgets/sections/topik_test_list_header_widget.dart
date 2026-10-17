@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
@@ -46,7 +46,7 @@ class TopikTestListHeaderWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.topikTestCount(testCount),
-                  style: context.texts.titleMedium,
+                  style: context.texts.sectionTitle,
                 ),
               ),
               MxChipTrigger(
@@ -57,8 +57,8 @@ class TopikTestListHeaderWidget extends StatelessWidget {
           ),
           Text(
             l10n.topikTestsHeaderBody,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ],

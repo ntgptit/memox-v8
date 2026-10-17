@@ -40,7 +40,7 @@ void main() {
 
         expect(
           _badgeFill(tester),
-          context.accentColor.tintOver(context.colors.surface),
+          context.colors.primary.tintOver(context.colors.background),
         );
         // The token spec's precomputed primary tint over the page.
         expect(
@@ -59,10 +59,10 @@ void main() {
         );
         final context = _context(tester);
 
-        expect(MxTintBase.of(context), context.mxColors.cardSurface);
+        expect(MxTintBase.of(context), context.colors.card);
         expect(
           _badgeFill(tester),
-          context.accentColor.tintOver(context.mxColors.cardSurface),
+          context.colors.primary.tintOver(context.colors.card),
         );
       });
 
@@ -75,8 +75,8 @@ void main() {
           brightness: brightness,
         );
         final context = _context(tester);
-        final cardGround = context.mxColors.warning.tintOver(
-          context.colors.surface,
+        final cardGround = context.status.warning.tintOver(
+          context.colors.background,
         );
 
         expect(MxTintBase.of(context), cardGround);
@@ -86,12 +86,12 @@ void main() {
         (
           'sheet',
           const MxBottomSheet(child: MxBadge(label: '4 due')),
-          (BuildContext c) => c.colors.surfaceContainerLow,
+          (BuildContext c) => c.colors.muted,
         ),
         (
           'dialog',
           const MxDialog(content: MxBadge(label: '4 due')),
-          (BuildContext c) => c.colors.surfaceContainerHigh,
+          (BuildContext c) => c.colors.muted,
         ),
       ]) {
         testWidgets('inside a $name a tint is over its ground', (tester) async {
@@ -101,7 +101,7 @@ void main() {
           expect(MxTintBase.of(context), ground(context));
           expect(
             _badgeFill(tester),
-            context.accentColor.tintOver(ground(context)),
+            context.colors.primary.tintOver(ground(context)),
           );
         });
       }

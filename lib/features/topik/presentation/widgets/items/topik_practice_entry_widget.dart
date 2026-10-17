@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -33,8 +33,8 @@ class TopikPracticeEntryWidget extends ConsumerWidget {
                 ? null
                 : Text(
                     l10n.topikTestCount(count),
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
             leading: const MxIconTile(icon: AppIcons.fileText),

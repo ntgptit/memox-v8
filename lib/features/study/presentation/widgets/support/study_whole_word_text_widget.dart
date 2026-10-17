@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
 
 /// The text of a study face that must stay whole (Guess's term, a Match

@@ -17,13 +17,8 @@ import 'package:memox/core/logging/sql_log_switch.dart';
 /// An admin's switch ([SqlLogSwitch]) turns the per-statement row off; slow,
 /// failed and transaction rows always log (SQL log switch spec §4.2).
 final class TracingInterceptor extends QueryInterceptor {
-  TracingInterceptor({
-    AppLogger? logger,
-    int Function()? micros,
-    SqlLogSwitch? sqlLog,
-  }) : _logger = logger,
-       _sqlLog = sqlLog,
-       _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
+  TracingInterceptor({this._logger, int Function()? micros, this._sqlLog})
+    : _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
 
   static const slowMs = 50;
   static const verySlowMs = 150;

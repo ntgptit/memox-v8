@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -123,7 +123,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
           l10n.cardSelectedCount(count),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.titleSmall,
+          style: context.texts.itemTitle,
         ),
       ),
       isLastActionText: true,

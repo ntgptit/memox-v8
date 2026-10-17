@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
@@ -133,8 +132,8 @@ class _GridCell extends StatelessWidget {
     final l10n = context.l10n;
     final dimens = context.dimens;
     final colors = context.colors;
-    final radius = BorderRadius.circular(dimens.radiusSm);
-    final accent = context.accentColor;
+    final radius = context.radii.sm;
+    final accent = context.colors.primary;
     return MxRowInk(
       onTap: onTap,
       isSelected: isCurrent,
@@ -158,11 +157,11 @@ class _GridCell extends StatelessWidget {
               border: switch ((isCurrent, isAnswered)) {
                 (true, _) => Border.all(
                   color: colors.primary,
-                  width: dimens.strokeControl,
+                  width: dimens.strokeEmphasis,
                 ),
                 (false, false) => Border.all(
-                  color: colors.outlineVariant,
-                  width: dimens.strokeHairline,
+                  color: colors.border,
+                  width: context.hairline,
                 ),
                 (false, true) => null,
               },
@@ -170,8 +169,8 @@ class _GridCell extends StatelessWidget {
             child: Center(
               child: Text(
                 '$no',
-                style: context.texts.labelLarge?.copyWith(
-                  color: isAnswered ? accent : colors.onSurface,
+                style: context.texts.button.copyWith(
+                  color: isAnswered ? accent : colors.foreground,
                 ),
               ),
             ),

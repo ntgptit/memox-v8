@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -62,8 +62,8 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             shown,
             semanticsLabel: overline,
             textAlign: TextAlign.center,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space4),
@@ -72,7 +72,7 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             child: Text(
               _titleOf(l10n),
               textAlign: TextAlign.center,
-              style: context.texts.titleMedium,
+              style: context.texts.sectionTitle,
             ),
           ),
           SizedBox(height: context.dimens.space4),
@@ -176,19 +176,19 @@ class _BodyText extends StatelessWidget {
       return Text(
         body,
         textAlign: TextAlign.center,
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
       );
     }
     return Text.rich(
       TextSpan(
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
         children: [
           TextSpan(text: body.substring(0, start)),
-          TextSpan(text: run, style: context.texts.titleSmall),
+          TextSpan(text: run, style: context.texts.itemTitle),
           TextSpan(text: body.substring(start + run.length)),
         ],
       ),
@@ -262,8 +262,8 @@ class _Stats extends StatelessWidget {
           Text(
             l10n.summaryWrongExplained,
             textAlign: TextAlign.center,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
       ],

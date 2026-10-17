@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The place a chart or a figure takes once there is something to show
@@ -14,14 +14,14 @@ class MxDashedNote extends StatelessWidget {
     final colors = context.colors;
     return CustomPaint(
       foregroundPainter: _DashedBorder(
-        color: colors.outlineVariant,
-        stroke: context.dimens.strokeHairline,
-        radius: context.dimens.radiusMd,
+        color: colors.border,
+        stroke: context.hairline,
+        radius: context.radii.md.topLeft.x,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+          color: colors.muted,
+          borderRadius: context.radii.md,
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -31,8 +31,8 @@ class MxDashedNote extends StatelessWidget {
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ),

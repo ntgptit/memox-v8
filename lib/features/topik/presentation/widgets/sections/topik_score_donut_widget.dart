@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
@@ -27,8 +27,8 @@ class TopikScoreDonutWidget extends StatelessWidget {
       child: CustomPaint(
         painter: _DonutPainter(
           fraction: total == 0 ? 0 : correct / total,
-          track: context.colors.surfaceContainerHighest,
-          arc: context.mxColors.success,
+          track: context.colors.secondary,
+          arc: context.status.success,
           width: dimens.space8,
         ),
         child: Center(
@@ -37,12 +37,12 @@ class TopikScoreDonutWidget extends StatelessWidget {
             children: [
               Text(
                 context.l10n.topikOfTotal(correct, total),
-                style: context.texts.titleMedium,
+                style: context.texts.sectionTitle,
               ),
               Text(
                 context.l10n.topikCorrect,
-                style: context.texts.labelSmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.meta.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
             ],

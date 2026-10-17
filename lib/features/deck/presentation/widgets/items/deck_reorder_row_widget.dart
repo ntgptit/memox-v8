@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
@@ -34,8 +34,8 @@ class DeckReorderRowWidget extends StatelessWidget {
       // (critique 2026-09-30).
       meta: Text(
         deckTileMeta(tile, context.l10n),
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
       leading: MxIconTile(

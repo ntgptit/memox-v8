@@ -1,12 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/shared/widgets/mx_user_edits.dart';
 
-/// The code variant of [MxTextField]: six slots over one hidden field. The field fills the
-/// row, so a tap on any slot focuses it and a long press offers paste; the
-/// slots follow its text and focus.
+/// The code variant of [MxTextField]: six slots over one hidden ForUI field.
+/// The field fills the row, so a tap on any slot focuses it and a long press
+/// offers paste; the slots follow its text and focus. ForUI's `FOtpField`
+/// owns its controller type, and this variant keeps the caller's plain
+/// [TextEditingController], its paste-replaces-the-code rule and its single
+/// TalkBack node, so the slots are drawn here in ForUI's colours.
 ///
 /// Built by `MxTextField` for the code variant; features use
 /// `MxTextField(variant: code)`.
@@ -70,32 +75,28 @@ class _MxCodeFieldState extends State<MxCodeField> {
   BorderSide _edge(BuildContext context, int index) {
     final colors = context.colors;
     final isNext = _focus.hasFocus && index == _controller.text.length;
+    // The slot that takes the next digit draws ForUI's focus width.
+    final focusWidth = context.hairline * _focusFactor;
     // A wrong code keeps the cue of the slot that takes the next digit: the
-    // same 2dp edge, in the error tone.
+    // same edge, in the error tone.
     if (widget.field.errorText != null) {
       return BorderSide(
         color: colors.error,
-        width: isNext
-            ? context.dimens.strokeFocus
-            : context.dimens.strokeHairline,
+        width: isNext ? focusWidth : context.hairline,
       );
     }
-    if (isNext) {
-      return BorderSide(
-        color: context.colors.primary,
-        width: context.dimens.strokeFocus,
-      );
-    }
+    if (isNext) return BorderSide(color: colors.primary, width: focusWidth);
     // A disabled code takes the disabled edge, as a disabled field does.
     return BorderSide(
       color: widget.field.isEnabled
-          ? context.colors.outline
-          : context.colors.onSurface.withValues(
-              alpha: context.dimens.opacityDisabledContainer,
-            ),
-      width: context.dimens.strokeHairline,
+          ? colors.border
+          : colors.disable(colors.border),
+      width: context.hairline,
     );
   }
+
+  /// The next slot's edge, twice the hairline, as ForUI's focused field.
+  static const double _focusFactor = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -106,28 +107,29 @@ class _MxCodeFieldState extends State<MxCodeField> {
       'MxCodeField draws the code variant; use '
       'MxTextField(variant: MxTextFieldVariant.code)',
     );
-    final hidden = TextField(
+    final edits = MxUserEdits(field.onChanged);
+    final hidden = FTextField(
       // Autofocus is read once, on mount: see MxTextField.
       key: ValueKey(field.isEnabled),
-      controller: _controller,
+      control: FTextFieldControl.managed(
+        controller: _controller,
+        onChange: edits.onChange,
+      ),
       focusNode: _focus,
       autofocus: field.isAutofocused,
       enabled: field.isEnabled,
       readOnly: field.isReadOnly,
-      onChanged: field.onChanged,
-      onSubmitted: field.onSubmitted,
+      onSubmit: field.onSubmitted,
       textInputAction: field.textInputAction,
-      maxLines: 1,
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
         const _PasteReplacesFormatter(),
         LengthLimitingTextInputFormatter(MxTextField.codeLength),
+        edits.formatter,
       ],
       autofillHints: const [AutofillHints.oneTimeCode],
       showCursor: false,
-      style: context.texts.displaySmall,
-      decoration: const InputDecoration.collapsed(hintText: null),
     );
     final slots = ListenableBuilder(
       listenable: Listenable.merge([_controller, _focus]),
@@ -202,8 +204,8 @@ class _PasteReplacesFormatter extends TextInputFormatter {
   }
 }
 
-/// One digit's box: 48 wide at most (it shrinks in a narrow column), as tall
-/// as a field at least and growing with the text scale, outlined with no fill.
+/// One digit's box: 48 wide at most (it shrinks in a narrow column), 48 tall
+/// at least and growing with the text scale, outlined with no fill.
 class _CodeSlot extends StatelessWidget {
   const _CodeSlot({
     super.key,
@@ -220,22 +222,20 @@ class _CodeSlot extends StatelessWidget {
   Widget build(BuildContext context) => ConstrainedBox(
     constraints: BoxConstraints(
       maxWidth: context.dimens.sizeControl,
-      minHeight: context.dimens.sizeInput,
+      minHeight: context.dimens.sizeControl,
     ),
     child: DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        borderRadius: context.radii.md,
         border: Border.fromBorderSide(edge),
       ),
       child: Center(
         child: Text(
           digit,
-          style: context.texts.displaySmall?.copyWith(
+          style: context.texts.term.copyWith(
             color: isEnabled
                 ? null
-                : context.colors.onSurface.withValues(
-                    alpha: context.dimens.opacityDisabledContent,
-                  ),
+                : context.colors.disable(context.colors.foreground),
           ),
         ),
       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -114,7 +114,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
           ),
           Text(
             reminderTimeLabel(context, _chosen),
-            style: context.texts.titleMedium,
+            style: context.texts.sectionTitle,
           ),
         ],
       ),
@@ -129,7 +129,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
 
   Widget _labelled(BuildContext context, String label, Widget stepper) => Row(
     children: [
-      Expanded(child: Text(label, style: context.texts.titleSmall)),
+      Expanded(child: Text(label, style: context.texts.itemTitle)),
       stepper,
     ],
   );

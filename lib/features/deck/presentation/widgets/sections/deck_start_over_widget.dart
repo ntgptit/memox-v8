@@ -20,11 +20,11 @@ class DeckStartOverWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: context.dimens.space4,
         children: [
-          Text(l10n.algorithmResetTitle, style: context.texts.titleSmall),
+          Text(l10n.algorithmResetTitle, style: context.texts.itemTitle),
           Text(
             l10n.algorithmResetBody,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
           SizedBox(height: context.dimens.space8),

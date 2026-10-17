@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Durations, Easing;
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A hidden study face (16a, 19): the kit's still placeholder bar until
@@ -51,7 +52,7 @@ class _HiddenBar extends StatelessWidget {
         decoration: BoxDecoration(
           // One step off the face it sits on (cardSurface or the recessed
           // ground), where surfaceContainerHigh equals cardSurface in dark.
-          color: context.colors.surfaceContainerHighest,
+          color: context.colors.secondary,
           borderRadius: BorderRadius.circular(_size.height / 2),
         ),
       ),

@@ -45,11 +45,11 @@ class DeckLockStripWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: context.dimens.space4,
                 children: [
-                  Text(title, style: context.texts.titleSmall),
+                  Text(title, style: context.texts.itemTitle),
                   Text(
                     body,
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ],

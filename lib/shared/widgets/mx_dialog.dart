@@ -1,40 +1,41 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_held_route.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
 enum MxDialogWidth { small, medium, large }
 
-const double _enterScale = 0.94;
-
-/// Opens [builder] (usually an MxDialog) over the theme's scrim. The dialog
-/// fades in and scales from 0.94 over 200ms; it opens instantly under reduced
-/// motion (ruling O7). A scrim tap dismisses it with null, unless the dialog
-/// is held (MxDialog.isHeld).
+/// Opens [builder] (usually an MxDialog) on ForUI's dialog route, over its
+/// barrier, from the nearest navigator. The dialog fades and scales in with
+/// ForUI's motion, at once under reduced motion. A scrim tap dismisses it
+/// with null, unless the dialog is held (MxDialog.isHeld). The result is
+/// what the dialog pops with.
 Future<T?> showMxDialog<T>(
   BuildContext context, {
   required WidgetBuilder builder,
-}) => showGeneralDialog<T>(
-  context: context,
-  barrierDismissible: true,
-  barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  barrierColor: DialogTheme.of(context).barrierColor!,
-  transitionDuration: MediaQuery.disableAnimationsOf(context)
-      ? Duration.zero
-      : Durations.short4,
-  pageBuilder: (dialogContext, _, _) => builder(dialogContext),
-  transitionBuilder: (_, animation, _, child) {
-    final curved = CurvedAnimation(parent: animation, curve: Easing.standard);
-    return FadeTransition(
-      opacity: curved,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: _enterScale, end: 1).animate(curved),
-        child: child,
+}) {
+  final navigator = Navigator.of(context);
+  final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
+  return navigator.push(
+    _MxDialogRoute<T>(
+      style: context.theme.dialogRouteStyle,
+      barrierLabel: localizations.barrierLabel,
+      barrierOnTapHint: localizations.barrierOnTapHint(
+        localizations.dialogSemanticsLabel,
       ),
-    );
-  },
-);
+      capturedFTheme: FTheme.capture(from: context, to: navigator.context),
+      capturedThemes: InheritedTheme.capture(
+        from: context,
+        to: navigator.context,
+      ),
+      builder: (context, animation) =>
+          _DialogAnimation(animation: animation, child: builder(context)),
+    ),
+  );
+}
 
 /// Asks one yes/no question: [title], [body], an optional [content] (a
 /// note: the reassurance, or why the confirm cannot go), Cancel and the
@@ -73,11 +74,11 @@ Future<bool> showMxConfirm(
     ) ??
     false;
 
-/// The centred modal for confirmations and short forms, as Material 3's
-/// AlertDialog: the text sits 24 in, the title over the body 16 apart, and
+/// The centred modal for confirmations and short forms, on ForUI's
+/// [FDialog]: the text sits 24 in, the title over the body 16 apart, and
 /// scrolls if it outgrows the screen; [actions], usually MxSheetActions, stay
-/// below it, 24 under the text. Title and body read the theme's dialog
-/// (headlineSmall in onSurface, bodyMedium in onSurfaceVariant).
+/// below it, 24 under the text. Title and body take ForUI's dialog styles.
+/// ForUI moves it above the keyboard and names the route with [title].
 class MxDialog extends StatelessWidget {
   const MxDialog({
     super.key,
@@ -97,97 +98,91 @@ class MxDialog extends StatelessWidget {
   final Widget? actions;
   final MxDialogWidth width;
 
-  /// The dialog stays while its work runs: Back and a scrim tap are refused
-  /// (the scrim pops through maybePop), as MxBottomSheet.isHeld does.
+  /// The dialog stays while its work runs: Back and a scrim tap are refused,
+  /// as MxBottomSheet.isHeld does.
   final bool isHeld;
 
   static const double _largeWidth = 340;
   static const double _mediumWidth = 320;
   static const double _smallWidth = 300;
 
+  /// ForUI's own minimum, capped by the narrowest width.
+  static const double _minWidth = 280;
+
   @override
   Widget build(BuildContext context) {
-    // The surface, radius, elevation and text roles are the theme's dialog
-    // (spec §4.6).
-    final dialogs = DialogTheme.of(context);
-    final shape = dialogs.shape! as RoundedRectangleBorder;
     final hasText = title != null || body != null || content != null;
-    final centred = Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.dimens.space24,
-          vertical: context.dimens.space24,
-        ),
-        child: ConstrainedBox(
-          constraints: dialogs.constraints!.copyWith(
-            maxWidth: switch (width) {
-              MxDialogWidth.large => _largeWidth,
-              MxDialogWidth.medium => _mediumWidth,
-              MxDialogWidth.small => _smallWidth,
-            },
-          ),
-          child: MxTintBase(
-            // What the dialog holds is tinted over its own ground.
-            color:
-                dialogs.backgroundColor ?? context.colors.surfaceContainerHigh,
-            child: Material(
-              color: dialogs.backgroundColor,
-              elevation: dialogs.elevation!,
-              shadowColor: dialogs.shadowColor,
-              shape: shape,
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (hasText)
-                    Flexible(
-                      child: SingleChildScrollView(
-                        // The text sits on the action pair's edge
-                        // (DEV-166); the pair is 24 below it.
-                        padding: EdgeInsets.all(context.dimens.space24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: context.dimens.space16,
-                          children: [
-                            if (title case final text?)
-                              Text(text, style: dialogs.titleTextStyle),
-                            if (body case final text?)
-                              Text(text, style: dialogs.contentTextStyle),
-                            ?content,
-                          ],
-                        ),
-                      ),
+    final maxWidth = switch (width) {
+      MxDialogWidth.large => _largeWidth,
+      MxDialogWidth.medium => _mediumWidth,
+      MxDialogWidth.small => _smallWidth,
+    };
+    return MxHoldRoute(
+      isHeld: isHeld,
+      child: FDialog(
+        animation: _DialogAnimation.maybeOf(context),
+        semanticsLabel: title,
+        constraints: BoxConstraints(minWidth: _minWidth, maxWidth: maxWidth),
+        builder: (context, style) => MxTintBase(
+          // What the dialog holds is tinted over its own ground.
+          color: context.colors.card,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (hasText)
+                Flexible(
+                  child: SingleChildScrollView(
+                    // The text sits on the action pair's edge (DEV-166); the
+                    // pair is 24 below it.
+                    padding: EdgeInsets.all(context.dimens.space24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: context.dimens.space16,
+                      children: [
+                        if (title case final text?)
+                          Text(text, style: style.titleTextStyle),
+                        if (body case final text?)
+                          Text(text, style: style.bodyTextStyle),
+                        ?content,
+                      ],
                     ),
-                  ?actions,
-                ],
-              ),
-            ),
+                  ),
+                ),
+              ?actions,
+            ],
           ),
-        ),
-      ),
-    );
-    return PopScope(
-      canPop: !isHeld,
-      child: Semantics(
-        scopesRoute: true,
-        namesRoute: true,
-        explicitChildNodes: true,
-        label: title,
-        // showGeneralDialog does not pad for the keyboard, as Material's
-        // Dialog does: the dialog centres in the room the keyboard leaves,
-        // and its text scrolls when that room is short, so the actions stay
-        // in view (SW-REV-002).
-        child: AnimatedPadding(
-          padding: MediaQuery.viewInsetsOf(context),
-          duration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero
-              : Durations.short4,
-          curve: Easing.standard,
-          child: centred,
         ),
       ),
     );
   }
+}
+
+/// ForUI's dialog route, with a barrier that a held dialog keeps.
+class _MxDialogRoute<T> extends FDialogRoute<T> with MxHeldRoute<T> {
+  _MxDialogRoute({
+    required super.style,
+    required super.builder,
+    super.barrierLabel,
+    super.barrierOnTapHint,
+    super.capturedFTheme,
+    super.capturedThemes,
+  });
+}
+
+/// The route's animation, for the [FDialog] the caller's builder returns:
+/// ForUI animates the dialog itself, and showMxDialog's builder takes only a
+/// context.
+class _DialogAnimation extends InheritedWidget {
+  const _DialogAnimation({required this.animation, required super.child});
+
+  final Animation<double> animation;
+
+  static Animation<double>? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_DialogAnimation>()?.animation;
+
+  @override
+  bool updateShouldNotify(_DialogAnimation oldWidget) =>
+      animation != oldWidget.animation;
 }

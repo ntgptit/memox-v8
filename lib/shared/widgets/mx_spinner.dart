@@ -1,11 +1,13 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One spinner revolution.
 const Duration _cycle = Duration(milliseconds: 800);
+
+/// The ring's stroke.
+const double _stroke = 2;
 
 /// The icon step a spinner is drawn at, so it drops into a button, a row or a
 /// card without a new number.
@@ -13,7 +15,8 @@ enum MxSpinnerSize { inline, compact, standard, large }
 
 /// The indeterminate ring: 2px, one quarter open, one turn every 0.8s. It
 /// keeps turning under reduced motion (ruling O1), because it is the only
-/// sign that work is in flight.
+/// sign that work is in flight; ForUI's `FCircularProgress` stops under
+/// reduced motion, so this stays a drawn ring in ForUI's colours.
 class MxSpinner extends StatefulWidget {
   const MxSpinner({
     super.key,
@@ -24,7 +27,7 @@ class MxSpinner extends StatefulWidget {
 
   final MxSpinnerSize size;
 
-  /// The ring colour. Null is the accent, for a spinner on a surface; a
+  /// The ring colour. Null is `primary`, for a spinner on a surface; a
   /// spinner on a fill passes the foreground that fill is read with, so it
   /// keeps its contrast (M3F-02).
   final Color? color;
@@ -64,8 +67,8 @@ class _MxSpinnerState extends State<MxSpinner>
         turns: _turns,
         child: CustomPaint(
           painter: _RingPainter(
-            color: widget.color ?? context.accentColor,
-            stroke: context.dimens.strokeIndicator,
+            color: widget.color ?? context.colors.primary,
+            stroke: _stroke,
           ),
         ),
       ),

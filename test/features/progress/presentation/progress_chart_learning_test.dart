@@ -24,7 +24,7 @@ void main() {
       find.byType(MxStackedDayBars),
     );
     final context = tester.element(find.byType(MxStackedDayBars));
-    expect(chart.top.color, context.mxColors.warningContainer);
+    expect(chart.top.color, context.status.warningFill);
     expect(chart.base.color, context.colors.primary);
   });
 }

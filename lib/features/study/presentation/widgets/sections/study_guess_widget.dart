@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -148,7 +148,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                         children: [
                           StudyWholeWordTextWidget(
                             widget.item.front,
-                            style: context.texts.displaySmall!,
+                            style: context.texts.term,
                           ),
                           StudySpeakButtonWidget(
                             text: widget.item.front,
@@ -231,7 +231,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
           Expanded(
             child: Text(
               option.meaning,
-              style: context.texts.bodySmall?.copyWith(color: foreground),
+              style: context.texts.caption.copyWith(color: foreground),
             ),
           ),
           if (tone == MxChoiceTone.right || tone == MxChoiceTone.wrong)
@@ -281,7 +281,7 @@ class _Letter extends StatelessWidget {
       child: Center(
         child: Text(
           letter,
-          style: context.texts.labelSmall?.copyWith(color: foreground),
+          style: context.texts.meta.copyWith(color: foreground),
         ),
       ),
     ),

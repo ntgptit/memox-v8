@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/l10n/meta_line.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
@@ -88,11 +87,11 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final muted = context.colors.onSurfaceVariant;
+    final muted = context.colors.mutedForeground;
     final terms = [
-      (overdueCount, overdueLabel, context.mxColors.warning, AppIcons.overdue),
-      (todayCount, todayLabel, context.accentColor, AppIcons.dueNow),
-      (newCount, newLabel, context.colors.onSurfaceVariant, AppIcons.newCards),
+      (overdueCount, overdueLabel, context.status.warning, AppIcons.overdue),
+      (todayCount, todayLabel, context.colors.primary, AppIcons.dueNow),
+      (newCount, newLabel, context.colors.mutedForeground, AppIcons.newCards),
       if (scheduledLabel case final label?)
         (scheduledCount, label, muted, null),
     ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();
@@ -103,8 +102,8 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     final isFallbackShown = !terms.any((term) => term.$4 != null);
     return Text.rich(
       TextSpan(
-        style: context.texts.labelMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.label.copyWith(
+          color: context.colors.mutedForeground,
         ),
         children: [
           // "1,248 cards · nothing due" is a line of terms too.
@@ -116,9 +115,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
             TextSpan(
               text: _termText(label(count)),
               style: count > 0
-                  ? context.texts.labelMedium?.copyWith(color: ink)
-                  : context.texts.labelMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                  ? context.texts.label.copyWith(color: ink)
+                  : context.texts.label.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
             ),
           ],
@@ -147,12 +146,12 @@ class _GlyphStatement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final muted = context.colors.onSurfaceVariant;
+    final muted = context.colors.mutedForeground;
     if (terms.isEmpty) {
       return Text(
         fallback,
-        style: context.texts.labelMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.label.copyWith(
+          color: context.colors.mutedForeground,
         ),
       );
     }
@@ -180,14 +179,14 @@ class _GlyphStatement extends StatelessWidget {
                 Flexible(
                   child: Text.rich(
                     TextSpan(
-                      style: context.texts.labelMedium?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                      style: context.texts.label.copyWith(
+                        color: context.colors.mutedForeground,
                       ),
                       children: [
                         TextSpan(
                           text: label(count),
                           style: count > 0
-                              ? context.texts.labelMedium?.copyWith(color: ink)
+                              ? context.texts.label.copyWith(color: ink)
                               : null,
                         ),
                         if (index < terms.length - 1)

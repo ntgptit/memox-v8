@@ -435,7 +435,7 @@ void main() {
           .element(waiting)
           .texts
           .labelSmall
-          ?.copyWith(color: tester.element(waiting).colors.onSurfaceVariant),
+          ?.copyWith(color: tester.element(waiting).colors.mutedForeground),
     );
     // The glyph follows the eyebrow, not the Required foreground.
     final glyph = find
@@ -446,7 +446,7 @@ void main() {
         .first;
     expect(
       IconTheme.of(tester.element(glyph)).color,
-      tester.element(glyph).colors.onSurfaceVariant,
+      tester.element(glyph).colors.mutedForeground,
     );
   });
 }

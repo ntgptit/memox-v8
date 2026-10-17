@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
@@ -25,21 +25,21 @@ class MxOutcomeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.mxColors.success.tintOver(MxTintBase.of(context)),
-        context.colors.outlineVariant,
-        context.mxColors.success,
+        context.status.success.tintOver(MxTintBase.of(context)),
+        context.colors.border,
+        context.status.success,
       ),
       MxOutcomeTone.lost => (
-        context.mxColors.warning.tintOver(MxTintBase.of(context)),
-        context.mxColors.warning,
-        context.mxColors.warning,
+        context.status.warning.tintOver(MxTintBase.of(context)),
+        context.status.warning,
+        context.status.warning,
       ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
         color: ground,
-        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
-        border: Border.all(color: edge, width: context.dimens.strokeHairline),
+        borderRadius: context.radii.md,
+        border: Border.all(color: edge, width: context.hairline),
       ),
       child: Padding(
         padding: EdgeInsets.all(context.dimens.space12),
@@ -47,11 +47,11 @@ class MxOutcomeTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: context.dimens.space4,
           children: [
-            Text(label, style: context.texts.labelSmall?.copyWith(color: ink)),
+            Text(label, style: context.texts.meta.copyWith(color: ink)),
             Text(
               body,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

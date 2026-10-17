@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One row of a Progress level (kit 22): a deck, or the level's total
 /// (FE-A9 D2), with the four numbers of the range (BR-PROGRESS-001). A deck
@@ -29,8 +28,8 @@ class ProgressDeckRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final caption = context.texts.labelSmall?.copyWith(
-      color: context.colors.onSurfaceVariant,
+    final caption = context.texts.meta.copyWith(
+      color: context.colors.mutedForeground,
     );
     final isActive = numbers.hasActivity;
     return MxListRow(
@@ -60,8 +59,8 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: wholeTerm(
                           l10n.progressRowLearning(numbers.learningCardDays),
                         ),
-                        style: context.texts.labelSmall?.copyWith(
-                          color: context.mxColors.warning,
+                        style: context.texts.meta.copyWith(
+                          color: context.status.warning,
                         ),
                       ),
                       const TextSpan(text: metaTermSeparator),
@@ -69,8 +68,8 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: wholeTerm(
                           l10n.progressRowReviewing(numbers.reviewingCardDays),
                         ),
-                        style: context.texts.labelSmall?.copyWith(
-                          color: context.accentColor,
+                        style: context.texts.meta.copyWith(
+                          color: context.colors.primary,
                         ),
                       ),
                     ],

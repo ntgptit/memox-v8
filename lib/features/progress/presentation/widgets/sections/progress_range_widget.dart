@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_range_provider.dart';

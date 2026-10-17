@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
-/// The base surface: a [Card], so it takes the theme's card colour, radius, and
-/// the absence of border and shadow. The tones below change only the ground. It
-/// is a Material, so the ripple of a row inside paints on the card instead of
-/// under its fill (ruling S14).
+/// The base surface: ForUI's [FCard], its card colour, border and radius.
+/// The tones below change only the ground, or the edge for [isSelected].
 class MxCard extends StatelessWidget {
   const MxCard({
     super.key,
@@ -40,32 +38,35 @@ class MxCard extends StatelessWidget {
   /// cards fit side by side on a phone.
   final bool isCompact;
 
-  /// The accent tint over the page surface.
+  /// The primary tint over the page.
   final bool isHero;
 
-  /// The warning tint over the page surface (screen 02's locked strip, owner
+  /// The warning tint over the page (screen 02's locked strip, owner
   /// decision D-O1).
   final bool isWarning;
 
-  /// A primary edge at the control weight over the card's own ground: a
-  /// picked row of a selection (screen 07).
+  /// A primary edge over the card's own ground: a picked row of a selection
+  /// (screen 07).
   final bool isSelected;
 
-  /// The success tint over the page surface: a finished session (FE-A6 D14).
+  /// The success tint over the page: a finished session (FE-A6 D14).
   final bool isSuccess;
 
-  /// The error tint over the page surface: a session stopped by an error
+  /// The error tint over the page: a session stopped by an error
   /// (FE-A6 D14).
   final bool isDanger;
 
-  /// The container-low ground: the answer face of a study card (kit
-  /// StudyFaceCard, screen 16a).
+  /// The muted ground: the answer face of a study card (screen 16a).
   final bool isRecessed;
+
+  /// The selected edge, twice the hairline so it reads as a state.
+  static const double _selectedEdgeFactor = 2;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final dimens = context.dimens;
+    final base = MxTintBase.of(context);
     final ground = switch ((
       isHero,
       isWarning,
@@ -73,35 +74,35 @@ class MxCard extends StatelessWidget {
       isDanger,
       isRecessed,
     )) {
-      (true, _, _, _, _) => context.accentColor.tintOver(
-        MxTintBase.of(context),
-      ),
-      (_, true, _, _, _) => context.mxColors.warning.tintOver(
-        MxTintBase.of(context),
-      ),
-      (_, _, true, _, _) => context.mxColors.success.tintOver(
-        MxTintBase.of(context),
-      ),
-      (_, _, _, true, _) => colors.error.tintOver(MxTintBase.of(context)),
-      (_, _, _, _, true) => colors.surfaceContainerLow,
-      _ => null,
+      (true, _, _, _, _) => colors.primary.tintOver(base),
+      (_, true, _, _, _) => context.status.warning.tintOver(base),
+      (_, _, true, _, _) => context.status.success.tintOver(base),
+      (_, _, _, true, _) => colors.error.tintOver(base),
+      (_, _, _, _, true) => colors.muted,
+      _ => colors.card,
     };
+    final edge = isSelected
+        ? BorderSide(
+            color: colors.primary,
+            width: context.hairline * _selectedEdgeFactor,
+          )
+        : BorderSide(color: colors.border, width: context.hairline);
     return SizedBox(
       width: double.infinity,
-      child: Card(
-        color: ground,
-        shape: isSelected
-            ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(dimens.radiusMd),
-                side: BorderSide(
-                  color: colors.primary,
-                  width: dimens.strokeControl,
-                ),
-              )
-            : null,
+      child: FCard(
+        clipBehavior: Clip.antiAlias,
+        style: FCardStyleDelta.delta(
+          decoration: DecorationDelta.shapeDelta(
+            color: ground,
+            shape: RoundedSuperellipseBorder(
+              borderRadius: context.radii.lg,
+              side: edge,
+            ),
+          ),
+        ),
         // What the card holds is tinted over the card's own ground.
         child: MxTintBase(
-          color: ground ?? context.mxColors.cardSurface,
+          color: ground,
           child: Padding(
             padding: isFullBleed
                 ? EdgeInsets.zero

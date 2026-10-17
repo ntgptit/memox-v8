@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
@@ -54,7 +54,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                         runSpacing: context.dimens.space4,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Text(entry.title, style: context.texts.titleMedium),
+                          Text(entry.title, style: context.texts.sectionTitle),
                           if (entry.isInLibrary)
                             MxBadge(
                               label: l10n.starterInLibrary,
@@ -69,8 +69,8 @@ class StarterTemplateCardWidget extends StatelessWidget {
                   padding: EdgeInsetsDirectional.only(start: _indent(context)),
                   child: Text(
                     starterEntryFacts(l10n, entry),
-                    style: context.texts.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.meta.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ),
@@ -92,8 +92,8 @@ class StarterTemplateCardWidget extends StatelessWidget {
                   l10n.starterSuggests(
                     starterSchedulerName(l10n, entry.suggestedScheduler),
                   ),
-                  style: context.texts.labelSmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.meta.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ],

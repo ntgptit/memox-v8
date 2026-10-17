@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/log_filter_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';

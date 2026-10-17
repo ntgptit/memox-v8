@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_route_name.dart';
@@ -7,14 +7,15 @@ import 'package:memox/shared/widgets/mx_route_name.dart';
 /// subtitle line under it), trailing actions. The title is the only slot
 /// that gives up width; it ellipsises on one line.
 ///
-/// Placed in-flow by MxAppShell, which paints its ground (`surface`, or
-/// `surfaceContainer` once content scrolls under it) full-bleed behind it. It
-/// is `sizeAppBar` tall at minimum and grows only when text scaling makes the
-/// title taller (ruling R1).
+/// Placed in-flow by MxAppShell, which paints its ground (the page
+/// background, with a hairline under it once content scrolls under it)
+/// full-bleed behind it. It is `sizeAppBar` tall at minimum and grows only
+/// when text scaling makes the title taller (ruling R1). The title is the
+/// screen title role, the controls ForUI's ghost icon buttons
+/// (MxIconButton).
 ///
 /// The icon glyphs sit on the screen margin, in line with the body: the
-/// control's touch area reaches out past the margin by its inset. The leading
-/// control is `onSurface`, the trailing icons `onSurfaceVariant`.
+/// control's touch area reaches out past the margin by its inset.
 class MxAppBar extends StatelessWidget {
   const MxAppBar({
     super.key,
@@ -41,7 +42,7 @@ class MxAppBar extends StatelessWidget {
 
   final String? title;
 
-  /// One line under [title] (`labelMedium`, `onSurfaceVariant`), such as the
+  /// One line under [title] (the label role, muted), such as the
   /// level and section of a TOPIK test (screens 34, 36). It is read in the
   /// title's heading node, so the route is named once with both (Q-P6-2).
   final String? subtitle;
@@ -111,13 +112,10 @@ class MxAppBar extends StatelessWidget {
                 },
               ),
               if (actions.isNotEmpty)
-                IconButtonTheme(
-                  data: _actionsTheme(context),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: dimens.space4,
-                    children: actions,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: dimens.space4,
+                  children: actions,
                 ),
             ],
           ),
@@ -132,7 +130,7 @@ class MxAppBar extends StatelessWidget {
       title!,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: context.texts.titleLarge,
+      style: context.texts.screenTitle,
     );
     final subtitle = this.subtitle;
     if (subtitle == null) return titleText;
@@ -145,28 +143,11 @@ class MxAppBar extends StatelessWidget {
           subtitle,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.labelMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.label.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ],
-    );
-  }
-
-  /// The ambient icon button, with the trailing icons in `onSurfaceVariant`.
-  IconButtonThemeData _actionsTheme(BuildContext context) {
-    final colors = context.colors;
-    final disabled = colors.onSurfaceVariant.withValues(
-      alpha: context.dimens.opacityDisabledContent,
-    );
-    final foreground = WidgetStateProperty.resolveWith(
-      (states) => states.contains(WidgetState.disabled)
-          ? disabled
-          : colors.onSurfaceVariant,
-    );
-    final ambient = IconButtonTheme.of(context).style ?? const ButtonStyle();
-    return IconButtonThemeData(
-      style: ambient.copyWith(foregroundColor: foreground),
     );
   }
 }

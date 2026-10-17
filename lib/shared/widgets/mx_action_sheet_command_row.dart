@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// One command in a bottom-sheet action list: a 30 tile in a 32 lead column
@@ -45,7 +44,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = isDestructive ? colors.error : context.accentColor;
+    final ink = isDestructive ? colors.error : context.colors.primary;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
@@ -76,12 +75,10 @@ class MxActionSheetCommandRow extends StatelessWidget {
                             ? context.colors.error.tintOver(
                                 MxTintBase.of(context),
                               )
-                            : context.accentColor.tintOver(
+                            : context.colors.primary.tintOver(
                                 MxTintBase.of(context),
                               ),
-                        borderRadius: BorderRadius.circular(
-                          context.dimens.radiusSm,
-                        ),
+                        borderRadius: context.radii.sm,
                       ),
                       // Ruling S7: the glyph size is UNSPECIFIED; the small
                       // IconTile step.
@@ -103,10 +100,10 @@ class MxActionSheetCommandRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: context.texts.titleSmall?.copyWith(
+                      style: context.texts.itemTitle.copyWith(
                         color: isDestructive
                             ? context.colors.error
-                            : context.colors.onSurface,
+                            : context.colors.foreground,
                       ),
                     ),
                     if (subtitle case final text?) ...[
@@ -117,8 +114,8 @@ class MxActionSheetCommandRow extends StatelessWidget {
                         text,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: context.texts.bodyMedium?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        style: context.texts.body.copyWith(
+                          color: context.colors.mutedForeground,
                         ),
                       ),
                     ],
@@ -129,7 +126,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                 Icon(
                   AppIcons.chevronRight,
                   size: context.dimens.sizeIconCompact,
-                  color: colors.onSurfaceVariant,
+                  color: colors.mutedForeground,
                 ),
             ],
           ),

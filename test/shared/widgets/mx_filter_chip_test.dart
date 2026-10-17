@@ -185,7 +185,7 @@ void main() {
 
       for (final ground in [
         Theme.of(context).scaffoldBackgroundColor,
-        context.mxColors.cardSurface,
+        context.colors.card,
       ]) {
         final ink = Color.alphaBlend(painted, ground);
         expect(contrast(ink, ground), greaterThanOrEqualTo(4.5));
@@ -319,7 +319,7 @@ void main() {
       final glyph = IconTheme.of(context).color!;
 
       expect(glyph, accentOf(context.colors));
-      expect(contrast(glyph, context.mxColors.cardSurface), greaterThan(3));
+      expect(contrast(glyph, context.colors.card), greaterThan(3));
     });
   }
 }

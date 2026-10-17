@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
@@ -44,8 +44,8 @@ class TopikAnswerRowWidget extends StatelessWidget {
       meta: Text(
         meta.shown,
         semanticsLabel: meta.spoken,
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
       trailing: MxBadge(

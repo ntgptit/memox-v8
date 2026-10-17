@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
@@ -50,10 +50,10 @@ class MxInlineBanner extends StatelessWidget {
     final colors = context.colors;
     final (ground, ink, titleInk) = switch (tone) {
       MxBannerTone.warning => (
-        context.mxColors.warning.tintOver(MxTintBase.of(context)),
+        context.status.warning.tintOver(MxTintBase.of(context)),
         // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
-        context.mxColors.warning,
-        context.mxColors.warning,
+        context.status.warning,
+        context.status.warning,
       ),
       // The glyph needs 3:1 and keeps error; the title is text and reads in
       // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
@@ -63,10 +63,10 @@ class MxInlineBanner extends StatelessWidget {
         context.colors.error,
       ),
     };
-    final messageStyle = context.texts.labelMedium!.copyWith(
+    final messageStyle = context.texts.label.copyWith(
       color: title == null
-          ? context.colors.onSurface
-          : context.colors.onSurfaceVariant,
+          ? context.colors.foreground
+          : context.colors.mutedForeground,
     );
     // The glyph centres on the first line at any text scale.
     final firstLine =
@@ -94,7 +94,7 @@ class MxInlineBanner extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: ground,
-            borderRadius: BorderRadius.circular(context.dimens.radiusSm),
+            borderRadius: context.radii.sm,
           ),
           child: Padding(
             padding: padding,
@@ -122,9 +122,7 @@ class MxInlineBanner extends StatelessWidget {
                       if (title case final lead?) ...[
                         Text(
                           lead,
-                          style: context.texts.labelMedium?.copyWith(
-                            color: titleInk,
-                          ),
+                          style: context.texts.label.copyWith(color: titleInk),
                         ),
                         const SizedBox(height: _titleGap),
                       ],

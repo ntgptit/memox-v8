@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';

@@ -46,7 +46,7 @@ void main() {
   testWidgets('the glyph centres on the first line', (tester) async {
     final long = List.filled(12, _rule).join(' ');
     await pumpMx(tester, SizedBox(width: 328, child: MxNote(text: long)));
-    final role = tester.element(find.text(long)).texts.bodyMedium!;
+    final role = tester.element(find.text(long)).texts.body;
     final firstLine = role.fontSize! * role.height!;
 
     expect(

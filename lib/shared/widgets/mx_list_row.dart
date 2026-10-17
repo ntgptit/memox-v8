@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
@@ -100,7 +99,7 @@ class MxListRow extends StatelessWidget {
       (false, true) => Icon(
         AppIcons.chevronRight,
         size: context.dimens.sizeIconCompact,
-        color: colors.onSurfaceVariant,
+        color: colors.mutedForeground,
       ),
       (false, false) => trailing,
     };
@@ -138,14 +137,14 @@ class MxListRow extends StatelessWidget {
                         context,
                         Text.rich(
                           _titleSpan(
-                            context.texts.titleSmall!.copyWith(
-                              color: context.accentColor,
+                            context.texts.itemTitle.copyWith(
+                              color: context.colors.primary,
                             ),
                           ),
                           maxLines: titleMaxLines,
                           softWrap: titleMaxLines > 1,
                           overflow: TextOverflow.ellipsis,
-                          style: context.texts.titleSmall,
+                          style: context.texts.itemTitle,
                         ),
                       ),
                       if (subtitle case final text?) ...[
@@ -155,8 +154,8 @@ class MxListRow extends StatelessWidget {
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
-                          style: context.texts.bodyMedium?.copyWith(
-                            color: context.colors.onSurfaceVariant,
+                          style: context.texts.body.copyWith(
+                            color: context.colors.mutedForeground,
                           ),
                         ),
                       ],
@@ -190,5 +189,5 @@ class MxListRow extends StatelessWidget {
 
   Widget _dim(BuildContext context, Widget child) => isEnabled
       ? child
-      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
+      : Opacity(opacity: context.colors.disabledOpacity, child: child);
 }

@@ -71,7 +71,7 @@ void main() {
     // The flag is plain foreground, as in the editor and the detail; the filled
     // glyph carries the state (critique 2026-10-02, F6).
     final flag = tester.element(find.byIcon(Icons.flag));
-    expect(IconTheme.of(flag).color, flag.colors.onSurface);
+    expect(IconTheme.of(flag).color, flag.colors.foreground);
     // M3-D1: the row pads 16 across and 12 down, as every MxListRow.
     expect(
       find.descendant(

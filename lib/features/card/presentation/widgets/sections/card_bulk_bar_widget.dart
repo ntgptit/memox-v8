@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
@@ -50,8 +50,8 @@ class _BulkCommand extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
             ],

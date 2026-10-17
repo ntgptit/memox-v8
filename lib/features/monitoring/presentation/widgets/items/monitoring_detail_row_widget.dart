@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -39,9 +39,7 @@ class MonitoringDetailRowWidget extends StatelessWidget {
     final copy = copyLabel;
     final labelText = Text(
       label,
-      style: context.texts.bodyMedium?.copyWith(
-        color: context.colors.onSurfaceVariant,
-      ),
+      style: context.texts.body.copyWith(color: context.colors.mutedForeground),
     );
     return ConstrainedBox(
       constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
@@ -62,7 +60,7 @@ class MonitoringDetailRowWidget extends StatelessWidget {
                   ),
                   child: Text(
                     value,
-                    style: context.texts.titleSmall,
+                    style: context.texts.itemTitle,
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -79,11 +77,11 @@ class MonitoringDetailRowWidget extends StatelessWidget {
                     children: [
                       labelText,
                       if (copy == null)
-                        Text(value, style: context.texts.titleSmall)
+                        Text(value, style: context.texts.itemTitle)
                       else
                         Text(
                           monitoringIdText(value),
-                          style: context.texts.bodyMedium?.copyWith(
+                          style: context.texts.body.copyWith(
                             fontFamily: AppTypography.monoFamily,
                           ),
                         ),

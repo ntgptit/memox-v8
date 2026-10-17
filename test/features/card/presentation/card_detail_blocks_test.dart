@@ -71,7 +71,7 @@ void main() {
     // A read-only field label: sentence case (critique 2026-09-30 part 2).
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).texts.labelMedium,
+      tester.element(label).texts.label,
     );
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [

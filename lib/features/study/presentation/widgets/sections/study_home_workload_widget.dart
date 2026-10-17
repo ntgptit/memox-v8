@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -33,7 +33,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     final l10n = context.l10n;
     // The eyebrow's own colour: it no longer borrows the Required foreground
     // (critique 2026-09-30 part 2, P2).
-    final foreground = context.colors.onSurfaceVariant;
+    final foreground = context.colors.mutedForeground;
     // A summary card, not a hero: sessions start per deck, so it leads
     // nowhere (critique 2026-09-30 part 3c-1, R2).
     return MxCard(
@@ -56,8 +56,8 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
                 child: Text(
                   l10n.studyHomeWaiting.toUpperCase(),
                   semanticsLabel: l10n.studyHomeWaiting,
-                  style: context.texts.labelSmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.meta.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ),
@@ -65,7 +65,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
           ),
           Text(
             l10n.studyHomeDueTitle(workload.dueCount),
-            style: context.texts.titleMedium,
+            style: context.texts.sectionTitle,
           ),
           // The hero states what is due, in its two halves; new and
           // scheduled cards are in the deck rows (BR-STUDY-068, critique

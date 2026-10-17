@@ -578,6 +578,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  forui:
+    dependency: "direct main"
+    description:
+      name: forui
+      sha256: "3ea0d75e66e4a01f0b878bdaaad391555b16dc027ac4ee76046045c882b921fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.27.6"
+  forui_lucide:
+    dependency: transitive
+    description:
+      name: forui_lucide
+      sha256: "63c660e4213309d9558cfc1c10ec52c13dab88cc2794dc41b8be769a7c86206c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.27.0"
   freezed_annotation:
     dependency: transitive
     description:
@@ -869,7 +885,7 @@ packages:
     source: hosted
     version: "0.13.0"
   material_ui:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: material_ui
       sha256: "134ab2f0843545c4e661e4ba2753fe1bcf0753cb690d5a9ee4870638a40411e9"
@@ -1369,6 +1385,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  sugar:
+    dependency: transitive
+    description:
+      name: sugar
+      sha256: a0a97f1d3552a3ef4cbec7c6e62c7b52c151cd5c11e984e8311700a918f73dc5
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   supabase:
     dependency: transitive
     description:

@@ -138,7 +138,7 @@ void main() {
     expect(type.text, 'PostgrestException');
     expect(
       type.style,
-      tester.element(find.byType(SelectableText).first).texts.titleSmall,
+      tester.element(find.byType(SelectableText).first).texts.itemTitle,
     );
   });
 

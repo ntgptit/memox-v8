@@ -72,11 +72,11 @@ void main() {
 
       expect(
         tester.widget<Text>(find.text('Kept')).style!.color,
-        context.mxColors.success,
+        context.status.success,
       );
       expect(
         tester.widget<Text>(find.text('Lost')).style!.color,
-        context.mxColors.warning,
+        context.status.warning,
       );
     },
   );

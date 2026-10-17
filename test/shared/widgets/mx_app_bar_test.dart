@@ -32,7 +32,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('Library')).style,
-      context.texts.titleLarge,
+      context.texts.screenTitle,
     );
     expect(
       tester.getTopLeft(find.text('Library')).dx -
@@ -56,7 +56,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('Japanese N5')).style,
-      tester.element(find.text('Japanese N5')).texts.titleLarge,
+      tester.element(find.text('Japanese N5')).texts.screenTitle,
     );
   });
 

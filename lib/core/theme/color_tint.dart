@@ -1,16 +1,17 @@
 import 'package:flutter/painting.dart';
-import 'package:memox/core/theme/generated/token_constants.g.dart';
+
+/// The tint strength of a state colour over the surface below it.
+const double _tintStrength = 0.16;
 
 extension ColorTint on Color {
-  /// This colour at the Design System tint strength (`opacity-dragged`, 16%)
-  /// over [base], rounded per 8-bit channel so it matches the token spec's
-  /// precomputed hex. [base] is the surface directly underneath: the page
-  /// surface on the screen, the card surface inside a card.
+  /// This colour at the tint strength (16%) over [base], rounded per 8-bit
+  /// channel. [base] is the surface directly underneath: the page on the
+  /// screen, the card inside a card (`MxTintBase`).
   Color tintOver(Color base) =>
       Color.fromARGB(255, _mix(r, base.r), _mix(g, base.g), _mix(b, base.b));
 }
 
 int _mix(double foreground, double background) =>
-    ((foreground * 255).round() * kOpacityDragged +
-            (background * 255).round() * (1 - kOpacityDragged))
+    ((foreground * 255).round() * _tintStrength +
+            (background * 255).round() * (1 - _tintStrength))
         .round();

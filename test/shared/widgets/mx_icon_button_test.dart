@@ -94,8 +94,8 @@ void main() {
 
     expect(
       IconTheme.of(context).color,
-      context.colors.onSurface.withValues(
-        alpha: context.dimens.opacityDisabledContent,
+      context.colors.foreground.withValues(
+        alpha: context.colors.disabledOpacity,
       ),
     );
   });

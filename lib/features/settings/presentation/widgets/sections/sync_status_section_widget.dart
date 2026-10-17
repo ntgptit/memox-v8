@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -49,7 +49,7 @@ class SyncStatusSectionWidget extends StatelessWidget {
                   child: Icon(
                     AppIcons.check,
                     size: context.dimens.sizeIconCompact,
-                    color: context.mxColors.success,
+                    color: context.status.success,
                   ),
                 )
               : null,

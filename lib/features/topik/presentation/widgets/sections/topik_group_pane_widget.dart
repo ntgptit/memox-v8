@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -48,7 +48,7 @@ class TopikGroupPaneWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dimens = context.dimens;
-    final ground = context.colors.surfaceContainerLow;
+    final ground = context.colors.muted;
     final hasMaterial = group.passage != null || group.script != null;
     // The screen keeps one collapse for the whole attempt; a group with
     // nothing to hide shows its instruction whole, or a collapse carried
@@ -77,8 +77,8 @@ class TopikGroupPaneWidget extends StatelessWidget {
                         group.instructionKo,
                         maxLines: isShut ? 1 : null,
                         overflow: isShut ? TextOverflow.ellipsis : null,
-                        style: context.texts.bodyMedium?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        style: context.texts.body.copyWith(
+                          color: context.colors.mutedForeground,
                         ),
                       ),
                     ),
@@ -112,7 +112,7 @@ class TopikGroupPaneWidget extends StatelessWidget {
     final translation = group.scriptTranslation;
     return [
       if (passage?.textKo case final text?)
-        Text(text, style: context.texts.bodyLarge),
+        Text(text, style: context.texts.content),
       if (passage?.image case final image?)
         Image.asset(
           image,
@@ -130,12 +130,12 @@ class TopikGroupPaneWidget extends StatelessWidget {
           ),
         ),
       if (script != null && isScriptShown) ...[
-        Text(script, style: context.texts.bodyMedium),
+        Text(script, style: context.texts.body),
         if (translation != null)
           Text(
             l10n.topikText(translation),
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
       ],

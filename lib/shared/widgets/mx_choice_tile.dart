@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Durations, Easing;
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -101,9 +102,9 @@ class MxChoiceTile extends StatelessWidget {
 
   /// The content colour of [tone].
   Color _foreground(BuildContext context) => switch (tone) {
-    MxChoiceTone.idle => context.colors.onSurface,
-    MxChoiceTone.selected => context.colors.onPrimary,
-    MxChoiceTone.right => context.mxColors.success,
+    MxChoiceTone.idle => context.colors.foreground,
+    MxChoiceTone.selected => context.colors.primaryForeground,
+    MxChoiceTone.right => context.status.success,
     MxChoiceTone.wrong => context.colors.error,
   };
 
@@ -112,18 +113,15 @@ class MxChoiceTile extends StatelessWidget {
   /// edge once answered.
   BoxDecoration _decoration(BuildContext context) {
     final colors = context.colors;
-    final dimens = context.dimens;
-    final rest = isRecessed
-        ? colors.surfaceContainerLow
-        : context.mxColors.cardSurface;
+    final rest = isRecessed ? colors.muted : context.colors.card;
     // At rest the edge is the fill itself, so the tone eases in without a
     // border appearing from nothing.
     final (Color fill, Color edge) = switch (tone) {
       MxChoiceTone.idle => (rest, rest),
       MxChoiceTone.selected => (colors.primary, colors.primary),
       MxChoiceTone.right => (
-        context.mxColors.success.tintOver(MxTintBase.of(context)),
-        context.mxColors.success,
+        context.status.success.tintOver(MxTintBase.of(context)),
+        context.status.success,
       ),
       MxChoiceTone.wrong => (
         colors.error.tintOver(MxTintBase.of(context)),
@@ -132,8 +130,8 @@ class MxChoiceTile extends StatelessWidget {
     };
     return BoxDecoration(
       color: fill,
-      borderRadius: BorderRadius.circular(dimens.radiusMd),
-      border: Border.all(color: edge, width: dimens.strokeHairline),
+      borderRadius: context.radii.md,
+      border: Border.all(color: edge, width: context.hairline),
     );
   }
 }

@@ -102,7 +102,7 @@ void main() {
     for (final value in ['20', _en.settingsOrderCreated]) {
       expect(
         tester.widget<Text>(find.text(value)).style,
-        texts.titleSmall,
+        texts.itemTitle,
         reason: value,
       );
     }

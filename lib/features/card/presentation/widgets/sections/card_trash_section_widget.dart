@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
@@ -53,11 +53,11 @@ class CardTrashSectionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: context.dimens.space4,
               children: [
-                Text(l10n.cardEditTrashTitle, style: context.texts.titleSmall),
+                Text(l10n.cardEditTrashTitle, style: context.texts.itemTitle),
                 Text(
                   l10n.cardEditTrashBody,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
                 SizedBox(height: context.dimens.space8),

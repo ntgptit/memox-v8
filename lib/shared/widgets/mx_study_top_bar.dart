@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Durations, Easing;
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
@@ -66,12 +67,12 @@ class MxStudyTopBar extends StatelessWidget {
     final accentColor = colors.primary;
     final trackHeight = context.dimens.sizeTrack;
     // The badge text is ink: primaryInk on the primary tint.
-    final accentInk = context.accentColor;
+    final accentInk = context.colors.primary;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : Durations.short4;
     return ColoredBox(
-      color: colors.surface,
+      color: colors.background,
       child: SafeArea(
         bottom: false,
         // Ruling R1: 56 at minimum, grows with text scaling.
@@ -114,7 +115,7 @@ class MxStudyTopBar extends StatelessWidget {
                             semanticsLabel: modeLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.texts.labelSmall?.copyWith(
+                            style: context.texts.meta.copyWith(
                               color: accentInk,
                             ),
                           ),
@@ -168,8 +169,8 @@ class MxStudyTopBar extends StatelessWidget {
         fit: BoxFit.scaleDown,
         child: Text(
           counterLabel,
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.meta.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ),

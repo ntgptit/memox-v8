@@ -1,13 +1,17 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart'
+    show InputBorder, OutlineInputBorder;
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_user_edits.dart';
 
-/// The library search input: a leading glyph, a single-line query, and a
-/// clear button that appears only once there is something to clear. What the
-/// query filters is the caller's.
+/// The library search input, on ForUI's [FTextField]: a leading glyph, a
+/// single-line query on the muted ground in a pill, and a clear button that
+/// appears only once there is something to clear. What the query filters is
+/// the caller's.
 class MxSearchField extends StatefulWidget {
   const MxSearchField({
     super.key,
@@ -49,11 +53,7 @@ class MxSearchField extends StatefulWidget {
 }
 
 class _MxSearchFieldState extends State<MxSearchField> {
-  FocusNode? _ownFocusNode;
   TextEditingController? _ownController;
-
-  FocusNode get _focusNode =>
-      widget.focusNode ?? (_ownFocusNode ??= FocusNode());
 
   TextEditingController get _controller =>
       widget.controller ?? (_ownController ??= TextEditingController());
@@ -62,31 +62,24 @@ class _MxSearchFieldState extends State<MxSearchField> {
   void initState() {
     super.initState();
     _controller.addListener(_rebuild);
-    _focusNode.addListener(_rebuild);
   }
 
   @override
   void didUpdateWidget(MxSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      (oldWidget.controller ?? _ownController)?.removeListener(_rebuild);
-      _controller.addListener(_rebuild);
-    }
-    if (oldWidget.focusNode != widget.focusNode) {
-      (oldWidget.focusNode ?? _ownFocusNode)?.removeListener(_rebuild);
-      _focusNode.addListener(_rebuild);
-    }
+    if (oldWidget.controller == widget.controller) return;
+    (oldWidget.controller ?? _ownController)?.removeListener(_rebuild);
+    _controller.addListener(_rebuild);
   }
 
   @override
   void dispose() {
     _controller.removeListener(_rebuild);
-    _focusNode.removeListener(_rebuild);
-    _ownFocusNode?.dispose();
     _ownController?.dispose();
     super.dispose();
   }
 
+  /// Rebuilds for the semantics label, which follows whether a query is held.
   void _rebuild() => setState(() {});
 
   void _clear() {
@@ -97,72 +90,69 @@ class _MxSearchFieldState extends State<MxSearchField> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
-    // As in MxTextField: padding centres the line in the `sizeSearch` floor, so the
-    // decorator paints the full box and scaled text still grows it.
-    final valueStyle = context.texts.labelMedium!;
-    final lineHeight = valueStyle.fontSize! * valueStyle.height!;
-    final stadium = BorderRadius.circular(context.dimens.sizeSearch / 2);
+    final pill = context.radii.pill;
+    final edits = MxUserEdits(widget.onChanged);
     final edge = OutlineInputBorder(
       gapPadding: 0,
-      borderRadius: stadium,
+      borderRadius: pill,
       borderSide: BorderSide.none,
     );
-    final field = TextField(
-      controller: _controller,
-      focusNode: _focusNode,
+    final field = FTextField(
+      control: FTextFieldControl.managed(
+        controller: _controller,
+        onChange: edits.onChange,
+      ),
+      size: FTextFieldSizeVariant.lg,
+      // The search bar is a pill on the muted ground, with no edge in any
+      // state.
+      style: FTextFieldStyleDelta.delta(
+        color:
+            FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              Color?,
+              Delta
+            >.all(colors.muted),
+        border:
+            FVariants<
+              FTextFieldVariantConstraint,
+              FTextFieldVariant,
+              InputBorder,
+              Delta
+            >.all(edge),
+      ),
+      hint: widget.hintText,
+      focusNode: widget.focusNode,
       readOnly: widget.onTap != null,
-      // A trigger's one tab stop is its ink, not the field under it.
+      // A trigger's one tab stop is its target, not the field under it.
       canRequestFocus: widget.onTap == null,
-      onChanged: widget.onChanged,
-      maxLines: 1,
+      inputFormatters: [edits.formatter],
       textInputAction: TextInputAction.search,
-      style: valueStyle,
-      cursorColor: colors.primary,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: context.texts.labelMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+      prefixBuilder: (context, _, variants) => Padding(
+        padding: EdgeInsetsDirectional.only(
+          start: context.dimens.space16,
+          end: context.dimens.space8,
         ),
-        // The search bar is a stadium on its own surface, with no edge in any
-        // state (Design System: SearchBar).
-        // The theme's field is outlined with no fill: the bar fills itself.
-        filled: true,
-        fillColor: context.mxColors.searchSurface,
-        border: edge,
-        enabledBorder: edge,
-        focusedBorder: edge,
-        contentPadding: EdgeInsets.symmetric(
-          vertical: (context.dimens.sizeSearch - lineHeight) / 2,
+        child: Icon(
+          AppIcons.search,
+          size: context.dimens.sizeIcon,
+          color: variants.contains(FTextFieldVariant.focused)
+              ? colors.primary
+              : colors.mutedForeground,
         ),
-        prefixIcon: Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: context.dimens.space16,
-            end: context.dimens.space8,
-          ),
-          child: Icon(
-            AppIcons.search,
-            size: context.dimens.sizeIcon,
-            color: isFocused ? context.accentColor : colors.onSurfaceVariant,
-          ),
+      ),
+      // The clear button owns its inset; a trigger never holds a query, so a
+      // clear button always belongs to the default constructor, which
+      // requires its label.
+      clearable: (value) => widget.onTap == null && value.text.isNotEmpty,
+      clearIconBuilder: (context, _, _) => Padding(
+        padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
+        child: MxIconButton(
+          icon: AppIcons.close,
+          semanticLabel: widget.clearLabel!,
+          onPressed: _clear,
         ),
-        prefixIconConstraints: const BoxConstraints(),
-        // The clear button owns its inset; an empty field keeps a 12 spacer.
-        suffixIcon: hasQuery
-            ? Padding(
-                padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
-                child: MxIconButton(
-                  icon: AppIcons.close,
-                  // A trigger never holds a query, so a clear button always
-                  // belongs to the default constructor, which requires it.
-                  semanticLabel: widget.clearLabel!,
-                  onPressed: _clear,
-                ),
-              )
-            : SizedBox(width: context.dimens.space12),
-        suffixIconConstraints: const BoxConstraints(),
       ),
     );
     final onTap = widget.onTap;
@@ -177,22 +167,12 @@ class _MxSearchFieldState extends State<MxSearchField> {
       label: widget.hintText,
       excludeSemantics: true,
       onTap: onTap,
-      child: Stack(
-        children: [
-          IgnorePointer(child: field),
-          // Its own Material, above the filled field, so the ripple and the
-          // hover and pressed layers show over the search surface.
-          Positioned.fill(
-            child: Material(
-              type: MaterialType.transparency,
-              child: MxRowInk(
-                onTap: onTap,
-                borderRadius: stadium,
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ),
-        ],
+      child: FTappable.static(
+        onPress: onTap,
+        focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
+          borderRadius: pill,
+        ),
+        child: IgnorePointer(child: field),
       ),
     );
   }

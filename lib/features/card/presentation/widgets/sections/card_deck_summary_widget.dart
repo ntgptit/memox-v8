@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -59,13 +59,13 @@ class CardDeckSummaryWidget extends StatelessWidget {
                       Text(
                         overline.toUpperCase(),
                         semanticsLabel: overline,
-                        style: context.texts.labelSmall?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        style: context.texts.meta.copyWith(
+                          color: context.colors.mutedForeground,
                         ),
                       ),
                       Text(
                         l10n.cardMasteredOf(states.mastered, total),
-                        style: context.texts.bodyMedium,
+                        style: context.texts.body,
                       ),
                       MxWorkloadBreakdownLine(
                         overdueCount: workload.overdue,

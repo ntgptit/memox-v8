@@ -342,7 +342,7 @@ void main() {
     expect(field.maxLines, 1);
     expect(
       field.style!.fontSize,
-      tester.element(find.byType(TextField)).texts.displaySmall!.fontSize,
+      tester.element(find.byType(TextField)).texts.term.fontSize,
     );
     expect(
       tester.getSize(find.byType(TextField)).height,

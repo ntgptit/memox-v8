@@ -58,10 +58,10 @@ void main() {
     ]) {
       // The grounds MxTintBase carries: the page, a card, a sheet, a dialog.
       for (final (name, ground, bar) in [
-        ('page', colors.surface, colors.surfaceContainerHigh),
-        ('card', mx.cardSurface, colors.surfaceContainerHighest),
-        ('sheet', colors.surfaceContainerLow, colors.surfaceContainerHighest),
-        ('dialog', colors.surfaceContainerHigh, colors.surfaceContainerHighest),
+        ('page', colors.background, colors.muted),
+        ('card', mx.cardSurface, colors.secondary),
+        ('sheet', colors.muted, colors.secondary),
+        ('dialog', colors.muted, colors.secondary),
       ]) {
         await pumpMx(
           tester,

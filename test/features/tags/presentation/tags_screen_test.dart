@@ -357,7 +357,7 @@ void main() {
           .element(label)
           .texts
           .labelMedium
-          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
+          ?.copyWith(color: tester.element(label).colors.mutedForeground),
     );
     expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });

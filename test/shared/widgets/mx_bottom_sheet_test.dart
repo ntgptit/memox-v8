@@ -297,10 +297,10 @@ void main() {
         find.text('Cards keep their progress.'),
       );
 
-      expect(title.style, texts.titleSmall);
+      expect(title.style, texts.itemTitle);
       expect(
         subtitle.style,
-        texts.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+        texts.body.copyWith(color: scheme.onSurfaceVariant),
       );
       expect(
         tester.getTopLeft(find.text('Move to deck')) - sheet,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
@@ -42,8 +42,8 @@ class TopikRecentAttemptRowWidget extends StatelessWidget {
       title: l10n.topikAttemptNumber(numbered.number),
       meta: Text(
         meta,
-        style: context.texts.bodyMedium?.copyWith(
-          color: context.colors.onSurfaceVariant,
+        style: context.texts.body.copyWith(
+          color: context.colors.mutedForeground,
         ),
       ),
       hasChevron: true,

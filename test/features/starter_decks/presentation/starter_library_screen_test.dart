@@ -357,10 +357,10 @@ void main() {
     final label = find.text(_en.starterSheetAlgorithmLabel);
     final required = find.text(_en.starterSheetRequired);
     final texts = tester.element(label).texts;
-    expect(tester.widget<Text>(label).style, texts.labelMedium);
+    expect(tester.widget<Text>(label).style, texts.label);
     expect(
       tester.widget<Text>(required).style,
-      texts.bodyMedium?.copyWith(color: tester.element(label).accentColor),
+      texts.body.copyWith(color: tester.element(label).accentColor),
     );
   });
 }

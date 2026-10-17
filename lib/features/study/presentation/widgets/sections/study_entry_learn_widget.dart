@@ -49,8 +49,8 @@ class StudyEntryLearnWidget extends StatelessWidget {
         // The kit wraps the line; the row's own subtitle is one line.
         meta: Text(
           line,
-          style: context.texts.bodyMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.body.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
         trailing: _trailing(context),

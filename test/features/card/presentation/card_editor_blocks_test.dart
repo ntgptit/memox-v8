@@ -421,11 +421,11 @@ void main() {
       // A field paints its own label in onSurfaceVariant; the section
       // header's stays on the default ink.
       expect(tester.widget<Text>(label).style, switch (role) {
-        'paintedLabel' => texts.labelMedium?.copyWith(
-          color: element.colors.onSurfaceVariant,
+        'paintedLabel' => texts.label.copyWith(
+          color: element.colors.mutedForeground,
         ),
-        'fieldLabel' => texts.labelMedium,
-        _ => texts.bodyMedium?.copyWith(color: element.accentColor),
+        'fieldLabel' => texts.label,
+        _ => texts.body.copyWith(color: element.accentColor),
       }, reason: text);
     }
     expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);

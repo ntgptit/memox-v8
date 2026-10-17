@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
@@ -56,8 +56,8 @@ class CardDetailContentWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: context.dimens.space4,
               children: [
-                Text(card.front, style: context.texts.titleLarge),
-                Text(card.back, style: context.texts.bodyMedium),
+                Text(card.front, style: context.texts.screenTitle),
+                Text(card.back, style: context.texts.body),
               ],
             ),
             for (final (icon, label, value) in optional)
@@ -102,8 +102,8 @@ class _OptionalField extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: context.dimens.space4,
             children: [
-              Text(label, style: context.texts.labelMedium),
-              Text(value, style: context.texts.bodyMedium),
+              Text(label, style: context.texts.label),
+              Text(value, style: context.texts.body),
             ],
           ),
         ),

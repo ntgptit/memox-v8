@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' show InputBorder;
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// How long a stepper button is held before it starts repeating (FE-A3 D6).
 const Duration mxStepperRepeatDelay = Duration(milliseconds: 400);
@@ -74,6 +75,9 @@ class MxStepper extends StatefulWidget {
 
   /// So 1 and 200 occupy the same width.
   static const double _valueColumn = 48;
+
+  /// The value box's painted height, as the step buttons'.
+  static const double _boxHeight = 32;
 
   /// Cards per session tops out at 200.
   static const int _defaultMaxDigits = 3;
@@ -155,24 +159,28 @@ class _MxStepperState extends State<MxStepper> {
 
   Widget _value(BuildContext context) {
     final colors = context.colors;
-    final style = context.texts.bodyLarge?.copyWith(
-      color: widget.isInvalid ? context.colors.error : context.colors.onSurface,
+    final style = context.texts.content.copyWith(
+      color: widget.isInvalid
+          ? context.colors.error
+          : context.colors.foreground,
     );
     final box = ConstrainedBox(
-      constraints: BoxConstraints(
+      constraints: const BoxConstraints(
         minWidth: MxStepper._valueColumn,
-        minHeight: context.dimens.sizeButtonSmall,
+        minHeight: MxStepper._boxHeight,
       ),
       child: DecoratedBox(
         key: const ValueKey('mx-stepper-value'),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+          borderRadius: context.radii.md,
           // Ruling I3. A null border when valid and not typing: turning
           // invalid adds colour, never layout.
           border: widget.isInvalid || _isEditing
               ? Border.all(
-                  color: widget.isInvalid ? colors.error : context.accentColor,
-                  width: context.dimens.strokeHairline,
+                  color: widget.isInvalid
+                      ? colors.error
+                      : context.colors.primary,
+                  width: context.hairline,
                 )
               : null,
         ),
@@ -183,10 +191,28 @@ class _MxStepperState extends State<MxStepper> {
             (true, _) => const MxSpinner(),
             (_, true) => SizedBox(
               width: MxStepper._valueColumn,
-              child: TextField(
-                controller: _field,
+              child: FTextField(
+                control: FTextFieldControl.managed(controller: _field),
                 focusNode: _focus,
-                style: style,
+                style: FTextFieldStyleDelta.delta(
+                  border:
+                      const FVariants<
+                        FTextFieldVariantConstraint,
+                        FTextFieldVariant,
+                        InputBorder,
+                        Delta
+                      >.all(InputBorder.none),
+                  contentPadding: const EdgeInsetsGeometryDelta.value(
+                    EdgeInsets.zero,
+                  ),
+                  contentTextStyle:
+                      FVariants<
+                        FTextFieldVariantConstraint,
+                        FTextFieldVariant,
+                        TextStyle,
+                        TextStyleDelta
+                      >.all(style),
+                ),
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
@@ -194,8 +220,7 @@ class _MxStepperState extends State<MxStepper> {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(widget.maxDigits),
                 ],
-                decoration: const InputDecoration.collapsed(hintText: null),
-                onSubmitted: (_) => _submit(),
+                onSubmit: (_) => _submit(),
               ),
             ),
             _ => Text(_text, style: style),
@@ -207,7 +232,7 @@ class _MxStepperState extends State<MxStepper> {
     // disabled colours, and dimming them too would stack the two.
     final value = widget.isEnabled
         ? box
-        : Opacity(opacity: context.dimens.opacityDisabledContent, child: box);
+        : Opacity(opacity: context.colors.disabledOpacity, child: box);
     if (_isEditing) return value;
     return Semantics(
       container: true,
@@ -226,7 +251,7 @@ class _MxStepperState extends State<MxStepper> {
       // edits, and the shared row ring marks it (M3F-06).
       child: MxRowInk(
         onTap: _canEdit ? _edit : null,
-        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        borderRadius: context.radii.md,
         // The box stays button-small; the tap target is a full one.
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
@@ -322,38 +347,23 @@ class _StepButtonState extends State<_StepButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
+    final buttons = FTheme.of(context).buttonStyles.secondary;
     return Listener(
       onPointerDown: _start,
       onPointerMove: _move,
       onPointerUp: _stop,
       onPointerCancel: _stop,
-      child: Tooltip(
-        message: widget.label,
-        // The icon carries the name into the button node; announcing the
-        // tooltip too would read it twice.
-        excludeFromSemantics: true,
-        child: TextButton(
-          onPressed: widget.onPressed == null ? null : _tap,
-          style:
-              buttonStyle(
-                ThemeTokens.of(context),
-                fill: colors.surfaceContainer,
-                foreground: colors.onSurface,
-              ).copyWith(
-                minimumSize: WidgetStatePropertyAll(
-                  Size.square(context.dimens.sizeButtonSmall),
-                ),
-                fixedSize: WidgetStatePropertyAll(
-                  Size.square(context.dimens.sizeButtonSmall),
-                ),
-                padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-              ),
-          child: Icon(
-            widget.icon,
-            size: context.dimens.sizeIconCompact,
-            semanticLabel: widget.label,
+      child: FTooltip(
+        tipBuilder: (_, _) => Text(widget.label),
+        child: FButton.icon(
+          onPress: widget.onPressed == null ? null : _tap,
+          // A 32 square in a 48 target.
+          style: mxIconTargetStyle(
+            context,
+            buttons.resolve({context.platformVariant, FButtonSizeVariant.xs}),
           ),
+          semanticsLabel: widget.label,
+          child: Icon(widget.icon, size: context.dimens.sizeIconCompact),
         ),
       ),
     );

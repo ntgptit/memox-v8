@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';

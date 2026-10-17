@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The size steps, each with one role: small leads content rows, medium
@@ -61,59 +60,53 @@ class MxIconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tinted = seed ?? context.accentColor;
+    final tinted = seed ?? context.colors.primary;
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (
         smallBox,
-        context.dimens.radiusSm,
+        context.radii.sm,
         context.dimens.sizeIconInline,
       ),
       MxIconTileSize.medium => (
         mediumBox,
-        context.dimens.radiusMd,
+        context.radii.md,
         context.dimens.sizeIconCompact,
       ),
       MxIconTileSize.large => (
         _largeBox,
-        context.dimens.radiusMd,
+        context.radii.md,
         context.dimens.sizeIconCompact,
       ),
     };
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
         tinted.tintOver(MxTintBase.of(context)),
-        seed ?? context.accentColor,
+        seed ?? context.colors.primary,
       ),
-      MxIconTileTone.primary => (colors.primary, colors.onPrimary),
+      MxIconTileTone.primary => (colors.primary, colors.primaryForeground),
       MxIconTileTone.warning => (
-        context.mxColors.warningContainer,
-        context.mxColors.onWarningContainer,
+        context.status.warningFill,
+        context.status.onWarningFill,
       ),
       MxIconTileTone.success => (
-        context.mxColors.success.tintOver(MxTintBase.of(context)),
-        context.mxColors.success,
+        context.status.success.tintOver(MxTintBase.of(context)),
+        context.status.success,
       ),
       MxIconTileTone.caution => (
-        context.mxColors.warning.tintOver(MxTintBase.of(context)),
-        context.mxColors.warning,
+        context.status.warning.tintOver(MxTintBase.of(context)),
+        context.status.warning,
       ),
       MxIconTileTone.danger => (
         context.colors.error.tintOver(MxTintBase.of(context)),
         context.colors.error,
       ),
       // An idle glyph, such as a lost streak's (DEV-370).
-      MxIconTileTone.neutral => (
-        colors.secondaryContainer,
-        colors.onSecondaryContainer,
-      ),
+      MxIconTileTone.neutral => (colors.secondary, colors.secondaryForeground),
     };
     return SizedBox.square(
       dimension: box,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(radius),
-        ),
+        decoration: BoxDecoration(color: fill, borderRadius: radius),
         child: Center(
           child: child ?? Icon(icon, size: glyph, color: ink),
         ),

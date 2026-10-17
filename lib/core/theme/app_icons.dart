@@ -1,125 +1,125 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/assets.dart';
 
-/// The handoff's Lucide glyph names mapped once, by meaning, to the built-in
-/// Material Icons (spec §2). One concept, one glyph. A navigation destination
-/// has an outlined resting glyph and a filled selected one.
+/// Every glyph the app draws, mapped once, by meaning, to ForUI's Lucide set
+/// (ADR-025). One concept, one glyph. Lucide has no filled variants, so a
+/// navigation destination's selected glyph is the resting one: the selected
+/// state is carried by colour and the indicator, never by the glyph alone.
 abstract final class AppIcons {
-  static const IconData add = Icons.add; // plus
-  static const IconData back = Icons.arrow_back; // arrow-left
-  static const IconData close = Icons.close; // x
-  static const IconData more = Icons.more_vert; // more-vertical
-  static const IconData search = Icons.search; // search
-  static const IconData chevronRight = Icons.chevron_right; // chevron-right
-  static const IconData check = Icons.check; // check
-  static const IconData select = Icons.checklist; // list-checks
-  static const IconData delete = Icons.delete_outline; // trash-2
-  static const IconData retry = Icons.refresh; // refresh-cw
-  static const IconData play = Icons.play_arrow; // play
-  static const IconData inbox = Icons.inbox_outlined; // inbox
-  static const IconData tag = Icons.sell_outlined; // tag
-  static const IconData chevronDown = Icons.keyboard_arrow_down; // chevron-down
-  static const IconData chevronUp = Icons.keyboard_arrow_up; // chevron-up
-  static const IconData sort = Icons.swap_vert; // arrow-up-down
-  static const IconData filters = Icons.tune; // sliders-horizontal
-  static const IconData filter = Icons.filter_list; // filter
-  static const IconData alert = Icons.error_outline; // alert-circle
-  static const IconData remove = Icons.remove; // minus
-  static const IconData info = Icons.info_outline; // info
-  static const IconData folder = Icons.folder_outlined; // folder
-  static const IconData edit = Icons.edit_outlined; // pencil
-  static const IconData reminder = Icons.notifications_none; // bell
-  static const IconData reminderOff =
-      Icons.notifications_off_outlined; // bell-off
-  static const IconData offline = Icons.cloud_off_outlined; // cloud-off
-  static const IconData sync = Icons.cloud_sync_outlined; // cloud-sync
-  static const IconData reorder = Icons.reorder; // list-ordered
-  static const IconData dragHandle = Icons.drag_handle; // grip-horizontal
-  static const IconData scheduler =
-      Icons.event_repeat_outlined; // calendar-clock
-  static const IconData flag = Icons.outlined_flag; // flag
-  static const IconData flagged = Icons.flag; // flag (filled)
-  static const IconData example = Icons.chat_bubble_outline; // message-square
-  static const IconData hint = Icons.lightbulb_outline; // lightbulb
-  static const IconData pronunciation = Icons.text_fields; // type
-  static const IconData speak = Icons.volume_up_outlined; // volume-2
-  static const IconData voice = Icons.record_voice_over_outlined; // speech
-  static const IconData clock = Icons.schedule; // clock
-  static const IconData searchOff = Icons.search_off; // search-x
-  static const IconData history = Icons.history; // history
-  static const IconData pause = Icons.pause_circle_outline; // pause-circle
-  static const IconData swipe =
-      Icons.keyboard_double_arrow_right; // chevrons-right
-  static const IconData learned = Icons.check_circle_outline; // check-circle-2
-  static const IconData repeat = Icons.repeat; // repeat
-  static const IconData lapses = Icons.replay; // rotate-ccw
-  static const IconData resetProgress = Icons.replay; // rotate-ccw
-  static const IconData restore = Icons.replay; // rotate-ccw
-  static const IconData lock = Icons.lock_outline; // lock
-  static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
-  static const IconData timeout = Icons.timer_off_outlined; // timer-off
-  static const IconData studyMode = Icons.layers_outlined; // layers
-  static const IconData calendar = Icons.event; // calendar
+  static const IconData add = FLucideIcons.plus;
+  static const IconData back = FLucideIcons.arrowLeft;
+  static const IconData close = FLucideIcons.x;
+  static const IconData more = FLucideIcons.ellipsisVertical;
+  static const IconData search = FLucideIcons.search;
+  static const IconData chevronRight = FLucideIcons.chevronRight;
+  static const IconData check = FLucideIcons.check;
+  static const IconData select = FLucideIcons.listChecks;
+  static const IconData delete = FLucideIcons.trash2;
+  static const IconData retry = FLucideIcons.refreshCw;
+  static const IconData play = FLucideIcons.play;
+  static const IconData inbox = FLucideIcons.inbox;
+  static const IconData tag = FLucideIcons.tag;
+  static const IconData chevronDown = FLucideIcons.chevronDown;
+  static const IconData chevronUp = FLucideIcons.chevronUp;
+  static const IconData sort = FLucideIcons.arrowUpDown;
+  static const IconData filters = FLucideIcons.slidersHorizontal;
+  static const IconData filter = FLucideIcons.funnel;
+  static const IconData alert = FLucideIcons.circleAlert;
+  static const IconData remove = FLucideIcons.minus;
+  static const IconData info = FLucideIcons.info;
+  static const IconData folder = FLucideIcons.folder;
+  static const IconData edit = FLucideIcons.pencil;
+  static const IconData reminder = FLucideIcons.bell;
+  static const IconData reminderOff = FLucideIcons.bellOff;
+  static const IconData offline = FLucideIcons.cloudOff;
+  static const IconData sync = FLucideIcons.cloudSync;
+  static const IconData reorder = FLucideIcons.listOrdered;
+  static const IconData dragHandle = FLucideIcons.gripHorizontal;
+  static const IconData scheduler = FLucideIcons.calendarClock;
+  static const IconData flag = FLucideIcons.flag;
+  // Lucide has no filled flag: the flagged state is the accent colour.
+  static const IconData flagged = FLucideIcons.flag;
+  static const IconData example = FLucideIcons.messageSquare;
+  static const IconData hint = FLucideIcons.lightbulb;
+  static const IconData pronunciation = FLucideIcons.type;
+  static const IconData speak = FLucideIcons.volume2;
+  static const IconData voice = FLucideIcons.speech;
+  static const IconData clock = FLucideIcons.clock;
+  static const IconData searchOff = FLucideIcons.searchX;
+  static const IconData history = FLucideIcons.history;
+  static const IconData pause = FLucideIcons.circlePause;
+  static const IconData swipe = FLucideIcons.chevronsRight;
+  static const IconData learned = FLucideIcons.circleCheck;
+  static const IconData repeat = FLucideIcons.repeat;
+  static const IconData lapses = FLucideIcons.rotateCcw;
+  static const IconData resetProgress = FLucideIcons.rotateCcw;
+  static const IconData restore = FLucideIcons.rotateCcw;
+  static const IconData lock = FLucideIcons.lock;
+  static const IconData lockOpen = FLucideIcons.lockOpen;
+  static const IconData timeout = FLucideIcons.timerOff;
+  static const IconData studyMode = FLucideIcons.layers;
+  static const IconData calendar = FLucideIcons.calendar;
   // Monitoring (screen 28): one glyph per log level, so colour is never the
   // only cue; info and error are [info] and [alert].
-  static const IconData levelDebug = Icons.bug_report_outlined; // bug
-  static const IconData levelWarning =
-      Icons.warning_amber_outlined; // triangle-alert
-  static const IconData copy = Icons.content_copy_outlined; // copy
-  static const IconData monitoring = Icons.monitor_heart_outlined; // activity
+  static const IconData levelDebug = FLucideIcons.bug;
+  static const IconData levelWarning = FLucideIcons.triangleAlert;
+  static const IconData copy = FLucideIcons.copy;
+  static const IconData monitoring = FLucideIcons.activity;
   // Account (screens 23, 29).
-  static const IconData account = Icons.person_outline; // user
-  static const IconData users = Icons.group_outlined; // users
-  static const IconData switchAccount = Icons.swap_horiz; // arrow-left-right
-  static const IconData signOut = Icons.logout; // log-out
-  static const IconData devices = Icons.devices_outlined; // smartphone
+  static const IconData account = FLucideIcons.user;
+  static const IconData users = FLucideIcons.users;
+  static const IconData switchAccount = FLucideIcons.arrowLeftRight;
+  static const IconData signOut = FLucideIcons.logOut;
+  static const IconData devices = FLucideIcons.smartphone;
 
   // Debug gallery.
-  static const IconData gallery = Icons.widgets_outlined;
-  static const IconData themeMode = Icons.contrast;
-  static const IconData theme = Icons.palette_outlined;
-  static const IconData studyOptions = Icons.tune; // sliders-horizontal
-  static const IconData shuffle = Icons.shuffle; // shuffle
-  static const IconData language = Icons.language; // globe
-  static const IconData resetOptions =
-      Icons.settings_backup_restore; // rotate-ccw
-  static const IconData safe = Icons.verified_user_outlined; // shield-check
-  static const IconData textScale = Icons.format_size;
+  static const IconData gallery = FLucideIcons.layoutGrid;
+  static const IconData themeMode = FLucideIcons.contrast;
+  static const IconData theme = FLucideIcons.palette;
+  static const IconData studyOptions = FLucideIcons.slidersHorizontal;
+  static const IconData shuffle = FLucideIcons.shuffle;
+  static const IconData language = FLucideIcons.globe;
+  static const IconData resetOptions = FLucideIcons.rotateCcw;
+  static const IconData safe = FLucideIcons.shieldCheck;
+  static const IconData textScale = FLucideIcons.aLargeSmall;
   // Development fixtures (screen 03, BR-STARTER-010).
-  static const IconData fixture = Icons.science_outlined; // flask-conical
+  static const IconData fixture = FLucideIcons.flaskConical;
   // A rename onto an existing tag merges the two (screen 05).
-  static const IconData merge = Icons.merge; // git-merge
+  static const IconData merge = FLucideIcons.gitMerge;
 
-  // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
-  static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
-  static const IconData upcoming = Icons.upcoming_outlined; // calendar-plus
-  static const IconData dueNow = Icons.bolt_outlined; // zap
+  static const IconData starterDecks = FLucideIcons.sparkles;
+  static const IconData upcoming = FLucideIcons.calendarPlus;
+  static const IconData dueNow = FLucideIcons.zap;
   // Workload terms (BR-STUDY-076: each count has its own glyph); Due today
   // is [dueNow].
-  static const IconData overdue = Icons.history; // history
-  static const IconData newCards = Icons.auto_awesome_outlined; // sparkles
-  static const IconData cardDeck = Icons.copy_all_outlined; // copy
+  static const IconData overdue = FLucideIcons.history;
+  static const IconData newCards = FLucideIcons.sparkles;
+  static const IconData cardDeck = FLucideIcons.copy;
   // Card import (kit 11).
-  static const IconData fileUp = Icons.upload_file_outlined; // file-up
-  static const IconData clipboard = Icons.content_paste; // clipboard
-  static const IconData fileText = Icons.description_outlined; // file-text
+  static const IconData fileUp = FLucideIcons.fileUp;
+  static const IconData clipboard = FLucideIcons.clipboard;
+  static const IconData fileText = FLucideIcons.fileText;
   // TOPIK's sections (owner, Q-P6-3).
-  static const IconData book = Icons.auto_stories_outlined; // book-open
-  static const IconData headphones = Icons.headphones_outlined; // headphones
-  static const IconData folderOpen = Icons.folder_open_outlined; // folder-open
-  static const IconData arrowRight = Icons.arrow_forward; // arrow-right
-  static const IconData preview = Icons.visibility_outlined; // eye
-  static const IconData download = Icons.download; // download
+  static const IconData book = FLucideIcons.bookOpen;
+  static const IconData headphones = FLucideIcons.headphones;
+  static const IconData folderOpen = FLucideIcons.folderOpen;
+  static const IconData arrowRight = FLucideIcons.arrowRight;
+  static const IconData preview = FLucideIcons.eye;
+  static const IconData download = FLucideIcons.download;
   // Card export (kit 12).
-  static const IconData share = Icons.share_outlined; // share-2
-  static const IconData fileDown = Icons.file_download_outlined; // file-down
+  static const IconData share = FLucideIcons.share2;
+  static const IconData fileDown = FLucideIcons.fileDown;
   // Progress (kit 22).
-  static const IconData streak = Icons.local_fire_department_outlined; // flame
-  static const IconData library = Icons.layers_outlined;
-  static const IconData librarySelected = Icons.layers;
-  static const IconData study = Icons.play_circle_outline;
-  static const IconData studySelected = Icons.play_circle;
-  static const IconData progress = Icons.bar_chart_outlined;
-  static const IconData progressSelected = Icons.bar_chart;
-  static const IconData settings = Icons.settings_outlined;
-  static const IconData settingsSelected = Icons.settings;
+  static const IconData streak = FLucideIcons.flame;
+
+  // Top-level destinations: layers · play · bar chart · settings. The
+  // selected glyph is the resting one (see the class comment).
+  static const IconData library = FLucideIcons.layers;
+  static const IconData librarySelected = FLucideIcons.layers;
+  static const IconData study = FLucideIcons.circlePlay;
+  static const IconData studySelected = FLucideIcons.circlePlay;
+  static const IconData progress = FLucideIcons.chartColumn;
+  static const IconData progressSelected = FLucideIcons.chartColumn;
+  static const IconData settings = FLucideIcons.settings;
+  static const IconData settingsSelected = FLucideIcons.settings;
 }

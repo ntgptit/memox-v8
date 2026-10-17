@@ -315,7 +315,7 @@ void main() {
     expect([for (final span in spans) span.text], ['Academic ', 'words', '']);
     expect(
       spans[1].style!.fontWeight,
-      tester.element(find.text('Academic words')).texts.titleSmall!.fontWeight,
+      tester.element(find.text('Academic words')).texts.itemTitle.fontWeight,
     );
     expect(spans[1].style!.color, accentOf(scheme));
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));

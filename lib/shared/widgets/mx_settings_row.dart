@@ -1,10 +1,7 @@
-import 'dart:math' as math;
-
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -71,6 +68,9 @@ class MxSettingsRow extends StatelessWidget {
   static const double stackTextScale = 1.5;
 
   static const double _leadColumn = 40;
+
+  /// The painted square of a stepper's step button inside its 48 target.
+  static const double _stepPainted = 32;
   static const double _subtitleGap = 4;
 
   @override
@@ -136,14 +136,14 @@ class MxSettingsRow extends StatelessWidget {
                       children: [
                         _dim(
                           context,
-                          Text(label, style: context.texts.titleSmall),
+                          Text(label, style: context.texts.itemTitle),
                         ),
                         if (subtitle case final text?) ...[
                           const SizedBox(height: _subtitleGap),
                           Text(
                             text,
-                            style: context.texts.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
+                            style: context.texts.body.copyWith(
+                              color: context.colors.mutedForeground,
                             ),
                           ),
                         ],
@@ -166,7 +166,7 @@ class MxSettingsRow extends StatelessWidget {
                     Icon(
                       AppIcons.chevronRight,
                       size: context.dimens.sizeIconCompact,
-                      color: context.colors.onSurfaceVariant,
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ],
@@ -185,12 +185,9 @@ class MxSettingsRow extends StatelessWidget {
     final labelStart = icon == null
         ? 0.0
         : _leadColumn + context.dimens.space16;
-    // MxFieldMessage insets its glyph by the field's text inset, as under a
-    // field: pulled back so the glyph lines up with the label (audit
-    // 2026-10-07).
-    final indent = line is MxFieldMessage
-        ? math.max(0.0, labelStart - context.dimens.space16)
-        : labelStart;
+    // The message starts on the label's start, so its glyph lines up with
+    // the label (audit 2026-10-07).
+    final indent = labelStart;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -224,7 +221,7 @@ class MxSettingsRow extends StatelessWidget {
   static double _trailingGap(BuildContext context, Widget control) {
     final dimens = context.dimens;
     if (!_isStepper(control)) return dimens.space16;
-    final touchInset = (dimens.sizeControl - dimens.sizeButtonSmall) / 2;
+    final touchInset = (dimens.sizeControl - _stepPainted) / 2;
     return dimens.space16 - touchInset;
   }
 
@@ -239,5 +236,5 @@ class MxSettingsRow extends StatelessWidget {
 
   Widget _dim(BuildContext context, Widget child) => isEnabled
       ? child
-      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
+      : Opacity(opacity: context.colors.disabledOpacity, child: child);
 }

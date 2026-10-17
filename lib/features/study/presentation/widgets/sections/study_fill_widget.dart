@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -129,7 +130,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                     child: Text(
                       item.back,
                       textAlign: TextAlign.center,
-                      style: context.texts.bodyLarge,
+                      style: context.texts.content,
                     ),
                   ),
                 ),
@@ -241,7 +242,7 @@ class _HintRow extends StatelessWidget {
       children: [
         IconTheme(
           data: IconThemeData(
-            color: context.colors.onSurfaceVariant,
+            color: context.colors.mutedForeground,
             size: context.dimens.sizeIconInline,
           ),
           child: const Icon(AppIcons.hint),
@@ -250,8 +251,8 @@ class _HintRow extends StatelessWidget {
           child: Text(
             hint,
             textAlign: TextAlign.center,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ),
@@ -280,7 +281,7 @@ class _Corrected extends StatelessWidget {
           typed,
           semanticsLabel: l10n.studyFillTyped(typed),
           textAlign: TextAlign.center,
-          style: context.texts.displaySmall?.copyWith(
+          style: context.texts.term.copyWith(
             color: context.colors.error,
             decoration: TextDecoration.lineThrough,
             decorationColor: context.colors.error,
@@ -289,9 +290,7 @@ class _Corrected extends StatelessWidget {
         Text(
           term,
           textAlign: TextAlign.center,
-          style: context.texts.displaySmall?.copyWith(
-            color: context.colors.onSurface,
-          ),
+          style: context.texts.term.copyWith(color: context.colors.foreground),
         ),
         Padding(
           padding: EdgeInsets.only(top: context.dimens.space8),
@@ -299,9 +298,7 @@ class _Corrected extends StatelessWidget {
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.mxColors.warning,
-            ),
+            style: context.texts.meta.copyWith(color: context.status.warning),
           ),
         ),
       ],

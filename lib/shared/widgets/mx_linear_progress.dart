@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Durations, Easing;
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// A thin progress track (FE-A8 H2): the fill eases to [value] over the
 /// progress track, at once under Remove animations. Decorative: the text
@@ -38,8 +38,8 @@ class MxLinearProgress extends StatelessWidget {
     final colors = context.colors;
     final height = context.dimens.sizeTrack;
     final fill = isMastery
-        ? MasteryRamp.fill(context.mxColors, context.accentColor, value)
-        : context.mxColors.successContainer;
+        ? MasteryRamp.fill(context.status, context.colors.primary, value)
+        : context.status.successFill;
     return ExcludeSemantics(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(height / 2),

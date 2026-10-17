@@ -38,7 +38,7 @@ void main() {
       expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 72);
       expect(
         tester.widget<Text>(find.text('Daily reminder')).style,
-        tester.element(find.text('Daily reminder')).texts.titleSmall,
+        tester.element(find.text('Daily reminder')).texts.itemTitle,
       );
       expect(
         tester.getTopLeft(find.text('One nudge a day')).dy -

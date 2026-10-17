@@ -54,12 +54,12 @@ void main() {
       final texts = tester.element(find.text(_title)).texts;
       expect(
         (title.fontSize, title.fontWeight),
-        (texts.titleSmall!.fontSize, texts.titleSmall!.fontWeight),
+        (texts.itemTitle.fontSize, texts.itemTitle.fontWeight),
       );
       expect(title.color, scheme.onSurface);
       expect(
         (body.fontSize, body.height),
-        (texts.bodyMedium!.fontSize, texts.bodyMedium!.height),
+        (texts.body.fontSize, texts.body.height),
       );
       expect(body.color, scheme.onSurfaceVariant);
       expect(

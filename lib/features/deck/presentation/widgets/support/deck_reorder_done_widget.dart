@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/l10n/l10n_context.dart';

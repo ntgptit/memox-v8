@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -211,7 +211,7 @@ class _Card extends StatelessWidget {
                   main: Text(
                     face.front,
                     textAlign: TextAlign.center,
-                    style: context.texts.displaySmall,
+                    style: context.texts.term,
                   ),
                   detail: face.pronunciation,
                   // Reads the face shown, the looked-back one included
@@ -227,8 +227,8 @@ class _Card extends StatelessWidget {
                   horizontal: context.dimens.space24,
                 ),
                 child: SizedBox(
-                  height: context.dimens.strokeHairline,
-                  child: ColoredBox(color: context.mxColors.divider),
+                  height: context.hairline,
+                  child: ColoredBox(color: context.colors.border),
                 ),
               ),
               Expanded(
@@ -237,7 +237,7 @@ class _Card extends StatelessWidget {
                   main: Text(
                     face.back,
                     textAlign: TextAlign.center,
-                    style: context.texts.bodyLarge,
+                    style: context.texts.content,
                   ),
                   detail: face.example,
                   trailing: null,
@@ -293,8 +293,8 @@ class _Half extends StatelessWidget {
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
-            style: context.texts.labelSmall?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.meta.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ),
@@ -313,8 +313,8 @@ class _Half extends StatelessWidget {
                       Text(
                         detail,
                         textAlign: TextAlign.center,
-                        style: context.texts.bodyMedium?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        style: context.texts.body.copyWith(
+                          color: context.colors.mutedForeground,
                         ),
                       ),
                     ?trailing,

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One card field (kit 08/09): the label with its glyph and "Required" or
 /// "· optional", then the input, then the count against the limit at the
@@ -62,14 +62,14 @@ class CardFieldWidget extends StatelessWidget {
             labelTrailing: isRequired
                 ? Text(
                     l10n.cardRequiredLegend,
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.accentColor,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.primary,
                     ),
                   )
                 : Text(
                     l10n.cardOptional,
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
             hintText: hint,

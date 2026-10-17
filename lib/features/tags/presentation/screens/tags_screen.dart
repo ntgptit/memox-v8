@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -184,7 +184,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     final busy = ref.watch(tagActionsControllerProvider);
     final header = MxListSectionHeader(
       label: shown.isEmpty ? l10n.tagsNoMatches : l10n.tagsCount(shown.length),
-      trailing: Text(l10n.tagsOrder, style: context.texts.labelSmall),
+      trailing: Text(l10n.tagsOrder, style: context.texts.meta),
     );
     // No tag at all: the empty state alone, no header saying it twice
     // (critique 2026-09-30 part 3d-2).

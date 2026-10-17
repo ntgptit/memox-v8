@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// The card editor's "Add details" disclosure (kit 08): a plus, the label
 /// and the fields it opens, and a chevron, in an outlined box. The kit's
@@ -17,18 +16,17 @@ class CardAddDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final radius = BorderRadius.circular(context.dimens.radiusMd);
+    final radius = context.radii.md;
     final glyph = IconThemeData(
-      color: context.accentColor,
+      color: context.colors.primary,
       size: context.dimens.sizeIconInline,
     );
-    // The ripple paints on this Material, so it keeps to the rounded box.
-    return Material(
-      type: MaterialType.transparency,
+    // The press layer and the focus outline keep to the rounded box.
+    return ClipRRect(
       borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
       child: MxRowInk(
         onTap: onPressed,
+        borderRadius: radius,
         child: Container(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           padding: EdgeInsets.symmetric(
@@ -39,8 +37,8 @@ class CardAddDetailsWidget extends StatelessWidget {
             borderRadius: radius,
             // The control edge, as the fields beside it (DEV-166).
             border: Border.all(
-              color: context.colors.outline,
-              width: context.dimens.strokeHairline,
+              color: context.colors.border,
+              width: context.hairline,
             ),
           ),
           child: IconTheme.merge(
@@ -55,8 +53,8 @@ class CardAddDetailsWidget extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: l10n.cardAddDetails,
-                          style: context.texts.labelMedium?.copyWith(
-                            color: context.accentColor,
+                          style: context.texts.label.copyWith(
+                            color: context.colors.primary,
                           ),
                         ),
                         WidgetSpan(
@@ -64,8 +62,8 @@ class CardAddDetailsWidget extends StatelessWidget {
                         ),
                         TextSpan(
                           text: metaLine(l10n.cardAddDetailsFields),
-                          style: context.texts.bodyMedium?.copyWith(
-                            color: context.colors.onSurfaceVariant,
+                          style: context.texts.body.copyWith(
+                            color: context.colors.mutedForeground,
                           ),
                         ),
                       ],

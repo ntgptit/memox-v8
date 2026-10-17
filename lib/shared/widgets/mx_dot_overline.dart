@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// An eyebrow led by a static primary dot: the Resume banners' marker
@@ -30,8 +30,8 @@ class MxDotOverline extends StatelessWidget {
         child: Text(
           label.toUpperCase(),
           semanticsLabel: label,
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.meta.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -25,15 +26,10 @@ class MxFloatingNotice extends StatelessWidget {
   /// a line of their own under it, at the end.
   final List<Widget> actions;
 
-  /// The Design System defines no shadow for a floating notice; Material's
-  /// own elevation casts it, the same in light and dark.
-  static const double _elevation = 3;
-
   @override
   Widget build(BuildContext context) {
-    final scheme = context.colors;
-    final messageStyle = context.texts.labelMedium!.copyWith(
-      color: context.colors.onSurface,
+    final messageStyle = context.texts.label.copyWith(
+      color: context.colors.foreground,
     );
     // The glyph centres on the first line at any text scale.
     final firstLine =
@@ -56,7 +52,7 @@ class MxFloatingNotice extends StatelessWidget {
             AppIcons.alert,
             size: context.dimens.sizeIconInline,
             // A glyph takes the text colour, never the amber fill (SW-REV-001).
-            color: context.mxColors.warning,
+            color: context.status.warning,
           ),
         ),
         Expanded(child: Text(message, style: messageStyle)),
@@ -66,12 +62,13 @@ class MxFloatingNotice extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       container: true,
-      child: Material(
-        color: context.mxColors.warning.tintOver(MxTintBase.of(context)),
-        elevation: _elevation,
-        shadowColor: scheme.shadow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+      // ForUI's one shadow lifts it over the content, the same in light and
+      // dark.
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.status.warning.tintOver(MxTintBase.of(context)),
+          borderRadius: context.radii.md,
+          boxShadow: FTheme.of(context).style.shadow,
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),

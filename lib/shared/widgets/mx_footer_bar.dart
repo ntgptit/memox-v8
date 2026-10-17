@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -28,11 +28,11 @@ class MxFooterBar extends StatelessWidget {
     final isTyping = MxAppShell.isTypingOf(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surface,
+        color: context.colors.background,
         border: Border(
           top: BorderSide(
-            color: context.mxColors.divider,
-            width: context.dimens.strokeHairline,
+            color: context.colors.border,
+            width: context.hairline,
           ),
         ),
       ),
@@ -53,8 +53,8 @@ class MxFooterBar extends StatelessWidget {
               Text(
                 caption,
                 textAlign: TextAlign.center,
-                style: context.texts.labelSmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.meta.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
           ],

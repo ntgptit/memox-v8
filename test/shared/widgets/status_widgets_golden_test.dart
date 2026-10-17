@@ -201,7 +201,7 @@ void main() {
               ),
               top: MxBarSeries(
                 label: 'Learning',
-                color: context.mxColors.warningContainer,
+                color: context.status.warningFill,
               ),
             ),
             const MxDashedNote(

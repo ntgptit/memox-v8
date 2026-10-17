@@ -298,7 +298,12 @@ scopes:
     include:
       - lib/**/*.dart
     exclude:
-      - lib/core/theme/theme_rules.dart
+      # ADR-025: the palette declares each mode's FColors once, and the
+      # composition root picks the mode; nothing else branches.
+      - lib/core/theme/app_palette.dart
+      - lib/core/theme/mx_status_colors.dart
+      - lib/core/theme/app_theme.dart
+      - lib/app/app_theme_host.dart
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 

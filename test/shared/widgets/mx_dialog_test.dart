@@ -82,14 +82,14 @@ void main() {
       expect(
         (title.fontSize, title.height, title.color),
         (
-          texts.headlineSmall!.fontSize,
-          texts.headlineSmall!.height,
+          texts.termCompact.fontSize,
+          texts.termCompact.height,
           scheme.onSurface,
         ),
       );
       expect(
         (body.style!.fontSize, body.style!.color),
-        (texts.bodyMedium!.fontSize, scheme.onSurfaceVariant),
+        (texts.body.fontSize, scheme.onSurfaceVariant),
       );
       expect(
         tester.getTopLeft(find.text('Delete deck?')) - surface,

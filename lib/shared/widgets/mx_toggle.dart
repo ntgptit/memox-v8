@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_component_themes.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
-/// The on/off switch (Settings, Reminder): Material 3's `Switch`, styled by
-/// the theme's `switchTheme`. A 52×32 track in a 48 tall touch box; the handle
-/// is 16 off, 24 on and 28 while pressed. A focused one also draws the focus
-/// ring round the track, as the buttons and chips do.
-class MxToggle extends StatefulWidget {
+/// The on/off switch (Settings, Reminder): ForUI's [FSwitch], in a 48 touch
+/// box. A tap anywhere in the box flips it, ForUI draws its focus outline,
+/// and the box is one TalkBack node with the label and the toggled state.
+class MxToggle extends StatelessWidget {
   const MxToggle({
     super.key,
     required this.isOn,
@@ -21,50 +20,35 @@ class MxToggle extends StatefulWidget {
   final String semanticLabel;
 
   @override
-  State<MxToggle> createState() => _MxToggleState();
-}
-
-class _MxToggleState extends State<MxToggle> {
-  /// Material's M3 switch track, which the focus ring has to hug. The Switch
-  /// owns these numbers and exposes no focus indicator of its own.
-  static const _track = Size(52, 32);
-
-  var _hasFocus = false;
-
-  @override
   Widget build(BuildContext context) {
-    final t = ThemeTokens.of(context);
-    return MergeSemantics(
-      child: Semantics(
-        label: widget.semanticLabel,
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            // The Switch dims itself when disabled: no Opacity here.
-            Switch(
-              value: widget.isOn,
-              onChanged: widget.onChanged,
-              onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
+    final onChanged = this.onChanged;
+    final flip = onChanged == null ? null : () => onChanged(!isOn);
+    return Semantics(
+      container: true,
+      label: semanticLabel,
+      toggled: isOn,
+      enabled: onChanged != null,
+      onTap: flip,
+      excludeSemantics: true,
+      // The switch paints under 48; the box around it takes the rest of the
+      // target. A tap on the switch itself is the switch's, so it flips once.
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: flip,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: context.dimens.sizeControl,
+            minHeight: context.dimens.sizeControl,
+          ),
+          child: Center(
+            widthFactor: 1,
+            child: FSwitch(
+              value: isOn,
+              onChange: onChanged,
+              enabled: onChanged != null,
+              semanticsLabel: semanticLabel,
             ),
-            if (_hasFocus)
-              IgnorePointer(
-                child: DecoratedBox(
-                  key: const ValueKey('mx-toggle-focus-ring'),
-                  decoration: ShapeDecoration(
-                    shape: MxFocusRingBorder(
-                      base: const StadiumBorder(),
-                      ring: BorderSide(
-                        color: t.scheme.primary,
-                        width: t.dimens.strokeFocus,
-                      ),
-                      gap: t.dimens.strokeFocusGap,
-                    ),
-                  ),
-                  child: SizedBox.fromSize(size: _track),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );

@@ -142,7 +142,7 @@ void main() {
     expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
     expect(
       tester.widget<Text>(find.text('6d')).style,
-      context.texts.labelMedium,
+      context.texts.label,
     );
   });
 
@@ -259,13 +259,13 @@ void main() {
 
     expect(
       style.foregroundColor!.resolve({WidgetState.disabled}),
-      context.colors.onSurface.withValues(
-        alpha: context.dimens.opacityDisabledContent,
+      context.colors.foreground.withValues(
+        alpha: context.colors.disabledOpacity,
       ),
     );
     expect(
       style.backgroundColor!.resolve({WidgetState.disabled}),
-      context.colors.onSurface.withValues(
+      context.colors.foreground.withValues(
         alpha: context.dimens.opacityDisabledContainer,
       ),
     );

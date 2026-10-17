@@ -374,7 +374,7 @@ void main() {
             .element(label)
             .texts
             .labelSmall
-            ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
+            ?.copyWith(color: tester.element(label).colors.mutedForeground),
         reason: text,
       );
     }

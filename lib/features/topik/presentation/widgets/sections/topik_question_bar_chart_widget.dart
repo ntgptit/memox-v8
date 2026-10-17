@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
@@ -104,9 +104,9 @@ const _legendOrder = [
 /// The fill of a bar of [status], shared by the bars and the legend.
 Color _statusColour(BuildContext context, TopikAnswerStatus status) =>
     switch (status) {
-      TopikAnswerStatus.correct => context.mxColors.success,
+      TopikAnswerStatus.correct => context.status.success,
       TopikAnswerStatus.wrong => context.colors.error,
-      TopikAnswerStatus.unanswered => context.colors.outline,
+      TopikAnswerStatus.unanswered => context.colors.border,
     };
 
 /// The glyph under a bar of [status] and its ink: the status's text role.
@@ -114,11 +114,11 @@ Color _statusColour(BuildContext context, TopikAnswerStatus status) =>
   BuildContext context,
   TopikAnswerStatus status,
 ) => switch (status) {
-  TopikAnswerStatus.correct => (AppIcons.check, context.mxColors.success),
+  TopikAnswerStatus.correct => (AppIcons.check, context.status.success),
   TopikAnswerStatus.wrong => (AppIcons.close, context.colors.error),
   TopikAnswerStatus.unanswered => (
     AppIcons.remove,
-    context.colors.onSurfaceVariant,
+    context.colors.mutedForeground,
   ),
 };
 
@@ -138,7 +138,7 @@ class _Bar extends StatelessWidget {
     final colour = _statusColour(context, status);
     final (glyph, glyphColour) = _statusGlyph(context, status);
     final fullHeight = dimens.sizeControl * 2;
-    final radius = BorderRadius.circular(dimens.radiusSm);
+    final radius = context.radii.sm;
     return MxRowInk(
       onTap: onTap,
       borderRadius: radius,
@@ -159,7 +159,7 @@ class _Bar extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: colour,
-                      borderRadius: BorderRadius.circular(dimens.radiusXs),
+                      borderRadius: context.radii.xs2,
                     ),
                   ),
                 ),
@@ -168,14 +168,14 @@ class _Bar extends StatelessWidget {
             IconTheme(
               data: IconThemeData(
                 color: glyphColour,
-                size: dimens.sizeIconButton,
+                size: dimens.sizeIconCompact,
               ),
               child: Icon(glyph),
             ),
             Text(
               '${answer.questionNo}',
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

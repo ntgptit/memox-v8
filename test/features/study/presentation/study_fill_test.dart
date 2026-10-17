@@ -283,7 +283,7 @@ void main() {
           .element(hint)
           .texts
           .bodyMedium
-          ?.copyWith(color: tester.element(hint).colors.onSurfaceVariant),
+          ?.copyWith(color: tester.element(hint).colors.mutedForeground),
     );
     handle.dispose();
   });

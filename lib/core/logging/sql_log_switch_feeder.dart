@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:memox/core/logging/app_logger.dart';
-import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/core/logging/sql_log_switch.dart';
 
 /// Keeps [target] equal to the account's `log_sql_statements` row (SQL log
@@ -11,11 +10,10 @@ import 'package:memox/core/logging/sql_log_switch.dart';
 /// failing stream leaves the switch as it is and is logged once.
 final class SqlLogSwitchFeeder {
   SqlLogSwitchFeeder({
-    required SqlLogSwitch target,
+    required this._target,
     required Stream<bool> flags,
-    AppLogger? logger,
-  }) : _target = target,
-       _logger = logger {
+    this._logger,
+  }) {
     _subscription = flags.listen(_apply, onError: _unavailable);
   }
 

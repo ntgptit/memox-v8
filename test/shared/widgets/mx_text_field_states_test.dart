@@ -154,7 +154,7 @@ void main() {
     expect(_textOf(tester, 'Shown on the card').color, scheme.onSurfaceVariant);
     expect(
       tester.widget<Text>(text).style!.fontSize,
-      tester.element(text).texts.bodySmall!.fontSize,
+      tester.element(text).texts.caption.fontSize,
     );
     expect(tester.getTopLeft(text).dx - tester.getTopLeft(field).dx, 16);
     expect(tester.getTopLeft(text).dy - tester.getBottomLeft(field).dy, 4);

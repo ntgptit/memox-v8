@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
 import 'package:memox/l10n/l10n_context.dart';

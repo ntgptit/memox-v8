@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
@@ -47,8 +47,8 @@ class TagActionsSheetWidget extends StatelessWidget {
             MxTagChip(label: tagWithCount(tag.name, tag.cardCount)),
             Text(
               l10n.tagsActionsCaption,
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              style: context.texts.body.copyWith(
+                color: context.colors.mutedForeground,
               ),
             ),
           ],

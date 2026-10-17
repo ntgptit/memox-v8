@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// What the surface's emptiness means: action-led, a plain fact, a calm
@@ -98,11 +97,11 @@ class MxEmptyState extends StatelessWidget {
                 icon: icon,
                 color: toneColor,
                 foreground: switch (tone) {
-                  MxEmptyStateTone.primary => context.accentColor,
-                  MxEmptyStateTone.success => context.mxColors.success,
+                  MxEmptyStateTone.primary => context.colors.primary,
+                  MxEmptyStateTone.success => context.status.success,
                   // As the caution tile and the warning banner (critique
                   // 2026-09-30 part 3d-2, E14).
-                  MxEmptyStateTone.warning => context.mxColors.warning,
+                  MxEmptyStateTone.warning => context.status.warning,
                   _ => toneColor,
                 },
                 isCompact: isCompact,
@@ -114,16 +113,16 @@ class MxEmptyState extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: isCompact
-                    ? context.texts.titleSmall
-                    : context.texts.titleMedium,
+                    ? context.texts.itemTitle
+                    : context.texts.sectionTitle,
               ),
               if (body case final body?) ...[
                 SizedBox(height: context.dimens.space8),
                 Text(
                   body,
                   textAlign: TextAlign.center,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ],
@@ -167,10 +166,10 @@ class MxEmptyState extends StatelessWidget {
   }
 
   Color _toneColor(BuildContext context) => switch (tone) {
-    MxEmptyStateTone.primary => context.accentColor,
-    MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
-    MxEmptyStateTone.success => context.mxColors.success,
-    MxEmptyStateTone.warning => context.mxColors.warningContainer,
+    MxEmptyStateTone.primary => context.colors.primary,
+    MxEmptyStateTone.neutral => context.colors.mutedForeground,
+    MxEmptyStateTone.success => context.status.success,
+    MxEmptyStateTone.warning => context.status.warningFill,
     MxEmptyStateTone.danger => context.colors.error,
   };
 }
@@ -202,9 +201,7 @@ class _Tile extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         color: color.tintOver(MxTintBase.of(context)),
-        borderRadius: BorderRadius.circular(
-          isCompact ? context.dimens.radiusLg : context.dimens.radiusXl,
-        ),
+        borderRadius: isCompact ? context.radii.lg : context.radii.xl2,
       ),
       child: Center(
         child: Icon(

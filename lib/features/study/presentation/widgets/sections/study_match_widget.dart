@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -282,8 +282,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? context.texts.headlineSmall!.copyWith(color: foreground)
-                    : context.texts.bodySmall!.copyWith(color: foreground),
+                    ? context.texts.termCompact.copyWith(color: foreground)
+                    : context.texts.caption.copyWith(color: foreground),
               ),
             ),
           ],

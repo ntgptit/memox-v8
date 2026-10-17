@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The card lifecycle, in order.
@@ -24,8 +24,6 @@ class MxStatusBadge extends StatelessWidget {
   /// The bare 8 indicator for dense card rows.
   final bool isDot;
 
-  /// A minimum: text scaling grows the pill (ruling S11).
-  static const double _height = 22;
   static const double _pillDot = 6;
   static const double _bareDot = 8;
 
@@ -35,17 +33,17 @@ class MxStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      MxCardStatus.newCard => context.colors.outline,
-      MxCardStatus.learning => context.mxColors.warningContainer,
-      MxCardStatus.reviewing => context.accentColor,
-      MxCardStatus.mastered => context.mxColors.successContainer,
+      MxCardStatus.newCard => context.colors.mutedForeground,
+      MxCardStatus.learning => context.status.warningFill,
+      MxCardStatus.reviewing => context.colors.primary,
+      MxCardStatus.mastered => context.status.successFill,
     };
     // The label reads in the status ink (AA); dot and fill keep the colour.
     final ink = switch (status) {
-      MxCardStatus.newCard => context.colors.onSurfaceVariant,
-      MxCardStatus.learning => context.mxColors.warning,
-      MxCardStatus.reviewing => context.accentColor,
-      MxCardStatus.mastered => context.mxColors.success,
+      MxCardStatus.newCard => context.colors.mutedForeground,
+      MxCardStatus.learning => context.status.warning,
+      MxCardStatus.reviewing => context.colors.primary,
+      MxCardStatus.mastered => context.status.success,
     };
     if (isDot) {
       return Semantics(
@@ -54,32 +52,20 @@ class MxStatusBadge extends StatelessWidget {
         child: _Dot(color: color, size: _bareDot),
       );
     }
-    return DecoratedBox(
-      decoration: ShapeDecoration(
-        color: color.tintOver(MxTintBase.of(context)),
-        shape: const StadiumBorder(),
+    return MxToneBadge(
+      fill: color.tintOver(MxTintBase.of(context)),
+      ink: ink,
+      padding: EdgeInsetsDirectional.only(
+        start: _startPadding,
+        end: context.dimens.space8,
       ),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: _height),
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: _startPadding,
-            end: context.dimens.space8,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: context.dimens.space4,
-            children: [
-              _Dot(color: color, size: _pillDot),
-              Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                style: context.texts.labelSmall?.copyWith(color: ink),
-              ),
-            ],
-          ),
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: context.dimens.space4,
+        children: [
+          _Dot(color: color, size: _pillDot),
+          Text(label, maxLines: 1, softWrap: false),
+        ],
       ),
     );
   }

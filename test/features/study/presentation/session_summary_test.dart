@@ -406,7 +406,7 @@ void main() {
           .element(overline)
           .texts
           .labelSmall
-          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
+          ?.copyWith(color: tester.element(overline).colors.mutedForeground),
     );
     expect(
       text.semanticsLabel,

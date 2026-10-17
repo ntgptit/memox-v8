@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-/// The Material 3 window size classes the layout follows.
+/// The window size classes the layout follows: compact, medium, expanded.
 enum WindowSize { compact, medium, expanded }
 
 /// Publishes the width of the whole window below a shell that narrows its
@@ -27,32 +27,9 @@ class WindowWidthScope extends InheritedWidget {
       width != oldWidget.width;
 }
 
-/// Design System rules of the form "this mode uses role A, that mode role B".
-/// The only widget-facing place that branches on the theme's brightness to
-/// pick a colour; a widget never does.
+/// The layout rules every screen follows: the window's size class and the
+/// screen margin it sets.
 extension ThemeRules on BuildContext {
-  /// Icons and text in the accent colour. `primary` on the dark page reaches
-  /// only 3.01:1, so dark uses the lighter fixed step (DS README, Primary).
-  Color get accentColor => switch (Theme.of(this).brightness) {
-    Brightness.light => colors.primary,
-    Brightness.dark => colors.primaryFixedDim,
-  };
-
-  /// The glyph on a fill in the accent colour (the check in a checked box):
-  /// `onPrimary` on light `primary`, `onPrimaryFixed` on dark
-  /// `primaryFixedDim`.
-  Color get onAccentColor => switch (Theme.of(this).brightness) {
-    Brightness.light => colors.onPrimary,
-    Brightness.dark => colors.onPrimaryFixed,
-  };
-
-  /// The deck icon on its tile surface: `info` on the light tile, the lighter
-  /// `infoContainer` on the dark one (DS README, Colour).
-  Color get deckIconColor => switch (Theme.of(this).brightness) {
-    Brightness.light => mxColors.info,
-    Brightness.dark => mxColors.infoContainer,
-  };
-
   /// The window's size class, by `breakpointMedium` / `breakpointExpanded`.
   /// It follows the whole window's width, also inside a shell that gives a
   /// screen only the area beside a rail ([WindowWidthScope]).

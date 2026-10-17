@@ -38,14 +38,14 @@ void main() {
       final texts = tester.element(find.text('Move to deck')).texts;
       expect(
         tester.widget<Text>(find.text('Move to deck')).style!.fontSize,
-        texts.titleSmall!.fontSize,
+        texts.itemTitle.fontSize,
       );
       expect(
         tester
             .widget<Text>(find.text('Cards keep their progress.'))
             .style!
             .fontSize,
-        texts.bodyMedium!.fontSize,
+        texts.body.fontSize,
       );
       // The handle's 48 target, then the head's 4.
       expect(

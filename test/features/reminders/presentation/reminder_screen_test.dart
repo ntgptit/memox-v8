@@ -400,8 +400,8 @@ void main() {
     // The button's own style dims it, once; no Opacity wraps it as well.
     expect(
       style.foregroundColor!.resolve({WidgetState.disabled}),
-      context.colors.onSurface.withValues(
-        alpha: context.dimens.opacityDisabledContent,
+      context.colors.foreground.withValues(
+        alpha: context.colors.disabledOpacity,
       ),
     );
     expect(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';

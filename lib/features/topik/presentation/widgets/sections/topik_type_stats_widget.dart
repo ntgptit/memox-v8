@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -38,7 +38,7 @@ class TopikTypeStatsWidget extends StatelessWidget {
                       Expanded(
                         child: Text(
                           l10n.topikTypeName(stat.type),
-                          style: context.texts.titleSmall,
+                          style: context.texts.itemTitle,
                         ),
                       ),
                       if (stat.type == summary.weakestType)
@@ -48,8 +48,8 @@ class TopikTypeStatsWidget extends StatelessWidget {
                         ),
                       Text(
                         l10n.topikOfTotal(stat.correct, stat.total),
-                        style: context.texts.labelMedium?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        style: context.texts.label.copyWith(
+                          color: context.colors.mutedForeground,
                         ),
                       ),
                     ],

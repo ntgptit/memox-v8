@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -87,7 +87,7 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               group.name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: context.texts.titleMedium,
+              style: context.texts.sectionTitle,
             ),
           Row(
             spacing: context.dimens.space8,
@@ -106,8 +106,8 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
                   widget.willWrite == 0
                       ? metaDots(l10n.importDeckNothing)
                       : l10n.importDeckCards(widget.willWrite),
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ),
@@ -139,8 +139,8 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
             if (_consequenceOf(group, l10n) case final consequence?)
               Text(
                 consequence,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
           ],

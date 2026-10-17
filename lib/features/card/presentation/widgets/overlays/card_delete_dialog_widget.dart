@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -147,14 +147,14 @@ class _Preview extends StatelessWidget {
             preview.front,
             maxLines: _maxLines,
             overflow: TextOverflow.ellipsis,
-            style: context.texts.titleMedium,
+            style: context.texts.sectionTitle,
           ),
           Text(
             preview.back,
             maxLines: _maxLines,
             overflow: TextOverflow.ellipsis,
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.body.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ],

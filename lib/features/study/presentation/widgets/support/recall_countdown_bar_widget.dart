@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -38,11 +38,11 @@ class RecallCountdownBarWidget extends StatelessWidget {
         ? seconds * _msPerSecond / recallTurnMs
         : left / recallTurnMs;
     final foreground = isTimedOut
-        ? context.mxColors.warning
-        : colors.onSurfaceVariant;
+        ? context.status.warning
+        : colors.mutedForeground;
     final fill = isTimedOut
-        ? context.mxColors.warningContainer
-        : colors.onSurfaceVariant;
+        ? context.status.warningFill
+        : colors.mutedForeground;
     return Semantics(
       container: true,
       label: caption,
@@ -65,14 +65,12 @@ class RecallCountdownBarWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     caption,
-                    style: context.texts.labelSmall?.copyWith(
-                      color: foreground,
-                    ),
+                    style: context.texts.meta.copyWith(color: foreground),
                   ),
                 ),
                 Text(
                   l10n.studyRecallClock(seconds, recallTurnMs ~/ _msPerSecond),
-                  style: context.texts.labelSmall?.copyWith(color: foreground),
+                  style: context.texts.meta.copyWith(color: foreground),
                 ),
               ],
             ),

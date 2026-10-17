@@ -392,7 +392,7 @@ void main() {
     await tester.pump();
 
     final term = tester.renderObject<RenderBox>(_field(0));
-    final role = tester.element(_field(0)).texts.bodyMedium!;
+    final role = tester.element(_field(0)).texts.body;
     expect(term.size.height, greaterThan(role.fontSize! * role.height!));
     expect(tester.takeException(), isNull);
   });

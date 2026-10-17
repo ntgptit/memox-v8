@@ -41,14 +41,14 @@ class StudyEntryHeroWidget extends StatelessWidget {
               Text(
                 algorithm.toUpperCase(),
                 semanticsLabel: algorithm,
-                style: context.texts.labelSmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.meta.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
               Text(
                 l10n.studyEntryLimit(entry.cardLimit),
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                style: context.texts.body.copyWith(
+                  color: context.colors.mutedForeground,
                 ),
               ),
             ],
@@ -83,9 +83,7 @@ class StudyEntryHeroWidget extends StatelessWidget {
           if (entry.overdueCardCount > 0)
             Text(
               l10n.studyEntryOverdue(entry.overdueCardCount),
-              style: context.texts.bodyMedium?.copyWith(
-                color: context.mxColors.warning,
-              ),
+              style: context.texts.body.copyWith(color: context.status.warning),
             ),
         ],
       ),

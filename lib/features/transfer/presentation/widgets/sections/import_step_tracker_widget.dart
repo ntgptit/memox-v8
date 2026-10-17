@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -79,9 +79,7 @@ class ImportStepTrackerWidget extends StatelessWidget {
   /// The width the four steps need on one row with the shortest connectors,
   /// at the reader's text scale.
   double _oneRowWidth(BuildContext context, List<String> labels) {
-    final style = context.texts.labelSmall?.copyWith(
-      color: context.colors.onSurface,
-    );
+    final style = context.texts.meta.copyWith(color: context.colors.foreground);
     var width =
         (labels.length - 1) *
         (context.dimens.space8 + 2 * context.dimens.space4);
@@ -119,15 +117,15 @@ class _Step extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final fill = isDone
-        ? context.mxColors.successContainer
+        ? context.status.successFill
         : isCurrent
         ? colors.primary
-        : colors.surfaceContainerHigh;
+        : colors.muted;
     final foreground = isDone
-        ? context.mxColors.onSuccessContainer
+        ? context.status.onSuccessFill
         : isCurrent
-        ? colors.onPrimary
-        : colors.onSurfaceVariant;
+        ? colors.primaryForeground
+        : colors.mutedForeground;
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,
@@ -147,19 +145,17 @@ class _Step extends StatelessWidget {
                     )
                   : Text(
                       context.l10n.importStepNumber(number),
-                      style: context.texts.labelSmall?.copyWith(
-                        color: foreground,
-                      ),
+                      style: context.texts.meta.copyWith(color: foreground),
                     ),
             ),
           ),
         ),
         Text(
           label,
-          style: context.texts.labelSmall?.copyWith(
+          style: context.texts.meta.copyWith(
             color: isDone || isCurrent
-                ? context.colors.onSurface
-                : context.colors.onSurfaceVariant,
+                ? context.colors.foreground
+                : context.colors.mutedForeground,
           ),
         ),
       ],
@@ -174,11 +170,9 @@ class _Line extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: context.dimens.strokeIndicator,
+    height: context.dimens.strokeEmphasis,
     child: ColoredBox(
-      color: isDone
-          ? context.mxColors.successContainer
-          : context.colors.outlineVariant,
+      color: isDone ? context.status.successFill : context.colors.border,
     ),
   );
 }

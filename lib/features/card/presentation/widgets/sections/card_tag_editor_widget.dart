@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -136,7 +137,7 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               spacing: context.dimens.space4,
               children: [
                 Icon(AppIcons.tag, size: context.dimens.sizeIconInline),
-                Text(l10n.cardTags, style: context.texts.labelMedium),
+                Text(l10n.cardTags, style: context.texts.label),
                 Flexible(
                   child: Text(
                     metaLine(
@@ -145,8 +146,8 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
                         TagEntity.maxPerCard,
                       ),
                     ),
-                    style: context.texts.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    style: context.texts.body.copyWith(
+                      color: context.colors.mutedForeground,
                     ),
                   ),
                 ),

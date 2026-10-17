@@ -47,7 +47,7 @@ void main() {
       );
       expect(
         field.style,
-        tester.element(find.byType(TextField)).texts.labelMedium,
+        tester.element(find.byType(TextField)).texts.label,
       );
       expect(
         field.decoration!.fillColor,
@@ -307,7 +307,7 @@ void main() {
             .first,
       );
 
-      expect(painter, paintsFill(context.mxColors.searchSurface));
+      expect(painter, paintsFill(context.colors.muted));
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
@@ -318,10 +318,10 @@ void main() {
         painter,
         paintsFill(
           Color.alphaBlend(
-            context.colors.onSurface.withValues(
+            context.colors.foreground.withValues(
               alpha: context.dimens.opacityHover,
             ),
-            context.mxColors.searchSurface,
+            context.colors.muted,
           ),
         ),
       );

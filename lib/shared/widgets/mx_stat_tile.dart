@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// How a stat's figure is inked: [primary] draws the eye to what the
 /// screen offers, [plain] states a fact, [muted] a figure nothing acts on.
@@ -40,9 +39,9 @@ class MxStatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final foreground = switch (emphasis) {
-      MxStatTileEmphasis.primary => context.accentColor,
-      MxStatTileEmphasis.plain => colors.onSurface,
-      MxStatTileEmphasis.muted => colors.onSurfaceVariant,
+      MxStatTileEmphasis.primary => context.colors.primary,
+      MxStatTileEmphasis.plain => colors.foreground,
+      MxStatTileEmphasis.muted => colors.mutedForeground,
     };
     final isBoxed = layout == MxStatTileLayout.boxed;
     final figure = Column(
@@ -62,13 +61,13 @@ class MxStatTile extends StatelessWidget {
           child: Text(
             value,
             maxLines: 1,
-            style: context.texts.displayMedium?.copyWith(color: foreground),
+            style: context.texts.figure.copyWith(color: foreground),
           ),
         ),
         Text(
           label.toUpperCase(),
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
+          style: context.texts.meta.copyWith(
+            color: context.colors.mutedForeground,
           ),
         ),
       ],
@@ -76,8 +75,8 @@ class MxStatTile extends StatelessWidget {
     final body = isBoxed
         ? DecoratedBox(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+              color: colors.muted,
+              borderRadius: context.radii.md,
             ),
             child: Padding(
               padding: EdgeInsets.all(context.dimens.space12),

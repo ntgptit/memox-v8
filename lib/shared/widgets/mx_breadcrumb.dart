@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
@@ -30,7 +30,7 @@ class MxBreadcrumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chevronColor = context.colors.outline;
+    final chevronColor = context.colors.border;
     // Ruling R4: the row is a 48 touch band, not 2 + text + 8.
     return SizedBox(
       height: context.dimens.sizeControl,
@@ -80,7 +80,7 @@ class _Segment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isCurrent) {
-      return Text(segment.label, style: context.texts.titleSmall);
+      return Text(segment.label, style: context.texts.itemTitle);
     }
     final target = MxRowInk(
       onTap: segment.onTap,
@@ -93,8 +93,8 @@ class _Segment extends StatelessWidget {
           widthFactor: 1,
           child: Text(
             segment.label,
-            style: context.texts.labelMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+            style: context.texts.label.copyWith(
+              color: context.colors.mutedForeground,
             ),
           ),
         ),

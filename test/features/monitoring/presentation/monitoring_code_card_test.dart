@@ -22,8 +22,8 @@ void main() {
         .style!;
 
     expect(style.fontFamily, AppTypography.monoFamily);
-    expect(style.fontSize, context.texts.bodyMedium!.fontSize);
-    expect(style.height, context.texts.bodyMedium!.height);
+    expect(style.fontSize, context.texts.body.fontSize);
+    expect(style.height, context.texts.body.height);
   });
 
   testWidgets('a stack trace frame number is mono in the accent', (
@@ -40,6 +40,6 @@ void main() {
     final frame = tester.widget<Text>(find.text('#0'));
 
     expect(frame.style!.fontFamily, AppTypography.monoFamily);
-    expect(frame.style!.color, context.accentColor);
+    expect(frame.style!.color, context.colors.primary);
   });
 }

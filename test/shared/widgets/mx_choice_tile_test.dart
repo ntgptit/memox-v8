@@ -99,7 +99,7 @@ void main() {
     final colors = buildLightTheme().colorScheme;
     expect(_decoration(tester).color, colors.primary);
     final text = tester.widget<Text>(find.text('① 보기 1'));
-    expect(text.style?.color, colors.onPrimary);
+    expect(text.style?.color, colors.primaryForeground);
   });
 
   testWidgets('idle is the card ground with the content on surface', (

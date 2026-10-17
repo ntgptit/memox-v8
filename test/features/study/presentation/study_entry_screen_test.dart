@@ -127,7 +127,7 @@ void main() {
 
     final note = tester.widget<Text>(find.text(_en.studyEntryOverdue(1)));
     final context = tester.element(find.text(_en.studyEntryOverdue(1)));
-    expect(note.style?.color, context.mxColors.warning);
+    expect(note.style?.color, context.status.warning);
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
@@ -338,7 +338,7 @@ void main() {
           .element(overline)
           .texts
           .labelSmall
-          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
+          ?.copyWith(color: tester.element(overline).colors.mutedForeground),
     );
   });
 

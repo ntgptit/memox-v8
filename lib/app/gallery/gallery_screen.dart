@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_actions_section.dart';
 import 'package:memox/app/gallery/gallery_chrome_section.dart';
@@ -31,7 +32,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   var _isLargeText = false;
 
   @override
-  Widget build(BuildContext context) => Theme(
+  Widget build(BuildContext context) => FTheme(
     data: _isDark ? buildDarkTheme() : buildLightTheme(),
     child: MediaQuery(
       data: MediaQuery.of(context).copyWith(

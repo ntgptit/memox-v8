@@ -37,9 +37,9 @@ void main() {
       final ancestor = tester.widget<Text>(find.text('Level 1')).style!;
       final current = tester.widget<Text>(find.text('Level 2')).style!;
       final texts = tester.element(find.text('Level 1')).texts;
-      expect(ancestor.fontWeight, texts.labelMedium!.fontWeight);
+      expect(ancestor.fontWeight, texts.label.fontWeight);
       expect(ancestor.color, scheme.onSurfaceVariant);
-      expect(current.fontWeight, texts.titleSmall!.fontWeight);
+      expect(current.fontWeight, texts.itemTitle.fontWeight);
       expect(current.color, scheme.onSurface);
     },
   );

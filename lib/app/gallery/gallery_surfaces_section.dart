@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -89,7 +89,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             size: MxIconTileSize.medium,
           ),
           const MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
-          MxIconTile(icon: AppIcons.folder, seed: context.mxColors.warning),
+          MxIconTile(icon: AppIcons.folder, seed: context.status.warning),
           const MxIconTile(
             icon: AppIcons.lockOpen,
             size: MxIconTileSize.medium,

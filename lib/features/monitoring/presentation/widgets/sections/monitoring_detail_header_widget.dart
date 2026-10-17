@@ -35,12 +35,12 @@ class MonitoringDetailHeaderWidget extends StatelessWidget {
               children: [
                 Text(
                   monitoringLevelLabel(l10n, record.level),
-                  style: context.texts.titleSmall,
+                  style: context.texts.itemTitle,
                 ),
                 Text(
                   monitoringFullTime(l10n, record.occurredAt),
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                  style: context.texts.body.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
                 ),
               ],

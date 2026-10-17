@@ -69,8 +69,8 @@ void main() {
 
     expect(
       subtitle.style,
-      context.texts.labelMedium?.copyWith(
-        color: context.colors.onSurfaceVariant,
+      context.texts.label.copyWith(
+        color: context.colors.mutedForeground,
       ),
     );
     expect(subtitle.maxLines, 1);

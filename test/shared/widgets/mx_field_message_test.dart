@@ -98,7 +98,7 @@ void main() {
     final style = tester.widget<Text>(find.text('Name is required')).style!;
     expect(
       style.fontSize,
-      tester.element(find.text('Name is required')).texts.bodySmall!.fontSize,
+      tester.element(find.text('Name is required')).texts.caption.fontSize,
     );
   });
 

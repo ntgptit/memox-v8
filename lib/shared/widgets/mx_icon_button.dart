@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 
-/// An icon in a round `sizeControl` box: the Design System's icon button.
-/// [semanticLabel] names it for screen readers and shows as its tooltip.
+/// An icon in a round 48 box: ForUI's ghost icon button at the large touch
+/// size. [semanticLabel] names it for screen readers and shows as its
+/// tooltip on a long press.
 class MxIconButton extends StatelessWidget {
   const MxIconButton({
     super.key,
@@ -13,15 +15,18 @@ class MxIconButton extends StatelessWidget {
   final IconData icon;
   final String semanticLabel;
 
-  /// Null disables the control; the theme dims it.
+  /// Null disables the control; ForUI dims it.
   final VoidCallback? onPressed;
 
-  /// The theme's IconButton is this contract: the glyph size, the control
-  /// size, the state layers, the disabled opacity and the focus ring.
   @override
-  Widget build(BuildContext context) => IconButton(
-    icon: Icon(icon),
-    tooltip: semanticLabel,
-    onPressed: onPressed,
+  Widget build(BuildContext context) => FTooltip(
+    tipBuilder: (_, _) => Text(semanticLabel),
+    child: FButton.icon(
+      onPress: onPressed,
+      variant: FButtonVariant.ghost,
+      size: FButtonSizeVariant.lg,
+      semanticsLabel: semanticLabel,
+      child: Icon(icon),
+    ),
   );
 }

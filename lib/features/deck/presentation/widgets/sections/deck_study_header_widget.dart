@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -43,7 +43,7 @@ class DeckStudyHeaderWidget extends ConsumerWidget {
           view.deck.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.titleMedium,
+          style: context.texts.sectionTitle,
         ),
       ),
       DeckStudyHeaderPart.breadcrumb => MxBreadcrumb(

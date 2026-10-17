@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/speech/di/speech_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -140,7 +140,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                   ? null
                   : Text(
                       l10n.studyCount(options.cardLimit),
-                      style: context.texts.titleSmall,
+                      style: context.texts.itemTitle,
                     ),
               wideControl: !isEditable
                   ? null
@@ -186,7 +186,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                   ? null
                   : Text(
                       _orderLabel(l10n, options.newCardOrder),
-                      style: context.texts.titleSmall,
+                      style: context.texts.itemTitle,
                     ),
               wideControl: !isEditable
                   ? null
