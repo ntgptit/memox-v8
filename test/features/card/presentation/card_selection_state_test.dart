@@ -43,17 +43,26 @@ void main() {
   test('retain drops the picks that are gone and keeps the mode (audit '
       'CARD-14)', () {
     notifier().selectAll({'c1', 'c2'});
-    notifier().retain({'c2', 'c3'});
+    notifier().retain({'c2', 'c3'}, checked: {'c1', 'c2'});
     expect(state().ids, {'c2'});
     expect(state().isSelecting, isTrue);
-    notifier().retain({});
+    notifier().retain({}, checked: {'c2'});
     expect(state().ids, isEmpty);
     expect(state().isSelecting, isTrue);
   });
 
   test('retain does not start a selection', () {
-    notifier().retain({'c1'});
+    notifier().retain({'c1'}, checked: const {});
     expect(state().isSelecting, isFalse);
+  });
+
+  test('retain keeps a pick made while the live ids were read (closing '
+      'audit 2026-10-17)', () {
+    notifier().selectAll({'c1', 'c2'});
+    final checked = state().ids;
+    notifier().toggle('c9');
+    notifier().retain({'c2'}, checked: checked);
+    expect(state().ids, {'c2', 'c9'});
   });
 
   test('select all replaces the picks and stays selecting', () {

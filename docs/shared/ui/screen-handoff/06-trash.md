@@ -105,6 +105,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **The Footer Pair Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
 - **DEV-179 (owner 2026-10-06):** the delete-for-good dialog's title names the count, so its confirm is "Delete" / "Xoá" alone, sharing the row 1 : 1 with "Keep in Trash"; it no longer stacks.
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
+- **Executor ruling 2026-10-17 (LIB-11), awaiting the owner's confirmation:** spec D6's "it goes when the list next changes" is read as the Trash's contents changing (a purge, a restore, or the entry the banner names leaving), not the view: a filter, entering or leaving selection, or a tick keep the purge-blocked banners. Under the Cards filter a banner about a deck batch therefore still shows. The earlier reading (any command clears it) is the alternative the owner may choose.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
 - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.
 - **E-L3:** "Select" is a small secondary `MxButton`.

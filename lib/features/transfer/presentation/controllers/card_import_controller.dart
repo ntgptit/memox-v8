@@ -94,11 +94,14 @@ class CardImportController extends _$CardImportController {
     final source = draft?.source;
     if (draft == null || source == null || draft.isBusy) return;
     state = draft.copyWith(isBusy: true, isProblemCleared: true);
-    final result = await ref.read(readImportSourceUseCaseProvider)(
-      source,
-      sheetIndex: sheetIndex,
+    final result = await _whileBusy(
+      draft,
+      () => ref.read(readImportSourceUseCaseProvider)(
+        source,
+        sheetIndex: sheetIndex,
+      ),
     );
-    if (!ref.mounted) return;
+    if (result == null || !ref.mounted) return;
     state = switch (result) {
       Ok(:final value) => CardImportDraft(
         step: CardImportStep.columns,
@@ -113,6 +116,27 @@ class CardImportController extends _$CardImportController {
       ),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
     };
+  }
+
+  /// Runs a step's read while [draft] shows busy: a Failure or a bug never
+  /// leaves the wizard busy, where Back waits (step 5). A Failure goes on to
+  /// the screen, which says it; a bug is reported and answers null.
+  Future<T?> _whileBusy<T>(
+    CardImportDraft draft,
+    Future<T> Function() read,
+  ) async {
+    try {
+      return await read();
+    } on Failure {
+      if (ref.mounted) state = draft.copyWith(isBusy: false);
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+      if (ref.mounted) state = draft.copyWith(isBusy: false);
+      return null;
+    }
   }
 
   /// Step 2 (A3): whether the first row names the columns. The mapping the
@@ -143,13 +167,16 @@ class CardImportController extends _$CardImportController {
     final table = draft?.table;
     if (draft == null || table == null || draft.isBusy) return;
     state = draft.copyWith(isBusy: true, isProblemCleared: true);
-    final result = await ref.read(previewImportUseCaseProvider)(
-      deckId: deckId,
-      table: table,
-      mapping: draft.mapping,
-      hasHeaderRow: draft.hasHeaderRow,
+    final result = await _whileBusy(
+      draft,
+      () => ref.read(previewImportUseCaseProvider)(
+        deckId: deckId,
+        table: table,
+        mapping: draft.mapping,
+        hasHeaderRow: draft.hasHeaderRow,
+      ),
     );
-    if (!ref.mounted) return;
+    if (result == null || !ref.mounted) return;
     // A name the user typed before Back stays (U4).
     final name = draft.defaultDeckName ?? defaultDeckName;
     state = switch (result) {

@@ -346,7 +346,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                     : l10n.cardSaveChangesFailedTitle,
                 hasFailed: _hasFailed,
                 isSaving: _isSaving,
-                onCancel: _close,
+                onCancel: _isSaving ? null : _close,
                 onSave: _onSave,
               ),
         body: _isGone
@@ -382,7 +382,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     leading: MxIconButton(
       icon: _isCreating ? AppIcons.close : AppIcons.back,
       semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,
-      onPressed: _close,
+      onPressed: _isSaving ? null : _close,
     ),
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
@@ -396,7 +396,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
             child: MxIconButton(
               icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
               semanticLabel: l10n.cardFlagLabel,
-              onPressed: () => setState(() => _isFlagged = !_isFlagged),
+              // The draft in flight already carries the flag.
+              onPressed: _isSaving
+                  ? null
+                  : () => setState(() => _isFlagged = !_isFlagged),
             ),
           ),
         ),

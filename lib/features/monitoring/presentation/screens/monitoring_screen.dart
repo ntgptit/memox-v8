@@ -44,6 +44,7 @@ class MonitoringScreen extends ConsumerStatefulWidget {
 class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
   final _search = TextEditingController();
   var _tab = MonitoringTab.server;
+  var _isRefreshing = false;
 
   @override
   void dispose() {
@@ -54,6 +55,18 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
   void _clearFilters() {
     _search.clear();
     ref.read(monitoringListControllerProvider.notifier).clearFilters();
+  }
+
+  /// The Refresh action stays off until the first page lands, so a tap is
+  /// seen (and heard as disabled) rather than doing nothing visible.
+  Future<void> _refresh(MonitoringListController controller) async {
+    if (_isRefreshing) return;
+    setState(() => _isRefreshing = true);
+    try {
+      await controller.refresh();
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
   }
 
   @override
@@ -86,7 +99,9 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
             MxIconButton(
               icon: AppIcons.retry,
               semanticLabel: l10n.monitoringRefresh,
-              onPressed: () => unawaited(listController.refresh()),
+              onPressed: _isRefreshing
+                  ? null
+                  : () => unawaited(_refresh(listController)),
             ),
         ],
       ),

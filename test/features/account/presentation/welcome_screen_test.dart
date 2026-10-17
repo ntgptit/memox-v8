@@ -179,10 +179,7 @@ void main() {
     expect(dones, 1);
   });
 
-  for (final starting in <AuthState>[
-    const Bootstrapping(),
-    const Validating(null),
-  ]) {
+  for (final starting in <AuthState>[const Booting(), const Bootstrapping()]) {
     accountTest('while the account starts (${starting.runtimeType}), Welcome '
         'keeps its three ways, disabled, and never looks offline (audit '
         '2026-10-17 ACC-2)', (tester, env, world) async {
@@ -202,6 +199,26 @@ void main() {
       expect(find.text(_en.accountOfflineNote), findsNothing);
     });
   }
+
+  accountTest('offline with a session (Validating stays until the network '
+      'returns), Welcome says it is offline (closing review 2026-10-17)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [
+        ...accountOverrides(world),
+        shown,
+        authStateOf(const Validating(null)),
+      ],
+    );
+
+    expect(find.text(_en.accountOfflineNote), findsOneWidget);
+  });
 
   accountTest('the lead says MemoX works without an account, and two '
       'benefits follow', (tester, env, world) async {

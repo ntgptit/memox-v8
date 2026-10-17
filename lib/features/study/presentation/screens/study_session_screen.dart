@@ -297,8 +297,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     if (_hasLeft) return;
     if (_isAsking) {
       // The exit dialog closes first; the leave follows (a blank page is
-      // never left behind it).
+      // never left behind it). A second leave meanwhile only replaces the
+      // message: popping again would take the session route too.
+      final isClosing = _pendingLeave != null;
       _pendingLeave = (message, deckId);
+      if (isClosing) return;
       unawaited(Navigator.of(context, rootNavigator: true).maybePop());
       return;
     }

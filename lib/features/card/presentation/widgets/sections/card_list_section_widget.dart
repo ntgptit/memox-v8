@@ -193,12 +193,13 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// card [request] lets through is read, not only the loaded window, as
   /// Select all picks beyond it. A failed read keeps the picks.
   Future<void> _pruneSelection(CardListRequestState request) async {
-    if (ref.read(cardSelectionProvider(widget.deckId)).ids.isEmpty) return;
+    final checked = ref.read(cardSelectionProvider(widget.deckId)).ids;
+    if (checked.isEmpty) return;
     try {
       final live = await ref
           .read(cardActionsControllerProvider.notifier)
           .selectAll(deckId: widget.deckId, query: request.query);
-      if (mounted) _selection().retain(live);
+      if (mounted) _selection().retain(live, checked: checked);
     } on Failure {
       // The next change of the list tries again.
     }

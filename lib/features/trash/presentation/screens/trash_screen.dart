@@ -87,7 +87,8 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     // Nothing is left to pick once the last entry has gone: the selection
     // ends instead of showing the empty state under its bar.
     ref.listen(trashEntriesProvider, (_, next) {
-      if (next case AsyncData(:final value) when value.isEmpty) {
+      final isSelecting = ref.read(trashControllerProvider).isSelecting;
+      if (next case AsyncData(:final value) when value.isEmpty && isSelecting) {
         _trash().stopSelecting();
       }
     });

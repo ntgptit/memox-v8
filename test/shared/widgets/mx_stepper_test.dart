@@ -145,6 +145,26 @@ void main() {
     expect(tester.getSize(find.byType(MxStepper)).width, width);
   });
 
+  testWidgets('busy: the spinner carries the value\'s name for TalkBack '
+      '(closing audit 2026-10-17)', (tester) async {
+    await pumpMx(
+      tester,
+      MxStepper(
+        value: 20,
+        valueLabel: 'Cards per session',
+        decrementLabel: 'Fewer cards',
+        incrementLabel: 'More cards',
+        onDecrement: () {},
+        onIncrement: () {},
+        isBusy: true,
+      ),
+    );
+    expect(
+      tester.widget<MxSpinner>(find.byType(MxSpinner)).semanticLabel,
+      'Cards per session',
+    );
+  });
+
   testWidgets('at a bound the button stops without dimming', (tester) async {
     await pumpMx(
       tester,

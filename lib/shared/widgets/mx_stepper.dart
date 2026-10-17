@@ -190,7 +190,7 @@ class _MxStepperState extends State<MxStepper> {
           widthFactor: 1,
           heightFactor: 1,
           child: switch ((widget.isBusy, _isEditing)) {
-            (true, _) => const MxSpinner(),
+            (true, _) => MxSpinner(semanticLabel: widget.valueLabel),
             // The typed number keeps the value's name: the edit box alone
             // would reach TalkBack unnamed.
             (_, true) => SizedBox(

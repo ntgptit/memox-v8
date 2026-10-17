@@ -220,6 +220,7 @@ class _RefreshFailed extends StatelessWidget {
       child: MxInlineBanner(
         tone: MxBannerTone.danger,
         message: l10n.monitoringRefreshFailed,
+        hasBottomMargin: false,
         actions: [
           MxButton(
             label: l10n.commonRetry,

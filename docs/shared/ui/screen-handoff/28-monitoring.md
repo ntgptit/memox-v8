@@ -28,7 +28,7 @@ FE-B8; ADR-018 §6 to §8; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` + back `MxIconButton`; on the Server tab a refresh `MxIconButton` | "Monitoring". "Refresh" reads the first page again, as the pull down does, for TalkBack and a keyboard (audit 2026-10-17); the Not sent tab watches its rows and has none. |
+| App bar | `MxAppBar` + back `MxIconButton`; on the Server tab a refresh `MxIconButton` | "Monitoring". "Refresh" reads the first page again, as the pull down does, for TalkBack and a keyboard (audit 2026-10-17); it is off while that read runs. The Not sent tab watches its rows and has none. |
 | Tabs | `MxSegmentedTray` | "Server" · "Not sent ({n})"; n is every row of the device buffer. |
 | Search (Server) | `MxSearchField` | "Search event or message"; asks 400 ms after the last keystroke. |
 | Filters (Server) | `MxChipTrigger` × 5 in a row that scrolls | Level (default warning + error) · Status (default open) · Category · Time · Device / user. A chip that holds a choice shows it, naming one or two and counting from three: "Level · Warning, Error", "Status · Open", "Time · Last 24 hours", "Level · 3"; Device / user counts a pair, since its choices are ids (critique 2026-09-30 part 3b). |
@@ -75,7 +75,7 @@ The images are the goldens.
 | list, refresh failed | — | — | The rows stay under a danger `MxInlineBanner` "Couldn't refresh. What is shown is still correct." with Retry (executed: `monitoring_screen_test.dart`). |
 | list, loading | — | — | `MxSkeletonList`, six rows. |
 | list, loading more | — | — | The last rows stay and an `MxSpinner` sits under them while the next 100 load (`MonitoringMore.loading`). Code read: `monitoring_server_list_widget.dart` `_End`; no golden. |
-| list, load more failed | — | — | The rows stay; an `MxInlineBanner` (danger) "Couldn't load more logs." with a small Retry replaces the spinner (`MonitoringMore.failed`); no loop on scroll. No golden; `monitoring_screen_test.dart::a failed page keeps the rows and offers Retry, not a loop`. |
+| list, load more failed | — | — | The rows stay; an `MxInlineBanner` (danger) "Couldn't load more logs. What is shown is still correct." with a small Retry replaces the spinner (`MonitoringMore.failed`); no loop on scroll. No golden; `monitoring_screen_test.dart::a failed page keeps the rows and offers Retry, not a loop`. |
 | list, end | — | — | "No more logs" caption once `next` is null. `monitoring_screen_test.dart::the next page loads near the end, and the end says so`. |
 | Not sent, loading | — | — | The chip stays; below it an `MxSkeletonList`, six rows, until the buffer's first answer (`PendingLogsState.logs` is `AsyncLoading`). Code read: `monitoring_pending_tab_widget.dart`; no golden. |
 | Not sent, error | — | — | The chip stays; below it `MxErrorState` "Couldn't load logs" with the local-first body and Retry (the buffer's watch failed). Code read: same file; no golden. |
@@ -106,7 +106,9 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 | list, load more failed | Retry | list, loading more | VERIFIED same tests |
 | list, loading more | a filter or search change lands first | the old page is dropped | VERIFIED `monitoring_list_controller_test.dart::a next page that lands after a filter change is dropped`, `::a slow answer to the old filter never overwrites the new one`, `::an old failure never replaces the new rows` |
 | list, loaded | pull down | the rows stay until the first page lands | VERIFIED `::pull to refresh asks the first page again`; `monitoring_list_controller_test.dart::a pull to refresh keeps the rows until the first page lands` |
-| list, loaded | the pull to refresh fails | list, offline / error: the rows are replaced | `UNVERIFIED (code read)`: `MonitoringListController._loadFirst` shows `MonitoringListFailed` over the kept rows |
+| list, loaded | the pull to refresh or Refresh fails | list, refresh failed: the rows stay under a danger banner with Retry; a lost admin right replaces them | audit 2026-10-17 MON-1. VERIFIED `monitoring_screen_test.dart::a failed pull to refresh keeps the rows, says so and offers Retry (audit 2026-10-17 MON-1)`; the banner's single gap `monitoring_refresh_test.dart::a failed refresh banner keeps one gap below it, not its own margin on top (closing audit 2026-10-17)` |
+| list, refresh failed | Retry | the rows stay until the first page lands, then the banner clears | VERIFIED same test |
+| list, loaded | tap Refresh in the app bar | Refresh is off (dimmed, read as disabled) until the first page lands; the rows stay | closing audit 2026-10-17. VERIFIED `monitoring_screen_test.dart::the app bar refreshes the Server tab for a screen reader (audit 2026-10-17 SET-11)`, `monitoring_refresh_test.dart::Refresh is off while its read runs, so the tap is seen and heard (closing audit 2026-10-17)` |
 | list, loaded | type in the search | the first page of the search, 400 ms after the last key | VERIFIED `::the search asks once the field has been still for 400 ms`; `monitoring_list_controller_test.dart::a filter change before the search fires keeps the search` |
 | list, loaded | apply a filter sheet | list, loading, then the first page of the filter | VERIFIED `monitoring_filters_test.dart::the Level chip shows its choice and its sheet applies it`, `::Reset puts a sheet back to its default, Apply keeps it`; the same filter again asks nothing `monitoring_list_controller_test.dart::the same filter again asks nothing` |
 | list, no match | Clear filters | list, loading with the default filter; the search text cleared | VERIFIED `::another filter with no match offers to clear the filters`; `monitoring_list_controller_test.dart::clearing the filters resets every filter and the search` |

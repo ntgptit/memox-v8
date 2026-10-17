@@ -29,7 +29,9 @@ class CardEditorFooterWidget extends StatelessWidget {
   final String failedTitle;
   final bool hasFailed;
   final bool isSaving;
-  final VoidCallback onCancel;
+
+  /// Null while a save runs: leaving then would race the write.
+  final VoidCallback? onCancel;
 
   /// Null while the card is not valid.
   final VoidCallback? onSave;
