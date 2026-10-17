@@ -2988,7 +2988,7 @@
   "@searchErrorTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorTitle."
   },
-  "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
+  "searchErrorBody": "Nothing was lost. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
   },
@@ -6719,7 +6719,7 @@
   "@starterLoadErrorTitle": {
     "description": "Screen 03: the read error title (loadFailed)."
   },
-  "starterLoadErrorBody": "Your library is unaffected. Try again in a moment.",
+  "starterLoadErrorBody": "Nothing was lost. Try again in a moment.",
   "@starterLoadErrorBody": {
     "description": "Screen 03: the read error body (loadFailed)."
   },

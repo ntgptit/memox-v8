@@ -315,6 +315,9 @@ void main() {
     loaded.complete();
     await tester.pumpAndSettle();
     expect(find.text(_en.starterLoadErrorTitle), findsOneWidget);
+    // The same local-first wording as the deck, tags and Trash screens
+    // (audit LIB-10).
+    expect(find.text(_en.libraryLoadErrorBody), findsOneWidget);
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.textContaining('load failed'), findsNothing);
     expect(find.text(_en.commonRetry), findsOneWidget);

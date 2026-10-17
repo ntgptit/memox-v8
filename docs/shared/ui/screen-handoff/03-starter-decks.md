@@ -70,5 +70,5 @@ Changing it later resets learning progress." · "Review algorithm · required" �
 nothing was copied" · "Add a second copy?" · "“{title}” is already in your library. A
 second copy is a separate deck with its own progress." · "Add" · "No starter
 decks in this build" · "This version ships without practice content. Create a deck or
-import cards instead." · "Create a deck" · "Couldn't load starter decks" · "Your library
-is unaffected. Try again in a moment."
+import cards instead." · "Create a deck" · "Couldn't load starter decks" · "Nothing was
+lost. Try again in a moment."

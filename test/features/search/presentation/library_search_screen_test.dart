@@ -354,6 +354,9 @@ void main() {
     await _search(tester, 'kor');
 
     expect(find.byType(MxErrorState), findsOneWidget);
+    // The same local-first wording as the deck, tags and Trash screens
+    // (audit LIB-10).
+    expect(find.text(_en.libraryLoadErrorBody), findsOneWidget);
     expect(find.byType(SearchDeckHitRowWidget), findsNothing);
   });
 
