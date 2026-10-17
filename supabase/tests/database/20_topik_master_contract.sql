@@ -1,7 +1,7 @@
 -- supabase/tests/database/20_topik_master_contract.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(48);
+select plan(50);
 -- ADR-025 (owner 2026-10-17), decision package 2026-10-17 §11 PR-02: the read gate
 -- (admins only for now, #5), the catalog's compatibility and integrity keys and the
 -- content envelope (#4; DR-05, DR-06). 18_topik_master_data.sql runs with the gate open.
@@ -125,6 +125,16 @@ select public.topik_admin_draft_save('topik2-97-listening',
     to_jsonb('topik2-97-listening/1/' || repeat('a', 64) || '.mp3/x')), '{}'::jsonb, false);
 select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
   'a path with a fourth segment is refused');
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}',
+    to_jsonb('topik2-97-listening/1/' || repeat('a', 64) || '.mp3/')), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'a trailing slash is refused');
+select public.topik_admin_draft_save('topik2-97-listening',
+  jsonb_set(public.t_listening('topik2-97-listening'), '{assets,audio}',
+    to_jsonb('topik2-97-listening/1/' || repeat('a', 64) || '.mp3//x')), '{}'::jsonb, false);
+select is(public.t_detail($$select public.topik_admin_publish('topik2-97-listening', 1, 'x')$$), 'media',
+  'an empty fourth segment is refused');
 
 -- ============================================================================
 -- The publish dry run (DR-10)

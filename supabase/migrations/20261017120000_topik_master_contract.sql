@@ -145,7 +145,7 @@ create function private.topik_media_path_ok(p_test_id text, p_next integer, p_pa
 language sql stable set search_path = '' as $$
   select split_part(p_path, '/', 1) = p_test_id
     and split_part(p_path, '/', 3) ~ '^[0-9a-f]{64}\.(mp3|jpg|jpeg|png|webp)$'
-    and split_part(p_path, '/', 4) = ''
+    and array_length(string_to_array(p_path, '/'), 1) = 3
     and (split_part(p_path, '/', 2) = p_next::text
          or exists (select 1 from public.topik_test_version tv
                     where tv.test_id = p_test_id and tv.content_version::text = split_part(p_path, '/', 2)))
