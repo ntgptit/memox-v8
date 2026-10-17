@@ -32,7 +32,8 @@ An `Mx*` widget:
   colour, a `TextStyle`, a padding or a ForUI style object;
 - reads every value from the theme: `context.colors` (`FColors`),
   `context.status`, `context.texts`, `context.dimens`, `context.radii`,
-  `context.hairline`, or a resolved ForUI style (`FTheme.of(context)`);
+  `context.hairline`, `context.focusOutlineReach`, or a resolved ForUI style
+  (`FTheme.of(context)`);
 - restyles ForUI only through style deltas (`FButtonStyleDelta.delta`,
   `DecorationDelta.shapeDelta`, `EdgeInsetsGeometryDelta.value`, …) or
   `FVariants`, so every state ForUI resolves keeps working;

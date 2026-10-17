@@ -64,7 +64,7 @@ THEME_FILES = frozenset({
     "theme_context.dart", "mastery_ramp.dart",
 })  # fmt: skip
 PALETTE_FILES = frozenset({THEME_DIR / "app_palette.dart", THEME_DIR / "mx_status_colors.dart"})
-THEME_CONTEXT_GETTERS = ("colors", "texts", "status", "dimens", "radii", "hairline")
+THEME_CONTEXT_GETTERS = ("colors", "texts", "status", "dimens", "radii", "hairline", "focusOutlineReach")
 
 # A colour written as a value: a hex literal or a Material swatch.
 COLOR_VALUE = re.compile(r"\bColor\(\s*0x[0-9A-Fa-f]+|\bColors\.\w+|\bColor\.fromRGBO\(\s*\d")

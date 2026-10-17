@@ -27,7 +27,7 @@ host (lib/app/app_theme_host.dart, MaterialApp.router)   infrastructure only
 | Type | `lib/core/theme/app_typography.dart` | `AppTypography.build(colors)` → `FTypography` (Be Vietnam Pro, Noto Sans KR fallback); `MxTextRoles`, the twelve roles. |
 | Dimens | `lib/core/theme/app_dimens.dart` | `AppDimens`, spacing, margins and layout sizes; an `FThemeData` extension. Radii and border width are ForUI's (`context.radii`, `context.hairline`). |
 | Theme | `lib/core/theme/app_theme.dart` | `buildLightTheme()`, `buildDarkTheme()`, `themeFor(brightness)`; `materialHostTheme(theme)` for the SDK host, derived from `FColors` and the ForUI type scale. |
-| Access | `lib/core/theme/theme_context.dart` | `context.colors`, `texts`, `status`, `dimens`, `radii`, `hairline`; a missing theme throws a `StateError` that names the builders. |
+| Access | `lib/core/theme/theme_context.dart` | `context.colors`, `texts`, `status`, `dimens`, `radii`, `hairline`, `focusOutlineReach` (how far ForUI's focus outline reaches past a control, the room a clipping container leaves); a missing theme throws a `StateError` that names the builders. |
 
 The palette is the only Dart that writes a colour value (`tools/design/check.py`).
 `DESIGN.md`'s frontmatter and `.impeccable/design.json` are rendered from the two

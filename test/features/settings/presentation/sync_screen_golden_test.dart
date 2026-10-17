@@ -136,7 +136,8 @@ void main() {
         },
       );
       commands.hold!.complete(true);
-      await tester.pump();
+      // The sync ends; ForUI's button finishes its press after its delay.
+      await tester.pumpAndSettle();
     });
   }
 }

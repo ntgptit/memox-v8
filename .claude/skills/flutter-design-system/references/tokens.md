@@ -56,7 +56,8 @@ brightness.
   stacked Vietnamese diacritics (Ẳ, Ổ, Ỗ) are clipped; a screen that clips is
   reported, not patched.
 - **Dimensions:** `context.dimens.space16`, `sizeControl`, `context.radii.md`,
-  `context.hairline`. A full radius is `StadiumBorder()`. Motion is Flutter's
+  `context.hairline`; the room a clipping container leaves for ForUI's focus
+  outline is `context.focusOutlineReach`. A full radius is `StadiumBorder()`. Motion is Flutter's
   own: `Durations.short4`, `Easing.standard`.
 - **A value one widget needs and the theme lacks:** a private constant in that
   widget with a doc comment. One several widgets need goes into `AppDimens`.

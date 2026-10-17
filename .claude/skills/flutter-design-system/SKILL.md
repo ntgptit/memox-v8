@@ -33,7 +33,9 @@ ForUI draws the UI. `FThemeData` carries the palette (`FColors`, with the
 `MxStatusColors` extension), the type scale (`FTypography`, read through the
 twelve `MxTextRoles`), ForUI's style (radii, border width, shadow) and
 `AppDimens`. Widgets read it through `context.colors`, `context.texts`,
-`context.status`, `context.dimens`, `context.radii` and `context.hairline`. A
+`context.status`, `context.dimens`, `context.radii`, `context.hairline` and
+`context.focusOutlineReach` (the room a clipping container leaves around a
+focusable control). A
 widget never branches on `brightness` to choose a colour or a size: the light and
 the dark palettes already differ where the modes differ.
 

@@ -315,7 +315,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** take every value from the ForUI theme through `context.colors`, `context.status`, `context.texts`, `context.dimens`, `context.radii` and `context.hairline`.
+- **Do** take every value from the ForUI theme through `context.colors`, `context.status`, `context.texts`, `context.dimens`, `context.radii`, `context.hairline` and, for the room a focus outline needs, `context.focusOutlineReach`.
 - **Do** change the look in `lib/core/theme/` only, then rewrite this frontmatter with `MEMOX_WRITE_DESIGN_DOCS=1` on `test/tools/design_doc_test.dart`.
 - **Do** use `primary` for exactly one primary action per decision.
 - **Do** keep the contrast test green; a failing pair is a palette change.
