@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show MaterialLocalizations;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -14,7 +15,9 @@ Future<T?> showMxBottomSheet<T>(
   required WidgetBuilder builder,
 }) {
   final navigator = Navigator.of(context);
-  final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
+  // Material's strings, as showModalBottomSheet read them: ForUI's Vietnamese
+  // barrier strings are defective ("Scrim", a literal "$modalRouteContentName").
+  final material = MaterialLocalizations.of(context);
   return navigator.push(
     _MxSheetRoute<T>(
       style: context.theme.modalSheetStyle,
@@ -23,10 +26,8 @@ Future<T?> showMxBottomSheet<T>(
       // MxBottomSheet caps itself at 85% and scrolls its body.
       mainAxisMaxRatio: null,
       useSafeArea: true,
-      barrierLabel: localizations.barrierLabel,
-      barrierOnTapHint: localizations.barrierOnTapHint(
-        localizations.sheetSemanticsLabel,
-      ),
+      barrierLabel: material.scrimLabel,
+      barrierOnTapHint: material.scrimOnTapHint(material.bottomSheetLabel),
       capturedFTheme: FTheme.capture(from: context, to: navigator.context),
       capturedThemes: InheritedTheme.capture(
         from: context,
@@ -164,13 +165,12 @@ class MxBottomSheet extends StatelessWidget {
 
   /// The drag affordance: a screen reader can dismiss by it (§9 row 65).
   Widget _grabber(BuildContext context) {
-    final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
     return Center(
       child: Semantics(
         key: const ValueKey('mx-sheet-grabber'),
         container: true,
         button: true,
-        label: localizations.barrierLabel,
+        label: MaterialLocalizations.of(context).modalBarrierDismissLabel,
         onTap: () => Navigator.of(context).maybePop(),
         child: SizedBox.square(
           dimension: context.dimens.sizeControl,

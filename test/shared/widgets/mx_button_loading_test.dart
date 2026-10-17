@@ -18,16 +18,9 @@ double contrast(Color a, Color b) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-// The painter is private to the spinner, so the ring colour is read untyped.
-Color _ringColor(WidgetTester tester) {
-  final paint = tester.widget<CustomPaint>(
-    find.descendant(
-      of: find.byType(MxSpinner),
-      matching: find.byType(CustomPaint),
-    ),
-  );
-  return (paint.painter! as dynamic).color as Color;
-}
+// The glyph's ink is the icon theme ForUI's progress draws with.
+Color _ringColor(WidgetTester tester) =>
+    spinnerIconTheme(tester, find.byType(MxSpinner)).color!;
 
 void main() {
   // Work in progress is not a control that cannot be used: a caller that

@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 /// The top-level destinations in a rail on the leading edge, for windows of
-/// `breakpointMedium` and wider (FE-C5): the page background, a hairline
-/// border on its inner edge, and the same ForUI item as [MxBottomNav]
+/// `breakpointMedium` and wider (FE-C5): ForUI's sidebar frame (the page
+/// background, a hairline border on its inner edge) and the same ForUI item
+/// as [MxBottomNav]
 /// ([MxNavItem]), so the two read as one control. It takes the insets on its
 /// own side and scrolls when the window is short.
 class MxNavRail extends StatelessWidget {
@@ -30,14 +32,16 @@ class MxNavRail extends StatelessWidget {
     final dimens = context.dimens;
     // SafeArea's sides are physical: the rail takes only the one it sits on.
     final isLtr = Directionality.of(context) == TextDirection.ltr;
-    final edge = BorderSide(
-      color: context.colors.border,
-      width: context.hairline,
-    );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colors.background,
-        border: BorderDirectional(end: edge),
+    final inset = MediaQuery.paddingOf(context);
+    // ForUI's sidebar is the frame: the page background and its end edge in
+    // the hairline. Its width holds the rail plus the inset of its own side.
+    return FSidebar.raw(
+      style: FSidebarStyleDelta.delta(
+        constraints: BoxConstraints.tightFor(
+          width: dimens.sizeRail + (isLtr ? inset.left : inset.right),
+        ),
+        // The rail's own padding scrolls with it (below).
+        contentPadding: const EdgeInsetsGeometryDelta.value(EdgeInsets.zero),
       ),
       child: SafeArea(
         left: isLtr,

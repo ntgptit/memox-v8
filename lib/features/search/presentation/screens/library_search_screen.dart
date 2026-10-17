@@ -36,23 +36,22 @@ class LibrarySearchScreen extends ConsumerStatefulWidget {
 
 class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
   late final _query = TextEditingController(text: widget.initialQuery);
-  final _focus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // The person came here to type (step 1), or with a term to search.
+    // A term given on arrival is searched; the field itself takes focus
+    // (step 1: the person came here to type).
+    if (widget.initialQuery.isEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _focus.requestFocus();
-      if (widget.initialQuery.isNotEmpty) _search(widget.initialQuery);
+      _search(widget.initialQuery);
     });
   }
 
   @override
   void dispose() {
     _query.dispose();
-    _focus.dispose();
     super.dispose();
   }
 
@@ -75,7 +74,7 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
           // (DEV-393): TalkBack announces the search on arrival.
           isRouteName: true,
           controller: _query,
-          focusNode: _focus,
+          isAutofocused: true,
           hintText: l10n.searchFieldHint,
           clearLabel: l10n.searchClear,
           onChanged: _search,

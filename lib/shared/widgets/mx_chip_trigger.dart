@@ -3,9 +3,11 @@ import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_chip_style.dart';
 
-/// A ghost chip that opens a menu (sort, filters): ForUI's ghost chip
+/// A chip that acts on press and never reads as selected. By default the
+/// ghost chip that opens a menu (sort, filters): ForUI's ghost chip
 /// (mxChipStyle), no fill and no edge, which sets it apart from
-/// MxFilterChip; it never reads as selected. The menu is the caller's.
+/// MxFilterChip; the menu is the caller's. With [isGhost] false it is the
+/// outline chip at rest (the card editor's removable tag).
 class MxChipTrigger extends StatelessWidget {
   const MxChipTrigger({
     super.key,
@@ -13,6 +15,7 @@ class MxChipTrigger extends StatelessWidget {
     required this.onPressed,
     this.icon = AppIcons.chevronDown,
     this.semanticLabel,
+    this.isGhost = true,
   });
 
   final String label;
@@ -27,10 +30,13 @@ class MxChipTrigger extends StatelessWidget {
   /// that one node, as MxButton.semanticLabel does.
   final String? semanticLabel;
 
+  /// False draws the outline chip at rest instead of the ghost chip.
+  final bool isGhost;
+
   @override
   Widget build(BuildContext context) => FButton(
     onPress: onPressed,
-    style: mxChipStyle(context, isGhost: true),
+    style: mxChipStyle(context, isGhost: isGhost),
     semanticsLabel: semanticLabel,
     mainAxisSize: MainAxisSize.min,
     // A label wider than the column ends in an ellipsis, as MxTagChip's does

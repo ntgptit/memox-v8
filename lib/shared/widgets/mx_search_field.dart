@@ -9,7 +9,6 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/shared/widgets/mx_user_edits.dart';
-import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// The library search input, on ForUI's [FTextField]: a leading glyph, a
 /// single-line query on the muted ground in a pill, and a clear button that
@@ -24,11 +23,12 @@ class MxSearchField extends StatefulWidget {
     this.onChanged,
     this.focusNode,
     this.isRouteName = false,
+    this.isAutofocused = false,
   }) : onTap = null;
 
-  /// A read-only field that opens the search elsewhere (screen 01's root
-  /// search). It takes no focus, never shows a clear button, and reads as a
-  /// button named by [hintText].
+  /// A button that looks like the resting field and opens the search
+  /// elsewhere (screen 01's root search). It holds no text, never shows a
+  /// clear button, and reads as a button named by [hintText].
   const MxSearchField.trigger({
     super.key,
     required this.hintText,
@@ -37,7 +37,8 @@ class MxSearchField extends StatefulWidget {
        clearLabel = null,
        onChanged = null,
        focusNode = null,
-       isRouteName = false;
+       isRouteName = false,
+       isAutofocused = false;
 
   final TextEditingController? controller;
   final String hintText;
@@ -56,6 +57,10 @@ class MxSearchField extends StatefulWidget {
   /// The field names its route (screen 04), as an app bar title does: the
   /// field's own node, which reads the hint, carries the name (DEV-393).
   final bool isRouteName;
+
+  /// Takes focus, and so opens the keyboard, when the field first appears:
+  /// the person came to this screen to type.
+  final bool isAutofocused;
 
   @override
   State<MxSearchField> createState() => _MxSearchFieldState();
@@ -98,6 +103,8 @@ class _MxSearchFieldState extends State<MxSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final onTap = widget.onTap;
+    if (onTap != null) return _trigger(context, onTap);
     final colors = context.colors;
     final pill = context.radii.pill;
     final edits = MxUserEdits(widget.onChanged);
@@ -145,9 +152,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
       ),
       hint: widget.hintText,
       focusNode: widget.focusNode,
-      readOnly: widget.onTap != null,
-      // A trigger's one tab stop is its target, not the field under it.
-      canRequestFocus: widget.onTap == null,
+      autofocus: widget.isAutofocused,
       inputFormatters: [edits.formatter],
       textInputAction: TextInputAction.search,
       prefixBuilder: (context, _, variants) => Padding(
@@ -163,10 +168,8 @@ class _MxSearchFieldState extends State<MxSearchField> {
               : colors.mutedForeground,
         ),
       ),
-      // The clear button owns its inset; a trigger never holds a query, so a
-      // clear button always belongs to the default constructor, which
-      // requires its label.
-      clearable: (value) => widget.onTap == null && value.text.isNotEmpty,
+      // The clear button owns its inset.
+      clearable: (value) => value.text.isNotEmpty,
       clearIconBuilder: (context, _, _) => Padding(
         padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
         child: MxIconButton(
@@ -176,19 +179,79 @@ class _MxSearchFieldState extends State<MxSearchField> {
         ),
       ),
     );
-    final onTap = widget.onTap;
-    if (onTap == null) return field;
-    return Semantics(
-      button: true,
-      label: widget.hintText,
-      excludeSemantics: true,
-      onTap: onTap,
-      child: FTappable.static(
-        onPress: onTap,
+    return field;
+  }
+
+  /// The trigger: an [FButton] that paints the resting field, so the button
+  /// semantics, the focus outline and the keyboard are ForUI's.
+  Widget _trigger(BuildContext context, VoidCallback onTap) {
+    final colors = context.colors;
+    final dimens = context.dimens;
+    final pill = context.radii.pill;
+    final hint = FTheme.of(context).textFieldStyles.lg.hintTextStyle
+        .resolve(const {});
+    // Every state paints the same: the pill on the muted ground, the hint and
+    // the glyph at rest, and the press does not shrink it.
+    return FButton(
+      onPress: onTap,
+      size: FButtonSizeVariant.lg,
+      mainAxisAlignment: MainAxisAlignment.start,
+      style: FButtonStyleDelta.delta(
+        decoration:
+            FVariants<
+              FTappableVariantConstraint,
+              FTappableVariant,
+              Decoration,
+              DecorationDelta
+            >.all(
+              ShapeDecoration(
+                color: colors.muted,
+                shape: RoundedRectangleBorder(borderRadius: pill),
+              ),
+            ),
+        contentStyle: FButtonContentStyleDelta.delta(
+          textStyle:
+              FVariants<
+                FTappableVariantConstraint,
+                FTappableVariant,
+                TextStyle,
+                TextStyleDelta
+              >.all(hint),
+          iconStyle:
+              FVariants<
+                FTappableVariantConstraint,
+                FTappableVariant,
+                IconThemeData,
+                IconThemeDataDelta
+              >.all(
+                IconThemeData(
+                  color: colors.mutedForeground,
+                  size: dimens.sizeIcon,
+                ),
+              ),
+          constraints: BoxConstraints(minHeight: dimens.sizeControl),
+          padding: EdgeInsetsGeometryDelta.value(
+            EdgeInsetsDirectional.symmetric(horizontal: dimens.space16),
+          ),
+          spacing: dimens.space8,
+        ),
+        tappableStyle: const FTappableStyleDelta.delta(
+          motion: FTappableMotionDelta.delta(
+            bounceTween: FTappableMotion.noBounceTween,
+          ),
+        ),
         focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
           borderRadius: pill,
         ),
-        child: mxPaintedOnly(field),
+      ),
+      prefix: const Icon(AppIcons.search),
+      child: Flexible(
+        child: Text(
+          widget.hintText,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

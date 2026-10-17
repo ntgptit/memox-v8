@@ -18,18 +18,36 @@ Widget _width(Widget child) => SizedBox(width: 328, child: child);
 MxButton _action(String label) =>
     MxButton(label: label, size: MxButtonSize.small, onPressed: () {});
 
-BoxDecoration _ground(WidgetTester tester) =>
-    tester
-            .widget<DecoratedBox>(
-              find
-                  .descendant(
-                    of: find.byType(MxFloatingNotice),
-                    matching: find.byType(DecoratedBox),
-                  )
-                  .first,
-            )
-            .decoration
-        as BoxDecoration;
+Decoration _decoration(WidgetTester tester) => tester
+    .widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxFloatingNotice),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    )
+    .decoration;
+
+/// The fill and the shadow of the card, whichever surface paints it.
+({Color? color, List<BoxShadow>? shadows}) _ground(WidgetTester tester) =>
+    switch (_decoration(tester)) {
+      final BoxDecoration box => (color: box.color, shadows: box.boxShadow),
+      final ShapeDecoration shape => (
+        color: shape.color,
+        shadows: shape.shadows,
+      ),
+      _ => (color: null, shadows: null),
+    };
+
+/// The corner radius of the card, whichever surface paints it.
+BorderRadiusGeometry? _radius(WidgetTester tester) =>
+    switch (_decoration(tester)) {
+      final BoxDecoration box => box.borderRadius,
+      final ShapeDecoration shape =>
+        (shape.shape as RoundedSuperellipseBorder).borderRadius,
+      _ => null,
+    };
 
 void main() {
   final colors = appLightColors;
@@ -42,16 +60,28 @@ void main() {
     final ground = _ground(tester);
     expect(ground.color, mx.warning.tintOver(colors.background));
     expect(
-      ground.boxShadow,
+      ground.shadows,
       forUiTheme(tester, find.byType(MxFloatingNotice)).style.shadow,
     );
-    expect(ground.boxShadow, isNotEmpty);
+    expect(ground.shadows, isNotEmpty);
     // A glyph takes the text colour, never the amber fill (SW-REV-001).
     expect(
       (glyph.size, glyph.color),
       (const AppDimens().sizeIconInline, mx.warning),
     );
   });
+
+  testWidgets(
+    'the card keeps its md radius (10), 16 side inset and 48 height',
+    (tester) async {
+      await pumpMx(tester, _width(const MxFloatingNotice(message: 'Waiting')));
+      final card = tester.getRect(find.byType(MxFloatingNotice));
+
+      expect(_radius(tester), BorderRadius.circular(10));
+      expect(card.height, const AppDimens().sizeControl);
+      expect(tester.getTopLeft(find.byIcon(AppIcons.alert)).dx - card.left, 16);
+    },
+  );
 
   testWidgets('dark: the dark warning tint, its glyph and the dark text', (
     tester,
@@ -76,7 +106,7 @@ void main() {
     );
     expect(
       forUiTheme(tester, find.byType(MxFloatingNotice)).style.shadow,
-      ground.boxShadow,
+      ground.shadows,
     );
   });
 

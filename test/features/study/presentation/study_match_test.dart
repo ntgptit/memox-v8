@@ -172,6 +172,8 @@ void main() {
     expect(_tile(tester, 'term 1').tone, MxChoiceTone.right);
     expect(_tile(tester, 'apple').tone, MxChoiceTone.right);
     expect(await turnKindsOf(env.db, 'ST-01'), isNotEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a second meaning moves the selection (R3)', (tester, env) async {
@@ -186,6 +188,8 @@ void main() {
     expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a second term moves the selection (M1, R3)', (
@@ -203,6 +207,8 @@ void main() {
     expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'term 2').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
   });
 
   libraryTest('a meaning, then the wrong term: both flash wrong, the turn is '

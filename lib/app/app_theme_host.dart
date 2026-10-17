@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeMode;
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:material_ui/material_ui.dart' as forui_material;
@@ -39,13 +40,18 @@ class AppThemeHost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = themeFor(brightness);
-    return FTheme(
-      data: theme,
-      child: forui_material.Theme(
-        data: theme.toApproximateMaterialTheme(),
-        child: IconTheme.merge(
-          data: IconThemeData(color: theme.colors.mutedForeground),
-          child: MxToastHost(child: child),
+    // The status bar's icons, as FScaffold sets them from the same style; the
+    // app hosts its pages in Material's Scaffold, which sets none.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: theme.scaffoldStyle.systemOverlayStyle,
+      child: FTheme(
+        data: theme,
+        child: forui_material.Theme(
+          data: theme.toApproximateMaterialTheme(),
+          child: IconTheme.merge(
+            data: IconThemeData(color: theme.colors.mutedForeground),
+            child: MxToastHost(child: child),
+          ),
         ),
       ),
     );

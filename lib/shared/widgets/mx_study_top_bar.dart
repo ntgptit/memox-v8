@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart' show Durations, Easing;
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
@@ -65,10 +65,6 @@ class MxStudyTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accent = colors.primary;
-    final trackHeight = context.dimens.sizeTrack;
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : Durations.short4;
     return ColoredBox(
       color: colors.background,
       child: SafeArea(
@@ -93,55 +89,34 @@ class MxStudyTopBar extends StatelessWidget {
                     constraints: BoxConstraints(
                       maxWidth: constraints.maxWidth * _badgeShare,
                     ),
-                    child: DecoratedBox(
-                      decoration: ShapeDecoration(
-                        color: accent.tintOver(MxTintBase.of(context)),
-                        shape: const StadiumBorder(),
+                    child: MxToneBadge(
+                      fill: accent.tintOver(MxTintBase.of(context)),
+                      ink: accent,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimens.space8,
+                        vertical: context.dimens.space4,
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.dimens.space8,
-                          vertical: context.dimens.space4,
-                        ),
-                        // The session route is pushed full screen under this
-                        // bar: its mode names the route (DEV-393).
-                        child: MxRouteName(
-                          child: Text(
-                            modeLabel.toUpperCase(),
-                            // Read as written, not as capitals a speech
-                            // engine may spell out.
-                            semanticsLabel: modeLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.texts.meta.copyWith(color: accent),
-                          ),
+                      // The chip hugs its text; the 22 floor of a count pill
+                      // would grow it.
+                      minHeight: 0,
+                      // The session route is pushed full screen under this
+                      // bar: its mode names the route (DEV-393).
+                      child: MxRouteName(
+                        child: Text(
+                          modeLabel.toUpperCase(),
+                          // Read as written, not as capitals a speech
+                          // engine may spell out.
+                          semanticsLabel: modeLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(trackHeight / 2),
-                      child: SizedBox(
-                        height: trackHeight,
-                        child: ColoredBox(
-                          color: MasteryRamp.track(colors),
-                          child: Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: TweenAnimationBuilder<double>(
-                              tween: Tween(end: current / total),
-                              duration: duration,
-                              curve: Easing.standard,
-                              builder: (context, fraction, _) =>
-                                  FractionallySizedBox(
-                                    widthFactor: fraction,
-                                    heightFactor: 1,
-                                    child: ColoredBox(color: accent),
-                                  ),
-                            ),
-                          ),
-                        ),
-                      ),
+                    child: MxLinearProgress(
+                      value: current / total,
+                      tone: MxProgressTone.primary,
                     ),
                   ),
                   _counter(context, constraints.maxWidth),

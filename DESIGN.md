@@ -303,7 +303,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 ### Feedback and Status
 - **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
 - **MxBadge**, **MxStatusBadge**, **MxTagChip**: ForUI's badge in a tone (`MxToneBadge`).
-- **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (a custom ring; ForUI's progress stops under reduced motion).
+- **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
 
 ### Study-specific
 - **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine**, the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.

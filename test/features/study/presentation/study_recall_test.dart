@@ -12,10 +12,12 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
+import '../../../support/forui_expect.dart' show textColor;
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -257,25 +259,28 @@ void main() {
     final id = await _recall(env);
     await pumpLibraryScreen(tester, env, _screen(id));
     final bar = find.byType(MxStudyTopBar);
-    final fill = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.descendant(
-          of: bar,
-          matching: find.byType(FractionallySizedBox),
-        ),
-        matching: find.byType(ColoredBox),
-      ),
-    );
+    // ForUI paints the track, then the fill, as decorated boxes.
+    final fill =
+        tester
+                .widgetList<DecoratedBox>(
+                  find.descendant(
+                    of: find.descendant(
+                      of: bar,
+                      matching: find.byType(MxLinearProgress),
+                    ),
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .last
+                .decoration
+            as ShapeDecoration;
     final chip = find.descendant(
       of: bar,
       matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
     );
 
     expect(fill.color, appLightColors.primary);
-    expect(
-      tester.widget<Text>(chip).style?.color,
-      tester.element(chip).colors.primary,
-    );
+    expect(textColor(tester, chip), tester.element(chip).colors.primary);
   });
 
   libraryTest('the self-check labels show whole at normal size (Impeccable '

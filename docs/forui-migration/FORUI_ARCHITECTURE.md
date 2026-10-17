@@ -71,7 +71,7 @@ is imported through a `show` list and checked by `tools/ui_lint` UIL03:
 | `RefreshIndicator` | users list, monitoring server list | Pull to refresh, none in ForUI |
 | `ReorderableListView` | deck reorder list | Drag to reorder, none in ForUI |
 | `SelectableText`, `SelectionArea` | monitoring code card | Text selection |
-| `MaterialLocalizations`, `TimeOfDay` | reminder and settings sections | Localised time formatting |
+| `MaterialLocalizations`, `TimeOfDay` | reminder and settings sections; `mx_dialog.dart`, `mx_bottom_sheet.dart` | Localised time formatting; barrier strings (ForUI's Vietnamese ones are broken) |
 | `Durations`, `Easing` | motion in shared and study widgets | The motion scale |
 | `ThemeExtension`, `InputBorder`, `OutlineInputBorder` (`material_ui`) | theme, text fields | Types ForUI's own API takes |
 
@@ -82,9 +82,23 @@ reverse, and nothing in `lib/` reads `Theme.of(context)` for a colour.
 
 | Adapter | Route | Barrier | Held behaviour |
 |---|---|---|---|
-| `showMxDialog` / `MxDialog` | `FDialogRoute` subclass with `MxHeldRoute` | `FColors.barrier` | A held popup ignores barrier taps and Back |
-| `showMxBottomSheet` / `MxBottomSheet` | `FModalSheetRoute` subclass with `MxHeldRoute` | `FColors.barrier` | Also absorbs the drag |
-| `showMxSnackbar` | ForUI's `FToast` in the root overlay (not ForUI's toaster, whose tap-to-pause lands on the screen's root semantics node unlabelled) | none | Returns `MxSnackbarController`; one toast at a time; a live region; swipe down dismisses; stays while TalkBack is on and it has an action |
+| `showMxDialog` / `MxDialog` | `FDialogRoute` subclass with `MxHeldRoute`, on the root navigator (the scrim covers the bottom bar) | `FColors.barrier`; label and hint from `MaterialLocalizations` | A held popup ignores barrier taps and Back |
+| `showMxBottomSheet` / `MxBottomSheet` | `FModalSheetRoute` subclass with `MxHeldRoute`, on the nearest navigator (owner ruling M3C-52) | `FColors.barrier`; label, hint and grabber from `MaterialLocalizations` | Also absorbs the drag |
+| `showMxSnackbar` | ForUI's `FToast` in the root overlay (not ForUI's toaster, whose tap-to-pause lands on the screen's root semantics node unlabelled) | none | Returns `MxSnackbarController`; one toast at a time; a live region; swipe down dismisses; stays while TalkBack is on and it has an action; motion is ForUI's `FToastMotion` with ForUI's reduced-motion rule |
+
+ForUI's `FLocalizations` gives Vietnamese barrier strings that reach TalkBack
+as "Scrim" and a literal `$modalRouteContentName`, so the adapters read
+Material's localized strings, the source used before the migration.
+
+## Motion and accessibility settings
+
+ForUI widgets read `context.accessibility` (`FAccessibilityContext`):
+`motion` is `all`, `reduced` or `disabled`, and `accessibleNavigation` follows
+TalkBack. The adapters follow the same source where ForUI owns the motion
+(toast, progress, spinner). `MxSpinner` scopes `FAccessibilityScope` so a
+loading state keeps turning when animations are off. The status-bar style is
+ForUI's `scaffoldStyle.systemOverlayStyle`, applied by `AppThemeHost` in an
+`AnnotatedRegion`, because Material's `Scaffold` applies none.
 
 ## Targets and accessibility
 

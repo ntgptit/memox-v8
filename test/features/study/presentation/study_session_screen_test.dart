@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
@@ -290,6 +291,8 @@ void main() {
     expect(find.byType(StudyRecallWidget), findsOneWidget);
     expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
+    // The last tile tapped lifts its pressed state after ForUI's exit delay.
+    await tester.pump(_tappableExit(tester));
   });
 
   libraryTest('a held turn stays on screen when its answer ends the session; '
@@ -394,3 +397,9 @@ StudySessionScreen _screen(String id) => StudySessionScreen(
 StudySessionController _controllerOf(WidgetTester tester, String id) =>
     ProviderScope.containerOf(tester.element(find.byType(StudySessionScreen)))
         .read(studySessionControllerProvider(id).notifier);
+
+/// How long ForUI's tappable holds its pressed state after a release.
+Duration _tappableExit(WidgetTester tester) =>
+    FTheme.of(tester.element(find.byType(MxStudyTopBar)))
+        .tappableStyle
+        .pressedExitDuration;

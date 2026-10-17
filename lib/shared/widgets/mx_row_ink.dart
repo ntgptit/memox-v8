@@ -100,13 +100,15 @@ class _MxRowInkState extends State<MxRowInk> {
       onPress: isBlocked ? null : onTap,
       onLongPress: isBlocked ? null : widget.onLongPress,
       selected: widget.isSelected ?? false,
+      // ForUI's item press layer: the pressed ground at once, no bounce.
+      style: FTheme.of(context).itemStyles.primary.tappableStyle,
       focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
         borderRadius: radius,
       ),
       builder: (context, variants, child) => DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,
-          // ForUI's item press layer: the secondary ground under the row.
+          // The item's press ground: secondary under the row.
           color:
               variants.contains(FTappableVariant.pressed) ||
                   variants.contains(FTappableVariant.hovered)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Durations, Easing;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
@@ -86,10 +87,15 @@ class MxChoiceTile extends StatelessWidget {
       sortKey: sortKey,
       onTap: onTap,
       excludeSemantics: true,
-      child: GestureDetector(
-        onTap: onTap,
+      // Tab reaches the tile, Enter presses it and the theme's outline marks
+      // it (DEV-391). Its own semantics node stays hidden under the one
+      // above, which also carries the reading order.
+      child: FTappable.static(
+        onPress: onTap,
         behavior: HitTestBehavior.opaque,
-        excludeFromSemantics: true,
+        focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
+          borderRadius: context.radii.md,
+        ),
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
           opacity: isFaded ? context.dimens.opacityMuted : 1,

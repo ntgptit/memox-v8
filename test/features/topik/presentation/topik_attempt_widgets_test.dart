@@ -106,6 +106,8 @@ void main() {
     );
     expect(tiles.elementAt(1).semanticsLabel, 'Option 2, 보기 2');
     await tester.tap(find.text('② 보기 2'));
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
     expect(picks, [2]);
   });
 

@@ -51,6 +51,32 @@ void main() {
     expect(paintedDecoration(tester, _button).shadows, shadow);
   });
 
+  testWidgets('the shadow stays under the hover and the press', (tester) async {
+    await pumpFab(tester);
+    final shadow = forUiTheme(tester, _button).style.shadow;
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(find.byType(MxFab)));
+    await tester.pumpAndSettle();
+    expect(paintedDecoration(tester, _button).shadows, shadow);
+
+    final press = await tester.startGesture(
+      tester.getCenter(find.byType(MxFab)),
+    );
+    await tester.pump();
+    expect(paintedDecoration(tester, _button).shadows, shadow);
+    expect(
+      paintedDecoration(tester, _button).color,
+      isNot(colors.primary),
+      reason: 'the pressed layer is still ForUI\'s',
+    );
+    await press.up();
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('the hover state layer is the primary hover colour', (
     tester,
   ) async {

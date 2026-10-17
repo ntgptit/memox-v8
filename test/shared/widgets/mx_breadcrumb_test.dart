@@ -38,8 +38,11 @@ void main() {
     (tester) async {
       await pumpMx(tester, MxBreadcrumb(segments: _path(2)));
 
-      final ancestor = tester.widget<Text>(find.text('Level 1')).style!;
-      final current = tester.widget<Text>(find.text('Level 2')).style!;
+      // ForUI hands the label its role through the ambient text style.
+      final ancestor = DefaultTextStyle.of(tester.element(find.text('Level 1')))
+          .style;
+      final current = DefaultTextStyle.of(tester.element(find.text('Level 2')))
+          .style;
       final texts = tester.element(find.text('Level 1')).texts;
       expect(ancestor.fontWeight, texts.label.fontWeight);
       expect(ancestor.color, colors.mutedForeground);
@@ -55,7 +58,7 @@ void main() {
     final chevrons = find.byIcon(AppIcons.chevronRight);
 
     expect(chevrons, findsNWidgets(3));
-    expect(tester.widget<Icon>(chevrons.first).color, colors.border);
+    expect(iconColor(tester, chevrons.first), colors.border);
     expect(tester.getSize(chevrons.first).width, 16);
   });
 
@@ -118,8 +121,41 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('an ancestor without a tap is still a button to TalkBack '
+      '(DEV-306)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxBreadcrumb(
+        segments: [
+          const MxBreadcrumbSegment(label: 'Vocabulary'),
+          const MxBreadcrumbSegment(label: 'Verbs'),
+        ],
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.text('Vocabulary')),
+      isSemantics(label: 'Vocabulary', isButton: true),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('the current level is announced as selected and is no button', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, MxBreadcrumb(segments: _path(2, onTap: (_) {})));
+
+    expect(
+      tester.getSemantics(find.text('Level 2')),
+      isSemantics(label: 'Level 2', isSelected: true, isButton: false),
+    );
+    handle.dispose();
+  });
+
   // M3F-05: an ancestor was a bare InkWell, so keyboard focus showed only the
-  // theme's focus layer. MxRowInk draws the shared 2px primary ring.
+  // theme's focus layer. ForUI's crumb draws the theme's focus outline.
   for (final brightness in Brightness.values) {
     testWidgets('M3F-05: a focused ancestor draws the theme focus ring '
         '(${brightness.name})', (tester) async {

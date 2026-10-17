@@ -108,6 +108,40 @@ void main() {
     );
   });
 
+  testWidgets("press: the ground shows within a frame, as ForUI's item "
+      'press layer does (not after the 100 ms tappable default)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxRowInk(onTap: () {}, child: const SizedBox(width: 200, height: 48)),
+    );
+    final theme = forUiTheme(tester, find.byType(MxRowInk));
+    Color? ground() {
+      final box = tester.widget<DecoratedBox>(
+        find
+            .descendant(
+              of: find.byType(MxRowInk),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      return (box.decoration as BoxDecoration).color;
+    }
+
+    expect(ground(), isNull);
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(MxRowInk)),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+
+    expect(ground(), theme.colors.secondary);
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(ground(), isNull);
+  });
+
   testWidgets('disabled: dimmed, no tap, a disabled button', (tester) async {
     final handle = tester.ensureSemantics();
     var taps = 0;

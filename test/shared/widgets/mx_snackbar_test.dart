@@ -164,6 +164,71 @@ void main() {
     expect(_toast, findsNothing);
   });
 
+  group("motion follows ForUI's toast motion and accessibility", () {
+    // Where the toast is drawn, against where it rests once settled.
+    double topOf(WidgetTester tester) => tester.getRect(_toast).top;
+
+    testWidgets('it slides in over the theme toast entrance', (tester) async {
+      await pumpMx(tester, trigger(actionLabel: null));
+      await tester.tap(find.text('Show'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 16));
+      final entering = topOf(tester);
+
+      final entrance = _style(tester).motion.entranceDuration;
+      await tester.pump(entrance);
+      final rest = topOf(tester);
+      expect(entering, greaterThan(rest));
+      await tester.pumpAndSettle();
+      expect(topOf(tester), rest);
+    });
+
+    testWidgets('reduced motion: it fades in place, no slide', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(reduceMotion: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await pumpMx(tester, trigger(actionLabel: null));
+      await tester.tap(find.text('Show'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 16));
+      final entering = topOf(tester);
+
+      final fade = tester.widget<FadeTransition>(
+        find.ancestor(of: _toast, matching: find.byType(FadeTransition)).first,
+      );
+      expect(fade.opacity.value, lessThan(1));
+      await tester.pumpAndSettle();
+      expect(topOf(tester), entering);
+    });
+
+    testWidgets('animations off: it shows and leaves at once', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      MxSnackbarController? toast;
+      await pumpMx(
+        tester,
+        trigger(actionLabel: null, onShown: (shown) => toast = shown),
+      );
+      await tester.tap(find.text('Show'));
+      await tester.pump();
+      await tester.pump();
+
+      final fade = tester.widget<FadeTransition>(
+        find.ancestor(of: _toast, matching: find.byType(FadeTransition)).first,
+      );
+      expect(fade.opacity.value, 1);
+      toast!.close();
+      await tester.pump();
+      expect(_toast, findsNothing);
+      await tester.pumpAndSettle();
+    });
+  });
+
   group('TalkBack and replacement', () {
     Future<void> pumpTwo(WidgetTester tester) => pumpMx(
       tester,

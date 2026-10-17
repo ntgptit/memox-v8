@@ -96,6 +96,66 @@ void main() {
     expect(ended, changed);
   });
 
+  group('the tooltip over the thumb while dragging', () {
+    Future<(Finder, double Function())> dragThumb(
+      WidgetTester tester, {
+      required bool isFormatted,
+    }) async {
+      final value = ValueNotifier<double>(0);
+      addTearDown(value.dispose);
+      await pumpMx(
+        tester,
+        ValueListenableBuilder(
+          valueListenable: value,
+          builder: (_, current, _) => SizedBox(
+            width: 300,
+            child: MxSlider(
+              value: current,
+              max: 10000,
+              onChanged: (next) => value.value = next,
+              semanticLabel: 'Audio position',
+              semanticFormatter: isFormatted
+                  ? (value) => '${(value / 1000).round()}s'
+                  : null,
+            ),
+          ),
+        ),
+      );
+      final rect = tester.getRect(slider());
+      final drag = await tester.startGesture(
+        Offset(rect.left + 8, rect.center.dy),
+      );
+      await drag.moveBy(const Offset(40, 0));
+      await drag.moveBy(const Offset(60, 0));
+      await tester.pump(const Duration(milliseconds: 300));
+      addTearDown(() => drag.up());
+      return (slider(), () => value.value);
+    }
+
+    testWidgets("speaks the caller's unit, as the semantics do", (
+      tester,
+    ) async {
+      final (_, value) = await dragThumb(tester, isFormatted: true);
+
+      expect(value(), greaterThan(0));
+      final seconds = '${(value() / 1000).round()}s';
+      expect(find.text(seconds), findsOneWidget);
+      expect(find.textContaining('%'), findsNothing);
+    });
+
+    testWidgets("keeps ForUI's percentage when there is no formatter", (
+      tester,
+    ) async {
+      final (_, value) = await dragThumb(tester, isFormatted: false);
+
+      expect(value(), greaterThan(0));
+      expect(
+        find.text('${(value() / 10000 * 100).toStringAsFixed(0)}%'),
+        findsOneWidget,
+      );
+    });
+  });
+
   testWidgets('a tap on the track reports a value along it', (tester) async {
     double? changed;
     await pumpMx(tester, seek(value: 0, onChanged: (v) => changed = v));

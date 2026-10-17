@@ -64,11 +64,13 @@ class MxFloatingNotice extends StatelessWidget {
       container: true,
       // ForUI's one shadow lifts it over the content, the same in light and
       // dark.
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: context.status.warning.tintOver(MxTintBase.of(context)),
-          borderRadius: context.radii.md,
-          boxShadow: FTheme.of(context).style.shadow,
+      child: FCard(
+        style: FCardStyleDelta.delta(
+          decoration: DecorationDelta.shapeDelta(
+            color: context.status.warning.tintOver(MxTintBase.of(context)),
+            shape: RoundedSuperellipseBorder(borderRadius: context.radii.md),
+            shadows: context.theme.style.shadow,
+          ),
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),

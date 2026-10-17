@@ -57,6 +57,10 @@ class MxSlider extends StatelessWidget {
       semanticValueFormatterCallback: formatter == null
           ? FSlider.defaultSemanticValueFormatter
           : (next) => formatter(next * max),
+      // The tooltip over the thumb says the same, not ForUI's percentage.
+      tooltipBuilder: formatter == null
+          ? FSlider.defaultTooltipBuilder
+          : (_, fraction) => Text(formatter(fraction * max)),
     );
     // One node for TalkBack: the label merged with the slider's value and
     // actions, as MxToggle does.

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Durations, Easing;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -159,10 +158,11 @@ class _ToastView extends StatefulWidget {
 
 class _ToastViewState extends State<_ToastView>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _motion = AnimationController(
-    vsync: this,
-    duration: Durations.medium2,
-  );
+  late final AnimationController _motion = AnimationController(vsync: this);
+
+  /// ForUI's toast rule: TalkBack on or reduced motion fades in place,
+  /// disabled motion shows and removes at once (FToastMotion).
+  FAccessibilityContext get _accessibility => context.accessibility;
 
   @override
   void initState() {
@@ -173,8 +173,12 @@ class _ToastViewState extends State<_ToastView>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final motion = FTheme.of(context).toasterStyle.toastStyles.primary.motion;
+    _motion
+      ..duration = motion.entranceDuration
+      ..reverseDuration = motion.dismissDuration;
     if (_motion.isAnimating || _motion.value > 0) return;
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (_accessibility.motion == FAccessibilityMotion.disabled) {
       _motion.value = 1;
       return;
     }
@@ -183,7 +187,7 @@ class _ToastViewState extends State<_ToastView>
 
   void _onShownChanged() {
     if (widget.controller._isShown.value) return;
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (_accessibility.motion == FAccessibilityMotion.disabled) {
       widget.controller._remove();
       return;
     }
@@ -201,11 +205,15 @@ class _ToastViewState extends State<_ToastView>
   @override
   Widget build(BuildContext context) {
     final style = FTheme.of(context).toasterStyle;
+    final motion = style.toastStyles.primary.motion;
     final curve = CurvedAnimation(
       parent: _motion,
-      curve: Easing.standardDecelerate,
-      reverseCurve: Easing.standardAccelerate,
+      curve: motion.entranceCurve,
+      reverseCurve: motion.dismissCurve,
     );
+    final isFadeOnly =
+        _accessibility.accessibleNavigation ||
+        _accessibility.motion != FAccessibilityMotion.all;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
@@ -217,7 +225,9 @@ class _ToastViewState extends State<_ToastView>
               opacity: curve,
               child: SlideTransition(
                 position: Tween(
-                  begin: const Offset(0, _slideFraction),
+                  begin: isFadeOnly
+                      ? Offset.zero
+                      : const Offset(0, _slideFraction),
                   end: Offset.zero,
                 ).animate(curve),
                 child: Dismissible(

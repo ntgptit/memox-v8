@@ -182,21 +182,14 @@ void main() {
     expect(textColorOf(tester, 'MATCH'), ink);
   });
 
-  testWidgets('MxSpinner: the arc is the accent unless a colour is given', (
+  testWidgets('MxSpinner: the glyph is the accent unless a colour is given', (
     tester,
   ) async {
-    RenderObject ring() => tester.renderObject(
-      find
-          .descendant(
-            of: find.byType(MxSpinner),
-            matching: find.byType(CustomPaint),
-          )
-          .first,
-    );
+    Color? glyph() => spinnerIconTheme(tester, find.byType(MxSpinner)).color;
     await pumpDark(tester, const MxSpinner());
-    expect(ring(), paints..arc(color: ink));
+    expect(glyph(), ink);
     await pumpDark(tester, MxSpinner(color: scheme.primaryForeground));
-    expect(ring(), paints..arc(color: scheme.primaryForeground));
+    expect(glyph(), scheme.primaryForeground);
   });
 }
 

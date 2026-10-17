@@ -14,6 +14,7 @@ phase by phase, with the decisions taken along the way. Branch
 | 6 Shared widgets | The `Mx*` widgets rebuilt on ForUI components (inventory in `SHARED_WIDGET_INVENTORY.md`) | Public contracts kept, except the four breaking changes listed in the inventory |
 | 7 Call sites and tests | A codemod renamed theme reads in `lib/` and `test/`; the test harness moved onto the ForUI host; every test file migrated (three parallel test agents, then the defects they found fixed in `lib/`) | Tests assert ForUI's resolved styles, not Material values |
 | 8 Gates and legacy | `tools/ui_lint` replaces `tools/m3_lint`; `tools/design/check.py` rewritten; design docs rendered from the theme; guard rules, hooks, skills, CLAUDE.md updated; legacy removed (`LEGACY_REMOVAL.md`) | See `FORUI_ARCHITECTURE.md` for the rule tables |
+| Research gate | Owner directive: no component from remembered ForUI behaviour. `FORUI_API_CATALOG.md` from the installed forui 0.27.6 source and its docs at tag `forui/0.27.6`; every shared widget and significant feature component re-audited (`FORUI_RESEARCH_LEDGER.md`, 90 records); corrections test first | 22 corrections found: 19 implemented, 3 declined with evidence; 2 test gaps closed (`FORUI_RESEARCH_COMPLIANCE_REPORT.md`) |
 | 9–10 Verify and report | Full gate, goldens regenerated with a review page, Android builds attempted | `MIGRATION_VERIFICATION.md` |
 
 ## Decisions taken without the owner (routine, reversible)
@@ -23,7 +24,7 @@ phase by phase, with the decisions taken along the way. Branch
 | Keep `MaterialApp.router` | go_router 18 builds Material pages when it finds a `MaterialApp`; replacing it brings no visual gain and risks the routing behaviour the task said to keep |
 | Palette: ForUI neutral base, MemoX indigo `primary`, three contrast adjustments | Keeps the brand accent; every pair holds 4.5:1 / 3:1 with no exception list (`token_contrast_test.dart`) |
 | Twelve text roles kept as `MxTextRoles` on ForUI's type scale | Keeps the screens' hierarchy and the guard rule on roles; sizes are ForUI's steps |
-| `MxSpinner` stays custom | ForUI's `FCircularProgress` stops animating under reduced motion, so a loading state would look frozen |
+| `MxSpinner` builds on `FCircularProgress` | ForUI's progress stands still only under the platform's `disableAnimations` (Android's Remove animations; reduce-motion keeps it turning), so a loading state would look frozen there; `MxSpinner` wraps it in an `FAccessibilityScope` that never reports that setting |
 | `MxSnackbar` renders `FToast` from its own host instead of ForUI's toaster | ForUI's toaster puts an unlabelled tap on the screen's root semantics node (a TalkBack defect); the host keeps "above every route" |
 | Held popups gate ForUI's barrier at hit-test time | ForUI's barrier pops with `Navigator.pop` and fixes its dismiss at build; the hold must apply from the frame it starts |
 | `MxIconButton` glyph at `sizeIcon` | Bars put the glyph on the screen margin; ForUI's default ghost icon is smaller |
@@ -53,6 +54,36 @@ commit messages.
 | `MxBottomSheet` / `MxDialog` | Held popup dismissible by a scrim tap in the hold's first frame; drag on locked rows | Immediate hold with a barrier gate; opaque, always-mounted drag absorber |
 | `AppThemeHost` | Glyphs without a colour drew in the accent | Ambient `IconTheme` `mutedForeground` |
 | Study hidden bar, skeleton | Bar equal to a recessed ground | `MxTintBase.stepOf` |
+
+## Corrections from the ForUI research
+
+Each was written test first: the contract tests ran on the old code (the
+behaviour that changes failed there, the behaviour that must survive passed),
+then the change, then the component's and every caller's tests.
+
+| Widget | Before | After (ForUI API) |
+|---|---|---|
+| `MxRowInk` | ForUI's default press timing on rows | The item press timing, `itemStyles.primary.tappableStyle` |
+| `AppThemeHost` | No status-bar style (Material `Scaffold` applies none) | `AnnotatedRegion` with `scaffoldStyle.systemOverlayStyle` |
+| `MxSnackbar` | Material `Durations` and `MediaQuery` for motion | `FToastMotion` and `context.accessibility` |
+| `MxDialog` | Nearest navigator; own animation object; ForUI barrier strings | Root navigator; the route's animation; `MaterialLocalizations` |
+| `MxBottomSheet` | ForUI barrier strings ("Scrim", a literal `$…` in Vietnamese) | `MaterialLocalizations`; nearest navigator kept (M3C-52) |
+| `MxSpinner` | Controller and painter | `FCircularProgress` in an `FAccessibilityScope` |
+| `MxFab` | Hand-rebuilt variants | `FVariantsDelta` shadow on `FButton.icon(variant: primary, size: lg)` |
+| `MxSheetActions` | Hand-drawn rule | `FDivider` |
+| `MxFloatingNotice` | Hand-painted surface | `FCard` |
+| `MxSlider` | Percentage tooltip | Tooltip in the caller's unit |
+| `MxSearchField` | Painted field as a trigger; post-frame focus on the search screen | `FButton` trigger; `FTextField(autofocus:)` |
+| `MxChoiceTile` | `GestureDetector`, no keyboard | `FTappable.static` with ForUI's focus outline |
+| `MxBreadcrumb` | Own segment row | `FBreadcrumb` |
+| `MxLinearProgress`, `MxStudyTopBar`, `RecallCountdownBarWidget` | Three hand-built tracks and a hand-built chip | `FDeterminateProgress` (value shown at once on mount), `MxToneBadge` |
+| `MxNavRail` | Hand-drawn frame | `FSidebar.raw` |
+| `CardRemovableTagChipWidget` | Hand-painted chip, `GestureDetector`, own semantics | `MxChipTrigger(isGhost: false)` (`FButton`) |
+
+`FTappable` holds its pressed state for `pressedExitDuration` after a release
+(`Future.delayed`, `tappable.dart:900-908`), so a widget test that taps a
+tappable and ends at once leaves a timer pending. The tests that do now pump
+past it; no assertion changed.
 
 ## Not done in this branch
 

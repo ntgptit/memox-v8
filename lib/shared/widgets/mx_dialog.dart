@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show MaterialLocalizations;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -9,7 +10,8 @@ import 'package:memox/shared/widgets/mx_tint_base.dart';
 enum MxDialogWidth { small, medium, large }
 
 /// Opens [builder] (usually an MxDialog) on ForUI's dialog route, over its
-/// barrier, from the nearest navigator. The dialog fades and scales in with
+/// barrier, on the root navigator, so the scrim also covers the bottom nav
+/// and the rail. The dialog fades and scales in with
 /// ForUI's motion, at once under reduced motion. A scrim tap dismisses it
 /// with null, unless the dialog is held (MxDialog.isHeld). The result is
 /// what the dialog pops with.
@@ -17,22 +19,21 @@ Future<T?> showMxDialog<T>(
   BuildContext context, {
   required WidgetBuilder builder,
 }) {
-  final navigator = Navigator.of(context);
-  final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
+  final navigator = Navigator.of(context, rootNavigator: true);
+  // Material's strings, as showDialog read them: ForUI's Vietnamese barrier
+  // strings are defective ("Scrim", a literal "$modalRouteContentName").
+  final material = MaterialLocalizations.of(context);
   return navigator.push(
     _MxDialogRoute<T>(
       style: context.theme.dialogRouteStyle,
-      barrierLabel: localizations.barrierLabel,
-      barrierOnTapHint: localizations.barrierOnTapHint(
-        localizations.dialogSemanticsLabel,
-      ),
+      barrierLabel: material.modalBarrierDismissLabel,
+      barrierOnTapHint: material.scrimOnTapHint(material.dialogLabel),
       capturedFTheme: FTheme.capture(from: context, to: navigator.context),
       capturedThemes: InheritedTheme.capture(
         from: context,
         to: navigator.context,
       ),
-      builder: (context, animation) =>
-          _DialogAnimation(animation: animation, child: builder(context)),
+      builder: (context, _) => builder(context),
     ),
   );
 }
@@ -120,7 +121,8 @@ class MxDialog extends StatelessWidget {
     return MxHoldRoute(
       isHeld: isHeld,
       child: FDialog(
-        animation: _DialogAnimation.maybeOf(context),
+        // The route's own animation: ForUI animates the dialog itself.
+        animation: ModalRoute.of(context)?.animation,
         semanticsLabel: title,
         constraints: BoxConstraints(minWidth: _minWidth, maxWidth: maxWidth),
         builder: (context, style) => MxTintBase(
@@ -169,20 +171,4 @@ class _MxDialogRoute<T> extends FDialogRoute<T> with MxHeldRoute<T> {
     super.capturedFTheme,
     super.capturedThemes,
   });
-}
-
-/// The route's animation, for the [FDialog] the caller's builder returns:
-/// ForUI animates the dialog itself, and showMxDialog's builder takes only a
-/// context.
-class _DialogAnimation extends InheritedWidget {
-  const _DialogAnimation({required this.animation, required super.child});
-
-  final Animation<double> animation;
-
-  static Animation<double>? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_DialogAnimation>()?.animation;
-
-  @override
-  bool updateShouldNotify(_DialogAnimation oldWidget) =>
-      animation != oldWidget.animation;
 }

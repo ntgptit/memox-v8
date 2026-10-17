@@ -185,6 +185,19 @@ void main() {
     handle.dispose();
   });
 
+  // The tab shell resets a branch to its root on a re-tap of the current
+  // tab; ForUI's bar reports that tap, with no equality guard.
+  testWidgets('a re-tap of the selected destination still reports it', (
+    tester,
+  ) async {
+    final picked = <int>[];
+    await pumpMx(tester, _nav(selected: 1, onSelected: picked.add));
+    await tester.tap(find.text('Study'));
+    await tester.pumpAndSettle();
+
+    expect(picked, [1]);
+  });
+
   testWidgets('each destination is named with its position', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(tester, _nav(selected: 1));

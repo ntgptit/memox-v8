@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -263,9 +262,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final grabber = find.byKey(const ValueKey('mx-sheet-grabber'));
-    final label =
-        (FLocalizations.of(tester.element(grabber)) ?? FDefaultLocalizations())
-            .barrierLabel;
+    final label = MaterialLocalizations.of(tester.element(grabber))
+        .modalBarrierDismissLabel;
     final node = tester.getSemantics(grabber);
     expect(node.label, label);
     tester.semantics.tap(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -162,22 +164,30 @@ void main() {
         ),
       ),
     );
-    final edge =
-        (tester
-                        .widget<DecoratedBox>(
-                          find
-                              .descendant(
-                                of: find.byType(MxSheetActions),
-                                matching: find.byType(DecoratedBox),
-                              )
-                              .first,
-                        )
-                        .decoration
-                    as BoxDecoration)
-                .border!
-            as Border;
+    final divider = find.descendant(
+      of: find.byType(MxSheetActions),
+      matching: find.byType(FDivider),
+    );
+    final context = tester.element(find.byType(MxSheetActions));
+    final origin = tester.getTopLeft(find.byType(MxSheetActions));
 
-    expect(edge.top, BorderSide(color: rule));
+    expect(
+      tester
+          .widget<ColoredBox>(
+            find.descendant(of: divider, matching: find.byType(ColoredBox)),
+          )
+          .color,
+      rule,
+    );
+    expect(
+      tester.getRect(divider),
+      Rect.fromLTWH(
+        origin.dx,
+        origin.dy,
+        tester.getSize(find.byType(MxSheetActions)).width,
+        context.hairline,
+      ),
+    );
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),

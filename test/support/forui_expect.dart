@@ -115,3 +115,19 @@ void expectForUiFieldLabel(WidgetTester tester, Finder label) {
     reason: 'the field label reads in ForUI\'s form-field label style',
   );
 }
+
+/// The icon theme ForUI's circular progress draws the spinner glyph with
+/// (its size and ink), first under [spinner] (an MxSpinner).
+IconThemeData spinnerIconTheme(WidgetTester tester, Finder spinner) => tester
+    .widget<IconTheme>(
+      find
+          .descendant(
+            of: find.descendant(
+              of: spinner,
+              matching: find.byType(FCircularProgress),
+            ),
+            matching: find.byType(IconTheme),
+          )
+          .first,
+    )
+    .data;

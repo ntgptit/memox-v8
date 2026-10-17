@@ -21,29 +21,21 @@ class MxFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FTheme.of(context);
-    final base = theme.buttonStyles.primary.resolve({
-      context.platformVariant,
-      FButtonSizeVariant.lg,
-    });
     final size = context.dimens.sizeFab;
     return MxTooltip(
       label: semanticLabel,
       child: FButton.icon(
+        variant: FButtonVariant.primary,
+        size: FButtonSizeVariant.lg,
         onPress: onPressed,
         semanticsLabel: semanticLabel,
-        style: base.copyWith(
-          decoration:
-              FVariants<
-                FTappableVariantConstraint,
-                FTappableVariant,
-                Decoration,
-                DecorationDelta
-              >.raw(_raised(base.decoration.base, theme), {
-                for (final MapEntry(:key, :value)
-                    in base.decoration.variants.entries)
-                  key: _raised(value, theme),
-              }),
+        style: FButtonStyleDelta.delta(
+          // ForUI's shadow on every state, which lifts it over the scroll.
+          decoration: FVariantsDelta.delta([
+            FVariantOperation.all(
+              DecorationDelta.shapeDelta(shadows: context.theme.style.shadow),
+            ),
+          ]),
           iconContentStyle: FButtonIconContentStyleDelta.delta(
             constraints: BoxConstraints.tightFor(width: size, height: size),
           ),
@@ -52,13 +44,4 @@ class MxFab extends StatelessWidget {
       ),
     );
   }
-
-  /// [decoration] with ForUI's shadow, which lifts it over the scroll.
-  static Decoration _raised(Decoration decoration, FThemeData theme) =>
-      switch (decoration) {
-        ShapeDecoration() => DecorationDelta.shapeDelta(
-          shadows: theme.style.shadow,
-        )(decoration),
-        _ => decoration,
-      };
 }

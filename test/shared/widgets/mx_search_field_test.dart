@@ -188,6 +188,8 @@ void main() {
   });
 
   group('trigger', () {
+    final button = find.byType(FButton);
+
     Future<void> pumpTrigger(WidgetTester tester, VoidCallback onTap) => pumpMx(
       tester,
       SizedBox(
@@ -201,12 +203,46 @@ void main() {
     ) async {
       await pump(tester);
       final rest = tester.getSize(_field).height;
+      final hintStyle = _style(tester).hintTextStyle.resolve({});
       await pumpTrigger(tester, () {});
 
-      expect(tester.getSize(_field).height, rest);
-      expect(_decoration(tester).fillColor, colors.muted);
-      expect(_edge(tester), BorderSide.none);
+      expect(tester.getSize(button).height, rest);
+      expect(tester.getSize(button).width, 328);
+      expect(paintedDecoration(tester, button).color, colors.muted);
+      expect(paintedSide(tester, button), BorderSide.none);
+      final pill = paintedDecoration(tester, button).shape;
+      expect(
+        pill.getOuterPath(const Rect.fromLTWH(0, 0, 328, 48)).getBounds(),
+        const Rect.fromLTWH(0, 0, 328, 48),
+      );
       expect(find.text('Search decks'), findsOneWidget);
+      final hint = DefaultTextStyle.of(
+        tester.element(find.text('Search decks')),
+      ).style;
+      expect(
+        (hint.color, hint.fontSize, hint.fontWeight, hint.fontFamily),
+        (
+          hintStyle.color,
+          hintStyle.fontSize,
+          hintStyle.fontWeight,
+          hintStyle.fontFamily,
+        ),
+      );
+      expect(
+        iconColor(tester, find.byIcon(AppIcons.search)),
+        colors.mutedForeground,
+      );
+    });
+
+    testWidgets('the glyph and the hint sit at the 16 inset, 8 apart', (
+      tester,
+    ) async {
+      await pumpTrigger(tester, () {});
+
+      final left = tester.getTopLeft(button).dx;
+      final glyph = tester.getRect(find.byIcon(AppIcons.search));
+      expect(glyph.left - left, 16);
+      expect(tester.getTopLeft(find.text('Search decks')).dx - glyph.right, 8);
     });
 
     testWidgets('a tap calls onTap once and takes no focus', (tester) async {
@@ -218,13 +254,7 @@ void main() {
 
       expect(taps, 1);
       expect(tester.testTextInput.hasAnyClients, isFalse);
-      expect(
-        tester
-            .widget<EditableText>(find.byType(EditableText))
-            .focusNode
-            .hasFocus,
-        isFalse,
-      );
+      expect(find.byType(EditableText), findsNothing);
     });
 
     testWidgets('hovering leaves the search surface as it is', (tester) async {
@@ -233,16 +263,44 @@ void main() {
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
 
-      await mouse.moveTo(tester.getCenter(_field));
+      await mouse.moveTo(tester.getCenter(button));
       await tester.pumpAndSettle();
 
-      expect(_decoration(tester).fillColor, colors.muted);
-      expect(_edge(tester), BorderSide.none);
+      expect(paintedDecoration(tester, button).color, colors.muted);
+      expect(paintedSide(tester, button), BorderSide.none);
+      final hint = DefaultTextStyle.of(
+        tester.element(find.text('Search decks')),
+      ).style;
+      expect(
+        hint.color,
+        forUiTheme(
+          tester,
+          button,
+        ).textFieldStyles.lg.hintTextStyle.resolve({}).color,
+      );
+      expect(
+        iconColor(tester, find.byIcon(AppIcons.search)),
+        colors.mutedForeground,
+      );
+    });
+
+    testWidgets('pressing it does not shrink it', (tester) async {
+      await pumpTrigger(tester, () {});
+      final rest = tester.getRect(button);
+
+      final press = await tester.startGesture(tester.getCenter(button));
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(tester.getRect(button), rest);
+      expect(paintedDecoration(tester, button).color, colors.muted);
+      await press.up();
+      await tester.pumpAndSettle();
     });
 
     testWidgets('the keyboard reaches it at one tab stop, with the outline '
-        'round the pill', (tester) async {
-      await pumpTrigger(tester, () {});
+        'round the pill, and Enter presses it', (tester) async {
+      var taps = 0;
+      await pumpTrigger(tester, () => taps++);
       final scope = FocusScope.of(tester.element(find.byType(MxSearchField)));
 
       expect(
@@ -261,6 +319,9 @@ void main() {
         focusRingRender(tester),
         paintsFocusRing(outline.color, width: outline.width),
       );
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(taps, 1);
     });
 
     testWidgets('reads as a button named by the hint, with no clear button', (
@@ -273,8 +334,52 @@ void main() {
         tester.getSemantics(find.bySemanticsLabel('Search decks')),
         isSemantics(label: 'Search decks', isButton: true, hasTapAction: true),
       );
+      expect(find.bySemanticsLabel('Search decks'), findsOneWidget);
       expect(find.byType(MxIconButton), findsNothing);
       semantics.dispose();
+    });
+  });
+
+  group('isAutofocused', () {
+    testWidgets('is off by default: the field does not take focus', (
+      tester,
+    ) async {
+      await pump(tester);
+
+      expect(
+        tester
+            .widget<EditableText>(find.byType(EditableText))
+            .focusNode
+            .hasFocus,
+        isFalse,
+      );
+    });
+
+    testWidgets('takes focus on arrival and opens the keyboard', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 328,
+          child: MxSearchField(
+            controller: controller,
+            hintText: 'Search decks and cards',
+            clearLabel: 'Clear search',
+            isAutofocused: true,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<EditableText>(find.byType(EditableText))
+            .focusNode
+            .hasFocus,
+        isTrue,
+      );
+      expect(tester.testTextInput.hasAnyClients, isTrue);
     });
   });
 

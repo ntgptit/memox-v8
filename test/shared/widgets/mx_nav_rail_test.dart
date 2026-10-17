@@ -90,6 +90,27 @@ void main() {
     }
   });
 
+  // The frame is ForUI's sidebar: its background and end edge come from the
+  // theme's sidebar style, not from a box drawn here.
+  testWidgets('the frame is ForUI\'s sidebar in the theme\'s style', (
+    tester,
+  ) async {
+    await pumpMx(tester, _rail());
+
+    final sidebar = find.descendant(
+      of: find.byType(MxNavRail),
+      matching: find.byType(FSidebar),
+    );
+    expect(sidebar, findsOneWidget);
+    final frame = tester.widget<DecoratedBox>(
+      find.descendant(of: sidebar, matching: find.byType(DecoratedBox)).first,
+    );
+    expect(
+      frame.decoration,
+      FTheme.of(tester.element(sidebar)).sidebarStyle.decoration,
+    );
+  });
+
   testWidgets('the selected item: glyph and label in primary; the rest in '
       'muted foreground', (tester) async {
     await pumpMx(tester, _rail(selected: 1));

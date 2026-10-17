@@ -311,6 +311,8 @@ void main() {
     );
 
     await tester.tap(find.byType(MxSearchField));
+    // ForUI's press layer settles on a short timer.
+    await tester.pumpAndSettle();
     expect(searches, 1);
   });
 
