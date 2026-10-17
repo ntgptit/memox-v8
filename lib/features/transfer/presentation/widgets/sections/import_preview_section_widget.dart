@@ -55,18 +55,20 @@ class ImportPreviewSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (problem != null && isStalePreviewProblem(problem)) ...[
+        if (problem != null && isShownImportProblem(problem)) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
             title: l10n.importProblem(problem).title,
             message: l10n.importProblem(problem).body,
+            // Only a stale preview is read again; any other refusal stands.
             actions: [
-              MxButton(
-                label: l10n.importPreviewAgain,
-                tone: MxButtonTone.text,
-                size: MxButtonSize.small,
-                onPressed: onPreviewAgain,
-              ),
+              if (isStalePreviewProblem(problem))
+                MxButton(
+                  label: l10n.importPreviewAgain,
+                  tone: MxButtonTone.text,
+                  size: MxButtonSize.small,
+                  onPressed: onPreviewAgain,
+                ),
             ],
           ),
           SizedBox(height: context.dimens.space12),

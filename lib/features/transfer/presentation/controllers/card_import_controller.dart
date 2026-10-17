@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
@@ -249,6 +250,14 @@ class CardImportController extends _$CardImportController {
     } on Failure {
       if (!ref.mounted) return;
       state = CardImportFailed(draft: draft, isTargetRejected: false);
+    } on Object catch (error, stackTrace) {
+      // A bug, not a Failure (ADR-016): report it, and never leave the
+      // wizard on importing, where Back and Close wait (step 5).
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+      if (!ref.mounted) return;
+      state = CardImportFailed(draft: draft, isTargetRejected: false);
     }
   }
 
@@ -267,10 +276,14 @@ class CardImportController extends _$CardImportController {
 
   /// Android Back and the app bar's Back (IT-NAV-012 step 4): one step back,
   /// keeping what the step held. False at step 1 and on a result, where the
-  /// screen closes. While writing, Back does nothing (step 5).
+  /// screen closes. While writing, or while a later step is being read,
+  /// Back does nothing (step 5): a result that lands after it would throw
+  /// the person forward again. At step 1 it still closes; the read then
+  /// lands on nothing.
   bool stepBack() {
     final draft = _draft;
     if (draft == null) return false;
+    if (draft.isBusy && draft.step != CardImportStep.source) return true;
     switch (draft.step) {
       case CardImportStep.source:
         return false;

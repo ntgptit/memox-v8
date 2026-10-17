@@ -95,10 +95,12 @@ class ImportMappingSectionWidget extends StatelessWidget {
           ),
           SizedBox(height: context.dimens.space12),
         ],
-        // The target cannot take the decks the file names (E7, E8): the
-        // same source and mapping would be refused again.
+        // Why the preview was refused: the target cannot take the decks the
+        // file names (E7, E8), no row holds anything (E2), the deck no
+        // longer takes cards (E4). The same source and mapping would be
+        // refused again, so a change clears it.
         if (draft.problem case final problem?
-            when isImportTargetProblem(problem)) ...[
+            when isShownImportProblem(problem)) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
             title: l10n.importProblem(problem).title,

@@ -402,4 +402,37 @@ void main() {
     expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
     expect(find.text('cooked rice'), findsOneWidget);
   });
+
+  libraryTest('a card trashed elsewhere while it is edited: Back to deck '
+      'returns to the deck, past its detail (audit 2026-10-17)', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(
+      env.db,
+      id: 'c0',
+      deckId: words.id,
+      front: 'bap',
+      back: 'rice',
+    );
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await _tap(tester, find.text('bap'));
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardEditAction));
+    expect(_barTitle(_en.cardEditTitle), findsOneWidget);
+
+    await env.cards.deleteCards(cardIds: {'c0'});
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardGoneTitle), findsOneWidget);
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardBackToDeck));
+
+    expect(find.text(_en.cardGoneTitle), findsNothing);
+    expect(_barTitle(_en.cardDetailTitle), findsNothing);
+    expect(_barTitle('Words'), findsOneWidget);
+  });
 }

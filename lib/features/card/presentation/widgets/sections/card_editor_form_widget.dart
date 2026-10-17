@@ -293,13 +293,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   }
 
   /// Leaves once the frame shows the form as leaving, so the guard lets go.
-  void _leave() {
+  /// A card found gone on save closes its detail too ([result] true, as
+  /// after Move to Trash).
+  void _leave({bool result = false}) {
     setState(() {
       _isLeaving = true;
       _isSaving = false;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(Navigator.of(context).maybePop());
+      if (mounted) unawaited(Navigator.of(context).maybePop(result));
     });
   }
 
@@ -350,7 +352,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                     ? l10n.cardDeckGoneTitle
                     : l10n.cardGoneTitle,
                 body: _isCreating ? l10n.cardDeckGoneBody : l10n.cardGoneBody,
-                onBack: _leave,
+                onBack: () => _leave(result: !_isCreating),
                 onOpenTrash: widget.onOpenTrash,
               )
             : Column(

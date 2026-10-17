@@ -91,12 +91,14 @@ class _EditLoader extends ConsumerWidget {
         deckContext: deckContext,
         onOpenTrash: onOpenTrash,
       ),
+      // The card is gone: Back to deck closes its detail too, which would
+      // only say the same (the editor pops true, as after Move to Trash).
       AsyncData(value: Rejected()) => MxAppShell(
         appBar: bar,
         body: CardGoneWidget(
           title: l10n.cardGoneTitle,
           body: l10n.cardGoneBody,
-          onBack: back,
+          onBack: () => unawaited(Navigator.of(context).maybePop(true)),
           onOpenTrash: onOpenTrash,
         ),
       ),
