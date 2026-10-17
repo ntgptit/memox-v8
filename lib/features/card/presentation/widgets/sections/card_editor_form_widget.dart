@@ -312,7 +312,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     if (discard && mounted) _leave();
   }
 
-  void _close() => unawaited(Navigator.of(context).maybePop());
+  /// Cancel, ✕ and Back are held while a save runs: the write lands either
+  /// way, so asking to discard it would say something untrue.
+  void _close() {
+    if (_isSaving) return;
+    unawaited(Navigator.of(context).maybePop());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +327,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     return PopScope(
       canPop: _isLeaving || _isGone || !_isDirty,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_confirmLeave());
+        if (didPop || _isSaving) return;
+        unawaited(_confirmLeave());
       },
       child: MxAppShell(
         appBar: _appBar(l10n),
@@ -409,6 +415,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller: _front,
       focusNode: _frontFocus,
       isRequired: true,
+      isReadOnly: _isSaving,
       variant: MxTextFieldVariant.term,
       errorText: errors[_Field.front],
       onChanged: (_) => _touch(_Field.front),
@@ -419,6 +426,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
+      isReadOnly: _isSaving,
       variant: MxTextFieldVariant.detail,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
@@ -428,6 +436,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       isOpen: _isDetailsOpen,
       hasHeader: !_isCreating,
       onOpen: () => setState(() => _isDetailsOpen = true),
+      isReadOnly: _isSaving,
       example: _input(_Field.example, _example, errors),
       hint: _input(_Field.hint, _hint, errors),
       pronunciation: _input(_Field.pronunciation, _pronunciation, errors),

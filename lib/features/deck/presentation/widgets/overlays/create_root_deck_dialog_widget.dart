@@ -104,7 +104,9 @@ class _CreateRootDeckDialogWidgetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Held while the deck is written, as every async confirm is (M3 B2).
     final dialog = MxDialog(
+      isHeld: _isSubmitting,
       title: l10n.deckCreateRootTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -142,15 +144,17 @@ class _CreateRootDeckDialogWidgetState
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => unawaited(_leave()),
+        onCancel: _isSubmitting ? null : () => unawaited(_leave()),
         confirmLabel: l10n.deckCreateConfirm,
         onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
       ),
     );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_leave());
+        if (didPop || _isSubmitting) return;
+        unawaited(_leave());
       },
       child: dialog,
     );

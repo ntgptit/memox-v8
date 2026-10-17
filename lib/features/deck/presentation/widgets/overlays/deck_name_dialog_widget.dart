@@ -122,7 +122,10 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Held while the name is written, as every async confirm is (M3 B2):
+    // the scrim, Back and Cancel wait, and the confirm spins.
     return MxDialog(
+      isHeld: _isSubmitting,
       title: widget.title,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -143,9 +146,10 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(),
         confirmLabel: widget.confirmLabel,
         onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
       ),
     );
   }
