@@ -36,7 +36,8 @@ class MxMasteryDonut extends StatelessWidget {
     // The arc is the ramp's fill; the label is text, so it takes the band's
     // text colour (SW-REV-001). Ruling S10: 0% falls in the lowest band.
     final status = context.status;
-    final accent = context.colors.primary;
+    // The reviewing band is a mark and a label: the brand's ink.
+    final accent = status.primaryInk;
     final fill =
         MasteryRamp.fill(status, accent, fraction) ?? status.warningFill;
     final foreground = MasteryRamp.foreground(status, accent, fraction);

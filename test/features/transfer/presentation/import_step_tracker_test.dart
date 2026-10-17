@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_step_tracker_widget.dart';
 
+import '../../../support/palette_status.dart';
 import '../../../support/library_harness.dart';
 
 // A done step's check sits on the mastery fill, so it inks in onSuccessFill,
 // not primaryForeground.
 void main() {
   for (final (brightness, mx) in [
-    (Brightness.light, MxStatusColors.light),
-    (Brightness.dark, MxStatusColors.dark),
+    (Brightness.light, lightStatus),
+    (Brightness.dark, darkStatus),
   ]) {
     libraryTest('a done step checks in onSuccessFill (${brightness.name})', (
       tester,
@@ -67,7 +67,7 @@ void main() {
   }
 
   test('onSuccessFill reads 3:1 on the mastery fill in both themes', () {
-    for (final mx in [MxStatusColors.light, MxStatusColors.dark]) {
+    for (final mx in [lightStatus, darkStatus]) {
       final ink = mx.onSuccessFill.computeLuminance();
       final fill = mx.successFill.computeLuminance();
       final (hi, lo) = ink > fill ? (ink, fill) : (fill, ink);

@@ -35,14 +35,14 @@ class MxStatusBadge extends StatelessWidget {
     final color = switch (status) {
       MxCardStatus.newCard => context.colors.mutedForeground,
       MxCardStatus.learning => context.status.warningFill,
-      MxCardStatus.reviewing => context.colors.primary,
+      MxCardStatus.reviewing => context.status.primaryInk,
       MxCardStatus.mastered => context.status.successFill,
     };
     // The label reads in the status ink (AA); dot and fill keep the colour.
     final ink = switch (status) {
       MxCardStatus.newCard => context.colors.mutedForeground,
       MxCardStatus.learning => context.status.warning,
-      MxCardStatus.reviewing => context.colors.primary,
+      MxCardStatus.reviewing => context.status.primaryInk,
       MxCardStatus.mastered => context.status.success,
     };
     if (isDot) {

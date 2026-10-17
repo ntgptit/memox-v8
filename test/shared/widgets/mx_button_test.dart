@@ -4,10 +4,10 @@ import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -115,16 +115,10 @@ void main() {
         MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
       );
 
-      expect(
-        paintedDecoration(tester, _button).color,
-        MxStatusColors.light.warningFill,
-      );
-      expect(
-        textColor(tester, find.text('Merge')),
-        MxStatusColors.light.onWarningFill,
-      );
+      expect(paintedDecoration(tester, _button).color, lightStatus.warningFill);
+      expect(textColor(tester, find.text('Merge')), lightStatus.onWarningFill);
       expect(paintedSide(tester, _button), BorderSide.none);
-      for (final status in [MxStatusColors.light, MxStatusColors.dark]) {
+      for (final status in [lightStatus, darkStatus]) {
         expect(
           _ratio(status.warningFill, status.onWarningFill),
           greaterThanOrEqualTo(4.5),

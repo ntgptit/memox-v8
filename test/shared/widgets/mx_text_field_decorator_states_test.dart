@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -114,7 +115,7 @@ final List<_Probe> _probes = [
     isEnabled: true,
     isFocused: true,
     isHovered: false,
-    edge: (c) => c.primary,
+    edge: inkOf,
     glyph: (c) => c.secondaryForeground,
   ),
   (

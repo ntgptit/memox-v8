@@ -38,7 +38,9 @@ List<_Pair> _pairs(FColors colors) {
   ]) {
     add('foreground on $where', colors.foreground, ground);
     add('mutedForeground on $where', colors.mutedForeground, ground);
-    add('primary on $where', colors.primary, ground);
+    // The brand as text, a glyph or an edge is its ink; primary itself is
+    // a fill under primaryForeground.
+    add('primaryInk on $where', status.primaryInk, ground);
     add('error on $where', colors.error, ground);
     add('success on $where', status.success, ground);
     add('warning on $where', status.warning, ground);
@@ -49,13 +51,13 @@ List<_Pair> _pairs(FColors colors) {
     ('card', colors.card),
   ]) {
     // A tint carries its own ink: a banner, a badge, an answered choice.
-    for (final (role, ink) in [
-      ('primary', colors.primary),
-      ('error', colors.error),
-      ('success', status.success),
-      ('warning', status.warning),
+    for (final (role, ink, hue) in [
+      ('primaryInk', status.primaryInk, colors.primary),
+      ('error', colors.error, colors.error),
+      ('success', status.success, status.success),
+      ('warning', status.warning, status.warning),
     ]) {
-      add('$role on its tint over $where', ink, ink.tintOver(ground));
+      add('$role on its tint over $where', ink, hue.tintOver(ground));
     }
   }
   add('primaryForeground on primary', colors.primaryForeground, colors.primary);

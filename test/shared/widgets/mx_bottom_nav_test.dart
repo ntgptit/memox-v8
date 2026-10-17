@@ -6,6 +6,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
@@ -96,7 +97,7 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination: glyph and label in primary, '
+  testWidgets('the selected destination: glyph and label in the brand ink, '
       'the others muted', (tester) async {
     await pumpMx(tester, _nav(selected: 1));
 
@@ -104,7 +105,7 @@ void main() {
     // weight, not in a second glyph.
     expect(AppIcons.studySelected, AppIcons.study);
     expect(find.byIcon(AppIcons.study), findsOneWidget);
-    expect(iconColor(tester, find.byIcon(AppIcons.study)), colors.primary);
+    expect(iconColor(tester, find.byIcon(AppIcons.study)), inkOf(colors));
     expect(
       IconTheme.of(tester.element(find.byIcon(AppIcons.study))).weight,
       700,
@@ -113,7 +114,7 @@ void main() {
       iconColor(tester, find.byIcon(AppIcons.library)),
       colors.mutedForeground,
     );
-    expect(textColor(tester, find.text('Study')), colors.primary);
+    expect(textColor(tester, find.text('Study')), inkOf(colors));
     expect(textColor(tester, find.text('Library')), colors.mutedForeground);
     expect(
       DefaultTextStyle.of(tester.element(find.text('Study'))).style.fontWeight,
@@ -121,7 +122,7 @@ void main() {
     );
   });
 
-  testWidgets('moving the selection moves the primary colour', (tester) async {
+  testWidgets('moving the selection moves the brand ink', (tester) async {
     final host = ValueNotifier(0);
     addTearDown(host.dispose);
     await pumpMx(
@@ -131,18 +132,18 @@ void main() {
         builder: (_, selected, _) => _nav(selected: selected),
       ),
     );
-    expect(textColor(tester, find.text('Library')), colors.primary);
+    expect(textColor(tester, find.text('Library')), inkOf(colors));
     expect(textColor(tester, find.text('Study')), colors.mutedForeground);
 
     host.value = 1;
     await tester.pumpAndSettle();
 
-    expect(iconColor(tester, find.byIcon(AppIcons.study)), colors.primary);
+    expect(iconColor(tester, find.byIcon(AppIcons.study)), inkOf(colors));
     expect(
       iconColor(tester, find.byIcon(AppIcons.library)),
       colors.mutedForeground,
     );
-    expect(textColor(tester, find.text('Study')), colors.primary);
+    expect(textColor(tester, find.text('Study')), inkOf(colors));
     expect(textColor(tester, find.text('Library')), colors.mutedForeground);
   });
 
@@ -253,7 +254,7 @@ void main() {
           tester,
           find.byType(MxBottomNav),
         ).style.focusedOutlineStyle;
-        expect(outline.color, focusColors.primary);
+        expect(outline.color, inkOf(focusColors));
         final ring = find.descendant(
           of: _cell(label),
           matching: find.byType(FFocusedOutline),

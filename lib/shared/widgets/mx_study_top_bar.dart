@@ -91,7 +91,7 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: MxToneBadge(
                       fill: accent.tintOver(MxTintBase.of(context)),
-                      ink: accent,
+                      ink: context.status.primaryInk,
                       padding: EdgeInsets.symmetric(
                         horizontal: context.dimens.space8,
                         vertical: context.dimens.space4,

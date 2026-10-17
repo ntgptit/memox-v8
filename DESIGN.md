@@ -173,16 +173,17 @@ MemoX should feel like a quiet, focused study space. The app is drawn with ForUI
 **Key Characteristics:**
 - One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve text roles on ForUI's type scale.
 - Neutral grounds: `background` for the page, `card` for cards, `muted` for recessed grounds, each edge a `border` hairline.
-- One accent: `primary` for the primary fill, the selected control and accent text; its two palette values keep it readable in both modes.
+- One accent: `primary`, the brand indigo in both modes, for the primary fill under white text; the brand as text, a glyph, an edge or a selected mark is `status.primaryInk`, which equals `primary` in light and is a lighter step of it on the dark navy page.
 - Phone first, `context.screenMargin` at the screen edge, `sizeControl` touch targets everywhere.
 - Every text and edge pair of the palette is contrast-tested in both modes, with no exception list.
 
 ## Colors
 
-An indigo accent on ForUI's neutral field, a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
+An indigo accent on a neutral field (ForUI's in light, one computed from the MemoX navy page in dark), a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
 
 ### Primary
-- **Accent** (`primary`): the primary button, the FAB, the selected tab, chip, radio and checkbox, progress, the focus outline, and accent text and glyphs. Light and dark each have their own value, so the accent reads on both pages without a per-mode rule in a widget.
+- **Accent** (`primary`): the brand indigo, the same in both modes: the primary button, the FAB, a selected choice tile, a solid badge, the current step: a fill that carries `primaryForeground`.
+- **Accent Ink** (`status.primaryInk`): the brand as text, a glyph, an edge or a mark: the selected tab, a ticked box, a selected radio, a switch that is on, a slider's or a bar's fill, the focus outline, accent text and glyphs. In light it is `primary`; on the dark navy page it is computed from `primary` and the foreground so it reads at 4.5:1 on every ground, and the theme gives ForUI's controls the same ink.
 - **On Accent** (`primaryForeground`): text and glyphs on an accent fill.
 - **Accent Tint** (`primary.tintOver(MxTintBase.of(context))`): the hero card and the accent's tinted grounds.
 

@@ -46,7 +46,10 @@ brightness.
 
 - **Colour:** an `FColors` role (`background`, `foreground`, `primary`,
   `primaryForeground`, `secondary`, `muted`, `mutedForeground`, `error`, `card`,
-  `border`, `barrier`, …) or a status colour. A tinted ground is
+  `border`, `barrier`, …) or a status colour. The brand as text, a glyph, an
+  edge or a mark is `context.status.primaryInk`; `primary` is only a fill
+  under `primaryForeground` (in dark it is too dark to read on the navy page).
+  A tinted ground is
   `colour.tintOver(MxTintBase.of(context))`; never `withValues(alpha:)` or
   `Color.lerp` for a ground.
 - **Text:** the role itself, `context.texts.itemTitle`, changing only the

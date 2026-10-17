@@ -110,7 +110,7 @@ class _StarterAlgorithmSheetWidgetState
                 Text(
                   l10n.starterSheetRequired,
                   style: context.texts.body.copyWith(
-                    color: context.colors.primary,
+                    color: context.status.primaryInk,
                   ),
                 ),
               ],

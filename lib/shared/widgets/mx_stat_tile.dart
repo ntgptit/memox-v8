@@ -39,7 +39,7 @@ class MxStatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final foreground = switch (emphasis) {
-      MxStatTileEmphasis.primary => context.colors.primary,
+      MxStatTileEmphasis.primary => context.status.primaryInk,
       MxStatTileEmphasis.plain => colors.foreground,
       MxStatTileEmphasis.muted => colors.mutedForeground,
     };

@@ -20,7 +20,7 @@ class MxDotOverline extends StatelessWidget {
           dimension: _dotSize,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: context.colors.primary,
+              color: context.status.primaryInk,
               shape: BoxShape.circle,
             ),
           ),

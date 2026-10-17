@@ -46,7 +46,7 @@ void main() {
           _badgeFill(tester),
           brightness == Brightness.light
               ? const Color(0xFFE4E2F7)
-              : const Color(0xFF282731),
+              : const Color(0xFF161346),
         );
       });
 

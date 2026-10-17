@@ -69,7 +69,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
                           l10n.progressRowReviewing(numbers.reviewingCardDays),
                         ),
                         style: context.texts.meta.copyWith(
-                          color: context.colors.primary,
+                          color: context.status.primaryInk,
                         ),
                       ),
                     ],

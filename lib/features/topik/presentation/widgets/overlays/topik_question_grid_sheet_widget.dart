@@ -156,7 +156,7 @@ class _GridCell extends StatelessWidget {
               borderRadius: radius,
               border: switch ((isCurrent, isAnswered)) {
                 (true, _) => Border.all(
-                  color: colors.primary,
+                  color: context.status.primaryInk,
                   width: dimens.strokeEmphasis,
                 ),
                 (false, false) => Border.all(
@@ -170,7 +170,9 @@ class _GridCell extends StatelessWidget {
               child: Text(
                 '$no',
                 style: context.texts.button.copyWith(
-                  color: isAnswered ? accent : colors.foreground,
+                  color: isAnswered
+                      ? context.status.primaryInk
+                      : colors.foreground,
                 ),
               ),
             ),

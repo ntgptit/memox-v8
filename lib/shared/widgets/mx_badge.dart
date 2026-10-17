@@ -57,6 +57,8 @@ class MxBadge extends StatelessWidget {
       (true, _) => colors.primaryForeground,
       (false, MxBadgeTone.warning) => status.warning,
       (false, MxBadgeTone.mastery) => status.success,
+      // The brand's tint carries the brand's ink, not its fill.
+      (false, MxBadgeTone.primary) => status.primaryInk,
       (false, _) => toneColor,
     };
     return MxToneBadge(

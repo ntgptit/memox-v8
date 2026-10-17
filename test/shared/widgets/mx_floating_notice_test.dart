@@ -4,10 +4,10 @@ import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -51,7 +51,7 @@ BorderRadiusGeometry? _radius(WidgetTester tester) =>
 
 void main() {
   final colors = appLightColors;
-  const mx = MxStatusColors.light;
+  final mx = lightStatus;
 
   testWidgets('the warning card, lifted by the overlay shadow', (tester) async {
     await pumpMx(tester, _width(const MxFloatingNotice(message: _message)));
@@ -92,7 +92,7 @@ void main() {
       brightness: Brightness.dark,
     );
     await tester.pumpAndSettle();
-    const night = MxStatusColors.dark;
+    final night = darkStatus;
     final ground = _ground(tester);
 
     expect(ground.color, night.warning.tintOver(appDarkColors.background));

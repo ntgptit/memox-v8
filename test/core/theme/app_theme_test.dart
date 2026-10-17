@@ -6,10 +6,12 @@ import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 
+import '../../support/palette_status.dart';
+
 void main() {
   for (final (name, theme, colors, status) in [
-    ('light', buildLightTheme(), appLightColors, MxStatusColors.light),
-    ('dark', buildDarkTheme(), appDarkColors, MxStatusColors.dark),
+    ('light', buildLightTheme(), appLightColors, lightStatus),
+    ('dark', buildDarkTheme(), appDarkColors, darkStatus),
   ]) {
     group(name, () {
       test('is the app palette on the ForUI touch theme', () {

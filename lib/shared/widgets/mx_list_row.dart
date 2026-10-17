@@ -138,7 +138,7 @@ class MxListRow extends StatelessWidget {
                         Text.rich(
                           _titleSpan(
                             context.texts.itemTitle.copyWith(
-                              color: context.colors.primary,
+                              color: context.status.primaryInk,
                             ),
                           ),
                           maxLines: titleMaxLines,

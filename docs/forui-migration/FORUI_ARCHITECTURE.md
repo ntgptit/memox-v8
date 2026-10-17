@@ -22,7 +22,7 @@ host (lib/app/app_theme_host.dart, MaterialApp.router)   infrastructure only
 
 | Piece | File | Notes |
 |---|---|---|
-| Palette | `lib/core/theme/app_palette.dart` | `appLightColors`, `appDarkColors` (`FColors`). ForUI neutral base; `primary` is MemoX indigo; `mutedForeground` and light `error`/`destructive` adjusted for contrast (reasons in the file). |
+| Palette | `lib/core/theme/app_palette.dart` | `appLightColors`, `appDarkColors` (`FColors`). Light: ForUI neutral base, `primary` MemoX indigo, `mutedForeground` and `error`/`destructive` adjusted for contrast. Dark: the navy page and the brand primary from before the migration, every other role computed from them (`darkColorsFrom`). The brand as text, glyph, edge or mark is `status.primaryInk`; `app_theme.dart` builds ForUI's control styles on it (focus outline, checkbox, radio, switch, slider, bottom navigation, text field). |
 | Status colours | `lib/core/theme/mx_status_colors.dart` | `MxStatusColors` (`success`, `warning`, `info` and their fills), an `FColors` extension. |
 | Type | `lib/core/theme/app_typography.dart` | `AppTypography.build(colors)` → `FTypography` (Be Vietnam Pro, Noto Sans KR fallback); `MxTextRoles`, the twelve roles. |
 | Dimens | `lib/core/theme/app_dimens.dart` | `AppDimens`, spacing, margins and layout sizes; an `FThemeData` extension. Radii and border width are ForUI's (`context.radii`, `context.hairline`). |

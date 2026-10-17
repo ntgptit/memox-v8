@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
@@ -35,11 +35,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxStatusColors.dark.warning,
+      darkStatus.warning,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxStatusColors.dark.warning,
+      darkStatus.warning,
     );
   });
 
@@ -58,7 +58,7 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxStatusColors.light.warning,
+      lightStatus.warning,
     );
   });
 

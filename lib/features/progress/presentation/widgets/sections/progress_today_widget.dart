@@ -106,7 +106,7 @@ class ProgressTodayWidget extends StatelessWidget {
       ],
       base: MxBarSeries(
         label: l10n.progressReviewing,
-        color: context.colors.primary,
+        color: context.status.primaryInk,
       ),
       top: MxBarSeries(
         label: l10n.progressLearning,

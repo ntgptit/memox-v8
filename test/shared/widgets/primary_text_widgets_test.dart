@@ -16,14 +16,16 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
+import '../../support/palette_status.dart';
 import '../../support/widget_harness.dart';
 
-// Spec 2026-09-27 D2, on ForUI (ADR-026): in dark, primary is the light step,
-// so primary as text, icon or focus ring reads on the dark page without a
-// separate ink; fills, edges and tints keep primary.
+// Spec 2026-09-27 D2, on ForUI (ADR-026) and the owner ruling of 2026-10-17:
+// in dark, primary is the brand indigo on the navy page, a fill under white
+// text; the brand as text, an icon or a focus ring is the brand's ink, which
+// reads on the dark page. Fills and tints keep primary.
 void main() {
   final scheme = appDarkColors;
-  final ink = scheme.primary;
+  final ink = darkStatus.primaryInk;
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
@@ -33,7 +35,7 @@ void main() {
 
   testWidgets(
     'MxButton: the primary fill keeps primary under its foreground, and every '
-    'focus ring is the theme ring in primary',
+    'focus ring is the theme ring in the brand ink',
     (tester) async {
       await pumpDark(
         tester,
@@ -54,12 +56,12 @@ void main() {
 
       useKeyboardFocusHighlight();
       final ring = forUiTheme(tester, fill).style.focusedOutlineStyle;
-      expect(ring.color, scheme.primary);
+      expect(ring.color, ink);
       for (final label in ['Outline', 'Fill']) {
         await tabTo(tester, find.text(label));
         expect(
           focusRingRender(tester),
-          paintsFocusRing(scheme.primary, width: ring.width),
+          paintsFocusRing(ink, width: ring.width),
         );
       }
     },

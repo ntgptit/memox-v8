@@ -7,6 +7,7 @@ import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
@@ -71,7 +72,7 @@ void main() {
       (_ring(tester).border! as Border).top.color,
       appLightColors.mutedForeground,
     );
-    expect(_dotDecoration(tester).color, appLightColors.primary);
+    expect(_dotDecoration(tester).color, lightStatus.primaryInk);
     expect(_dotDecoration(tester).shape, BoxShape.circle);
     expect(tester.getSize(_dot()), Size.square(style.indicatorSize));
     expect(tester.getCenter(_dot()), tester.getCenter(_circles().first));
@@ -86,7 +87,7 @@ void main() {
       brightness: Brightness.dark,
     );
     await tester.pumpAndSettle();
-    expect(_dotDecoration(tester).color, appDarkColors.primary);
+    expect(_dotDecoration(tester).color, darkStatus.primaryInk);
 
     await pumpMx(
       tester,
@@ -326,7 +327,7 @@ void main() {
         tester,
         find.byType(MxOptionRow),
       ).style.focusedOutlineStyle;
-      expect(outline.color, focusColors.primary);
+      expect(outline.color, inkOf(focusColors));
       expect(
         tester.renderObject(find.byType(MxOptionRow)),
         isNot(paintsFocusRing(outline.color, width: outline.width)),

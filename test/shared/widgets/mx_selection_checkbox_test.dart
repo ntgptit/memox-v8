@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
+import '../../support/palette_status.dart';
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
@@ -56,7 +57,7 @@ void main() {
     final checked = <FVariant>{FCheckboxVariant.selected};
 
     expect(_box(tester), style.decoration.resolve(checked));
-    expect(_box(tester).color, appLightColors.primary);
+    expect(_box(tester).color, lightStatus.primaryInk);
     expect((_box(tester).shape as OutlinedBorder).side, BorderSide.none);
     expect(
       iconColor(tester, find.byType(Icon)),
@@ -68,8 +69,9 @@ void main() {
     );
   });
 
-  // The dark primary reads on a sheet through ForUI's palette.
-  testWidgets('dark checked: the dark primary fill and its foreground', (
+  // In dark the tick is the brand's ink, which reads on a sheet, and the
+  // check mark is the navy page, which reads on the pale ink.
+  testWidgets('dark checked: the brand ink fill and the page-coloured check', (
     tester,
   ) async {
     await pumpMx(
@@ -79,11 +81,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(_box(tester).color, appDarkColors.primary);
-    expect(
-      iconColor(tester, find.byType(Icon)),
-      appDarkColors.primaryForeground,
-    );
+    expect(_box(tester).color, darkStatus.primaryInk);
+    expect(iconColor(tester, find.byType(Icon)), appDarkColors.background);
   });
 
   testWidgets('it is painted only: out of the semantics tree and out of '
