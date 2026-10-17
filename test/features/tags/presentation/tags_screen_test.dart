@@ -330,6 +330,47 @@ void main() {
     expect(find.text('tạm'), findsNothing);
   });
 
+  libraryTest('opError: Retry after leaving the screen still runs the '
+      'write, without reading the disposed screen (audit LIB-1)', (
+    tester,
+    env,
+  ) async {
+    final store = await _pump(tester, env);
+    store.failsWrites = true;
+    await _actions(tester, 'tạm');
+    await tester.tap(find.text(_en.tagsDelete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.tagsDeleteConfirm));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text(_en.tagsDeleteFailed), findsOneWidget);
+
+    // Leave Tags: the toast lives above the Navigator and outlasts it.
+    unawaited(
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pushReplacement(
+            MaterialPageRoute<void>(builder: (_) => const SizedBox()),
+          ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(TagsScreen), findsNothing);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+
+    store.failsWrites = false;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(tester.takeException(), isNull);
+    final rows = await env.db
+        .customSelect("SELECT id FROM tags WHERE id = 't-tam'")
+        .get();
+    expect(rows, isEmpty);
+    await tester.pump(const Duration(seconds: 10));
+  });
+
   libraryTest('tagGone: a tag deleted elsewhere says so and writes nothing '
       '(E3)', (tester, env) async {
     await _pump(tester, env);

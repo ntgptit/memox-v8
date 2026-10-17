@@ -50,9 +50,6 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     super.dispose();
   }
 
-  TagActionsController _tags() =>
-      ref.read(tagActionsControllerProvider.notifier);
-
   Future<void> _openActions(TagCount tag) async {
     final action = await showTagActionsSheet(context, tag: tag);
     if (action == null || !mounted) return;
@@ -73,7 +70,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     if (request == null || !mounted) return;
     await _write(
       tag,
-      () => _tags().rename(
+      (tags) => tags.rename(
         tagId: tag.id,
         name: request.name,
         mergeIntoTagId: request.mergeIntoTagId,
@@ -87,7 +84,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     if (!await showTagDeleteDialog(context, tag: tag) || !mounted) return;
     await _write(
       tag,
-      () => _tags().delete(tag.id),
+      (tags) => tags.delete(tag.id),
       failure: context.l10n.tagsDeleteFailed,
     );
   }
@@ -96,27 +93,56 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
   /// success says nothing, the catalog shows it (spec §6).
   Future<void> _write(
     TagCount tag,
-    Future<TagWriteResult> Function() write, {
+    Future<TagWriteResult> Function(TagActionsController tags) write, {
+    required String failure,
+    Future<void> Function()? onReplan,
+  }) => _run(
+    Navigator.of(context, rootNavigator: true).context,
+    ProviderScope.containerOf(context, listen: false),
+    tag,
+    write,
+    failure: failure,
+    onReplan: onReplan,
+  );
+
+  /// The toast's Retry outlives this screen, so [_run] reads the app's
+  /// container and the root navigator's context, taken before the toast, not
+  /// this State's `ref` or `context`; a plan that no longer holds reopens
+  /// its dialog only while the screen is there.
+  Future<void> _run(
+    BuildContext host,
+    ProviderContainer container,
+    TagCount tag,
+    Future<TagWriteResult> Function(TagActionsController tags) write, {
     required String failure,
     Future<void> Function()? onReplan,
   }) async {
-    final result = await write();
-    if (!mounted) return;
-    final l10n = context.l10n;
+    final result = await write(
+      container.read(tagActionsControllerProvider.notifier),
+    );
+    if (!host.mounted) return;
+    final l10n = host.l10n;
     switch (result) {
       case TagWriteResult.done:
         return;
       case TagWriteResult.gone:
-        showMxSnackbar(context, message: l10n.tagsGone(tag.name));
+        showMxSnackbar(host, message: l10n.tagsGone(tag.name));
       case TagWriteResult.replan:
-        await onReplan?.call();
+        if (mounted) await onReplan?.call();
       case TagWriteResult.failed:
         showMxSnackbar(
-          context,
+          host,
           message: failure,
           actionLabel: l10n.commonRetry,
           onAction: () => unawaited(
-            _write(tag, write, failure: failure, onReplan: onReplan),
+            _run(
+              host,
+              container,
+              tag,
+              write,
+              failure: failure,
+              onReplan: onReplan,
+            ),
           ),
         );
     }

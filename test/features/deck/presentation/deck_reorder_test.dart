@@ -153,6 +153,26 @@ void main() {
     expect(find.text(_en.deckReorder), findsNothing);
   });
 
+  libraryTest('system Back in reorder mode ends the reorder and stays on the '
+      'screen (audit LIB-7)', (tester, env) async {
+    for (final name in ['A', 'B']) {
+      await env.decks.root(name);
+    }
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await _startReorder(tester);
+    expect(find.text(_en.libraryReorderDone), findsOneWidget);
+
+    final left = await tester
+        .state<NavigatorState>(find.byType(Navigator))
+        .maybePop();
+    await tester.pumpAndSettle();
+
+    expect(left, isTrue);
+    expect(find.text(_en.libraryReorderDone), findsNothing);
+    expect(find.text('A'), findsOneWidget);
+    expect(find.byType(DeckReorderRowWidget), findsNothing);
+  });
+
   libraryTest('dragging a deck past the next one saves the new order', (
     tester,
     env,
