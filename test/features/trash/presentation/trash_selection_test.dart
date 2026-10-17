@@ -201,6 +201,37 @@ void main() {
     expect(_button(_en.trashRestoreSelected(1)), findsOneWidget);
   });
 
+  libraryTest('selection ends when the last entry leaves the Trash (audit '
+      'TRASH-1)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await insertCard(
+      env.db,
+      id: 'only',
+      deckId: korean.id,
+      front: 'only',
+      back: 'one',
+    );
+    await env.cards.deleteCards(cardIds: {'only'}, now: libraryToday);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _tap(tester, _button(_en.trashSelect));
+    await _tap(tester, find.text('only · one'));
+    expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
+
+    // It expires while picked; the resume purge takes it, and the Trash is
+    // empty.
+    env.clock.current = libraryToday.add(const Duration(days: 31));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(TrashScreen)),
+    );
+    await container.read(purgeExpiredTrashUseCaseProvider)();
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.trashEmptyTitle), findsOneWidget);
+    expect(find.text(_en.libraryTrash), findsOneWidget);
+    expect(byControlLabel(_en.trashSelectionClose), findsNothing);
+    expect(find.text(_en.trashSelectTitle), findsNothing);
+  });
+
   libraryTest('while the purge runs, Keep in Trash and Back wait for it; '
       'nothing is deleted behind a closed dialog', (tester, env) async {
     await seedTrash(env);

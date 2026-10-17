@@ -178,8 +178,20 @@ void main() {
     expect(state.blocked.keys, [deck.batchId]);
     expect(state.blocked[deck.batchId], {_named(entries, 'annyeong').batchId});
 
-    // The next command lets the note go.
+    // The note stays through the view changes: the filter and the
+    // selection (audit LIB-11) ...
+    final blocked = container.read(trashControllerProvider).blocked;
     trash.chooseFilter(TrashFilter.cards);
+    expect(container.read(trashControllerProvider).blocked, blocked);
+    trash.startSelecting();
+    expect(container.read(trashControllerProvider).blocked, blocked);
+    trash.toggle(_named(entries, 'annyeong'), entries);
+    expect(container.read(trashControllerProvider).blocked, blocked);
+    trash.stopSelecting();
+    expect(container.read(trashControllerProvider).blocked, blocked);
+
+    // ... and the next command, a purge here, replaces it.
+    await trash.purge({_named(entries, 'annyeong').batchId});
     expect(container.read(trashControllerProvider).blocked, isEmpty);
   });
 
