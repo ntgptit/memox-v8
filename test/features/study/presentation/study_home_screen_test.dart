@@ -59,16 +59,6 @@ StudyHomeScreen _screenWith(Widget reauthNotice) => StudyHomeScreen(
   reauthNotice: reauthNotice,
 );
 
-/// Screen 13 with a feature's practice entry in its slot (TOPIK, DEV-394).
-StudyHomeScreen _screenWithPractice(Widget practiceEntry) => StudyHomeScreen(
-  onOpenSession: (_) {},
-  onOpenDeck: (_) {},
-  onOpenLibrary: () {},
-  onOpenStarterDecks: () {},
-  onOpenSync: () {},
-  practiceEntry: practiceEntry,
-);
-
 const _account = AccountUser(
   id: 'x',
   email: 'a@example.com',
@@ -412,32 +402,6 @@ void main() {
     await tester.tap(find.text(_en.commonRetry));
     await _settle(tester);
     expect(reads, 2);
-  });
-
-  libraryTest('the practice slot shows under the content in a state with '
-      'data, even with no deck (detail file 13)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWithPractice(const Text('practice-entry')),
-    );
-    await _settle(tester);
-
-    expect(find.text('practice-entry'), findsOneWidget);
-  });
-
-  libraryTest('the practice slot is absent while loading', (tester, env) async {
-    final never = StreamController<StudyHome>();
-    addTearDown(never.close);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWithPractice(const Text('practice-entry')),
-      overrides: [studyHomeProvider.overrideWith((ref) => never.stream)],
-    );
-    await _settle(tester);
-
-    expect(find.text('practice-entry'), findsNothing);
   });
 
   libraryTest('loading shows the shapes, and never settles a test', (

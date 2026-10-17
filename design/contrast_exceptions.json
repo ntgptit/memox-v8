@@ -7,6 +7,12 @@
       "reason": "primary is a fill colour. As text or icon on the dark page use the accent (primaryFixedDim); primary stays at 3.01:1 and is only drawn as a fill or at 18sp and larger."
     },
     {
+      "pair": "seek bar thumb (primary) on surfaceContainerLow",
+      "mode": "dark",
+      "ratio": 2.77,
+      "reason": "The thumb and the active track of MxSlider are primary (the theme's sliderTheme, owner 2026-10-15), drawn on the recessed group pane of screen 37 (surfaceContainerLow). In dark, primary falls just short of 3:1 on that ground. The value is the Design System's (design/tokens.json), which owns the fix; the Impeccable audit of 2026-10-17 recorded it."
+    },
+    {
       "pair": "error on its tint over cardSurface",
       "mode": "light",
       "ratio": 4.41,

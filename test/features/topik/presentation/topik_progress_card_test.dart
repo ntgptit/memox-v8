@@ -86,6 +86,19 @@ void main() {
     );
 
     expect(tile(tester, 'Best'), matchesSemantics(label: 'Best', value: '72'));
+    // BR-TOPIK-020: Sessions, Completed and Completion each have a figure.
+    expect(
+      tile(tester, 'Sessions'),
+      matchesSemantics(label: 'Sessions', value: '2'),
+    );
+    expect(
+      tile(tester, 'Completed'),
+      matchesSemantics(label: 'Completed', value: '1'),
+    );
+    expect(
+      tile(tester, 'Completion'),
+      matchesSemantics(label: 'Completion', value: '50%'),
+    );
     // Short terms: the line breaks only between them (The Wrap Rule).
     final en = lookupAppLocalizations(const Locale('en'));
     expectBreaksOnlyBetweenWords(

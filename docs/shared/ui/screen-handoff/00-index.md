@@ -58,12 +58,12 @@ audit reaches the screen. The visual system is in
 | 31 | Code | 3 | FE-B9 | built | [31-code.md](31-code.md) (redesign in `2026-10-05-sign-in-flow-redesign-design.md`; layout balance in `2026-10-05-sign-in-layout-balance-design.md`) |
 | 32 | Account | 9 | FE-B10 | built | [32-account.md](32-account.md) (shape in the account UI spec §9.1) |
 | 33 | Users (admin) | 10 | FE-B11 | built | [33-users.md](33-users.md) (shape in the users spec §6) |
-| 34 | TOPIK home | 4 | DEV-394 | built | [34-topik-home.md](34-topik-home.md) (shape in the TOPIK spec, brief 2026-10-15) |
+| 34 | TOPIK home | 6 | DEV-394 | built | [34-topik-home.md](34-topik-home.md) (shape in the TOPIK spec, brief 2026-10-15) |
 | 35 | TOPIK test list | 7 | DEV-394 | built | [35-topik-test-list.md](35-topik-test-list.md) |
-| 36 | TOPIK test detail | 9 | DEV-394 | built | [36-topik-test-detail.md](36-topik-test-detail.md) |
-| 37 | TOPIK attempt | 13 | DEV-394 | built | [37-topik-attempt.md](37-topik-attempt.md) |
-| 38 | TOPIK summary | 9 | DEV-394 | built | [38-topik-summary.md](38-topik-summary.md) |
-| 39 | TOPIK review | 9 | DEV-394 | built | [39-topik-review.md](39-topik-review.md) |
+| 36 | TOPIK test detail | 10 | DEV-394 | built | [36-topik-test-detail.md](36-topik-test-detail.md) |
+| 37 | TOPIK attempt | 19 | DEV-394 | built | [37-topik-attempt.md](37-topik-attempt.md) |
+| 38 | TOPIK summary | 10 | DEV-394 | built | [38-topik-summary.md](38-topik-summary.md) |
+| 39 | TOPIK review | 13 | DEV-394 | built | [39-topik-review.md](39-topik-review.md) |
 
 ## Rules shared by every screen
 

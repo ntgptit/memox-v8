@@ -24,6 +24,7 @@ class MxListRow extends StatelessWidget {
     this.subtitle,
     this.meta,
     this.leading,
+    this.hasStableLeading = false,
     this.trailing,
     this.hasChevron = false,
     this.onTap,
@@ -49,6 +50,12 @@ class MxListRow extends StatelessWidget {
 
   /// Usually an MxIconTile at the small step; any widget may replace it.
   final Widget? leading;
+
+  /// Gives [leading] a `sizeListRow`-wide column (56 dp: a "#100" badge is
+  /// about 55), so a leading whose width follows its content (a badge of 1
+  /// to 3 digits) does not move the title from one row to the next. Off, the leading takes its own width: an icon
+  /// tile is narrower than the column and stays on the screen margin.
+  final bool hasStableLeading;
 
   /// An overflow button or another control. It keeps its own tap and node.
   final Widget? trailing;
@@ -113,7 +120,8 @@ class MxListRow extends StatelessWidget {
           child: Row(
             spacing: context.dimens.space12,
             children: [
-              if (leading case final lead?) _dim(context, lead),
+              if (leading case final lead?)
+                _dim(context, _column(context, lead)),
               // Only the text carries the 12/12 inset, so a 48 trailing
               // control sits inside the text height instead of growing the
               // row: every row in a list stays one height.
@@ -167,6 +175,18 @@ class MxListRow extends StatelessWidget {
       ),
     );
   }
+
+  Widget _column(BuildContext context, Widget lead) => hasStableLeading
+      ? ConstrainedBox(
+          constraints: BoxConstraints(minWidth: context.dimens.sizeListRow),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: lead,
+          ),
+        )
+      : lead;
 
   Widget _dim(BuildContext context, Widget child) => isEnabled
       ? child

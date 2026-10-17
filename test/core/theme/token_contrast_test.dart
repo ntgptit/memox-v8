@@ -92,6 +92,15 @@ List<_Pair> _pairs(String mode) {
     add('checkbox fill (accent) on $where', accent, ground, _nonText);
   }
   add('checkbox check (onAccent) on fill (accent)', onAccent, accent, _nonText);
+  // The seek bar's thumb and active track (MxSlider, the theme's
+  // sliderTheme) are primary, drawn on the recessed group pane of the TOPIK
+  // attempt (surfaceContainerLow). Non-text, 3:1.
+  add(
+    'seek bar thumb (primary) on surfaceContainerLow',
+    c('primary'),
+    c('surfaceContainerLow'),
+    _nonText,
+  );
   // The loading spinner (MxButton, M3F-02) is drawn in the tone's own
   // foreground on the tone's fill. Non-text, 3:1. Several of these pairs also
   // sit above as text pairs; they are named here by the widget that draws them.

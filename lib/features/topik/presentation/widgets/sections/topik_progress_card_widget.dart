@@ -8,9 +8,9 @@ import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
-/// Overall Progress of screen 36 (BR-TOPIK-020): accuracy, best, average
-/// and completed as four figures, then when and how long in all. A figure
-/// with nothing to show reads as a dash.
+/// Overall Progress of screen 36 (BR-TOPIK-020): accuracy and completion,
+/// best and average, sessions and completed as six figures, then when and
+/// how long in all. A figure with nothing to show reads as a dash.
 class TopikProgressCardWidget extends StatelessWidget {
   const TopikProgressCardWidget({
     super.key,
@@ -29,56 +29,53 @@ class TopikProgressCardWidget extends StatelessWidget {
         value == null ? '–' : format(value);
     // TalkBack reads a bare dash as "en dash" (Q-P6-5).
     String? spoken(int? value) => value == null ? l10n.topikNoFigure : null;
+    Widget tile(String value, String label, String? semanticValue) =>
+        MxStatTile(
+          value: value,
+          label: label,
+          semanticValue: semanticValue,
+          layout: MxStatTileLayout.boxed,
+        );
     final lastActivity = progress.lastActivityAt;
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: dimens.space16,
         children: [
-          Row(
-            spacing: dimens.space16,
-            children: [
-              Expanded(
-                child: MxStatTile(
-                  value: figure(progress.accuracyPercent, l10n.topikPercent),
-                  label: l10n.topikAccuracy,
-                  semanticValue: spoken(progress.accuracyPercent),
-                  layout: MxStatTileLayout.boxed,
-                ),
+          for (final pair in [
+            [
+              tile(
+                figure(progress.accuracyPercent, l10n.topikPercent),
+                l10n.topikAccuracy,
+                spoken(progress.accuracyPercent),
               ),
-              Expanded(
-                child: MxStatTile(
-                  value: figure(progress.bestScore, (v) => '$v'),
-                  label: l10n.topikBest,
-                  semanticValue: spoken(progress.bestScore),
-                  layout: MxStatTileLayout.boxed,
-                ),
+              tile(
+                figure(progress.completionPercent, l10n.topikPercent),
+                l10n.topikCompletion,
+                spoken(progress.completionPercent),
               ),
             ],
-          ),
-          Row(
-            spacing: dimens.space16,
-            children: [
-              Expanded(
-                child: MxStatTile(
-                  value: figure(progress.averageScore, (v) => '$v'),
-                  label: l10n.topikAverage,
-                  semanticValue: spoken(progress.averageScore),
-                  layout: MxStatTileLayout.boxed,
-                ),
+            [
+              tile(
+                figure(progress.bestScore, (v) => '$v'),
+                l10n.topikBest,
+                spoken(progress.bestScore),
               ),
-              Expanded(
-                child: MxStatTile(
-                  value: l10n.topikOfTotal(
-                    progress.completed,
-                    progress.sessions,
-                  ),
-                  label: l10n.topikCompleted,
-                  layout: MxStatTileLayout.boxed,
-                ),
+              tile(
+                figure(progress.averageScore, (v) => '$v'),
+                l10n.topikAverage,
+                spoken(progress.averageScore),
               ),
             ],
-          ),
+            [
+              tile('${progress.sessions}', l10n.topikSessions, null),
+              tile('${progress.completed}', l10n.topikCompleted, null),
+            ],
+          ])
+            Row(
+              spacing: dimens.space16,
+              children: [for (final cell in pair) Expanded(child: cell)],
+            ),
           if (lastActivity != null)
             Text(
               metaLine(

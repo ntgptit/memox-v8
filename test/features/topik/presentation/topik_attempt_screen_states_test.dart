@@ -6,6 +6,9 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
+import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
+import 'package:memox/features/topik/domain/usecases/watch_topik_attempt_use_case.dart';
+import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.dart';
 import 'package:memox/features/topik/presentation/providers/topik_attempt_provider.dart';
 import 'package:memox/features/topik/presentation/providers/watch_topik_attempt_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
@@ -108,6 +111,75 @@ void main() {
     expect(find.text('Next'), findsNothing);
     await tester.tap(find.text('Back to the test'));
     expect(exits.closes, 1);
+  });
+
+  libraryTest('the clock runs only while a question is on screen: the time '
+      'before the attempt loads is not counted (BR-TOPIK-015)', (
+    tester,
+    env,
+  ) async {
+    final attempt = await topikSeedAttempt(env, reading);
+    final gate = StreamController<TopikAttemptView?>();
+    addTearDown(gate.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikAttemptScreen(
+        attemptId: attempt.id,
+        onClose: () {},
+        onSubmitted: (_) {},
+      ),
+      overrides: [
+        ...topikContentOverrides([reading]),
+        topikAudioRepositoryProvider.overrideWithValue(
+          FakeTopikAudioRepository(),
+        ),
+        topikAttemptProvider(attempt.id).overrideWith((ref) => gate.stream),
+      ],
+    );
+    await tester.pump();
+    expect(find.bySemanticsLabel('Loading the attempt'), findsOneWidget);
+    // Five seconds of loading, which belong to no question.
+    topikWait(env, 5);
+    final view = await tester.runAsync(
+      () => WatchTopikAttemptUseCase(
+        FakeTopikContentRepository([reading]),
+        TopikAttemptRepositoryImpl(env.db),
+      )(attempt.id).first,
+    );
+    gate.add(view);
+    await tester.pumpAndSettle();
+    expect(find.text('① 보기 1'), findsOneWidget);
+
+    topikWait(env, 3);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+
+    final detail = await topikStoredAttempt(tester, env, attempt.id);
+    expect(detail.answers.first.timeSpentMs, 3000);
+    expect(detail.attempt.totalTimeMs, 3000);
+  });
+
+  libraryTest('a state with no question on screen writes no time: the '
+      'attempt whose test changed keeps its 0 (BR-TOPIK-015, -019)', (
+    tester,
+    env,
+  ) async {
+    final attempt = await topikSeedAttempt(env, reading);
+    await pumpTopikAttempt(tester, env, attempt.id, catalog: const []);
+    expect(
+      find.text("This test changed and can't be continued"),
+      findsOneWidget,
+    );
+
+    topikWait(env, 5);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+
+    final detail = await topikStoredAttempt(tester, env, attempt.id);
+    expect(detail.attempt.totalTimeMs, 0);
   });
 
   libraryTest('the test changed: the attempt offers Delete, which leaves '

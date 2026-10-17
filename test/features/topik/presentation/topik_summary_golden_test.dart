@@ -11,6 +11,8 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_summary_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
+import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
@@ -75,6 +77,26 @@ void main() {
       await shoot(tester, env, 'loaded', done.id);
     });
 
+    // Scrolled to the time chart, so its legend is pinned (wireframe pass).
+    libraryTest('chart, $theme', (tester, env) async {
+      final done = await topikSeedSubmitted(
+        env,
+        reading,
+        answers: _mixed(reading),
+      );
+      await shoot(
+        tester,
+        env,
+        'chart',
+        done.id,
+        // The chart's header near the top: the bars and the legend in full.
+        before: () => Scrollable.ensureVisible(
+          tester.element(find.byType(MxChartLegend)),
+          alignment: 0.5,
+        ),
+      );
+    });
+
     libraryTest('perfect, $theme', (tester, env) async {
       final done = await topikSeedSubmitted(
         env,
@@ -128,7 +150,8 @@ void main() {
         env,
         'filter_empty',
         done.id,
-        before: () => tester.tap(find.text('Wrong')),
+        // The chip, not the chart legend's "Wrong".
+        before: () => tester.tap(find.widgetWithText(MxFilterChip, 'Wrong')),
       );
     });
 

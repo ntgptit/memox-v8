@@ -8,6 +8,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 
 /// Screen 39's question (detail file 39, critique V2–V4):
@@ -19,7 +20,8 @@ import 'package:memox/shared/widgets/mx_section.dart';
 /// - the supporting content in the UI language, a section only when it has
 ///   data (BR-TOPIK-006, A2).
 ///
-/// The right answer is the snapshot's, the one that scored.
+/// The right answer is the snapshot's, the one that scored. The pane fades its
+/// bottom edge while more lies below, as on 37 (owner 2026-10-17).
 class TopikReviewQuestionWidget extends StatelessWidget {
   const TopikReviewQuestionWidget({
     super.key,
@@ -38,42 +40,52 @@ class TopikReviewQuestionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dimens = context.dimens;
-    final selected = answer.selectedIdx;
-    return MxScreenScroll(
-      children: [
-        SizedBox(height: dimens.space16),
-        if (isContentUpdated) ...[
-          MxInlineBanner(
-            tone: MxBannerTone.warning,
-            title: l10n.topikUpdatedTitle,
-            message: l10n.topikUpdatedBody,
-            hasBottomMargin: false,
+    return MxScrollFade(
+      child: MxScreenScroll(
+        children: [
+          SizedBox(height: dimens.space16),
+          if (isContentUpdated) ...[
+            MxInlineBanner(
+              tone: MxBannerTone.warning,
+              title: l10n.topikUpdatedTitle,
+              message: l10n.topikUpdatedBody,
+              hasBottomMargin: false,
+            ),
+            SizedBox(height: dimens.space16),
+          ],
+          // A polite live region: Next, Previous and a filter change the
+          // question while focus stays on the footer, and TalkBack says the
+          // new "{no}. {stem}" (WCAG 4.1.3; 39 has no study bar counter).
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              l10n.topikQuestionStem(question.no, question.stemKo),
+              style: context.texts.bodyLarge,
+            ),
           ),
           SizedBox(height: dimens.space16),
+          for (final option in question.options) ...[
+            _option(context, option),
+            SizedBox(height: dimens.space8),
+          ],
+          _answerMeta(context),
+          ..._support(context),
         ],
-        Text(
-          l10n.topikQuestionStem(question.no, question.stemKo),
-          style: context.texts.bodyLarge,
-        ),
-        SizedBox(height: dimens.space16),
-        for (final option in question.options) ...[
-          _option(context, option),
-          SizedBox(height: dimens.space8),
-        ],
-        Text(
-          metaTerms([
-            if (selected == null)
-              l10n.topikNotAnswered
-            else
-              l10n.topikYourAnswer(topikCircled(selected)),
-            l10n.topikRightAnswer(topikCircled(_right)),
-          ]),
-          style: context.texts.labelMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
-        ),
-        ..._support(context),
-      ],
+      ),
+    );
+  }
+
+  Widget _answerMeta(BuildContext context) {
+    final meta = context.l10n.topikAnswerMeta(
+      selected: answer.selectedIdx,
+      right: _right,
+    );
+    return Text(
+      meta.shown,
+      semanticsLabel: meta.spoken,
+      style: context.texts.labelMedium?.copyWith(
+        color: context.colors.onSurfaceVariant,
+      ),
     );
   }
 

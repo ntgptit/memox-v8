@@ -69,6 +69,14 @@ void main() {
       isTrue,
     );
     expect(findPlainText('Your answer ③ · Right answer ①'), findsOneWidget);
+    // A screen reader gets plain digits for the circled ones.
+    expect(
+      tester
+          .widgetList<Text>(find.byType(Text))
+          .map((t) => t.semanticsLabel)
+          .whereType<String>(),
+      contains('Your answer 3, Right answer 1'),
+    );
     expect(find.text('Explanation.'), findsOneWidget);
     expect(findPlainTextContaining('기획'), findsOneWidget);
     expect(findPlainTextContaining('planning'), findsOneWidget);

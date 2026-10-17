@@ -83,4 +83,65 @@ void main() {
       TextOverflow.ellipsis,
     );
   });
+
+  // TalkBack reads one node naming the trigger's purpose and its value, not
+  // the bare value and "button" (DEV-394).
+  testWidgets('semanticLabel is the one node TalkBack reads; the painted '
+      'label is unchanged', (tester) async {
+    final handle = tester.ensureSemantics();
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxChipTrigger(
+        label: '1×',
+        semanticLabel: 'Playback speed, 1×',
+        onPressed: () => taps++,
+      ),
+    );
+
+    expect(find.text('1×'), findsOneWidget);
+    expect(find.bySemanticsLabel('1×'), findsNothing);
+    final node = tester.getSemantics(
+      find.bySemanticsLabel('Playback speed, 1×'),
+    );
+    expect(
+      node,
+      isSemantics(
+        label: 'Playback speed, 1×',
+        isButton: true,
+        hasTapAction: true,
+        hasEnabledState: true,
+        isEnabled: true,
+      ),
+    );
+    await tester.tap(find.byType(MxChipTrigger));
+    expect(taps, 1);
+
+    await pumpMx(
+      tester,
+      const MxChipTrigger(
+        label: '1×',
+        semanticLabel: 'Playback speed, 1×',
+        onPressed: null,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Playback speed, 1×')),
+      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('without semanticLabel the visible label stays the name', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, MxChipTrigger(label: 'Sort: Due', onPressed: () {}));
+
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Sort: Due')),
+      isSemantics(label: 'Sort: Due', isButton: true, hasTapAction: true),
+    );
+    handle.dispose();
+  });
 }

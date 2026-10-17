@@ -12,6 +12,7 @@ class MxChipTrigger extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon = AppIcons.chevronDown,
+    this.semanticLabel,
   });
 
   final String label;
@@ -20,10 +21,16 @@ class MxChipTrigger extends StatelessWidget {
   /// The trailing glyph at 18: chevron-down by default.
   final IconData icon;
 
+  /// What TalkBack reads in place of [label]: the trigger's purpose and its
+  /// current value ("Playback speed, 1x"), when the painted value alone does
+  /// not say what it controls. The chip keeps its tap and its enabled state on
+  /// that one node, as MxButton.semanticLabel does.
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final chip = Theme.of(context).chipTheme;
-    return TextButton(
+    final button = TextButton(
       onPressed: onPressed,
       style: chipButtonStyle(
         ThemeTokens.of(context),
@@ -48,6 +55,17 @@ class MxChipTrigger extends StatelessWidget {
           Icon(icon),
         ],
       ),
+    );
+    final named = semanticLabel;
+    if (named == null) return button;
+    return Semantics(
+      container: true,
+      label: named,
+      button: true,
+      enabled: onPressed != null,
+      onTap: onPressed,
+      excludeSemantics: true,
+      child: button,
     );
   }
 }

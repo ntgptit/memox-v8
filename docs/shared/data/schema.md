@@ -58,7 +58,7 @@ Ba nguyên tắc chi phối cách chia bảng:
 ```
 app_settings (một dòng — mặc định tùy chọn học)
 account_state, account_transition (tối đa một dòng — tài khoản trên máy, schema 12)
-topik_attempt ──► topik_attempt_answer  (lượt làm đề TOPIK và đáp án từng câu, schema 17; đề là asset, không phải bảng)
+topik_attempt ──► topik_attempt_answer  (lượt làm đề TOPIK và đáp án từng câu, schema 17; nội dung đề không nằm trong bảng này: từ ADR-024 nó đến từ Master Data của server và được cache vào Drift từ plan 2, xem "Server: TOPIK Master Data")
 
 starter template (asset JSON, không phải bảng — Starter decks)
         │ sao chép một lần, không liên kết ghi ngược
@@ -708,8 +708,8 @@ phải ai đang đăng nhập. Không hoặc một dòng (`CHECK (id = 1)`) cho 
 ## `topik_attempt`
 
 Schema 17. Một lượt làm một đề TOPIK ([ADR-023](../decisions/ADR-023-luyen-de-topik.md),
-[spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §7.1, §13.1). Đề là
-asset đóng gói, nên `test_id` không có FK. Lượt dở gắn với máy; lượt đã nộp bất biến
+[spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §7.1, §13.1). Nội
+dung đề nằm ngoài bảng này (Master Data của server, ADR-024), nên `test_id` không có FK. Lượt dở gắn với máy; lượt đã nộp bất biến
 (trigger `topik_attempt_completed_immutable` chặn mọi cột trừ `server_version`) và đồng
 bộ (BR-TOPIK-010, BR-TOPIK-026).
 
@@ -756,6 +756,18 @@ mọi thay đổi.
 | `points` | INTEGER NULL | bản chốt: điểm của câu |
 | `points_earned` | INTEGER NULL | bản chốt: `points` khi đúng, ngược lại 0 (CHECK) |
 | `question_type` | TEXT NULL | bản chốt: mã dạng câu; không CHECK để lượt từ bản app mới hơn vẫn đồng bộ về |
+
+## Server: TOPIK Master Data
+
+Phía Supabase, không phải Drift: kho nội dung đề TOPIK của [ADR-024](../decisions/ADR-024-master-data-topik-tren-supabase-va-admin-web.md),
+mô tả đầy đủ ở [spec](../../superpowers/specs/2026-10-16-topik-master-data-admin-web-design.md) §5.
+Migration `20261016120000_topik_master_data.sql`; schema Drift không đổi trong plan này (bảng cache
+`topik_content_cache`, `topik_content_state` đến ở plan 2, v18). Các bảng RLS bật, không policy, chỉ đi qua RPC.
+
+- `topik_test_draft`: bản nháp sửa tự do của một đề, một dòng cho mỗi `test_id`, có thể không hợp lệ.
+- `topik_test_version`: một phiên bản đã publish, bất biến (trigger chặn sửa và xoá), khoá `(test_id, content_version)`, giữ JSON, danh sách media (mỗi file một `{path, size, eTag}`, lấy từ Storage lúc publish) và `md5` của JSON.
+- `topik_publication`: điều client nhìn thấy, một dòng cho mỗi đề: `published` hoặc `retired`, phiên bản hiện hành và `catalog_version` toàn cục để client kéo "mọi thứ sau N".
+- `topik_master_audit`: nhật ký chỉ thêm, ghi trong cùng transaction với mỗi thay đổi Master Data.
 
 ## Bất biến — phải kiểm tra được bằng query
 

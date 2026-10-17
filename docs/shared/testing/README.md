@@ -68,7 +68,7 @@ AI agent MUST đọc theo thứ tự:
 | Ranh giới nền tảng — thứ duy nhất còn cần thiết bị | Có thể kiểm thử | [`features/deck/it-scenarios.md`](../../features/deck/it-scenarios.md) · [`features/study/it-scenarios.md`](../../features/study/it-scenarios.md) · [`shared/testing/it-scenarios.md`](it-scenarios.md) |
 | Hồ sơ thực thi và truy vết UC/BR theo từng kịch bản | Tham chiếu | [`host-coverage-map.md`](host-coverage-map.md) |
 
-**Không có kịch bản `FIXTURE-BLOCKED` nào** — cả 142 dòng của
+**Một kịch bản `FIXTURE-BLOCKED`** — `IT-TOPIK-019` (`DEVICE-E2E`, chờ gói nội dung TOPIK thật); mọi dòng còn lại của
 `scenario-catalog.md` đều `READY`. Luật "không được ghi thẳng vào cơ sở dữ
 liệu" là luật viết cho **một thiết bị**; nó không áp cho một test host tự
 dựng SQLite in-memory của chính nó (§4.3).

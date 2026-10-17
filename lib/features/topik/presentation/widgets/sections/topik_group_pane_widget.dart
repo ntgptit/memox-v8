@@ -9,6 +9,7 @@ import 'package:memox/features/topik/presentation/widgets/support/topik_labels_w
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// A group's shared material (detail file 37, critique F5, F12):
@@ -19,7 +20,8 @@ import 'package:memox/shared/widgets/mx_tint_base.dart';
 ///   translation once the current question is answered or by the toggle
 ///   (spec §5.5, D15).
 ///
-/// It sits on the recessed ground and scrolls on its own. Collapsed, it keeps
+/// It sits on the recessed ground and scrolls on its own, fading its bottom
+/// edge into that ground while more lies below. Collapsed, it keeps
 /// the instruction on one line and the audio bar, so the audio is never lost
 /// to a collapse.
 class TopikGroupPaneWidget extends StatelessWidget {
@@ -56,44 +58,47 @@ class TopikGroupPaneWidget extends StatelessWidget {
       color: ground,
       child: ColoredBox(
         color: ground,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.screenMargin,
-            vertical: dimens.space12,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: dimens.space12,
-            children: [
-              Row(
-                spacing: dimens.space8,
-                children: [
-                  Expanded(
-                    child: Text(
-                      group.instructionKo,
-                      maxLines: isShut ? 1 : null,
-                      overflow: isShut ? TextOverflow.ellipsis : null,
-                      style: context.texts.bodyMedium?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+        child: MxScrollFade(
+          ground: MxScrollFadeGround.recessed,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.screenMargin,
+              vertical: dimens.space12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: dimens.space12,
+              children: [
+                Row(
+                  spacing: dimens.space8,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        group.instructionKo,
+                        maxLines: isShut ? 1 : null,
+                        overflow: isShut ? TextOverflow.ellipsis : null,
+                        style: context.texts.bodyMedium?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
-                  // A chevron named for TalkBack (critique F5, Q-P6b-4).
-                  if (hasMaterial)
-                    MxIconButton(
-                      icon: isCollapsed
-                          ? AppIcons.chevronDown
-                          : AppIcons.chevronUp,
-                      semanticLabel: isCollapsed
-                          ? l10n.topikShowPassage
-                          : l10n.topikHidePassage,
-                      onPressed: onToggleCollapsed,
-                    ),
-                ],
-              ),
-              if (audio case final clip?) TopikAudioBarWidget(clip: clip),
-              if (!isShut) ..._material(context),
-            ],
+                    // A chevron named for TalkBack (critique F5, Q-P6b-4).
+                    if (hasMaterial)
+                      MxIconButton(
+                        icon: isCollapsed
+                            ? AppIcons.chevronDown
+                            : AppIcons.chevronUp,
+                        semanticLabel: isCollapsed
+                            ? l10n.topikShowPassage
+                            : l10n.topikHidePassage,
+                        onPressed: onToggleCollapsed,
+                      ),
+                  ],
+                ),
+                if (audio case final clip?) TopikAudioBarWidget(clip: clip),
+                if (!isShut) ..._material(context),
+              ],
+            ),
           ),
         ),
       ),

@@ -2,6 +2,26 @@
 
 # Open questions
 
+## [shared/ui/screen-handoff/34-topik-home.md](../shared/ui/screen-handoff/34-topik-home.md)
+
+- L57: - **Audit 2026-10-16 (DEV-394):** OPEN QUESTION Q-A-1: a level with tests only in Listening opens 35 on an empty Reading section (UC-TOPIK-001 step 2 fixes Reading as the default). Proposed: open the first section that has tests. Code unchanged until the owner rules.
+
+## [shared/ui/screen-handoff/35-topik-test-list.md](../shared/ui/screen-handoff/35-topik-test-list.md)
+
+- L59: - **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name is the current order alone ("Newest round"); nothing in the node says it sorts. `MxChipTrigger` has no semantic label slot, so the fix is shared: OPEN QUESTION Q-A-2 for the owner. BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
+
+## [shared/ui/screen-handoff/36-topik-test-detail.md](../shared/ui/screen-handoff/36-topik-test-detail.md)
+
+- L81: - **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
+
+## [shared/ui/screen-handoff/37-topik-attempt.md](../shared/ui/screen-handoff/37-topik-attempt.md)
+
+- L117: - **Audit 2026-10-16 (DEV-394), the clock:** the controller's clock ran from the moment the screen opened, so loading, the error panel and contentMissing were added to the current question, and a lap was consumed before its write, so a failed or refused write dropped it; after a refused submit the clock restarted even in the background. Now the clock runs only while a question is on screen (`showQuestion` / `hideQuestion`) and the app is in the foreground, a lap whose write fails or is refused is carried into the next write, and a `Failure` of the pause or exit write (no screen to speak on) is logged `topik.time_not_written` with its time kept. `inactive` still keeps the clock running (a transient state): OPEN QUESTION Q-A-5, with Q-A-6 (the audio keeps playing in the background while the clock stops) and Q-A-7 (a submit started from the grid off the last question shows no spinner, only a disabled Next).
+
+## [shared/ui/screen-handoff/39-topik-review.md](../shared/ui/screen-handoff/39-topik-review.md)
+
+- L86: - **Audit 2026-10-16 (DEV-394):** UC-TOPIK-005 A3 is rewritten to V5 and V9 as built (a question outside the current filter cannot occur). The right option marked is the snapshot's `correct_idx` (`topik_review_question_widget.dart`), while the stem, options and supporting content are the current content's: after an `answerIdx` correction the old index stays marked beside a current explanation. OPEN QUESTION Q-A-8: mark the current content's `answerIdx` as right (Review teaches the truth; the score stays from the snapshot and the banner says so) or keep the snapshot's. Code unchanged until the owner rules. "Back to summary" uses `go`, so Done on that summary lands on TOPIK home, not 36 (owner ruling Q-P6c, 2026-10-16: as built).
+
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions

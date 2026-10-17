@@ -28,6 +28,16 @@ prefixing each command that may pull an image:
     SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io npx supabase db reset
     SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io bash tools/supabase/run_auth_it.sh
 
+When Docker runs but the CLI cannot pull its service images (Docker Hub answers
+`429 Too Many Requests`), `bash tools/supabase/image_pgtap.sh` runs the migrations
+and the pgTAP suite on the `supabase/postgres` image alone, with a stub of the
+Storage tables and GoTrue's `auth.*` additions (its header lists what the stub
+does not prove; of storage-api's own triggers on `storage.objects` only
+`protect_delete`, which refuses every direct `DELETE` even one matching no row,
+is mirrored, so a direct `UPDATE` on it is not proven there). `supabase test db`
+on the full stack stays the reference: the `supabase migrations` workflow runs
+it before `db push`, which is the first proof of the Storage path.
+
 Where Docker is not available, `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
@@ -69,6 +79,14 @@ convenience; the CI `supabase` job is the gate.
    `log_query`, `log_get`, `log_set_status`, `role_list` and `role_set`;
    everyone else gets `FORBIDDEN`. This changes data, not schema, so the drift
    check does not see it.
+
+7. TOPIK Master Data (ADR-024) needs nothing by hand: the migration creates
+   the tables, the RPCs, the private bucket `topik-media` and its policies.
+   (The hosted ownership of the Storage tables is proven only by the push
+   after merge; the local stub cannot prove it.) The Free plan holds 1 GB of
+   storage and 5 GB of egress a month; one round's media is tens of MB. The
+   `supabase usage` workflow does not read Storage yet (database size and
+   active users only), so watch it under Project Settings → Usage.
 
 ## Sign-in setup (SB-A4, once)
 
@@ -179,6 +197,16 @@ there.
   `UNAUTHORIZED`, never a row-by-row rejection (DEV-192).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
+- TOPIK Master Data (ADR-024) is reached through `topik_admin_*` (an admin),
+  `topik_catalog` and `topik_test_content` (everyone). Its media sits in the
+  private bucket `topik-media`; Storage authorises through four policies on
+  `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
+  each calling `topik_media_can_read` / `topik_media_can_write` /
+  `topik_media_can_modify`, which are granted to `authenticated` only to serve
+  those policies. A published version's `media` lists each file as `{path, size, eTag}`
+  (from Storage at publish). An object it lists cannot be
+  updated or deleted, even by an admin, and a media path must name the version
+  being published or an existing one.
 - A new synced entity type changes four functions in one migration:
   `private.push_one` (its accepted list), `private.apply_operation` (upsert,
   and delete unless the type is never deleted), `private.current_change` and

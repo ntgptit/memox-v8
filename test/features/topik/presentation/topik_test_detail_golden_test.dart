@@ -109,7 +109,9 @@ void main() {
         before: () async {
           await openHistory(tester);
           await tester.pumpAndSettle();
-          await tester.tap(find.byTooltip('Delete attempt').first);
+          await tester.tap(
+            find.byTooltip(RegExp(r'^Delete attempt \d+$')).first,
+          );
         },
       );
     });

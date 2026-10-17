@@ -16,9 +16,9 @@ nào (`HOST-FLOW`, `HOST-WIDGET` hay `DEVICE-E2E` — định nghĩa ở
 vết tới UC/BR nào. `—` nghĩa là kịch bản không truy vết tới một UC/BR cụ thể
 (thường là một ranh giới nền tảng thuần tuý, không phải một luật nghiệp vụ).
 
-Tám trong chín kịch bản `DEVICE-E2E` chạy trên thiết bị bằng
+Tám trong mười kịch bản `DEVICE-E2E` chạy trên thiết bị bằng
 `tools/device/run_device_e2e.sh` (`integration_test/`); cách chạy và lần chạy gần nhất ở
-[device-e2e.md](device-e2e.md). IT-PLAT-009 chưa có phase nào trong `integration_test/`.
+[device-e2e.md](device-e2e.md). IT-PLAT-009 và IT-TOPIK-019 chưa có phase nào trong `integration_test/`.
 
 | ID | Profile | Truy vết (UC/BR) |
 |---|---|---|
@@ -164,3 +164,22 @@ Tám trong chín kịch bản `DEVICE-E2E` chạy trên thiết bị bằng
 | IT-TREE-012 | `HOST-FLOW` | UC-DECK-005, BR-SRS-005, BR-SRS-006 |
 | IT-TREE-013 | `HOST-FLOW` | UC-DECK-004, UC-DECK-005, BR-DECK-001 |
 | IT-TREE-014 | `HOST-FLOW` | UC-CARD-001, BR-DECK-015 |
+| IT-TOPIK-001 | `HOST-WIDGET` | UC-TOPIK-001, BR-TOPIK-008 |
+| IT-TOPIK-002 | `HOST-WIDGET` | UC-TOPIK-001, BR-TOPIK-009, BR-TOPIK-022 |
+| IT-TOPIK-003 | `HOST-WIDGET` | UC-TOPIK-003, BR-TOPIK-001, BR-TOPIK-010 |
+| IT-TOPIK-004 | `HOST-FLOW` | UC-TOPIK-003 A3, BR-TOPIK-012, BR-TOPIK-015 |
+| IT-TOPIK-005 | `HOST-FLOW` | UC-TOPIK-003 A2, BR-TOPIK-010, BR-TOPIK-011 |
+| IT-TOPIK-006 | `HOST-WIDGET` | BR-TOPIK-015 |
+| IT-TOPIK-007 | `HOST-WIDGET` | UC-TOPIK-003 A1, BR-TOPIK-013, BR-TOPIK-014 |
+| IT-TOPIK-008 | `HOST-FLOW` | BR-TOPIK-002, BR-TOPIK-013, BR-TOPIK-019 |
+| IT-TOPIK-009 | `HOST-WIDGET` | BR-TOPIK-014 |
+| IT-TOPIK-010 | `HOST-WIDGET` | UC-TOPIK-002 A2, BR-TOPIK-011 |
+| IT-TOPIK-011 | `HOST-FLOW` | UC-TOPIK-002, BR-TOPIK-018, BR-TOPIK-021, BR-TOPIK-026 |
+| IT-TOPIK-012 | `HOST-WIDGET` | UC-TOPIK-004, BR-TOPIK-023, BR-TOPIK-024, BR-TOPIK-025 |
+| IT-TOPIK-013 | `HOST-WIDGET` | UC-TOPIK-005, BR-TOPIK-006, BR-TOPIK-010, BR-TOPIK-019 |
+| IT-TOPIK-014 | `HOST-WIDGET` | BR-TOPIK-004, BR-TOPIK-017 |
+| IT-TOPIK-015 | `HOST-FLOW` | BR-TOPIK-026, BR-TOPIK-028 |
+| IT-TOPIK-016 | `HOST-FLOW` | BR-TOPIK-027 |
+| IT-TOPIK-017 | `HOST-FLOW` | BR-TOPIK-026 |
+| IT-TOPIK-018 | `HOST-WIDGET` | UC-TOPIK-003 A4 |
+| IT-TOPIK-019 | `DEVICE-E2E` | BR-TOPIK-017 |

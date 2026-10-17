@@ -5,11 +5,13 @@ import 'package:memox/features/topik/presentation/widgets/support/topik_labels_w
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 /// The current question (detail file 37, critique F3): "{no}. {stem}", then
 /// its options ①–④ as choice tiles, idle or selected only. Nothing says
 /// right or wrong before submit (BR-TOPIK-016, D15). [onPick] null holds
-/// the options (submitting).
+/// the options (submitting). The pane fades its bottom edge while more lies
+/// below (owner 2026-10-17).
 class TopikQuestionPaneWidget extends StatelessWidget {
   const TopikQuestionPaneWidget({
     super.key,
@@ -26,19 +28,21 @@ class TopikQuestionPaneWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dimens = context.dimens;
-    return MxScreenScroll(
-      children: [
-        SizedBox(height: dimens.space16),
-        Text(
-          l10n.topikQuestionStem(question.no, question.stemKo),
-          style: context.texts.bodyLarge,
-        ),
-        SizedBox(height: dimens.space16),
-        for (final option in question.options) ...[
-          _option(context, option),
-          SizedBox(height: dimens.space8),
+    return MxScrollFade(
+      child: MxScreenScroll(
+        children: [
+          SizedBox(height: dimens.space16),
+          Text(
+            l10n.topikQuestionStem(question.no, question.stemKo),
+            style: context.texts.bodyLarge,
+          ),
+          SizedBox(height: dimens.space16),
+          for (final option in question.options) ...[
+            _option(context, option),
+            SizedBox(height: dimens.space8),
+          ],
         ],
-      ],
+      ),
     );
   }
 

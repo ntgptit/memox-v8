@@ -9,9 +9,11 @@ import 'package:memox/shared/widgets/mx_tint_base.dart';
 /// (critique 2026-09-30 tone pass, T6).
 enum MxBadgeTone { primary, mastery, success, warning, danger, neutral }
 
-/// A count pill. The unit belongs inside the label ("23 due"), so the digits
-/// stay tabular and the space is part of the text. Omitting a zero count is
-/// the caller's call.
+/// A count pill. The unit belongs inside the label ("23 due"), so the space is
+/// part of the text. Its width follows its digits: a row that leads with it
+/// keeps a stable leading column (`MxListRow.hasStableLeading`) so the title
+/// does not move between a one-digit and a three-digit count. Omitting a zero
+/// count is the caller's call.
 class MxBadge extends StatelessWidget {
   const MxBadge({
     super.key,

@@ -217,8 +217,8 @@ END;
 -- transaction; deleting a submitted attempt queues a final delete. A local
 -- insert is always in progress and the answers travel inside the attempt's
 -- row, so neither has a trigger: an attempt in progress never reaches the
--- outbox. The adapter is registered by plan 3; until then the coordinator's
--- push reads only registered types and leaves these rows queued.
+-- outbox. The adapter (TopikAttemptSyncDao) is registered in
+-- lib/app/sync_tables.dart.
 CREATE TRIGGER topik_attempt_sync_complete AFTER UPDATE OF status ON topik_attempt
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
   AND old.status = 'in_progress' AND new.status = 'completed'

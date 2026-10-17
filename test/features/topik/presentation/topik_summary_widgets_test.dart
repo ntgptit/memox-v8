@@ -1,18 +1,23 @@
 import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
+import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
+import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_answer_row_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_answer_filter_chips_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_question_bar_chart_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_score_donut_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_summary_figures_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_summary_hero_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
@@ -47,7 +52,6 @@ TopikAttemptSummary _summary(List<TopikAttemptAnswer> answers) {
     correctCount: correct.length,
     questionCount: answers.length,
     answeredCount: answered,
-    accuracyPercent: answered == 0 ? 0 : correct.length * 100 ~/ answered,
     longest: answers.reduce((a, b) => b.timeSpentMs > a.timeSpentMs ? b : a),
     typeStats: const [
       TopikTypeStat(type: TopikQuestionType.r1Topic, correct: 2, total: 2),
@@ -57,6 +61,27 @@ TopikAttemptSummary _summary(List<TopikAttemptAnswer> answers) {
     answers: answers,
   );
 }
+
+TopikAttempt _attempt(TopikAttemptSummary summary) => TopikAttempt(
+  id: 'A',
+  testId: 'topik2-96-reading',
+  level: TopikLevel.topik2,
+  section: TopikSection.reading,
+  round: 96,
+  mode: TopikAttemptMode.practice,
+  status: TopikAttemptStatus.completed,
+  startedAt: DateTime.utc(2026, 10, 15, 2),
+  completedAt: DateTime.utc(2026, 10, 15, 3),
+  updatedAt: DateTime.utc(2026, 10, 15, 3),
+  totalTimeMs: 3731000,
+  currentQuestionNo: 31,
+  questionCount: summary.questionCount,
+  maxScore: summary.maxScore,
+  score: summary.score,
+  correctCount: summary.correctCount,
+  answeredCount: summary.answeredCount,
+  contentVersion: 1,
+);
 
 // Screen 38's parts (detail file 38; critique S1, S3–S7).
 void main() {
@@ -84,18 +109,87 @@ void main() {
       const TopikScoreDonutWidget(correct: 48, total: 50),
     );
     expect(find.text('48 / 50'), findsOneWidget);
+    // Beside "96 / 100" the ring's figure says what it counts (wireframe).
+    expect(
+      find.descendant(
+        of: find.byType(TopikScoreDonutWidget),
+        matching: find.text('Correct'),
+      ),
+      findsOneWidget,
+    );
   });
 
-  libraryTest('the figures: accuracy, answered, unanswered, and the longest '
-      'with its real number (critique S1)', (tester, env) async {
+  libraryTest('the time chart names what each colour means', (
+    tester,
+    env,
+  ) async {
+    await host(
+      tester,
+      env,
+      TopikQuestionBarChartWidget(answers: answers, onOpen: (_) {}),
+    );
+
+    final legend = find.byType(MxChartLegend);
+    expect(legend, findsOneWidget);
+    // In the filter chips' order (audit 2026-10-16).
+    final labels = tester
+        .widgetList<Text>(
+          find.descendant(of: legend, matching: find.byType(Text)),
+        )
+        .map((text) => text.data)
+        .toList();
+    expect(labels, ['Wrong', 'Unanswered', 'Correct']);
+  });
+
+  libraryTest('the figures: average per Q, answered, unanswered, and '
+      'the longest with its real number (owner 2026-10-17)', (
+    tester,
+    env,
+  ) async {
     await host(tester, env, TopikSummaryFiguresWidget(summary: summary));
 
-    expect(find.text('66%'), findsOneWidget);
+    // (65 + 125 + 0 + 30) s over 4 questions.
+    expect(find.text('55s'), findsOneWidget);
+    expect(find.text('AVERAGE PER Q'), findsOneWidget);
+    expect(find.text('ACCURACY'), findsNothing);
     expect(find.text('3'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2m 05s'), findsOneWidget);
     expect(find.text('LONGEST · Q32'), findsOneWidget);
   });
+
+  for (final (locale, labels) in [
+    (const Locale('en'), ['AVERAGE PER Q', 'LONGEST · Q32']),
+    (const Locale('vi'), ['TRUNG BÌNH/CÂU', 'LÂU NHẤT · CÂU 32']),
+  ]) {
+    libraryTest('every figure label keeps one line at 360 dp in '
+        '${locale.languageCode}', (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: SingleChildScrollView(
+            child: TopikSummaryFiguresWidget(summary: summary),
+          ),
+        ),
+        locale: locale,
+      );
+      await tester.pumpAndSettle();
+
+      for (final label in labels) {
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find.text(label),
+        );
+        final lines = (paragraph.size.height / paragraph.preferredLineHeight)
+            .round();
+        expect(
+          lines,
+          1,
+          reason: '$label wraps: ${paragraph.size.width} dp wide',
+        );
+      }
+    });
+  }
 
   libraryTest('no time on any question: Longest shows a dash and reads '
       '"None" (Q-P6-5)', (tester, env) async {
@@ -103,13 +197,16 @@ void main() {
     final blank = _summary([_answer(31, ms: 0), _answer(32, ms: 0)]);
     await host(tester, env, TopikSummaryFiguresWidget(summary: blank));
 
-    expect(find.text('–'), findsOneWidget);
-    expect(
-      tester.getSemantics(
-        find.byWidgetPredicate((w) => w is MxStatTile && w.label == 'Longest'),
-      ),
-      matchesSemantics(label: 'Longest', value: 'None'),
-    );
+    // Both time figures have no value: a dash that reads "None".
+    expect(find.text('–'), findsNWidgets(2));
+    for (final label in ['Longest', 'Average per Q']) {
+      expect(
+        tester.getSemantics(
+          find.byWidgetPredicate((w) => w is MxStatTile && w.label == label),
+        ),
+        matchesSemantics(label: label, value: 'None'),
+      );
+    }
     handle.dispose();
   });
 
@@ -142,29 +239,6 @@ void main() {
     expect(picks, [TopikAnswerFilter.correct]);
   });
 
-  libraryTest('the chart: a bar per question with its real number, one node '
-      'each, and a tap opens it (critique S4)', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    final opened = <int>[];
-    await host(
-      tester,
-      env,
-      TopikQuestionBarChartWidget(answers: answers, onOpen: opened.add),
-    );
-
-    for (final no in [31, 32, 33, 34]) {
-      expect(find.text('$no'), findsOneWidget);
-    }
-    expect(find.bySemanticsLabel('Question 32, Wrong, 2m 05s'), findsOneWidget);
-    expect(
-      find.bySemanticsLabel('Question 33, Unanswered, 0s'),
-      findsOneWidget,
-    );
-    await tester.tap(find.text('32'));
-    expect(opened, [32]);
-    handle.dispose();
-  });
-
   libraryTest('an answer row: yours, the right one and the time; the eye '
       'hides the right one; the status badge (critique S5)', (
     tester,
@@ -195,6 +269,17 @@ void main() {
       findsOneWidget,
     );
     expect(findPlainText('Not answered · 0s'), findsOneWidget);
+    // TalkBack gets plain digits, not "circled digit three" (owner
+    // 2026-10-17); the glyphs stay on screen.
+    final spoken = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((t) => t.semanticsLabel)
+        .whereType<String>()
+        .toList();
+    expect(spoken, [
+      'Your answer 3, Right answer 1, 2m 05s',
+      'Not answered, 0s',
+    ]);
     final badges = tester.widgetList<MxBadge>(find.byType(MxBadge)).toList();
     expect(
       [for (final b in badges) b.tone],
@@ -225,7 +310,6 @@ void main() {
       correctCount: 2,
       questionCount: 2,
       answeredCount: 2,
-      accuracyPercent: 100,
       longest: answers.first,
       typeStats: const [
         TopikTypeStat(type: TopikQuestionType.r1Topic, correct: 2, total: 2),
@@ -250,6 +334,29 @@ void main() {
     );
     final node = tester.getSemantics(find.text('Wrong'));
     expect(node.getSemanticsData().flagsCollection.isSelected, Tristate.isTrue);
+    handle.dispose();
+  });
+
+  libraryTest('the hero: which test, when and how long, from the attempt, '
+      'and one TalkBack node for the score (critique S2, S3)', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await host(
+      tester,
+      env,
+      TopikSummaryHeroWidget(attempt: _attempt(summary), summary: summary),
+    );
+
+    expect(findPlainText('#96 · TOPIK II · Reading'), findsOneWidget);
+    expect(findPlainTextContaining('1h 02m 11s'), findsOneWidget);
+    expect(find.text('4 / 8'), findsOneWidget);
+    // One node: the card merges the hero's lines into it.
+    expect(
+      find.bySemanticsLabel(RegExp(r'Score 4 of 8, 2 of 4 correct')),
+      findsOneWidget,
+    );
     handle.dispose();
   });
 }

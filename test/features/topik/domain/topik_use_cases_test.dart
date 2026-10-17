@@ -115,6 +115,7 @@ void main() {
     final second = topikOk(await start(content.testId));
     await pumpEventQueue();
     expect(listed.last.single.status!.hasInProgress, isTrue);
+    expect(listed.last.single.status!.completedCount, 1);
     expect(
       [for (final n in details.last.attempts) (n.attempt.id, n.number)],
       [(second.id, 2), (first.id, 1)],
@@ -127,6 +128,10 @@ void main() {
       [(second.id, 1)],
     );
     expect(details.last.progress.sessions, 1);
+    // The list's status follows the delete too (UC-TOPIK-001 A2).
+    expect(listed.last.single.status!.completedCount, 0);
+    expect(listed.last.single.status!.bestScore, isNull);
+    expect(listed.last.single.status!.hasInProgress, isTrue);
   });
 
   test('the detail and the attempt still stream once the test is gone '
@@ -177,10 +182,7 @@ void main() {
     final view = await WatchTopikAttemptUseCase(catalog, attempts)(attempt.id)
         .first;
     expect(view!.detail.answers.first.selectedIdx, 1);
-    expect(
-      await WatchTopikSummaryUseCase(catalog, attempts)(attempt.id).first,
-      isNull,
-    );
+    expect(await WatchTopikSummaryUseCase(attempts)(attempt.id).first, isNull);
 
     topikOk(
       await SubmitTopikAttemptUseCase(catalog, attempts)(
@@ -190,9 +192,8 @@ void main() {
       ),
     );
 
-    final summary = (await WatchTopikSummaryUseCase(catalog, attempts)(
-      attempt.id,
-    ).first)!;
+    final summary = (await WatchTopikSummaryUseCase(attempts)(attempt.id)
+        .first)!;
     expect(summary.summary.score, 2);
     final review = (await WatchTopikReviewUseCase(catalog, attempts)(attempt.id)
         .first)!;
@@ -223,11 +224,32 @@ void main() {
         .first)!;
     expect(gone.isUnavailable, isTrue);
     expect(
-      (await WatchTopikSummaryUseCase(catalog, attempts)(
+      (await WatchTopikSummaryUseCase(attempts)(
         attempt.id,
       ).first)!.summary.score,
       0,
     );
+  });
+
+  test('the summary reads from the snapshot alone: a content read that fails '
+      'changes nothing (BR-TOPIK-019)', () async {
+    final attempt = topikOk(
+      await StartTopikAttemptUseCase(catalog, attempts)(content.testId),
+    );
+    topikOk(
+      await SubmitTopikAttemptUseCase(catalog, attempts)(
+        attemptId: attempt.id,
+        testId: content.testId,
+        elapsedMs: 0,
+      ),
+    );
+    catalog.failure = StateError('the asset bundle cannot be read');
+
+    final summary = (await WatchTopikSummaryUseCase(attempts)(attempt.id)
+        .first)!;
+
+    expect(summary.summary.score, 0);
+    expect(summary.attempt.id, attempt.id);
   });
 
   test('submit refuses when the test is unavailable; delete removes', () async {

@@ -143,6 +143,32 @@ extension TopikLabels on AppLocalizations {
   };
 }
 
+/// An answer's meta line on screens 38 and 39: what the person chose, the
+/// right option unless [right] is null, and the [time] when given.
+/// [shown] writes the options as ①–④ and glues its terms (The Wrap Rule);
+/// [spoken] writes them as plain digits for a screen reader, which reads
+/// "③" as a symbol name (owner 2026-10-17).
+extension TopikAnswerMeta on AppLocalizations {
+  ({String shown, String spoken}) topikAnswerMeta({
+    required int? selected,
+    required int? right,
+    String? time,
+  }) {
+    List<String> terms(String Function(int) option) => [
+      if (selected == null)
+        topikNotAnswered
+      else
+        topikYourAnswer(option(selected)),
+      if (right != null) topikRightAnswer(option(right)),
+      ?time,
+    ];
+    return (
+      shown: metaTerms(terms(topikCircled)),
+      spoken: terms((idx) => '$idx').join(', '),
+    );
+  }
+}
+
 /// An audio position as minutes and seconds, "1:33" (spec §5.5); the
 /// seconds are cut, not rounded, so the clock never runs ahead.
 String topikClockText(int ms) {

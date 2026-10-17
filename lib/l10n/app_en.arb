@@ -174,7 +174,7 @@
         "type": "int"
       }
     },
-    "description": "Screen 35: how many completed attempts."
+    "description": "Screen 35: how many completed attempts. Screen 36: the History header, every attempt in any state."
   },
   "topikSectionEmpty": "No tests yet for this section",
   "@topikSectionEmpty": {
@@ -223,6 +223,14 @@
   "topikCompleted": "Completed",
   "@topikCompleted": {
     "description": "Screen 36 figure and badge."
+  },
+  "topikSessions": "Sessions",
+  "@topikSessions": {
+    "description": "Screen 36 figure: attempts of the test, in any state (BR-TOPIK-020)."
+  },
+  "topikCompletion": "Completion",
+  "@topikCompletion": {
+    "description": "Screen 36 figure: submitted attempts as a share of all attempts (BR-TOPIK-020)."
   },
   "topikPercent": "{value}%",
   "@topikPercent": {
@@ -313,6 +321,42 @@
   "topikDeleteAttempt": "Delete attempt",
   "@topikDeleteAttempt": {
     "description": "Screen 36: the delete button's label."
+  },
+  "topikSummaryOfAttempt": "Summary of attempt {number}",
+  "@topikSummaryOfAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Summary button, so rows with the same visible label stay apart."
+  },
+  "topikReviewOfAttempt": "Review of attempt {number}",
+  "@topikReviewOfAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Review button."
+  },
+  "topikContinueAttempt": "Continue attempt {number}",
+  "@topikContinueAttempt": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: TalkBack name of a row's Continue button."
+  },
+  "topikDeleteAttemptNumber": "Delete attempt {number}",
+  "@topikDeleteAttemptNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36, History: the row's delete button, named with its attempt number for TalkBack and the tooltip."
   },
   "topikDeleteTitle": "Delete this attempt?",
   "@topikDeleteTitle": {
@@ -426,6 +470,15 @@
   "topikPlaybackSpeed": "Playback speed",
   "@topikPlaybackSpeed": {
     "description": "Screen 37: the speed sheet's title and the speed chip's label."
+  },
+  "topikSpeedTrigger": "Playback speed, {speed}",
+  "@topikSpeedTrigger": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: what TalkBack reads for the speed chip, its purpose and its current value, as Playback speed, 1× (the speed is formatted by topikSpeed)."
   },
   "topikAudioFailed": "Couldn't play this audio",
   "@topikAudioFailed": {
@@ -677,26 +730,39 @@
   },
   "topikCorrect": "Correct",
   "@topikCorrect": {
-    "description": "Screens 38, 39: a filter and a status."
+    "description": "Screens 38, 39: a filter, a status, a legend entry, and the caption under the donut's correct-of-total figure."
   },
   "topikTimePerQuestion": "Time per question",
   "@topikTimePerQuestion": {
     "description": "Screen 38: the chart's header."
   },
-  "topikBarLabel": "Question {no}, {status}, {duration}",
-  "@topikBarLabel": {
+  "topikChartSummary": "{count, plural, =1{Time per question, 1 question, longest question {no}: {duration}} other{Time per question, {count} questions, longest question {no}: {duration}}}",
+  "@topikChartSummary": {
     "placeholders": {
-      "no": {
+      "count": {
         "type": "int"
       },
-      "status": {
-        "type": "String"
+      "no": {
+        "type": "int"
       },
       "duration": {
         "type": "String"
       }
     },
-    "description": "Screen 38: a bar of the chart to TalkBack."
+    "description": "Screen 38: what a screen reader says for the whole time chart, as one node (the bars are hidden from it; the answer rows below are the way to each question). Names the question that took longest and its time."
+  },
+  "topikChartSummaryNoTime": "{count, plural, =1{Time per question, 1 question, no time recorded} other{Time per question, {count} questions, no time recorded}}",
+  "@topikChartSummaryNoTime": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 38: the chart's single node when no question has a recorded time, so there is no longest question to name."
+  },
+  "topikAveragePerQuestion": "Average per Q",
+  "@topikAveragePerQuestion": {
+    "description": "Screen 38: a figure, the time spent over all questions divided by the number of questions (\"Q\" is a question, as in the Longest figure). Shown in capitals, it must fit one line in a half-width tile on a 360 dp phone: 124 dp, and \"Average per question\" is 160."
   },
   "topikQuestionTitle": "Question {no}",
   "@topikQuestionTitle": {
@@ -4301,7 +4367,7 @@
   "@importRowDeckNameTooLong": {
     "description": "Why a row is not imported: its section name is too long (BR-DECK-020)."
   },
-  "importCaptionChooseDecks": "{count, plural, =1{Choose how to import 1 deck with a taken name.} other{Choose how to import {count} decks with taken names.}}",
+  "importCaptionChooseDecks": "{count, plural, =1{Pick how to import 1 deck with a taken name.} other{Pick how to import {count} decks with taken names.}}",
   "@importCaptionChooseDecks": {
     "placeholders": {
       "count": {

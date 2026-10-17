@@ -1,6 +1,6 @@
 ---
 feature: topik
-code: [lib/features/topik/domain, lib/features/topik/data, lib/features/topik/di, lib/core/database/tables/topik.drift, lib/core/database/queries/topik_queries.drift, lib/core/database/queries/sync_topik_attempt_queries.drift, tools/topik]
+code: [lib/features/topik/domain, lib/features/topik/data, lib/features/topik/di, lib/features/topik/presentation, lib/app/router/topik_routes.dart, lib/core/database/tables/topik.drift, lib/core/database/queries/topik_queries.drift, lib/core/database/queries/sync_topik_attempt_queries.drift, assets/topik, tools/topik]
 depends_on: []
 ---
 ## Phạm vi
@@ -18,7 +18,7 @@ Thuật ngữ:
 | Phần thi (`section`) | 듣기 (nghe), 읽기 (đọc); 쓰기 (viết) ở Phase C |
 | Kỳ (`round`, 회차) | Một kỳ thi, ví dụ 제96회 |
 | Đề (`TopikTest`) | Bộ (cấp, kỳ, phần thi) — BR-TOPIK-001 |
-| Nhóm câu (`QuestionGroup`) | Các câu dùng chung chỉ thị, đoạn văn, đoạn audio — BR-TOPIK-004 |
+| Nhóm câu (`TopikQuestionGroup`) | Các câu dùng chung chỉ thị, đoạn văn, đoạn audio — BR-TOPIK-004 |
 | Lượt làm bài (`TopikAttempt`) | Một lần người dùng làm một đề — BR-TOPIK-010 |
 | Bản chốt | Kết quả lưu vào lượt và đáp án lúc nộp — BR-TOPIK-013 |
 
@@ -32,7 +32,7 @@ Thuật ngữ:
 | Tổng kết lượt (màn 38) | UC-TOPIK-004 |
 | Ôn lại câu (màn 39) | UC-TOPIK-005 |
 
-Màn 34–39 đã shape, chưa xây: [34](../../shared/ui/screen-handoff/34-topik-home.md) · [35](../../shared/ui/screen-handoff/35-topik-test-list.md) · [36](../../shared/ui/screen-handoff/36-topik-test-detail.md) · [37](../../shared/ui/screen-handoff/37-topik-attempt.md) · [38](../../shared/ui/screen-handoff/38-topik-summary.md) · [39](../../shared/ui/screen-handoff/39-topik-review.md); lối vào ở ruling của [màn 13](../../shared/ui/screen-handoff/13-study-home.md).
+Màn 34–39 đã xây (DEV-394, kế hoạch 6a–6c, 2026-10-15); mỗi detail file ghi layout, state có golden, transition kèm bằng chứng test và copy: [34](../../shared/ui/screen-handoff/34-topik-home.md) · [35](../../shared/ui/screen-handoff/35-topik-test-list.md) · [36](../../shared/ui/screen-handoff/36-topik-test-detail.md) · [37](../../shared/ui/screen-handoff/37-topik-attempt.md) · [38](../../shared/ui/screen-handoff/38-topik-summary.md) · [39](../../shared/ui/screen-handoff/39-topik-review.md); lối vào ở ruling của [màn 13](../../shared/ui/screen-handoff/13-study-home.md).
 
 ## Không thuộc phạm vi
 

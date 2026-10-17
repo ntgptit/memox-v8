@@ -151,6 +151,8 @@ class _TopikReviewScreenState extends ConsumerState<TopikReviewScreen> {
     final isScriptShown = _scriptChoice[group.groupId] ?? true;
     final isLast = index == numbers.length - 1;
     return MxAppShell(
+      // The same column as the attempt (The Column Rule).
+      isSession: true,
       appBar: _appBar(l10n.topikReviewTitle(current, test.questions.last.no)),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

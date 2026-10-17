@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
@@ -17,6 +18,7 @@ import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.d
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
@@ -85,6 +87,23 @@ void main() {
     expect(find.text('3 / 50'), findsOneWidget);
     // The study bar paints its mode upper-case.
     expect(find.text('PRACTICE'), findsOneWidget);
+  });
+
+  libraryTest('TOPIK I reading: the counter reads 31 / 70 and the grid runs '
+      '31 to 70 (BR-TOPIK-001, UC-TOPIK-003)', (tester, env) async {
+    final topik1 = topikTestFixture(level: TopikLevel.topik1);
+    final attempt = await topikSeedAttempt(env, topik1);
+    final handle = tester.ensureSemantics();
+    await pumpTopikAttempt(tester, env, attempt.id, catalog: [topik1]);
+
+    expect(find.text('31 / 70'), findsOneWidget);
+    expect(find.textContaining('31. '), findsOneWidget);
+    await tester.tap(find.text('Questions'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Question 31, not answered'), findsOneWidget);
+    expect(find.bySemanticsLabel('Question 70, not answered'), findsOneWidget);
+    expect(find.bySemanticsLabel('Question 1, not answered'), findsNothing);
+    handle.dispose();
   });
 
   libraryTest('a pick is saved at once and shows only as chosen '
@@ -259,6 +278,7 @@ void main() {
 
   libraryTest('while submitting, a second tap and Back do nothing '
       '(BR-TOPIK-014)', (tester, env) async {
+    final handle = tester.ensureSemantics();
     final attempt = await topikSeedAttempt(
       env,
       reading,
@@ -294,15 +314,33 @@ void main() {
           .onPressed,
       isNull,
     );
+    // Close is disabled, not a live no-op: the bar's callback is null, and
+    // TalkBack reads it as disabled.
+    final close = find.byTooltip('Close');
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.close),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester.getSemantics(close),
+      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+    );
+    await tester.tap(close, warnIfMissed: false);
     await tester.tap(find.byType(MxSpinner), warnIfMissed: false);
     await tester.binding.handlePopRoute();
     await tester.pump();
+    expect(exits.closes, 0);
     expect(held.calls, 1);
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
 
     held.release.complete();
     await tester.pump(const Duration(seconds: 1));
     expect(exits.submitted, [attempt.id]);
+    handle.dispose();
   });
 
   libraryTest('a choice that is not saved says so and is not shown as '
