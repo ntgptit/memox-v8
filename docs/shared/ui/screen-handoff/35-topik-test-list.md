@@ -16,7 +16,7 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 |---|---|---|
 | App bar | `MxAppBar` | "TOPIK I" / "TOPIK II"; Back to 34. |
 | Section switch | `MxSegmentedTray` | Reading · Listening (Writing comes with Phase C). The prompt's bottom tabs are not used: the app's bottom bar already holds the destinations. |
-| Header | `MxCard` | Leading `MxIconTile` (book or headphones), "{n} tests" in `titleMedium`, one line saying what the section is; trailing sort `MxChipTrigger` "Newest round ▾" opening an `MxBottomSheet` of three `MxOptionRow`s. |
+| Header | `MxCard` | Leading `MxIconTile` (book or headphones), "{n} tests" in `texts.sectionTitle`, one line saying what the section is (`texts.body` in `mutedForeground`); trailing sort `MxChipTrigger` "Newest round ▾" (TalkBack "Sort tests, {order}") opening an `MxBottomSheet` of three `MxOptionRow`s. |
 | Rows | `MxCard` of `MxListRow`s | Leading `MxBadge` "#96"; title = the Korean title, one line; meta line 1 = the derived content tags (BR-TOPIK-009) joined by " · "; meta line 2 = the status: "Not started", "In progress", "Best {score} · {n} attempts" (both when both hold, BR-TOPIK-022); a chevron. |
 
 ## States
@@ -56,7 +56,7 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 - **Plan 6a (2026-10-15):** the header (count and sort) shows only with tests; the section tray stays in every state (The Content Gate Rule, critique F4). The count and the sort share the first line; the description reads full width under them.
 - **Plan 6a:** the round badge is neutral (The One Accent Rule); the Korean title is content and may end in an ellipsis (critique F7); tags and status are glued terms (The Wrap Rule).
 - **Owner 2026-10-16 (Q-P6-3):** Reading is `AppIcons.book`, Listening `AppIcons.headphones`, in the header and the empty state (they were the stand-ins `fileText` and `speak`).
-- **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name is the current order alone ("Newest round"); nothing in the node says it sorts. `MxChipTrigger` has no semantic label slot, so the fix is shared: OPEN QUESTION Q-A-2 for the owner. BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
+- **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name was the current order alone ("Newest round"); nothing in the node said it sorts. Q-A-2 is RESOLVED: `MxChipTrigger` has a `semanticLabel` slot (`mx_chip_trigger.dart`), and the sort trigger now passes "Sort tests, {order}" (`topik_test_list_header_widget.dart`). BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
 - **Impeccable fix 2026-10-17 (shared, `MxListRow.hasStableLeading`):** the round badge's width followed its digits (#96 / #91 / #83 drew the Korean title about 3 dp apart), so the rows' left edge was ragged. `TopikTestRowWidget` passes `hasStableLeading: true`: the leading slot is at least `sizeListRow` (56) wide (a "#100" badge is about 55 dp, so a three-digit round still fits; it was `sizeControl`, 48, which a "#100" would have overflowed), so the title column starts at one x whatever the round's digits. VERIFIED also `::hasStableLeading holds a "#100" badge as well as a "#96" one`. VERIFIED by `test/shared/widgets/mx_list_row_test.dart::hasStableLeading: leadings of 20 and 36 start the title at the same x` (and `::without hasStableLeading the leading keeps its own width` pins the default). The `topik_list_*` goldens move with it and go through the golden review. `MxBadge` no longer claims tabular digits (the Design System owns the role's figures).
 - **Impeccable audit 2026-10-17 (P3, not changed):** the loading skeleton is shorter than the loaded layout: the header skeleton is about 72 dp against the real header's 128 dp and the three rows about 216 dp against 263 dp (a TOPIK row is three lines), so the content moves down about 100 dp on load. `MxSkeletonRow` is the shared two-line height (DESIGN.md Feedback); a header-shaped, three-line skeleton is the owner's call. `UNVERIFIED (golden read)` for the measures.
 - **Wireframe pass (owner, 2026-10-16):** nothing missing in scope. The header's "Reading" and "{n} tests" chips repeat the switch and the title; tags stay a meta line (The Wrap Rule); Writing is Phase C.
@@ -64,7 +64,7 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 ## Copy
 
 - Tray: "Reading" · "Listening".
-- Header: "{n} tests" · "Past papers published by NIIED." · sort "Newest round" · "Oldest round" · "Recent activity".
+- Header: "{n} tests" · "Past papers published by NIIED." · sort "Newest round" · "Oldest round" · "Recent activity"; the sort trigger's TalkBack name "Sort tests, {order}" (Q-A-2).
 - Tags: "Explanation" · "Translation" · "Words" · "Grammar" · "Script".
 - Status: "Not started" · "In progress" · "Best {score} · {n} attempts".
 - Empty: "No tests yet for this section".

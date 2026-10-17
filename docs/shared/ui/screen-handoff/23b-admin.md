@@ -36,6 +36,22 @@ Spec [2026-10-07-settings-hub-design.md](../../../superpowers/specs/2026-10-07-s
 
 Goldens: `test/features/settings/presentation/goldens/admin_{light,dark}.png`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (deep link or Admin tools row) | the account is still being confirmed | gate: a skeleton list titled "Admin" | ADR-018 §7. VERIFIED `monitoring_admin_gate_test.dart::while the account is still being confirmed, the gate waits instead of refusing (plan ruling 13)` |
+| gate (wait) | the account is confirmed an admin | loaded | `UNVERIFIED (code read)`: `MonitoringAdminGateWidget` rebuilds on `isAdminProvider` |
+| gate (wait) | the account is confirmed not an admin | gate: "Only an admin can see this" | ADR-018 §7. VERIFIED `monitoring_admin_gate_test.dart::a settled non-admin is refused` |
+| gate (refusal) | Back | the hub (23), or the previous screen | `UNVERIFIED (code read)`: the gate's back button is `maybePop` |
+| loaded | tap Monitoring | 28; Back returns here | monitoring spec §3.1. VERIFIED `test/app/monitoring_routes_test.dart::Settings opens Monitoring above the shell, a row opens its detail, and Back climbs one page at a time` (Back climbs to 23b, then to the hub); the row's presence and order `admin_screen_test.dart::Logs holds Monitoring and the SQL switch, People holds Users, in that order` |
+| loaded | tap Users | 33; Back returns here | users spec U2. VERIFIED `test/app/account_routes_test.dart::an admin opens Users from Settings, and Back returns (users spec U5)` (Back to 23b, then to the hub) |
+| loaded | flip Log SQL statements | the toggle disabled while the save runs, then the new value | SQL log switch spec §5. VERIFIED `sql_log_row_widget_test.dart::shows the row's value and saves the flipped one`; `sql_log_controller_test.dart::set saves once and ignores a second tap while saving` |
+| loaded | the save fails | the toggle keeps its value, toast "Couldn't change that. The switch is unchanged." | VERIFIED `sql_log_row_widget_test.dart::a failed save shows the snackbar and keeps the value`; `sql_log_controller_test.dart::a failed save is reported, then dismissed` |
+| loaded | the settings read has not landed | the toggle is disabled, showing on | `UNVERIFIED (code read)`: `SqlLogRowWidget` passes `onChanged: null` while the value is null |
+| loaded | the account stops being an admin (sign-out, role change) | gate: "Only an admin can see this", the rows gone | `UNVERIFIED (code read)`: the gate watches `isAdminProvider`; the same switch is VERIFIED for the hub's row, `settings_screen_test.dart::an account confirmed as admin shows the row without a restart, and a lost confirmation hides it` |
+| (deep link) | `/settings/monitoring` or `/settings/users` opened directly | that screen; Back returns to the hub | settings hub spec D5. VERIFIED for Monitoring `test/app/account_routes_test.dart::an admin's deep link to Monitoring returns to the hub, not to 23b (settings hub spec D5)`; a non-admin's deep link to Admin or Users meets the gate: `::a non-admin's deep link to Admin meets the gate, titled Admin`, `::a non-admin's deep link to Users meets the gate, titled Users` |
+
 ## Rulings
 
 - **Settings hub spec D4, D5:** one page for the admin rows, behind the gate; leaf paths do not move, so a deep link to a leaf returns to the hub.

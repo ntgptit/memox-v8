@@ -48,10 +48,36 @@ saves the root's options otherwise. A second Save while one runs is ignored (A4)
 | saved | `study_options_saved_light.png` | `study_options_saved_dark.png` | — |
 | saveFailed | `study_options_save_failed_light.png` | `study_options_save_failed_dark.png` | "Not saved" banner and "Retry save"; both stay through edits until a save succeeds. |
 | loading | `study_options_loading_light.png` | `study_options_loading_dark.png` | Skeleton rows, no footer (UI-base row 125). |
-| gone | — | — | (spec §6) a deck gone to the Trash shows "This deck is no longer here" with Back, in the neutral tone (UI-base row 129; owner 2026-10-08). |
-| read error | — | — | `MxErrorState` with Retry and no invented value. |
+| unreadableOverride | — | — | The warning `MxInlineBanner` "This deck's options could not be read. Saving replaces them." above the toggle; Save is enabled with no edit (any save replaces the unreadable override, `StudyOptionsForm.isChanged`). No golden; VERIFIED `study_options_screen_test.dart::an override that cannot be read is named, and Save replaces it`. |
+| gone | — | — | (spec §6) a deck gone to the Trash shows "This deck is no longer here" with Back, in the neutral tone (UI-base row 129; owner 2026-10-08). No golden; VERIFIED `study_options_screen_test.dart::a deck gone to the Trash shows the gone state with Back (spec §6)`. |
+| read error | — | — | `MxErrorState` with Retry and no invented value. No golden; VERIFIED `study_options_screen_test.dart::a failed read shows the error with Retry and no invented value`. |
 
 Goldens: `test/features/settings/presentation/goldens/study_options_{override,defaults,invalid,saving,saved,save_failed,loading}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the read lands | override or defaults, by whether the root has its own options; a sub-deck shows its root's | VERIFIED `study_options_screen_test.dart::a sub-deck shows its root's options, following Settings, with nothing to save (kit defaults, D9)`; the skeleton: `::before the first read the screen shows skeleton rows and no Save (loading)` |
+| loading | the options read fails | read error | VERIFIED `::a failed read shows the error with Retry and no invented value` |
+| read error | Retry | loading, then the state the read gives | `UNVERIFIED (code read)`: `ref.invalidate(studyOptionsProvider)` in `study_options_screen.dart`; the Retry tap is not driven by a test |
+| loading | the root is gone (a `Rejected` read) | gone | VERIFIED `::a deck gone to the Trash shows the gone state with Back (spec §6)` |
+| gone | tap Back | the previous screen | `UNVERIFIED (code read)`: `maybePop` in `_gone` |
+| loaded | the deck goes to the Trash while the screen is open | gone, the draft dropped with the form | `UNVERIFIED (code read)`: the stream emits `Rejected`; a Save in flight ends as `idle` (`study_options_controller.dart`, `deckNotFound`), no test |
+| override / defaults | turn Use app defaults off or on | the controls or the plain values, the same values kept; Save enabled only for a change | VERIFIED `::while app defaults are on the values are read-only text; turning them off brings the controls back with the same values (E1; critique 2026-09-30)`; controller `study_options_controller_test.dart::turning app defaults on shows the app's values, not the override it replaces` |
+| override | step the card limit, pick an order | Save enabled (D9) | VERIFIED `::turning app defaults off, stepping and saving writes the root's options and says so (A1)` |
+| override | type a number outside 1 to 200 | invalid: the message under the stepper, Save disabled | VERIFIED `::a typed 250 is refused under the stepper and Save waits (E1)`; `study_options_controller_test.dart::a typed 250 is invalid and Save writes nothing (E1)` |
+| invalid | type a valid number, or step | override, the message gone | `UNVERIFIED (code read)`: `typeCardLimit` and `stepCardLimit` reset `isCardLimitInvalid` |
+| override | tap the speech language row | the speech language sheet; a pick is saved with the rest | VERIFIED `::following the defaults, the speech language is plain text; own options open the sheet and Save writes the pick`; closing the sheet without a pick is `UNVERIFIED (code read)` |
+| defaults | tap the speech language row | nothing (inert while the toggle is on) | VERIFIED same test (`expect(find.byType(MxBottomSheet), findsNothing)`) |
+| override / defaults | tap Save | saving, then saved: the draft resets, the toast "Saved · applies to the next session" | VERIFIED `::turning app defaults off, stepping and saving writes the root's options and says so (A1)`; `study_options_controller_test.dart::Use app defaults clears the root's override (A1)` |
+| saving | a second Save, or an edit | ignored (A4) | VERIFIED `study_options_controller_test.dart::a second Save while one runs is ignored (A4)`; the edit guard (`isSaving`) is `UNVERIFIED (code read)` |
+| saving | the write fails | saveFailed: "Not saved" banner, footer "Retry save", the draft kept | VERIFIED `study_options_screen_test.dart::a failed save names what the deck still uses; Retry save writes it (E4)`, `::a failed save shows a danger banner at the top; the caption stays the local-only line (critique 2026-09-30 part 3d-1)` |
+| saveFailed | edit | saveFailed stays (banner and Retry save kept) | `UNVERIFIED (code read)`: `StudyOptionsState.edited` keeps `failed` (part 3d-2) |
+| saveFailed | Retry save | saving, then saved | VERIFIED `::a failed save names what the deck still uses; Retry save writes it (E4)`; `study_options_controller_test.dart::a failed save keeps the draft, and Retry save writes it (E4)` |
+| saving | the deck is deleted meanwhile (`deckNotFound`) | idle, then gone from the stream | `UNVERIFIED (code read)`: `study_options_controller.dart` |
+| saving | Back, the screen is gone before the write answers | nothing shown; the write still lands | `UNVERIFIED (code read)`: `if (!ref.mounted) return` after the await, so no toast |
+| unreadableOverride | tap Save | saving, then saved with the options shown | VERIFIED `study_options_controller_test.dart::an unreadable override can be replaced by Save`; the screen enables Save in `::an override that cannot be read is named, and Save replaces it` |
 
 ## Rulings
 

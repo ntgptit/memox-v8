@@ -14,7 +14,7 @@ FE-B8; ADR-018 §6 to §8; spec
 ## Entry points
 
 - Screen 23b (Admin, admin only), Logs, row "Monitoring" (settings hub spec D4). Route `/settings/monitoring`, on the root
-  navigator like Sync; Back returns to 23.
+  navigator like Sync; Back returns to 23b, since 23b pushes it (`lib/app/router/admin_routes.dart`).
 - A row opens its detail at `/settings/monitoring/:id` (`?local=1` for a row of the device
   buffer), nested under the list, so Back climbs one page at a time and the list keeps its
   pages and scroll position.
@@ -72,12 +72,67 @@ The images are the goldens.
 | detail, fixed with a note | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png) | Golden `monitoring_detail_fixed_*`, scrolled to the Details: Fixed by, Fixed at, the note, Reopen. |
 | detail, a row of the buffer | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png) | Golden `monitoring_detail_local_*`: no triage, no user. |
 | list, loading | — | — | `MxSkeletonList`, six rows. |
+| list, loading more | — | — | The last rows stay and an `MxSpinner` sits under them while the next 100 load (`MonitoringMore.loading`). Code read: `monitoring_server_list_widget.dart` `_End`; no golden. |
+| list, load more failed | — | — | The rows stay; an `MxInlineBanner` (danger) "Couldn't load more logs." with a small Retry replaces the spinner (`MonitoringMore.failed`); no loop on scroll. No golden; `monitoring_screen_test.dart::a failed page keeps the rows and offers Retry, not a loop`. |
+| list, end | — | — | "No more logs" caption once `next` is null. `monitoring_screen_test.dart::the next page loads near the end, and the end says so`. |
+| Not sent, loading | — | — | The chip stays; below it an `MxSkeletonList`, six rows, until the buffer's first answer (`PendingLogsState.logs` is `AsyncLoading`). Code read: `monitoring_pending_tab_widget.dart`; no golden. |
+| Not sent, error | — | — | The chip stays; below it `MxErrorState` "Couldn't load logs" with the local-first body and Retry (the buffer's watch failed). Code read: same file; no golden. |
+| Not sent, empty | — | — | "Nothing waiting" (success tone) for an empty buffer, "No logs at these levels" (neutral) when the chosen levels hide every row; the note shows only while logs wait. `monitoring_not_sent_test.dart::Not sent has words for an empty buffer and for a level with no row`. |
+| detail, changing | — | — | Mark fixed / Reopen shows a spinner and is disabled while the change runs (`isLoading`); the page stays. Code read: `monitoring_detail_screen.dart` `_triage`; no golden. |
+| status sheet | — | — | `MxBottomSheet` "Mark fixed" / "Reopen" with the optional note and Cancel · Save. `monitoring_detail_screen_test.dart::Mark fixed asks for an optional note, says so, and the button becomes Reopen`; no golden. |
+| detail, change failed | — | — | The log as it was, toast "Couldn't change that. Nothing changed." with Retry; the toast leaves with the page. `::a change that fails offline says nothing changed and Retry does it`, `::leaving the page takes its failed-change toast with it`. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
 | list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
 | list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). |
 | detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; gone: a neutral `MxEmptyState`, "This log is gone" / "It may have been cleaned up." (owner 2026-10-08) |
 
 Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,list_all_levels,list_empty,list_offline,not_sent,level_sheet}_{light,dark}.png` and `monitoring_detail_{open,open_trace,fixed,local}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (entry) | the account is not an admin | the gate: "Only an admin can see this", nothing read | ADR-018 §7. VERIFIED `monitoring_admin_gate_test.dart::a settled non-admin is refused`; the wait while the account is confirmed `::while the account is still being confirmed, the gate waits instead of refusing (plan ruling 13)` |
+| list, loading | the first page lands | list, loaded / empty / no match | spec §3.4. VERIFIED `monitoring_screen_test.dart::it opens on open warnings and errors, with their count`, `::no open problems is a calm empty state` |
+| list, loading | the read fails | list, offline / error / not an admin | spec §3.4. VERIFIED `::offline says so and points at Not sent, with a Retry`, `::another failure is a local-first error with a Retry`, `::FORBIDDEN says only an admin can see this`; the three kinds `monitoring_list_controller_test.dart::a failure is told apart: not an admin, offline, or other` |
+| list, offline / error | Retry | list, loading, then the state the read gives | VERIFIED `monitoring_list_controller_test.dart::a retry after a failure asks the first page again` |
+| list, offline | tap "Not sent" | Not sent tab | plan ruling 12. VERIFIED `monitoring_not_sent_test.dart::Not sent works while the server tab is offline` |
+| list, not an admin | | the search field and filters are not drawn | Impeccable 2026-09-29 F7. `UNVERIFIED (code read)`: `monitoring_server_tab_widget.dart` `isRefused` |
+| list, loaded | scroll within ten rows of the end | list, loading more | spec §3.5. VERIFIED `::the next page loads near the end, and the end says so`; `monitoring_list_controller_test.dart::a full page is followed by the next, and a short one ends the list`, `::a second loadMore while one is in flight asks nothing` |
+| list, loading more | the page lands | list, loaded (more rows), or the end | same tests |
+| list, loading more | the page fails | list, load more failed (rows kept) | VERIFIED `::a failed page keeps the rows and offers Retry, not a loop`; `monitoring_list_controller_test.dart::a failed page keeps the rows and loadMore is its retry` |
+| list, load more failed | Retry | list, loading more | VERIFIED same tests |
+| list, loading more | a filter or search change lands first | the old page is dropped | VERIFIED `monitoring_list_controller_test.dart::a next page that lands after a filter change is dropped`, `::a slow answer to the old filter never overwrites the new one`, `::an old failure never replaces the new rows` |
+| list, loaded | pull down | the rows stay until the first page lands | VERIFIED `::pull to refresh asks the first page again`; `monitoring_list_controller_test.dart::a pull to refresh keeps the rows until the first page lands` |
+| list, loaded | the pull to refresh fails | list, offline / error: the rows are replaced | `UNVERIFIED (code read)`: `MonitoringListController._loadFirst` shows `MonitoringListFailed` over the kept rows |
+| list, loaded | type in the search | the first page of the search, 400 ms after the last key | VERIFIED `::the search asks once the field has been still for 400 ms`; `monitoring_list_controller_test.dart::a filter change before the search fires keeps the search` |
+| list, loaded | apply a filter sheet | list, loading, then the first page of the filter | VERIFIED `monitoring_filters_test.dart::the Level chip shows its choice and its sheet applies it`, `::Reset puts a sheet back to its default, Apply keeps it`; the same filter again asks nothing `monitoring_list_controller_test.dart::the same filter again asks nothing` |
+| list, no match | Clear filters | list, loading with the default filter; the search text cleared | VERIFIED `::another filter with no match offers to clear the filters`; `monitoring_list_controller_test.dart::clearing the filters resets every filter and the search` |
+| list, loaded | tap a row | detail (`/settings/monitoring/:id`); Back returns with the pages kept | spec §3.5. VERIFIED `::a tap on a row opens its detail`; `test/app/monitoring_routes_test.dart::Settings opens Monitoring above the shell, a row opens its detail, and Back climbs one page at a time` (the list is not asked again after Back); the scroll position kept is `UNVERIFIED (code read)` |
+| (deep link) | a log's path, or the list's | the detail / the list; Back lands on the list / the hub; a non-admin gets the gate before anything is read | VERIFIED `test/app/monitoring_routes_test.dart::a deep link to a log opens its detail, and Back lands on Monitoring`, `::a deep link to $name from an account that is not an admin builds nothing and says only an admin can see this`; the list's Back to the hub `test/app/account_routes_test.dart::an admin's deep link to Monitoring returns to the hub, not to 23b (settings hub spec D5)` |
+| list | tab to Not sent / Server | the other tab; both controllers live as long as the screen | VERIFIED `monitoring_not_sent_test.dart::switching tabs keeps the pages of the server tab` |
+| Not sent, loading | the buffer answers | Not sent, loaded / empty | `pending_logs_controller_test.dart::it watches warnings and errors first, and shows what arrives` (the controller); the skeleton is `UNVERIFIED (code read)` |
+| Not sent, loading | the watch fails | Not sent, error | `pending_logs_controller_test.dart::a watch that fails shows its error` (the controller); the screen's `MxErrorState` is `UNVERIFIED (code read)` |
+| Not sent, error | Retry | Not sent, loading, then the state the buffer gives | `UNVERIFIED (code read)`: the button calls `ref.invalidate(pendingLogsControllerProvider)`, which rebuilds the controller |
+| Not sent | pick other levels | the rows stay until the buffer answers for the new levels | VERIFIED `pending_logs_controller_test.dart::new levels watch again, keep the rows until the answer, and stop the old watch` |
+| Not sent | a log is written to the buffer | the rows and the tab count update | VERIFIED `pending_logs_controller_test.dart::every write to the buffer shows` |
+| Not sent | tap a row | detail with `?local=1`: no triage, no user | VERIFIED `monitoring_detail_screen_test.dart::a row of the device buffer has no triage and no user` (the page); the tap `UNVERIFIED (code read)` |
+| Not sent | flip the SQL log switch | as 23b | `sql_log_row_widget_test.dart::shows the row's value and saves the flipped one` |
+| detail, loading | the log lands | detail, loaded | VERIFIED `monitoring_detail_controller_test.dart::a server log is read and shown`, `::a buffered log is read from the buffer, and cannot be triaged`; the skeleton `monitoring_detail_screen_test.dart::while it loads the page is a skeleton, with no actions` |
+| detail, loading | the log is gone | detail, gone | VERIFIED `::a log that is gone says it may have been cleaned up`; `monitoring_detail_controller_test.dart::a log that is gone is told so` |
+| detail, loading | the read fails | detail, error / offline / not an admin | VERIFIED `::offline and other failures offer Retry, not an admin its words`; `monitoring_detail_controller_test.dart::a read that fails is told apart, and a retry reads again`, `::not an admin is its own failure` |
+| detail, error / offline | Retry | detail, loading, then the state the read gives | VERIFIED `monitoring_detail_controller_test.dart::a read that fails is told apart, and a retry reads again` |
+| detail, loaded | tap Copy | the log as JSON on the clipboard; toast "Copied" | VERIFIED `::Copy puts the whole log on the clipboard as JSON` |
+| detail, loaded | tap Mark fixed / Reopen | status sheet | VERIFIED `::Mark fixed asks for an optional note, says so, and the button becomes Reopen`, `::Reopen says Reopened` |
+| status sheet | Cancel or dismiss | detail, loaded; nothing changed | VERIFIED `::cancelling the sheet changes nothing` |
+| status sheet | Save | detail, changing | `monitoring_detail_controller_test.dart::a second change waits for the first`; the spinner is `UNVERIFIED (code read)` |
+| detail, changing | the server answers | detail, loaded with the new status; toast "Marked fixed" / "Reopened"; the list updates or drops the row | VERIFIED `monitoring_detail_controller_test.dart::marking fixed shows the server's row and says so`, `::the list drops the row when its filter no longer matches` |
+| detail, changing | the page is left first | the answer still updates the list | VERIFIED `monitoring_detail_controller_test.dart::a change that lands after the page is left still updates the list`, `::a change with no list open does not open one` |
+| detail, changing | the change fails | detail, change failed | VERIFIED `::a change that fails offline says nothing changed and Retry does it`; `monitoring_detail_controller_test.dart::a change that fails changes nothing and offers the same change again` |
+| detail, changing | the log is gone | detail, gone | VERIFIED `monitoring_detail_controller_test.dart::a change of a log that is gone leaves the page saying so` |
+| detail, changing | a second tap | ignored (the button is disabled) | VERIFIED `monitoring_detail_controller_test.dart::a second change waits for the first` |
+| detail, change failed | leave the page | the toast is closed | VERIFIED `::leaving the page takes its failed-change toast with it` |
+| detail, loaded | the log is a 256 kB context | rendered whole, selectable, in a scroll | VERIFIED `::a 256 kB context renders whole, selectable, in a scroll` |
 
 ## Rulings
 
@@ -88,7 +143,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 - **Plan ruling 4:** the device / user filter is a sheet of two text fields, a device id and a user id.
 - **Plan ruling 12:** the offline state offers Retry above Not sent.
 - **Plan ruling 13:** rows sit directly in the page's scroll, with no card around them.
-- **Owner 2026-09-29, UI-base row 147:** code uses `bodyMedium` in `AppTypography.monoFamily`, the system monospace.
+- **Owner 2026-09-29, UI-base row 147:** code uses `texts.body` with `AppTypography.monoFamily`, the system monospace.
 - **Owner 2026-09-29 (Impeccable audit):** the detail shows the level and status first, then the message, error, trace and context, then compact Details without an Event row.
 - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; the detail shows the full date and `HH:mm:ss`, 24-hour in every language.
 - **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists' success state tints with success.

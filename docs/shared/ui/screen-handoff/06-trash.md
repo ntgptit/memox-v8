@@ -9,7 +9,7 @@ place the person picks, or deleted for good. UC-TRASH-001; spec
 
 ## Entry points
 
-- **The Library's app bar:** the Trash icon, beside Coming soon (D1).
+- **The Library's app bar:** the Trash icon, after Starter decks and Tags; it stays when the Library is empty (D1, screen 01).
 - **Toasts:** the toast after several cards move to the Trash, and every refused Undo,
   both through "Open Trash" (D4, UC-TRASH-001 E3).
 - **Gone states:** the "no longer here" states of an open deck, the card editor and the
@@ -40,22 +40,65 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | all | `trash_all_light.png` | `trash_all_dark.png` | The tile is tinted, and "Was in" has no glyph. |
-| cards | no golden | no golden | — |
-| decks | no golden | no golden | — |
+| cards | no golden | no golden | The Cards chip: only cards; `trash_screen_test.dart::each filter counts its kind and shows only it (A6)`. |
+| decks | no golden | no golden | The Decks chip, as above. |
 | actions | `trash_actions_light.png` | `trash_actions_dark.png` | A row tap opens it too. |
-| restoreTarget | `trash_restore_target_light.png` | `trash_restore_target_dark.png` | Targets read as paths, without counts or "where it was". |
+| restoreTarget | `trash_restore_target_light.png` | `trash_restore_target_dark.png` | Targets read as paths, without counts or "where it was". The targets follow the store while the sheet is open (`trash_restore_test.dart::the targets follow the store while the sheet is open (E2)`). |
 | noTarget | `trash_no_target_light.png` | `trash_no_target_dark.png` | As the move sheets draw it: the neutral folder, and a filled OK. |
-| restored | no golden | no golden | — |
+| restored | no golden | no golden | The sheet closes and the toast names the entry or the count and the deck; a selection ends. `trash_restore_test.dart::a card goes back into a deck the person picks (UC-TRASH-001 steps 5-7)`, `trash_selection_test.dart::Restore 2… asks one target for both, then ends the selection (UC-TRASH-001 A2)`. |
+| restoring | no golden | no golden | The sheet is held: every target is disabled until the write lands, a second tap does nothing. Code read: `trash_restore_sheet_widget.dart`. |
+| restoreTargetsLoading | no golden | no golden | `MxDeckPickerLoadingSheet` with the title and three skeleton rows (the rule is unknown until the targets load). Code read: `trash_restore_sheet_widget.dart`. |
+| restoreTargetsError | no golden | no golden | `MxDeckPickerErrorSheet`: "Couldn't open Trash" with Retry and Cancel. Code read: `trash_restore_sheet_widget.dart`. |
+| restoreRefused | no golden | no golden | The restore is refused: the sheet closes with the rejection as a toast and the list follows the store (spec §6). A failure keeps the sheet and shows the failure toast. Code read: `trash_restore_sheet_widget.dart`. |
 | undoRefused | no golden | no golden | Shown where the item was deleted, with Open Trash (UI-base row 109). |
 | selection | `trash_selection_light.png` | `trash_selection_dark.png` | "Restore ({n})" · "Delete ({n})" as a filled destructive button, the note hidden, the other kind dimmed (owner 2026-09-26). |
+| selectionNone | no golden | no golden | "Select" or a long-press started the mode and nothing is picked: "Select entries" in the bar, both footer buttons disabled, every row selectable. `trash_selection_test.dart::Select starts with nothing chosen; the first pick locks the kind (BR-TRASH-011)`. |
+| kindLock | no golden | no golden | After the first pick: "Cards and decks can't be selected together." above the list, the other kind dimmed and not tappable, the retention note hidden. `trash_selection_test.dart::while selecting, the retention note hides and one line says why the other kind waits`, `::while cards are selected, a deck row is dimmed and a card row is not`. |
+| selectionShrinks | no golden | no golden | A picked entry leaves the Trash (it expired): the count and the header follow, no stale count. `trash_selection_test.dart::a picked entry that leaves the Trash leaves every count`. |
+| selectionEmptied | no golden | no golden | Every entry leaves the Trash while selecting: the empty state shows under the selection bar ("Select entries", close), the footer stays with both buttons disabled; close or Back leaves the mode. Code read: `trash_screen.dart` (`isSelecting` is not reset when the list empties). |
 | purgeConfirm | `trash_purge_confirm_light.png` | `trash_purge_confirm_dark.png` | No glyph, left-aligned (UI-base row 108). |
-| purged | no golden | no golden | — |
-| youngerInside | `trash_purge_blocked_light.png` | `trash_purge_blocked_dark.png` | "deleted earlier", in a warning banner (D6). |
+| purged | no golden | no golden | The dialog closes and "{n} cards deleted permanently" (or decks) shows; nothing shows when the store skipped every batch. `trash_selection_test.dart::Delete for good names the count, focuses Keep in Trash, and deletes only on its own button (BR-TRASH-011)`. |
+| purging | no golden | no golden | Delete spins, Keep in Trash and Back wait; nothing is deleted behind a closed dialog. `trash_selection_test.dart::while the purge runs, Keep in Trash and Back wait for it; nothing is deleted behind a closed dialog`. |
+| purgeFailed | no golden | no golden | The purge fails: the dialog stays, the failure toast shows, Delete is usable again. Code read: `trash_purge_dialog_widget.dart`. |
+| youngerInside | `trash_purge_blocked_light.png` | `trash_purge_blocked_dark.png` | "deleted earlier", in a warning banner, one per batch the purge skipped and that is still in the Trash, above the list (D6). `trash_selection_test.dart::a purge the store skips names what it still holds (spec D6)`. |
+| noteDismissed | no golden | no golden | After "Hide this note" the retention note is gone and stays gone on this device. `trash_screen_test.dart::the retention note can be hidden, and stays hidden (critique 2026-09-30)`. |
 | empty | `trash_empty_light.png` | `trash_empty_dark.png` | — |
-| loading | no golden | no golden | Skeleton rows. |
+| loading | no golden | no golden | Skeleton rows. `trash_screen_test.dart::while the entries load, skeleton rows stand in`. |
 | error | `trash_error_light.png` | `trash_error_dark.png` | The app's local-first body, "Nothing was lost. Try again in a moment." |
 
 Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_target,no_target,selection,purge_confirm,purge_blocked,empty,error}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (entry) | the Trash opens | loading; the auto-purge runs once, a failure leaves the list as it is | `UNVERIFIED (code read)`: `trash_screen.dart` `initState`; the purge itself is `trash_selection_test.dart::a picked entry that leaves the Trash leaves every count` |
+| loading | the entries land | all (or empty when none) | VERIFIED `trash_screen_test.dart::entries read newest first with their kind, age, time left and origin (UC-TRASH-001 step 3)`, `::an empty Trash says so, with no note and no filters` |
+| loading | the read fails | error | VERIFIED `::a failed read says so; Retry reads again (E5)` |
+| error | Retry | loading, then all / empty | VERIFIED same test |
+| all | choose Cards / Decks / All | cards / decks / all | VERIFIED `::each filter counts its kind and shows only it (A6)` |
+| all | tap a row or ⋮ | actions | VERIFIED `::⋮ offers Restore… and Delete permanently for its entry`; the row tap shares `_openActions`: `UNVERIFIED (code read)` |
+| actions | Restore… | restoreTargetsLoading, then restoreTarget / noTarget / restoreTargetsError | restoreTarget and noTarget VERIFIED `trash_restore_test.dart::a card goes back into a deck the person picks (UC-TRASH-001 steps 5-7)`, `::with nowhere to go, the sheet says why and offers OK (E1)`; loading and error `UNVERIFIED (code read)` |
+| restoreTargetsError | Retry | restoreTargetsLoading, then the targets | `UNVERIFIED (code read)`: `trash_restore_sheet_widget.dart` invalidates the targets provider |
+| restoreTarget | tap a target | restoring, then restored | VERIFIED `trash_restore_test.dart::a card goes back into a deck the person picks (UC-TRASH-001 steps 5-7)`, `::a top-level deck goes back to the top level, which the person still confirms (BR-TRASH-006)`, `::a sub-deck goes under a deck that could take it by a move` |
+| restoring | a second tap on a target | ignored | `UNVERIFIED (code read)`: `_isRestoring` guard |
+| restoring | the restore is refused or fails | restoreRefused | refusal copy VERIFIED `trash_rejection_message_test.dart`; the sheet behaviour `UNVERIFIED (code read)` |
+| restoreTarget | the last target disappears while open | noTarget | VERIFIED `::the targets follow the store while the sheet is open (E2)` |
+| noTarget | OK | the Trash, nothing restored | VERIFIED `::with nowhere to go, the sheet says why and offers OK (E1)` |
+| actions | Delete permanently | purgeConfirm | `UNVERIFIED (code read)`: `trash_screen.dart`; the dialog is VERIFIED through the selection path below |
+| all | tap Select, or long-press a row | selectionNone / selection with that row | VERIFIED `trash_selection_test.dart::Select starts with nothing chosen; the first pick locks the kind (BR-TRASH-011)`, `::a long-press starts the selection with its entry (spec D8)` |
+| selectionNone | pick the first entry | selection + kindLock | VERIFIED same first test |
+| selection | tap an entry of the other kind | nothing | VERIFIED `::while cards are selected, a deck row is dimmed and a card row is not` |
+| selection | tap Restore ({n}) | the restore sheet for the whole selection; on success the selection ends | VERIFIED `::Restore 2… asks one target for both, then ends the selection (UC-TRASH-001 A2)` |
+| selection | tap Delete ({n}) | purgeConfirm | VERIFIED `::Delete for good names the count, focuses Keep in Trash, and deletes only on its own button (BR-TRASH-011)` |
+| selection | close or Back | all, the mode left before the screen is | `UNVERIFIED (code read)`: `trash_screen.dart` `PopScope`; the close glyph's label is in the bar |
+| selection | a picked entry expires | selectionShrinks | VERIFIED `::a picked entry that leaves the Trash leaves every count` |
+| selection | every entry leaves | selectionEmptied | `UNVERIFIED (code read)`: `trash_screen.dart` |
+| purgeConfirm | Keep in Trash | the Trash, nothing deleted | VERIFIED `::Delete for good names the count, focuses Keep in Trash, and deletes only on its own button (BR-TRASH-011)` |
+| purgeConfirm | Delete | purging, then purged; the selection ends | VERIFIED `::while the purge runs, Keep in Trash and Back wait for it; nothing is deleted behind a closed dialog` |
+| purging | the store skips a batch | purged for the rest, youngerInside for the skipped | VERIFIED `::a purge the store skips names what it still holds (spec D6)` |
+| purging | the purge fails | purgeFailed | `UNVERIFIED (code read)`: `trash_purge_dialog_widget.dart` |
+| all | tap Hide this note | noteDismissed | VERIFIED `trash_screen_test.dart::the retention note can be hidden, and stays hidden (critique 2026-09-30)` |
 
 ## Rulings
 

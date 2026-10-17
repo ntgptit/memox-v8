@@ -61,28 +61,93 @@ One `MxBottomSheet`, "Sort & filter":
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the learning fill, `statusLearning` (spec 2026-10-10). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
-| rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. |
+| rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. The app bar keeps only Starter decks and the Trash (`library_content_gate_test.dart::a loading root keeps only Starter decks and the Trash over the skeleton`). |
 | rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | No search field, no Tags, no FAB (The Content Gate Rule, DEV-309); Starter decks and the Trash stay. "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
-| rootError | no golden | no golden | "Couldn't load your library" with Retry. |
+| rootError | no golden | no golden | "Couldn't load your decks" · "Nothing was lost. Try again in a moment." with Retry (Retry spins while the read runs). The app bar keeps only Starter decks and the Trash; the search trigger, Tags and the FAB wait for decks (`library_content_gate_test.dart::a failed root keeps only Starter decks and the Trash over Retry (Review Focus 3)`). |
 | rootSearch | no golden | no golden | The field is a trigger: a tap opens screen 04 instead of typing here. |
 | rootSortFilter | `library_sort_light.png` | `library_sort_dark.png` | Progress orders least mastered first, decks with no card last (BR-DECK-027). |
-| rootDueEmpty | no golden | no golden | "Nothing due right now" with "Show all decks". |
+| rootDueEmpty | no golden | no golden | "Nothing due right now" · "No deck has cards waiting." with "Show all decks"; the filter is on, so this is not the first-run empty state (ruling L4). |
 | rootOverflow | `library_deck_actions_light.png` | `library_deck_actions_dark.png` | Rows as in "Action sheet"; Reorder added. |
-| rootCreate | no golden | no golden | The create dialog; no algorithm chosen up front (BR-SRS-001). |
-| rootRename | no golden | no golden | The rename dialog. |
+| rootCreate | no golden | no golden | The create dialog: title "New deck", the "Deck name" field, the Eight boxes / SM-2 segmented tray and a note on the lock; no algorithm chosen up front (BR-SRS-001). A rejected name shows under the field; the confirm is held while the deck is created. |
+| rootCreateSchedulerMissing | no golden | no golden | Create pressed with no algorithm: "Choose how the cards are reviewed." under the tray, nothing written (E3). |
+| rootCreateDiscard | no golden | no golden | Cancel, Back or a tap outside after typing or choosing: "Discard this deck?" confirm (UC-DECK-001 A1). With nothing typed the dialog closes at once. |
+| rootRename | no golden | no golden | The rename dialog: title "Rename deck", the "Deck name" field filled with the current name, confirm "Save". A name rejection stays under the field; any other refusal closes the dialog with a toast (ruling P2-L10). |
 | rootDelete | `library_deck_delete_light.png` | `library_deck_delete_dark.png` | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
 | rootTrashed | `library_deck_trashed_light.png` | `library_deck_trashed_dark.png` | Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
 | deckLoaded | `library_deck_open_light.png` | `library_deck_open_dark.png` | The level's donut beside "MASTERED · {algorithm}"; the breakdown line wraps between whole terms, never "…" (the Wrap Rule; critique 2026-09-30 part 3b). |
 | deckEmpty | `library_deck_unset_light.png` | `library_deck_unset_dark.png` | `unset` deck: both create choices and "Import cards from a file" (screen 11); no FAB (R9, critique 2026-09-30 part 1). |
+| deckEmptyTopLevel | no golden | no golden | A top-level deck with no sub-deck cannot hold cards (BR-DECK-005): "This deck is empty" · "Add a sub-deck to start organising it." (`deckRootEmptyBody`) with "New sub-deck" only; no Import. Code read: `deck_unset_state_widget.dart`. |
+| deckEmptyDeepest | no golden | no golden | An empty deck at level 10 holds no sub-deck (BR-DECK-001): "This deck is at the deepest level, so it holds cards." (`deckUnsetDeepestBody`) with "New card" and "Import cards from a file" only. `open_deck_screen_test.dart::the deepest deck offers a card only`. |
 | deckMaxDepth | no golden | no golden | No FAB. |
 | deckLoading | no golden | no golden | Skeletons under the summary card. |
-| deckError | no golden | no golden | Error state with Retry. |
+| deckError | no golden | no golden | "Couldn't open this deck" · "Nothing was lost. Try again in a moment." with Retry. Code read: `deck_level_screen.dart`. |
 | deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11), a neutral `MxEmptyState` like the card's (owner 2026-10-08); replaces ruling P2-L7. |
 | deckOverflow | no golden | no golden | The sub-deck action sheet. |
-| deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
+| deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). Candidates are named by path; every candidate is held while a move runs. `deck_action_sheet_test.dart::Move lists targets by path and moves there`. |
+| deckMoveLoading | no golden | no golden | `MxDeckPickerLoadingSheet`: title, rule and three skeleton rows. Code read: `deck_move_sheet_widget.dart`. |
+| deckMoveError | no golden | no golden | `MxDeckPickerErrorSheet`: "Couldn't load your decks" with Retry and Cancel. Code read: `deck_move_sheet_widget.dart`. |
+| deckMoveEmpty | no golden | no golden | "Nowhere to move" · "No other deck can hold this one." with OK, not Cancel (ruling O11). `deck_action_sheet_test.dart::with nowhere to go, the picker says so and offers OK`. |
 | deckDelete | no golden | no golden | As rootDelete. |
 | deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
-Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
+| deleteSummaryPending | no golden | no golden | The Move to Trash dialog before the count is read: no body, no note, the confirm disabled. Code read: `deck_delete_dialog_widget.dart`. |
+| deleteSummaryFailed | no golden | no golden | The count is rejected or its read fails: the body says why (the rejection or the failure message) and the confirm stays disabled; Cancel closes. Code read: `deck_delete_dialog_widget.dart`. |
+| deckActionsGone | no golden | no golden | The ⋮ of a row or of the open deck on a deck deleted meanwhile: no sheet, the toast "This deck is no longer here". `deck_action_sheet_test.dart::a row’s actions on a vanished deck say so`. |
+| rootReorder | `library_reorder_light.png` | `library_reorder_dark.png` | Reorder mode: one `MxCard` per deck with a drag handle; "Done" replaces the app bar actions; the search field, due strip, sort pill and FAB are hidden (critique 2026-09-30 part 3d-2). A drop saves at once; a refused drop snaps back with a toast. |
+| deckReorder | no golden | no golden | The same mode inside an open deck of decks: "Done" in the app bar, the FAB hidden. `deck_reorder_test.dart::Done ends the mode and brings back the FAB`. |
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| rootLoading | the level lands | rootLoaded, or rootEmpty with no deck | VERIFIED `deck_level_screen_test.dart::loading shows skeleton rows`, `::a deck made elsewhere appears without a reload (RF2)`; the chrome follows the same state in one frame `library_content_gate_test.dart::scenario C: the first deck brings the search field, Tags and the FAB in the same frame as its row` |
+| rootLoading | the read fails | rootError | VERIFIED `deck_level_screen_test.dart::a load error offers Retry, in plain words` |
+| rootError | Retry | rootLoading, then rootLoaded / rootEmpty | VERIFIED `deck_level_screen_test.dart::Retry after a load error loads the level again` |
+| deckError | Retry | deckLoading, then the deck | `UNVERIFIED (code read)`: `deck_level_screen.dart` invalidates `deckViewProvider`; no test taps it |
+| rootEmpty | Create deck | the create dialog (rootCreate) | VERIFIED `library_content_gate_test.dart::first run: an empty Library offers to create a deck` |
+| rootEmpty | Browse starter decks | screen 03 | VERIFIED `library_content_gate_test.dart::rootEmpty offers a starter deck beside Create deck (spec §5.4)` |
+| rootLoaded | tap the FAB | rootCreate | VERIFIED `deck_level_screen_test.dart::the FAB opens the create dialog` |
+| rootCreate | Create with a name and an algorithm | the dialog closes; the new deck's row appears | VERIFIED `create_root_deck_dialog_widget_test.dart::a name and SM-2 create a root deck and close the dialog`, `::the keyboard Done action creates the deck` |
+| rootCreate | Create with a blank or over-long name | the dialog stays, the reason under the field | VERIFIED `::a blank name is refused under the field; nothing is written`, `::a name longer than 200 characters is refused` |
+| rootCreate | Create with no algorithm | rootCreateSchedulerMissing; nothing written | VERIFIED `::no scheduler is chosen up front; Create without one says so and writes nothing (BR-SRS-001, E3)` |
+| rootCreate | a second tap on Create while it runs | one deck | VERIFIED `::a double tap on Create makes one deck (RF3)` |
+| rootCreate | the write fails | the dialog stays, a toast says why | VERIFIED `::a database failure keeps the dialog and says so plainly (RF4)` |
+| rootCreate | Cancel, Back or a tap outside, nothing typed | the dialog closes | VERIFIED `::Cancel with nothing typed closes at once (A1)` |
+| rootCreate | Cancel, Back or a tap outside, form started | rootCreateDiscard; Keep editing returns, Discard closes and writes nothing | VERIFIED `::Cancel after typing asks first: Keep editing keeps the name, Discard closes and writes nothing (A1)`; Back and the outside tap share `_leave()`: `UNVERIFIED (code read)` |
+| rootCreate | the dialog is left while Create runs | no state set after the dialog is gone | `UNVERIFIED (code read)`: `create_root_deck_dialog_widget.dart` returns on `!mounted` |
+| rootLoaded | tap a deck row | deckLoaded (the deck opens) | VERIFIED `open_deck_screen_test.dart::a deck of decks lists its sub-decks; a row opens its deck` |
+| rootLoaded | tap the due strip | Study home | VERIFIED `deck_level_screen_test.dart::the due strip is a button to Study home (critique 2026-09-30, R4)` |
+| rootLoaded | tap the search field | screen 04 | VERIFIED `deck_level_screen_test.dart::the search field opens the search` |
+| rootLoaded | tap Starter decks / Tags / Trash | screens 03 / 05 / 06 | VERIFIED `deck_level_screen_test.dart::the root app bar holds Starter decks, Tags and Trash, as kit 01 draws it; nothing waits under Coming soon (spec D2)` for the bar; the taps are `UNVERIFIED (code read)` |
+| rootLoaded | tap the sort pill, choose a sort | rootSortFilter; the list re-orders at once | VERIFIED `deck_level_screen_test.dart::sort by name reorders the decks`, `::sort by progress puts the least mastered first and the empty deck last (BR-DECK-027)` |
+| rootSortFilter | turn on "Only decks with due cards", Done | rootLoaded with idle decks hidden, or rootDueEmpty | VERIFIED `deck_level_screen_test.dart::the due filter hides idle decks and says so when none is left` |
+| rootDueEmpty | Show all decks | rootLoaded | VERIFIED same test |
+| rootLoaded (filter on) | the last deck is deleted | rootEmpty, not rootDueEmpty | VERIFIED `library_content_gate_test.dart::the last deck under "Due only" leaves the first-run empty state, not "Nothing due" (Review Focus 1)` |
+| rootLoaded / deckLoaded | tap ⋮ on a row or the open deck | rootOverflow / deckOverflow | VERIFIED `deck_action_sheet_test.dart::a row’s ⋮ opens that deck’s sheet, with Open first` |
+| rootOverflow | the deck was deleted meanwhile | deckActionsGone | VERIFIED `deck_action_sheet_test.dart::a row’s actions on a vanished deck say so` |
+| rootOverflow | Rename, then Save | the name changes in place | VERIFIED `deck_name_dialog_widget_test.dart::rename starts from the current name and saves the new one`, `deck_action_sheet_test.dart::Rename renames the open deck` |
+| rootRename | a blank name | the dialog stays, the reason under the field | VERIFIED `deck_name_dialog_widget_test.dart::a blank name stays in the dialog, under the field` |
+| rootRename | the deck is gone | the dialog closes, a toast says so | VERIFIED `deck_name_dialog_widget_test.dart::a deck gone meanwhile closes the dialog and says so (P2-L10)` |
+| deckOverflow | Move to another deck | deckMoveLoading, then deckMove / deckMoveEmpty / deckMoveError | deckMove and deckMoveEmpty VERIFIED (`deck_action_sheet_test.dart::Move lists targets by path and moves there`, `::with nowhere to go, the picker says so and offers OK`); loading and error `UNVERIFIED (code read)` |
+| deckMoveError | Retry | deckMoveLoading, then the targets | `UNVERIFIED (code read)`: `deck_move_sheet_widget.dart` invalidates the targets provider |
+| deckMove | tap a target | the sheet closes, the toast "Moved to {deck}" (or the rejection) | VERIFIED `deck_action_sheet_test.dart::Move lists targets by path and moves there` |
+| deckMove | a second tap on a target while the move runs | one move | VERIFIED `deck_action_sheet_test.dart::a double tap on a move target moves once (RF2)` |
+| rootOverflow | Move to Trash, Move | rootTrashed; the row leaves the list | VERIFIED `deck_action_sheet_test.dart::Move to Trash says what goes with the deck, then offers Undo (FE-B1)`; the spinner and a single move `::Move to Trash spins while the deck moves, and moves once (FE-B1 D15)` |
+| deckOverflow (open deck) | Move to Trash, Move | the parent level; the toast with Undo stays | VERIFIED `test/app/library_routes_test.dart::deleting the open deck returns to its parent once (RF1)` |
+| rootDelete | the count is pending, rejected or fails | deleteSummaryPending / deleteSummaryFailed; Move stays disabled | `UNVERIFIED (code read)`: `deck_delete_dialog_widget.dart` |
+| rootDelete | the delete throws a failure | the dialog stays, a toast says why | `UNVERIFIED (code read)`: `deck_delete_dialog_widget.dart` |
+| rootTrashed | Undo within 8 seconds | the deck is back where it was | VERIFIED `deck_action_sheet_test.dart::Undo puts the deck back where it was (UC-TRASH-001 A1)` |
+| rootTrashed | Undo is refused | a toast with the reason and Open Trash; the deck stays in Trash | VERIFIED `deck_action_sheet_test.dart::a refused Undo says why; the deck stays in the Trash (UC-TRASH-001 E3)` |
+| rootTrashed | the screen is left before Undo | Undo still works | The toast lives on the root navigator and reads the app container: VERIFIED for the open-deck step back by `library_routes_test.dart` above; the Undo after a step back is `UNVERIFIED (code read)` |
+| rootOverflow | Reorder | rootReorder | VERIFIED `deck_reorder_test.dart::Reorder is offered for a manual level of two decks or more`, `deck_action_sheet_test.dart::Reorder from the sheet shows the drag handles` |
+| rootReorder | drop a deck | the dropped order shows at once and is saved | VERIFIED `deck_reorder_test.dart::dragging a deck past the next one saves the new order` |
+| rootReorder | a drop is refused | the order snaps back, a toast says why | VERIFIED `deck_reorder_test.dart::a refused drop snaps back and says why (RF3)` |
+| rootReorder | the level updates while a drop saves | the dropped order stays | VERIFIED `deck_reorder_test.dart::a level update while a drop saves keeps the dropped order` |
+| rootReorder | Done | rootLoaded with the FAB and the search field back | VERIFIED `deck_reorder_test.dart::Done ends the mode and brings back the FAB`, `::reorder hides the search field; Done brings it back (critique 2026-09-30 part 3d-2, E3)` |
+| deckLoaded | tap "Study this deck" | screen 14 | VERIFIED `open_deck_screen_test.dart::a deck of decks leads with its summary and its Study (FE-A6 D10)` |
+| deckLoaded | tap a breadcrumb segment | that level, the root as null | VERIFIED `open_deck_screen_test.dart::a breadcrumb tap reports that level, the root as null` |
+| deckEmpty | add the first card or sub-deck | deckLoaded for the content type chosen; deleting the last card returns to deckEmpty | VERIFIED `open_deck_screen_test.dart::deleting the last card turns the deck into its unset state` |
+| deckLoaded | the open deck is deleted elsewhere | deckNotFound; Back to Library or Open Trash | VERIFIED `open_deck_screen_test.dart::a deck deleted while open says it is no longer here and leads back or to the Trash (A8, FE-B1 D11)` |
+| deckLoading | the deck lands, fails or is gone | deckLoaded / deckError / deckNotFound | deckNotFound VERIFIED in the test above; the others `UNVERIFIED (code read)`: `deck_level_screen.dart` |
 
 ## Rulings
 
@@ -119,11 +184,12 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - Summary: "Mastered · {algorithm}".
 - Sort: "Progress" · "Least mastered first".
 - First launch: "Start your library" · "Organize your cards into decks. Create your own or start with a ready-made collection." · "Create deck" · "Browse starter decks" · "Everything stays on this device. Nothing is added until you choose."
-- Error: "Couldn't load your library" · "Your data is safe on this device. Try again in a moment."
-- Due filter, none: "Nothing due right now" · "No deck has cards waiting. The next card becomes due tomorrow at 00:00." · "Show all decks".
-- Create: "New deck" · "Holds sub-decks; sub-decks hold cards." · "Name" · "Review algorithm · required" · "Eight boxes" / "Cards move up a box each time you remember them, back to box 1 when you forget. Forgiving of long breaks." · "SM-2" / "Intervals adapt to how well you recall each card. You grade yourself: again · hard · good · easy." · "Locks once the first card finishes learning. After that, only “Reset learning progress” starts a new cycle." · "Cancel" · "Create deck". No algorithm is chosen up front; Create without one says "Choose how the cards are reviewed." (BR-SRS-001, UC-DECK-001 E3). Cancel, Back or a tap outside after typing asks "Discard this deck?" · "What you typed is not saved." · "Keep editing" · "Discard" (UC-DECK-001 A1).
-- Rename: "Rename deck" · "Only the name changes — sub-decks, cards and schedules stay as they are." · "Rename".
+- Error: "Couldn't load your decks" · "Nothing was lost. Try again in a moment." An open deck that fails reads "Couldn't open this deck" with the same body.
+- Due filter, none: "Nothing due right now" · "No deck has cards waiting." · "Show all decks".
+- Create: "New deck" · field label "Deck name" · "Eight boxes" / "SM-2" (a segmented tray, no descriptions) · "The scheduler locks after the first review. Changing it later resets learning progress." · "Cancel" · "Create". No algorithm is chosen up front; Create without one says "Choose how the cards are reviewed." (BR-SRS-001, UC-DECK-001 E3). Cancel, Back or a tap outside after typing asks "Discard this deck?" · "What you typed is not saved." · "Keep editing" · "Discard" (UC-DECK-001 A1). A new sub-deck uses "New sub-deck" over the same field, with "Create".
+- Rename: "Rename deck" · field label "Deck name" · "Cancel" · "Save". The dialog has no body text.
+- Empty deck: "What goes in here?" · "Add cards to study them here, or nest sub-decks to organise further. A deck holds one or the other." · "New card" · "New sub-deck" · "Import cards from a file" · "The first card or sub-deck decides what this deck holds. Once it is empty again, both options come back." A top-level deck: "This deck is empty" · "Add a sub-deck to start organising it." At level 10: "This deck is at the deepest level, so it holds cards."
 - Not found: "This deck is no longer here" · "It was moved to Trash or deleted while you were away. Anything in Trash can still be restored." · "Back to Library" · "Open Trash".
-- Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck to Trash?" · "“{name}” goes to Trash with its {n} sub-decks and {n} cards." · "Recoverable from Trash for 30 days. Any open study session on these cards ends." · "Cancel" · "Move" · "“{name}” moved to Trash · {n} sub-decks, {n} cards" · "Undo".
-- Move: "Move “{name}” to…" · "Its {n} sub-decks and {n} cards come along, schedules included. Only decks in the same review algorithm can receive it." · "Move here".
+- Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck to Trash?" · "“{name}” goes to Trash with its {n} sub-decks and {n} cards." (the sub-deck and card phrases read "no sub-decks", "1 card" at 0 and 1) · "Recoverable from Trash for 30 days. Any open study session on these cards ends." · "Cancel" · "Move" · "“{name}” moved to Trash · {n} sub-decks, {n} cards" · "Undo".
+- Move: "Move to deck" · "The deck moves with everything in it. Decks that can't hold it aren't offered." · each target is named by its path · "Moved to {deck}" · empty: "Nowhere to move" · "No other deck can hold this one." · "OK". A failed target read: "Couldn't load your decks" · "Nothing was lost. Try again in a moment." · "Retry".
 - Sort & filter: as in "Sort & filter sheet".

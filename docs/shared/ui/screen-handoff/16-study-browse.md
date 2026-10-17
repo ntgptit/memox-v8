@@ -73,6 +73,46 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   in feature code; each screen's icons take their colour from the shared
   icon-tinting mechanism. Not repeated per screen below.
 
+### Session route states
+
+`StudySessionScreen` (`study_session_screen.dart`) owns these around every mode body (16-21). They are the route's states, not a mode's; each mode file lists its own.
+
+| State | Golden (light) | Golden (dark) | App |
+|---|---|---|---|
+| sessionLoading | none | none | Before the session's first view: a centred `MxSpinner` ("Loading") in the session shell (`StudySessionLoadingWidget`). The summary has no loading of its own; it arrives with the view (spec D2). Code read: `study_session_error_widget.dart`. |
+| sessionReadError | none | none | The session could not be read (UC-STUDY-001 E5): `MxErrorState` "Couldn't read this session" with Retry and a close icon (`StudySessionErrorWidget`). VERIFIED without a golden by `study_session_screen_test.dart::a session that cannot be read says so and Retry reads again (UC-STUDY-001 E5)`. |
+| unsavedAnswer | none | none | A busy database refused an answer (`DatabaseLockedFailure`): the card stays, a danger `MxInlineBanner` "Couldn't save that answer" with a small Retry sits under the context line, and the answer is kept (`turn.unsaved`, UC-STUDY-001 E2). VERIFIED without a golden by `::a busy database shows the error on the same card and Retry saves it (UC-STUDY-001 E2)`; the banner's margins by `::M3F-19: the unsaved-answer banner keeps the 16.0 screen margin at 360 wide` (and 24 at 700). |
+| heldTurn | none | none | A graded turn stays drawn in the view it was answered in, with its result, until its mode releases it (spec D5), even when its answer ended the session or stalled the round. VERIFIED `::a held turn stays on screen when its answer ends the session; the summary follows its release (spec D5)`. |
+| stalledRound | none | none | A round whose cards were all deleted has no card to serve: the route shows the loading spinner while it settles (`settle` resumes the session, spec D12), waiting for a held turn to release first. VERIFIED `::a stalled round waits for a held turn before it settles (spec D5)` for the order and the settle; the spinner frame itself is `UNVERIFIED (code read)`. |
+| exitDialog | none | none | ✕ and system Back ask "Stop this session?" with "Keep going" and "Stop" (owner ruling 2026-09-27). VERIFIED `::✕ asks first; Stop abandons and the same screen shows "You left early"; …`, `::Keep studying in the exit dialog changes nothing: the session stays open on the same card (IT-CONT-004)`. |
+| deckGone | none | none | The deck went to the Trash: the toast "This deck no longer exists", then the route leaves for the Library, once (UC-STUDY-001 A5). VERIFIED `::the deck moved to the Trash leaves once, for the Library, with a message (UC-STUDY-001 A5)`. |
+| staleGeneration | none | none | A write came from a stale generation: the toast "This session ended: the deck's learning progress was reset.", then the route leaves for the deck, with no summary (UC-STUDY-001 E4). VERIFIED `::a write from a stale generation leaves for the deck, with no summary (UC-STUDY-001 E4)`. |
+| summary | see 21 | see 21 | An ended session shows screen 21 on the same route (spec D3); system Back there is Done. VERIFIED `::system Back mid-session keeps the ✕ contract: it asks, Stop abandons, the turn taken stays, no Continue; Back on the summary is Done, never a return to a closed session (IT-NAV-010)`. |
+
+### Session route transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| sessionLoading | the view lands | the mode body of the current stage, or the summary if the session has ended | `UNVERIFIED (code read)`: `study_session_screen.dart` `build` and `_pageOf`; every session test pumps past it |
+| sessionLoading | the read fails | sessionReadError | VERIFIED `study_session_screen_test.dart::a session that cannot be read says so and Retry reads again (UC-STUDY-001 E5)` |
+| sessionReadError | Retry | sessionLoading, then the view (the provider is invalidated) | VERIFIED same test (the read runs again); the landing after Retry is `UNVERIFIED (code read)` |
+| sessionReadError | tap the close icon | leaves for the Library (`onLeave(null)`) | `UNVERIFIED (code read)` |
+| any open mode | the stream errors after a view was shown | sessionReadError replaces the body | `UNVERIFIED (code read)`: the `AsyncError` branch of `build` |
+| any open mode | an answer is refused by a busy database | unsavedAnswer; nothing moves or is painted | VERIFIED `::a busy database shows the error on the same card and Retry saves it (UC-STUDY-001 E2)`; `study_session_controller_test.dart::a busy database keeps the answer for Retry and moves nothing (UC-STUDY-001 E2)` |
+| unsavedAnswer | Retry | the same answer is sent again; on success the banner goes and the next turn follows | VERIFIED same screen test; `study_session_controller_test.dart::Retry resends the same pair the busy database refused (E2)` |
+| unsavedAnswer | any other failure on Retry | the turn resets with no banner; the stream shows the session failed (summary `saveError`) | `UNVERIFIED (code read)`: `StudySessionController.answer` catches `Failure` |
+| any open mode | a second command while a write runs | dropped (BR-STUDY-004) | VERIFIED `study_session_controller_test.dart::a second command while a write runs is dropped (BR-STUDY-004)` |
+| any open mode | tap ✕ or system Back | exitDialog | VERIFIED `study_session_screen_test.dart::✕ asks first; Stop abandons …`, `::system Back mid-session keeps the ✕ contract …` |
+| exitDialog | Keep going | the same card, nothing written | VERIFIED `::Keep studying in the exit dialog changes nothing: the session stays open on the same card (IT-CONT-004)` |
+| exitDialog | Stop | summary `leftEarly`; the turns taken stay and the entry offers no Continue | VERIFIED `::✕ asks first; Stop abandons and the same screen shows "You left early"; …`; `study_session_controller_test.dart::abandon ends the session as user_exit and keeps its turns (UC-STUDY-001 A3)` |
+| exitDialog | Stop, and the write fails | the session stays open; the next start closes it (BR-STUDY-072) | `UNVERIFIED (code read)`: `StudySessionController.abandon` |
+| any open mode | the answer ends the session while a turn is held | the held turn stays; the summary shows once it is released | VERIFIED `::a held turn stays on screen when its answer ends the session; the summary follows its release (spec D5)` |
+| any open mode | every remaining card of the round is deleted | stalledRound, then the session serves again | VERIFIED `::a stalled round waits for a held turn before it settles (spec D5)`; `study_session_controller_test.dart::a stalled session settles and serves again (spec D12)` |
+| any open mode | the deck is deleted | deckGone: toast, leave to the Library, once | VERIFIED `::the deck moved to the Trash leaves once, for the Library, with a message (UC-STUDY-001 A5)` |
+| any open mode | the session is invalidated by a stale generation | staleGeneration: toast, leave to the deck | VERIFIED `::a write from a stale generation leaves for the deck, with no summary (UC-STUDY-001 E4)` |
+| summary | tap Done / Study this deck / system Back | the deck / its Study Entry / the deck | Back is VERIFIED in `::system Back mid-session keeps the ✕ contract …`; the two buttons are listed on screen 21 |
+| any open mode | the screen is disposed with a write or a voice running | the voice stops; a late result is dropped (`ref.mounted`) | the voice: VERIFIED `study_speech_test.dart::ending the session stops the voice (BR-STUDY-082)`; the dropped result is `UNVERIFIED (code read)` |
+
 ## Accessibility
 
 - TalkBack reads the top bar (close, mode, "{done} of {total}"), the context line, then the card: term label and term, pronunciation, meaning label and meaning, example. The footer hint is read last.
@@ -96,6 +136,22 @@ Not captured: the swipe-back preview of an earlier card in the round
 round's trail from the session read model, so it survives a resume; the counter does not move. The
 look-back order is the order served, which the stage shuffles (BR-STUDY-022). Goldens
 `test/features/study/presentation/goldens/study_browse{,_looking_back}_*`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| default | left swipe, or tap Next | the next card (the live card is answered with an advance, nothing graded) | VERIFIED `study_browse_test.dart::left advances one stop; right looks back without writing; left from a look-back returns and does not answer twice (IT-MODE-002 steps 4–6, BR-STUDY-048)`, `::a visible Next moves on like a left swipe, for a thumb or a switch (critique 2026-09-30)` |
+| default | right swipe, or TalkBack "Previous card" | lookingBack: the earlier card of the round with a neutral badge; nothing is written, the counter stays | VERIFIED the same first test; golden `study_browse_looking_back_*` |
+| default (first card of the round) | right swipe | nothing; no Previous action offered | VERIFIED `::a right swipe on the round's first card does nothing (FE-A6 D20)`, `::the card offers Next always and Previous only when there is a card behind (IT-MODE-002 step 7)` |
+| lookingBack | left swipe, or Next | one step forward, still no answer; the live card again at the end | VERIFIED the first test above |
+| lookingBack | a new live card arrives | the look back starts over from the live card | `UNVERIFIED (code read)`: `didUpdateWidget` in `study_browse_widget.dart` |
+| default | Next on the stage's last card | the card is answered and the session moves to the next stage or the summary | `UNVERIFIED (code read)`: Browse sends the same advance; the stage change is the session read model's |
+| default | Next or a swipe while a write runs | dropped (BR-STUDY-004) | `UNVERIFIED (code read)`: `isBusy` in `_forward`; the controller side is VERIFIED `study_session_controller_test.dart::a second command while a write runs is dropped (BR-STUDY-004)` |
+| default | Next, and a busy database refuses the answer | the same card stays with the unsaved-answer banner | VERIFIED `study_session_screen_test.dart::a busy database shows the error on the same card and Retry saves it (UC-STUDY-001 E2)` (it swipes in Browse) |
+| default / lookingBack | tap the speaker | the face shown is read (BR-STUDY-079); disabled with the reason when the device lacks the voice | VERIFIED `study_speech_test.dart::with the switch off nothing is read, but the speaker button reads on tap (BR-STUDY-079)`, `::a language the device lacks disables the speaker and says so; auto-play asks the engine, which reads nothing (BR-STUDY-081)` |
+| default | a new card is served | the term is read once, when auto-play is on and a learning session runs | VERIFIED `study_speech_test.dart::each new card is read, and only once` |
+| default | ✕ or Back, deck deleted, stale write, unreadable session | the route states in [Session route states](#session-route-states) | see the table above |
 
 ## Rulings
 

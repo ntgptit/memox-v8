@@ -50,6 +50,37 @@ hub's Study summary names the saved value on return.
 
 Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loading,saving,saved,invalid_limit,save_failed,order_sheet,speech_language_sheet}_{light,dark}.png`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the `app_settings` stream emits | loaded | UC-SETTINGS-001 step 2. VERIFIED `study_defaults_screen_test.dart::the two sections carry their own notes (settings hub spec D3)`; the skeleton is the golden `study_defaults_loading_*` |
+| loading | the read fails | read error | UC E3. VERIFIED `::a failed read on the Study defaults page shows the error with Retry and no value (E3)` |
+| read error | Retry | error with Retry spinning, then loaded | UC E3. The error is VERIFIED in the test above; the tap is `UNVERIFIED (code read)`: `study_defaults_screen.dart` invalidates `appSettingsProvider` |
+| loaded | tap − or + (or hold) | loaded with the draft shown; the write follows 600 ms after the last step | D1, D6. VERIFIED `settings_controller_test.dart::steps settle into one write of the last value (D1, D6)`, `::a step stops at the bounds` |
+| loaded (draft) | the 600 ms settle ends | saving | D1. VERIFIED `::while the limit writes, the stepper spins and the order stays usable (saving)` for the spinner |
+| saving | the write lands | saved: the draft goes, toast "Saved" | D1. VERIFIED `::steps settle into one save, then "Saved" (D1)` |
+| saving | the write fails | saveFailed: the stepper shows the stored value, toast "Couldn't save cards per session. Still {n}." with Retry | UC E2. VERIFIED `::a failed save names the kept value and Retry saves it (E2)`; `settings_controller_test.dart::a failed write keeps the persisted value, says so, and Retry writes the same change (E2)` |
+| saveFailed | Retry | saving, then saved | UC E2. VERIFIED same tests |
+| saving | a step or a typed value while the write runs | saving; the new value is written once the first ends | VERIFIED `settings_controller_test.dart::a step while its own write runs is written after it` |
+| loaded | type a number in 1 to 200 | saving at once, then saved | D6. VERIFIED `settings_controller_test.dart::a typed limit outside 1–200 is shown as invalid and not written; a valid one is written at once (E1)` |
+| loaded | type a number outside 1 to 200 | invalidLimit: nothing is written, the message sits under the label and the stepper | UC E1. VERIFIED `::a typed 250 is refused under the stepper and saves nothing (E1)`, `::a typed 250 is refused across the row, under the label (owner 2026-10-07)` |
+| invalidLimit | type a valid number | saving at once, then saved | UC E1. VERIFIED `settings_controller_test.dart` (same test as the row above) |
+| invalidLimit | tap − or + | the draft steps from the stored value, the message goes | `UNVERIFIED (code read)`: `SettingsController.stepCardLimit` starts from the persisted value when `isCardLimitInvalid` |
+| any | Back within the 600 ms settle | the value is still saved, with no toast | accepted (final review 2026-10-07; see the note under Layout). `UNVERIFIED (code read)`: the hub under the page listens to the same `settingsControllerProvider`, so the settle timer survives the pop |
+| loaded | tap New-card order | the order sheet | owner 2026-10-07. VERIFIED `::the new-card order row names the order and opens a sheet; a pick saves it (owner 2026-10-07)` |
+| order sheet | pick the other order | the sheet closes; saving, then saved: toast "Saved" | VERIFIED same test for the close, the row and the stored order; the toast is `UNVERIFIED (code read)` |
+| order sheet | pick the current order, tap away or Back | the sheet closes, nothing written | `UNVERIFIED (code read)`: `chooseNewCardOrder` returns on the same order; `showNewCardOrderSheet` returns null when dismissed |
+| saving (order) | the write fails | saveFailed: toast "Couldn't save the new-card order." with Retry; the row shows the stored order | `UNVERIFIED (code read)`: `SettingsController._submit`; the failure path is tested for the limit and the speech rows, not for this one |
+| loaded | pick an order while the limit is saving | the pick is dropped with no toast and the sheet has already closed | `UNVERIFIED (code read)`, suspect: `chooseNewCardOrder` returns on `isStudyDefaultsBusy`, although the saving row above says the order "stays usable"; the reverse (a limit during an order write) is queued and VERIFIED (`settings_controller_test.dart::a limit changed while its group writes is written once that write ends, not dropped`) |
+| loaded | flip the read-aloud toggle | saving, then saved: toast "Saved" | BR-SETTINGS-010. VERIFIED `::the read-aloud toggle saves on change (BR-SETTINGS-010)` |
+| loaded | tap Speech language | the engine is asked (up to 300 ms), then the speech language sheet | study speech spec D5. VERIFIED `::the speech language row opens the sheet; a pick saves and shows its name (BR-SETTINGS-009)` |
+| speech language sheet | a second tap on the row while the engine is asked | no second sheet | VERIFIED `speech_language_sheet_test.dart::a second tap while the engine is still asked opens nothing (audit 2026-10-07)` |
+| speech language sheet | pick a language | the sheet closes; saving, then saved: toast "Saved" | VERIFIED `::a saved speech language says "Saved", as the other rows do` |
+| speech language sheet | dismiss | nothing written | `UNVERIFIED (code read)`: `showSpeechLanguageSheet` returns null |
+| saving (toggle or language) | the write fails | saveFailed: toast "Couldn't save the read-aloud switch." / "Couldn't save the speech language." with Retry | UC E2. VERIFIED `::a failed speech save says so, and Retry writes it (UC-SETTINGS-001 E2)` |
+| loaded | the stored value changes elsewhere (a sync pull) | the rows show it; a draft is dropped once the store holds it | `UNVERIFIED (code read)`: `SettingsController._dropSavedDraft` on the `appSettingsProvider` listener |
+
 ## Rulings
 
 - **Settings hub spec D3, D9:** two sections with their own notes, so each names its own timing (the limit and order apply from the next session, speech at once); the page says the study rows' toasts, the hub the reset's.

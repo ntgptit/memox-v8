@@ -32,6 +32,22 @@ and the page stays open. UC-SETTINGS-001 step 5, BR-SETTINGS-006; spec
 
 Goldens: `test/features/settings/presentation/goldens/settings_language_{english,switched,system}_{light,dark}.png`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (entry) | the `app_settings` stream has not emitted | loading: `MxSkeletonList`, three rows | `UNVERIFIED (code read)`: `language_screen.dart`; no test or golden pins it |
+| loading | the stream emits | system / english / vietnamese, the stored one selected | UC-SETTINGS-001 step 5. VERIFIED `language_screen_test.dart::Follow the system names the phone language, or says the app lacks it (FE-A3 D8)` |
+| loading | the read fails | read error | UC E3. `UNVERIFIED (code read)`: the `AsyncError` branch; the Theme and Study options pages pin the same branch (`theme_screen_test.dart::a failed read shows the error with Retry and no invented choice (E3)`) |
+| read error | Retry | error with Retry spinning, then the state the read gives | `UNVERIFIED (code read)` |
+| any | tap another row | the whole app switches at once; toast in the new language ("Switched to English" / "Đã chuyển sang Tiếng Việt"); the page stays | BR-SETTINGS-006. VERIFIED `::a tap switches the language and the toast reads in it (UC-SETTINGS-001 step 5)` |
+| any | tap Follow the system | the app follows the phone; the toast reads in the phone's language, English if the app lacks it | `UNVERIFIED (code read)`: `_say` resolves `_phoneLocale()`; the row's line is VERIFIED in `::Follow the system names the phone language, or says the app lacks it (FE-A3 D8)` |
+| any | tap the selected row | nothing written, no toast | `UNVERIFIED (code read)`: `_choose` returns on the stored choice; the controller side is VERIFIED `settings_controller_test.dart::theme and language are each one write; choosing the persisted value writes nothing` |
+| any | a second tap while a switch runs | ignored: neither the store nor the language the toast names changes | UC A4. VERIFIED `::a second tap while a switch runs changes neither the store nor the language the toast names (A4)` |
+| any | the write fails | the stored row stays selected, toast "Couldn't change the language." with Retry | UC E2. VERIFIED `::a failed save keeps the stored language and offers Retry (E2)` |
+| any | Retry on the toast | the write runs again, then the toast reads in that language | UC E2. VERIFIED same test |
+| any | Back | screen 23, whose Language row reads the new choice | `UNVERIFIED (code read)` |
+
 ## Rulings
 
 - **D8, BR-SETTINGS-006:** the system row says "Phone is set to {language}"; the fallback line shows only for a language the app lacks.

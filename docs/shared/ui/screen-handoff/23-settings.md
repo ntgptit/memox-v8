@@ -45,6 +45,8 @@ admin; only Reset falls below the fold (spec §5.1, measured on the goldens).
 | admin row | `settings_admin_row_light.png` | `settings_admin_row_dark.png` | The Admin group with its one row, for an admin. |
 | resetConfirm | `settings_reset_confirm_light.png` | `settings_reset_confirm_dark.png` | — |
 | resetDone | `settings_reset_done_light.png` | `settings_reset_done_dark.png` | — |
+| resetting | — | — | (A3) after "Reset" in the dialog: the dialog is held (`MxDialog.isHeld`: Back and a scrim tap refused, Cancel disabled) and "Reset" spins (`isConfirmLoading`) while `resetAppOptions` runs. Code read: `settings_reset_dialog_widget.dart`; no golden. |
+| resetFailed | — | — | (A3, E2) the write failed: the dialog closes, nothing changed, and the toast "Couldn't reset the app options. Nothing changed." carries Retry. Code read: `settings_controller.dart` `reset` / `_submit`; no golden. |
 | syncSynced | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_dark.png) | (SB-U1) the Sync row after a success, in Account & sync. |
 | syncFailed | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_dark.png) | (SB-U1) the Sync row after a failed run. |
 | syncRejected | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_dark.png) | (SB-U1) the Sync row with refused rows. |
@@ -54,6 +56,33 @@ admin; only Reset falls below the fold (spec §5.1, measured on the goldens).
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,admin_row,reset_confirm,reset_done,sync_synced,sync_failed,sync_rejected}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the `app_settings` stream emits | loaded | UC-SETTINGS-001 step 1. VERIFIED `settings_screen_test.dart::the hub names every group and value: Study summary, Theme, reminder, Reset (settings hub spec §5.1)`; the skeleton before the first read `::before the first read the screen shows skeleton rows and no value (loading)` |
+| loading | the read fails | read error | UC E3. VERIFIED `::a failed read shows the error with Retry and no invented value (E3)` |
+| read error | Retry | error with Retry spinning (`isRetrying`), then loaded | UC E3. The error is VERIFIED in the test above; the tap (`ref.invalidate(appSettingsProvider)`) is `UNVERIFIED (code read)`: `settings_screen.dart` |
+| loaded | the stream errors after data was shown | read error | `UNVERIFIED (code read)`: the `AsyncError` branch matches before the held value, so the rows go; recovery is Retry |
+| loaded | tap Study options / Theme / Language / Daily reminder | 23a / 25 / 26 / 24 on the root navigator; Back returns here | D2, D8. VERIFIED `::the Study defaults row opens screen 23a and reflects a stored change (D8)`, `::the Theme and Language rows open their pages`, `::the reminder row names the time when on, and opens screen 24` |
+| loaded | tap the Sync row | 27 | SB-U1. VERIFIED `settings_sync_section_test.dart::the Sync row names the state and opens screen 27` |
+| loaded | the status stream fails | the Sync row is gone | spec §6. VERIFIED `settings_sync_section_test.dart::the Sync row hides when the status stream fails (spec §6)` |
+| loaded | tap the account row / the re-auth banner | 30 (anonymous, `reauth`) / 32 (attached) | FE-B9, FE-B10. `UNVERIFIED (code read)` for the taps here (`app/` composes the slots: `lib/app/router/app_router.dart`); the slots' frames are the account goldens and `::the account row and the Sync row share one section, the banner above its overline (settings hub spec D7)` |
+| loaded | the account becomes (or stops being) an admin | the Admin group appears or goes, without a restart | users spec U2. VERIFIED `::an account confirmed as admin shows the row without a restart, and a lost confirmation hides it` |
+| loaded (admin) | tap Admin tools | 23b | D4. VERIFIED `::an admin sees one Admin tools row, and it opens screen 23b` |
+| loaded (debug build) | tap the gallery icon | the component gallery | D11. `UNVERIFIED (code read)`: `onOpenGallery`, null in release |
+| loaded | tap Reset app options | resetConfirm | UC A3. VERIFIED `::Reset asks first, then puts the defaults back (A3)` |
+| resetConfirm | Cancel | loaded, nothing written | UC A3. VERIFIED same test |
+| resetConfirm | Back or a scrim tap | loaded, nothing written | `UNVERIFIED (code read)`: `showMxDialog` dismisses with null unless held |
+| resetConfirm | Reset | resetting | UC A3. `UNVERIFIED (code read)` for the held dialog and the spinner: no test reads `isHeld` or `isConfirmLoading` |
+| resetting | Back, a scrim tap or Cancel | resetting (refused) | `UNVERIFIED (code read)`: `MxDialog.isHeld`, `onCancel: null` while `_isResetting` |
+| resetting | a second tap on Reset | resetting (ignored) | `UNVERIFIED (code read)`: `_isResetting` in the dialog and `state.isBusy(reset)` in `SettingsController._submit` |
+| resetting | the write lands | loaded with the defaults; the dialog closes; toast "App options reset to defaults" | UC A3. VERIFIED `::Reset asks first, then puts the defaults back (A3)`; `settings_controller_test.dart::reset returns every option to its default in one write (A3)` |
+| resetting | the write fails | resetFailed; the dialog closes either way (`Navigator.pop` after `reset` returns) | UC E2. VERIFIED `::reset runs the reset app/ composed; a failure says so and the next confirm runs it again` (the toast; the dialog closing after a failure is a code read), `settings_controller_test.dart::a failed reset changes nothing and says so` |
+| resetFailed | Retry on the toast | the reset runs again with no dialog; the toast then says the result | `UNVERIFIED (code read)`: `SettingsController.reset` registers `retry`; the screen test confirms again from the dialog instead of tapping Retry |
+| resetFailed | tap Reset app options, confirm | resetting, then loaded | UC E2. VERIFIED `::reset runs the reset app/ composed; a failure says so and the next confirm runs it again` |
+| resetting | the screen is left | not reachable: the held dialog refuses Back; the tab bar sits under the scrim | N/A, `UNVERIFIED (code read)` |
 
 ## Rulings
 

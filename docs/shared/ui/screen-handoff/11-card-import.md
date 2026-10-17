@@ -59,10 +59,44 @@ bar is gone while it is open.
 | sectionsRefused | no golden | no golden | A file split by `*` rows into a deck of cards (E7) or at level 10 (E8): a warning banner at Columns, Preview locked (U7). |
 | sectionTargetChanged | no golden | no golden | A deck chosen for "Add to existing" changed before Import (E9): a warning banner with "Preview again" on the preview. |
 | none | no golden | no golden | Neutral tone; Import another file · Back to deck (ruling 1). |
-| failed | no golden | no golden | `MxEmptyState`, danger tone; Close · Try again, which returns to the preview. |
-| rejects | no golden | no golden | `MxEmptyState`, warning tone; Close only. |
+| failed | no golden | no golden | `MxEmptyState`, danger tone, "Import didn’t finish"; Close · Try again. Try again does not return to the preview: it commits the same preview again at once (`CardImportController.retry()` sets the draft back and calls `commit()`), so the screen goes to importing, then to a result. `card_import_controller_test.dart::a write that fails keeps the preview, and Try again commits it again (E5)`. |
+| rejects | no golden | no golden | `MxEmptyState`, warning tone, "This deck no longer accepts cards"; Close only (E4). `card_import_controller_test.dart::a deck that gained sub-decks refuses the commit: the rejects result (E4)`. |
+| pickerCancelled | no golden | no golden | The system picker is dismissed: the source chosen before stays (A5). `card_import_controller_test.dart::a cancelled picker keeps the source chosen before (A5)`, `card_import_source_pick_test.dart::from Paste, the file card switches to file and opens the picker; a cancelled picker leaves file chosen with no source`. |
+| unsupportedFile | no golden | no golden | A name that is not CSV, TSV or XLSX, or a picker that throws, is refused at step 1 with the unreadable-file problem; the platform message (which may carry a path) is never shown (E1). `card_import_controller_test.dart::a file that is not CSV, TSV or XLSX, or not UTF-8, is refused at step 1 (E1)`. |
+| previewRefused | no golden | no golden | A rejection from the preview or read (an unmapped Term or Meaning, E7, E8, a deck that no longer exists) shows as the step's problem and locks the step action. `import_preview_problem_test.dart::$problem on the preview says why and locks Import`, `card_import_screen_test.dart::an unmapped back locks Preview and says why (BR-TRANSFER-002)`. |
 
 Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,preview,partial}_{light,dark}.png` and `import_sections_{undecided,decided,choose_all,result}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| empty (Source) | choose a file | fileSelected, or unsupportedFile / pickerCancelled | VERIFIED `card_import_screen_test.dart::a file becomes cards through the four steps (IT-CARD-014)`; the other two as in States |
+| empty (Source) | paste text | pasted; blank text is no source | VERIFIED `card_import_controller_test.dart::pasted text is a source once it holds something (A1)`, `card_import_screen_test.dart::pasted text is read on the device, and the caption says text` |
+| fileSelected / pasted | remove the source | empty (Source) | `UNVERIFIED (code read)`: `card_import_controller.dart` `clearSource()` |
+| fileSelected / pasted | Map columns | parsing, then mapping, or badEncoding / emptySheet | VERIFIED `card_import_screen_test.dart::a Latin-1 file is refused at step 1 with guidance (E1)` for the refusal; the success path in the first test above |
+| parsing | the options are tapped | ignored, announced as disabled | VERIFIED `import_source_option_test.dart` (while reading, the option is announced as disabled) |
+| mapping | choose another sheet of a workbook | parsing, then mapping of that sheet (A2) | `UNVERIFIED (code read)`: `card_import_controller.dart` `readSource(sheetIndex:)` |
+| mapping | toggle "First row is a header" | mappingNoHeader / mapping | `UNVERIFIED (code read)`: `setHasHeaderRow`; the golden shows the off state |
+| mapping | Term or Meaning left unmapped | mappingIncomplete; Preview locked | VERIFIED `card_import_screen_test.dart::an unmapped back locks Preview and says why (BR-TRANSFER-002)`, `card_import_controller_test.dart::an unmapped back stops the preview, and mapping it lets it through (BR-TRANSFER-002)` |
+| mapping | Preview rows | preview (previewAll / previewMix / sections*) or previewRefused | VERIFIED `card_import_screen_test.dart::a file becomes cards through the four steps (IT-CARD-014)` |
+| preview | toggle Include duplicates | the willWrite count follows | VERIFIED `card_import_controller_test.dart::Include duplicates writes them as new cards (A4)` |
+| preview (sections) | choose Add to existing / Create new, or all | sectionsDecided; Import unlocks when every clash is decided | VERIFIED `import_decks_section_test.dart::a clash shows the tray with nothing chosen; a tap chooses (U3)`, `::two clashes add a row that decides them all (C2)` |
+| preview (sections) | rename the default deck | its choice clears and its clash is found again | VERIFIED `card_import_sections_controller_test.dart::renaming the default deck clears its choice and finds its new clash (U4)` |
+| preview (sections) | go Back to Columns and change the mapping | the choices clear, the default name stays | VERIFIED `card_import_sections_controller_test.dart::changing the mapping clears the choices; the default name stays (Review Focus 2)` |
+| preview | a chosen deck changed before Import | sectionTargetChanged: warning banner with Preview again | `UNVERIFIED (code read)`: `import_preview_section_widget.dart` |
+| preview | Import {n} | importing, then success / partial / none / sectionsResult | VERIFIED `card_import_screen_test.dart::a file becomes cards through the four steps (IT-CARD-014)`; `import_result_decks_test.dart::the result lists each deck with New or Existing and its cards` |
+| importing | Close or Back | nothing | `UNVERIFIED (code read)`: `card_import_screen.dart` `_close()` and `stepBack()` |
+| importing | the write fails | failed | VERIFIED `card_import_controller_test.dart::a write that fails keeps the preview, and Try again commits it again (E5)` |
+| importing | the deck now holds sub-decks | rejects | VERIFIED `::a deck that gained sub-decks refuses the commit: the rejects result (E4)` |
+| failed | Try again | importing again with the same preview, then a result | VERIFIED `::a write that fails keeps the preview, and Try again commits it again (E5)` |
+| failed / rejects | Close | the screen closes | `UNVERIFIED (code read)`: `card_import_screen.dart` |
+| success / partial / none | Import another file | empty (Source), a fresh draft | VERIFIED `card_import_controller_test.dart::Import another file starts a fresh step 1` |
+| success | View the cards | the deck's card list; a sectioned import leads Back to deck | VERIFIED `import_result_decks_test.dart::a sectioned import leads back to the deck; a flat one to its cards` |
+| partial | Show all {n} | every skipped row | VERIFIED `import_result_skipped_test.dart::a partial import lists its skipped rows with why, five at first, all after Show all` |
+| preview / mapping | Back | mapping / Source, the draft kept | VERIFIED `card_import_controller_test.dart::Back steps back one step and keeps what it held; at step 1 it closes (IT-NAV-012)` |
+| empty (Source), a result | Back | the screen closes | same test |
+| any | the picker or read result arrives after the screen is gone | no state is set | `UNVERIFIED (code read)`: the controller returns on `!ref.mounted` after each await |
 
 ## Back
 

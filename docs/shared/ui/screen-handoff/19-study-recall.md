@@ -15,7 +15,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8). |
-| Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
+| Context line | `SessionContextLine` | "{deck} · Review · round {n}"; a learning session adds its stage: "{deck} · Learning · stage {n} of {total} · round {n}" (`session_context_state.dart`). |
 | Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a fill `sizeTrack` tall (the same track as `MxStudyTopBar`'s, M3F-18) that drains to 0. |
 | Term face | `StudyFaceCard` (label "Term") | The prompt; always visible, with the speaker ("Read aloud · {language}", disabled with "No {language} voice on this device" when the device lacks the voice) under the term (BR-STUDY-079; 16-study-browse.md, Speech). |
 | Meaning face | `StudyFaceCard` (`role: answer`) | Blurred placeholder before reveal; the meaning once revealed or timed out, with a "Counted as forgot" tag when timed out. |
@@ -40,10 +40,28 @@ and the next card follows; at zero the turn answers timed out and is held until
 Continue (spec D5). Goldens:
 `test/features/study/presentation/goldens/study_recall_{counting,revealed,timed_out}_*`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| countingDown | the turn opens | the clock drains from 20 s (from the saved time on a resumed turn) | VERIFIED `study_recall_test.dart::the term shows, the meaning is hidden, and the clock counts down from 20 (19 countingDown)`, `::a turn resumed with saved time starts from it (BR-STUDY-036)` |
+| countingDown | tap Show the meaning | the clock stops at once, the reveal is written, then revealed (nothing recorded) | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)` |
+| countingDown | a double tap on Show the meaning | revealed only; Forgot and Remembered take no tap for 400 ms | VERIFIED `::a double tap on Show the meaning answers nothing: Forgot and Remembered settle first (critique 2026-09-30 part 3c-2, R1)` |
+| countingDown | the database refuses the reveal | the clock counts down again from where it stopped; the turn is as it was | `UNVERIFIED (code read)`: `didUpdateWidget` (`isRefused`) in `study_recall_widget.dart`; the controller leaves the turn as it was |
+| revealed | tap Remembered / Forgot | the answer is written and the next card follows at once, no held frame | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)`, `::Forgot records a wrong answer and moves on` |
+| countingDown | the clock reaches 0 | timedOut: the turn is written as forgot, announced "Time is up. Counted as forgot. …", held until Continue | VERIFIED `::at zero the turn counts as forgot, is announced, and waits for Continue (R2, BR-STUDY-033, BR-STUDY-066)` |
+| countingDown | a tap on Show the meaning in the instant the clock runs out | the timed-out turn is not skipped | VERIFIED `::a tap in the instant the clock runs out does not skip the timed-out turn (Review Focus 2)` |
+| timedOut | tap Continue | the next card; nothing more is recorded (BR-STUDY-066) | VERIFIED in the zero test above |
+| countingDown | the app goes to the background | the clock stops; the time left is saved on pause; it resumes where it stopped (BR-STUDY-036) | VERIFIED `::the clock stops in the background and saves its time; it resumes where it stopped (D12, BR-STUDY-036)` |
+| countingDown | leave the screen mid-turn (✕ then Stop, Back) | the time left is saved when the widget goes | VERIFIED `::closing the screen mid-turn saves the time left (D12)` |
+| session reopened | the turn had been revealed | revealed with its clock stopped; Forgot or Remembered | VERIFIED `::a turn resumed after a reveal opens revealed, its clock stopped, and asks Forgot or Remembered (BR-STUDY-036)` |
+| revealed / timedOut | the answer write is refused by a busy database | the unsaved-answer banner with Retry; the buttons are disabled while a write runs | the banner path is VERIFIED from Browse (16); this screen's frame is `UNVERIFIED (code read)` |
+| any | ✕, system Back, deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |
+
 ## Rulings
 
 - **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a self-check advances by itself, a timeout waits for Continue.
-- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningText` once timed out; the top bar is Indigo (3c-2 R8).
+- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `muted-foreground` while counting down and `warning` once timed out (`recall_countdown_bar_widget.dart`); the top bar is Indigo (3c-2 R8).
 - **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track.
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
@@ -60,7 +78,7 @@ Continue (spec D5). Goldens:
 
 ## Copy
 
-- Context line: "{deck} · Review · round {n}".
+- Context line: "{deck} · Review · round {n}" · "{deck} · Learning · stage {n} of {total} · round {n}".
 - Clock caption: "Time to recall" (`countingDown`) · "Revealed with time left" (`revealed`) · "Time is up" (`timedOut`).
 - Meaning tag: "Counted as forgot" (`timedOut`).
 - CTAs: "Show the meaning" · "Forgot" · "Remembered" · "Continue".

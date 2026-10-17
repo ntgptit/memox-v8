@@ -36,13 +36,35 @@ person's language too; any other source shows as written.
 | adding | `starter_adding_light.png` | `starter_adding_dark.png` | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add" spins with no "Adding…" text (D13). A second add is ignored. |
 | added | `starter_added_light.png` | `starter_added_dark.png` | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
 | alreadyPresent | `starter_already_present_light.png` | `starter_already_present_dark.png` | A copy made meanwhile copies nothing more. |
-| secondCopy | `starter_second_copy_light.png` | `starter_second_copy_dark.png` | "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
+| secondCopy | `starter_second_copy_light.png` | `starter_second_copy_dark.png` | "Add another copy" first asks "Add a second copy?" (Cancel · Add); confirming opens the algorithm sheet (BR-STARTER-008). |
 | addFailed | `starter_add_failed_light.png` | `starter_add_failed_dark.png` | The sheet stays with the choice; the danger banner's lead "Couldn't add the deck." sits above "Nothing was copied — try again."; the button reads "Try again". `templateNotFound` reads the same (spec §6). |
 | loading | `starter_loading_light.png` | `starter_loading_dark.png` | The note, then skeleton rows (UI-base row 125). |
 | none | `starter_none_light.png` | `starter_none_dark.png` | "Create a deck" returns to the Library and opens its create dialog. |
 | loadFailed | `starter_load_failed_light.png` | `starter_load_failed_dark.png` | Titled "Couldn't load starter decks", with Retry. |
+| noteDismissed | no golden | no golden | After "Hide this note" the fixture note is gone from the loading and list states, and stays gone on this device (`dismissed_note`). `starter_library_screen_test.dart::the fixture note can be hidden, and stays hidden (critique 2026-09-30)`. |
 
 Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,adding,added,already_present,second_copy,add_failed,loading,none,load_failed}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the templates land | list, or none when the build ships no template | VERIFIED `starter_library_screen_test.dart::list: the note, then a card per template with its facts, its add and what it suggests`, `::none: a build without templates offers to create a deck` |
+| loading | the read fails | loadFailed | VERIFIED `::loading, then loadFailed with Retry; the message carries no failure text` |
+| loadFailed | Retry | loading, then list | Retry is on screen in the test above; the read after it is `UNVERIFIED (code read)`: `starter_library_screen.dart` invalidates `starterLibraryProvider` |
+| none | Create a deck | the Library with its create dialog open | VERIFIED `::none: a build without templates offers to create a deck` |
+| list | tap Hide this note | noteDismissed | VERIFIED `::the fixture note can be hidden, and stays hidden (critique 2026-09-30)` |
+| list | tap "Add to library" (no copy yet) | choose | VERIFIED `::choose: the sheet preselects the suggested scheduler; the one picked is the copy's, and the toast opens it (added)` |
+| list | tap "Add another copy" (a copy exists) | secondCopy; Cancel returns to list, nothing copied; Add opens choose | VERIFIED `::secondCopy: a template in the library asks first; Cancel copies nothing, confirming adds a deck of its own` |
+| choose | Cancel | list, nothing copied | `UNVERIFIED (code read)`: `starter_algorithm_sheet_widget.dart` pops with null; the screen then does nothing |
+| choose | Add | adding, then added: the sheet closes and the toast carries Open | VERIFIED `::choose: ...` above |
+| added | tap Open on the toast | that copy's root deck in the Library | VERIFIED same test |
+| adding | Back, the scrim, a drag, Cancel or an option | ignored | VERIFIED `::adding: the options and Cancel lock and the add spins; the sheet cannot be dismissed` |
+| adding | a second Add | ignored | VERIFIED `starter_add_controller_test.dart::a second add while one runs is ignored (adding)` |
+| adding | the write fails, or the template is gone | addFailed: the sheet stays with the choice | VERIFIED `starter_add_controller_test.dart::a failed write keeps the sheet open and says so; the next add clears it (addFailed)`, `::a template gone from the build reads as a failure`; on screen `starter_library_screen_test.dart::addFailed: the sheet stays with the choice and says so; Try again adds` |
+| addFailed | Try again | adding, then added | VERIFIED same screen test |
+| adding | a copy was made meanwhile (not a second copy) | alreadyPresent: the sheet closes, the toast "Already in your library — nothing was copied" | VERIFIED `starter_library_screen_test.dart::alreadyPresent: a copy made while the sheet was open copies nothing more` |
+| adding | the screen is left before the add lands | the sheet and the toast are dropped; the copy is already written | `UNVERIFIED (code read)`: `starter_library_screen.dart` returns on `!mounted`, the controller checks `ref.mounted` |
 
 ## Rulings
 
