@@ -109,6 +109,8 @@
     "tools/m3_lint/",
     "test/support/approved_palette.dart",
     "test/app/m3_production_theme_test.dart",
-    "test/app/m3_overlay_barrier_test.dart"
+    "test/app/m3_overlay_barrier_test.dart",
+    "test/support/theme_expect.dart",
+    "test/support/field_edge_expect.dart"
   ]
 }

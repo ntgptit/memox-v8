@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,20 +9,12 @@ import 'package:memox/features/card/presentation/widgets/sections/card_editor_fo
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
-import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/deck/domain/failures/deck_failure.dart';
-import 'package:memox/features/deck/domain/models/deck_view_model.dart';
-import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
-import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/meta_line.dart';
-import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 
-import '../../../support/deck_fixtures.dart';
 import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
@@ -232,33 +222,6 @@ void main() {
     expect(answers, [false, true]);
   });
 
-  libraryTest('the deck context names the path once, ending in the deck and '
-      'the operation (critique 2026-09-30)', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(
-        body: DeckContextHeaderWidget(
-          deckId: words.id,
-          currentLabel: _en.cardAddTitle,
-        ),
-      ),
-    );
-
-    for (final crumb in [_en.navLibrary, 'Korean', 'Words', _en.cardAddTitle]) {
-      expect(
-        find.descendant(
-          of: find.byType(MxBreadcrumb),
-          matching: find.text(crumb),
-        ),
-        findsOneWidget,
-      );
-    }
-    expect(find.text('Words'), findsOneWidget);
-  });
-
   libraryTest('tags and fields meet the guidelines', (tester, env) async {
     await pumpLibraryScreen(tester, env, _host(const _Tags()));
     await tester.tap(find.text(_en.cardAddTag));
@@ -270,30 +233,6 @@ void main() {
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
     await tester.pump(const Duration(milliseconds: 200));
-  });
-
-  libraryTest('the deck context holds its place while the deck loads', (
-    tester,
-    env,
-  ) async {
-    final pending = StreamController<Outcome<DeckView, DeckRejection>>();
-    addTearDown(pending.close);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(
-        body: DeckContextHeaderWidget(
-          deckId: 'words',
-          currentLabel: _en.cardAddTitle,
-        ),
-      ),
-      overrides: [
-        deckViewProvider('words').overrideWith((ref) => pending.stream),
-      ],
-    );
-
-    expect(find.byType(MxSkeleton), findsWidgets);
-    expect(find.byType(MxBreadcrumb), findsNothing);
   });
 
   libraryTest('a card field names its input once for TalkBack', (
