@@ -66,7 +66,6 @@ class MxCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final dimens = context.dimens;
-    final base = MxTintBase.of(context);
     final ground = switch ((
       isHero,
       isWarning,
@@ -74,10 +73,14 @@ class MxCard extends StatelessWidget {
       isDanger,
       isRecessed,
     )) {
-      (true, _, _, _, _) => colors.primary.tintOver(base),
-      (_, true, _, _, _) => context.status.warning.tintOver(base),
-      (_, _, true, _, _) => context.status.success.tintOver(base),
-      (_, _, _, true, _) => colors.error.tintOver(base),
+      (true, _, _, _, _) => colors.primary.tintOver(MxTintBase.of(context)),
+      (_, true, _, _, _) => context.status.warning.tintOver(
+        MxTintBase.of(context),
+      ),
+      (_, _, true, _, _) => context.status.success.tintOver(
+        MxTintBase.of(context),
+      ),
+      (_, _, _, true, _) => colors.error.tintOver(MxTintBase.of(context)),
       (_, _, _, _, true) => colors.muted,
       _ => colors.card,
     };

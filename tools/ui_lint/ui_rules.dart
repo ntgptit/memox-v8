@@ -1,7 +1,15 @@
-// Symbol-aware Material 3 rules (M3L00..M3L08). A symbol counts only when its
-// element comes from package:flutter/, so a local function named like a
-// Flutter one, or an import alias, changes nothing. The rule table is in
-// docs/shared/design/m3-adoption-ledger.md §7.
+// Symbol-aware ForUI boundary rules (UIL00..UIL06, ADR-025). A symbol counts
+// by the library its element comes from (package:flutter/, package:material_ui/
+// or package:forui/), so an import alias or a local function with a Flutter
+// name changes nothing. The rule table is in docs/forui-migration/FORUI_ARCHITECTURE.md.
+//
+//   UIL00  an allowlist entry that covers nothing, or whose review has passed
+//   UIL01  an overlay opened outside the shared Mx overlay adapters
+//   UIL02  a Cupertino or `.adaptive` substitute (Android, ForUI only)
+//   UIL03  a Material import outside the approved infrastructure names
+//   UIL04  a barrier, scrim or surface-tint argument outside lib/core/theme/
+//   UIL05  a theme built outside lib/core/theme/, or a runtime seed scheme
+//   UIL06  package:forui imported outside lib/core/theme/, lib/shared/, lib/app/
 import 'dart:convert';
 import 'dart:io';
 
@@ -10,22 +18,51 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/source/line_info.dart';
 
 const String _flutterUriPrefix = 'package:flutter/';
-const String _flutterMaterialUriPrefix = 'package:flutter/src/material/';
+const String _materialUiUriPrefix = 'package:material_ui/';
+const String _foruiUriPrefix = 'package:forui/';
 const String _themeOwnerPrefix = 'lib/core/theme/';
 const String _unresolvedUriCode = 'uri_does_not_exist';
 
-const Set<String> _overlayFunctions = {'showGeneralDialog', 'showRawDialog'};
+/// The files that may open an overlay route: the shared adapters every
+/// feature goes through (showMxDialog, showMxBottomSheet, showMxSnackbar).
+const Set<String> _overlayAdapters = {
+  'lib/shared/widgets/mx_bottom_sheet.dart',
+  'lib/shared/widgets/mx_dialog.dart',
+  'lib/shared/widgets/mx_held_route.dart',
+  'lib/shared/widgets/mx_snackbar.dart',
+};
+
+const Set<String> _overlayFunctions = {
+  'showAboutDialog',
+  'showBottomSheet',
+  'showDatePicker',
+  'showDialog',
+  'showFDialog',
+  'showFPersistentSheet',
+  'showFSheet',
+  'showFToast',
+  'showGeneralDialog',
+  'showLicensePage',
+  'showMenu',
+  'showModalBottomSheet',
+  'showRawDialog',
+  'showRawFToast',
+  'showSearch',
+  'showTimePicker',
+};
 const Set<String> _overlayRoutes = {
   'DialogRoute',
-  'RawDialogRoute',
+  'FDialogRoute',
+  'FModalSheetRoute',
   'ModalBottomSheetRoute',
+  'RawDialogRoute',
 };
 const Set<String> _overlayBaseRoutes = {'ModalRoute', 'PopupRoute'};
+const Set<String> _messengerOverlays = {'showMaterialBanner', 'showSnackBar'};
 
 const Set<String> _cupertinoFunctions = {
   'showAdaptiveDialog',
@@ -45,18 +82,66 @@ const Set<String> _cupertinoClasses = {
   'CupertinoActivityIndicator',
 };
 
+/// The Material names lib/ may import, each with the path prefix it is
+/// limited to (empty: anywhere). They are infrastructure ForUI does not
+/// replace: the app host, page routes, motion constants, platform widgets
+/// with no ForUI counterpart, and the material_ui types ForUI's own API takes.
+const Map<String, String> _materialInfrastructure = {
+  'Durations': '',
+  'Easing': '',
+  'FloatingActionButtonLocation': 'lib/shared/widgets/mx_app_shell.dart',
+  'InputBorder': 'lib/shared/widgets/',
+  'MaterialApp': 'lib/app/',
+  'MaterialLocalizations': '',
+  'MaterialPageRoute': '',
+  'OutlineInputBorder': 'lib/shared/widgets/',
+  'RefreshIndicator': '',
+  'ReorderableListView': '',
+  'Scaffold': 'lib/shared/widgets/mx_app_shell.dart',
+  'ScaffoldPrelayoutGeometry': 'lib/shared/widgets/mx_app_shell.dart',
+  'SelectableText': '',
+  'SelectionArea': '',
+  'ThemeExtension': 'lib/core/theme/',
+  'ThemeMode': '',
+  'TimeOfDay': '',
+};
+
+/// The files that bridge ForUI to the Material host and may import Material
+/// whole (behind a prefix): the host theme and the theme host widget.
+const Set<String> _materialHostFiles = {
+  'lib/app/app_theme_host.dart',
+  'lib/core/theme/app_theme.dart',
+};
+
+const Set<String> _foruiOwnerPrefixes = {
+  'lib/app/',
+  'lib/core/theme/',
+  'lib/shared/',
+};
+
 const Set<String> _barrierArguments = {
   'barrierColor',
+  'drawerScrimColor',
   'modalBarrierColor',
   'scrimColor',
   'surfaceTintColor',
 };
-const Set<String> _appBarClasses = {'AppBarTheme', 'AppBarThemeData', 'AppBar'};
-const Set<String> _appBarThemeClasses = {'AppBarTheme', 'AppBarThemeData'};
 
-/// One finding. [rule] is M3L00..M3L08; [path] is relative to the lint root.
-class M3Violation {
-  const M3Violation({
+const Set<String> _themeClasses = {
+  'ColorScheme',
+  'FColors',
+  'FStyle',
+  'FThemeData',
+  'FTypeface',
+  'FTypography',
+  'TextTheme',
+  'ThemeData',
+  'Typography',
+};
+
+/// One finding. [rule] is UIL00..UIL06; [path] is relative to the lint root.
+class UiViolation {
+  const UiViolation({
     required this.rule,
     required this.path,
     required this.line,
@@ -139,14 +224,14 @@ String _dayOf(DateTime date) =>
     '${date.day.toString().padLeft(2, '0')}';
 
 /// Lints [absolutePaths] and returns the violations the [allowlist] does not
-/// cover, plus one M3L00 per allowlist entry that covered nothing and one per
+/// cover, plus one UIL00 per allowlist entry that covered nothing and one per
 /// entry whose review date is before [today] (the current day by default).
 ///
 /// [partial] says [absolutePaths] are some of `lib/`, not all of it (the
 /// changed files of `dod_check.sh --changed`): an entry is then stale only when
 /// its file was linted, because an entry for a file left out covers nothing
 /// here without being stale. Expiry is checked for every entry either way.
-Future<List<M3Violation>> lintPaths(
+Future<List<UiViolation>> lintPaths(
   List<String> absolutePaths, {
   required String root,
   required List<AllowEntry> allowlist,
@@ -156,7 +241,7 @@ Future<List<M3Violation>> lintPaths(
   final linted = partial
       ? {for (final path in absolutePaths) relativeToRoot(path, root)}
       : null;
-  final found = <M3Violation>[];
+  final found = <UiViolation>[];
   if (absolutePaths.isEmpty) {
     return applyAllowlist(found, allowlist, today: today, linted: linted);
   }
@@ -173,7 +258,7 @@ Future<List<M3Violation>> lintPaths(
         throw StateError('could not resolve $path');
       }
       _requireResolvedImports(result, path);
-      final visitor = _M3Visitor(
+      final visitor = _UiVisitor(
         relativePath: relativeToRoot(path, root),
         lineInfo: result.lineInfo,
         out: found,
@@ -216,7 +301,7 @@ void _requireResolvedImports(ResolvedUnitResult result, String path) {
 }
 
 /// [path] relative to [root], with `/` separators on every platform, so it
-/// compares equal to the allowlist's `file` and to `lib/core/theme/`.
+/// compares equal to the allowlist's `file` and to the owner paths below.
 String relativeToRoot(String path, String root) {
   final slashed = _slashes(path);
   final base = _slashes(root);
@@ -229,19 +314,19 @@ String relativeToRoot(String path, String root) {
 String _slashes(String path) => path.replaceAll(r'\', '/');
 
 /// Drops the violations an entry covers (same file and rule, whatever the
-/// separator the entry was written with) and adds an M3L00 per entry that
+/// separator the entry was written with) and adds an UIL00 per entry that
 /// covered nothing, and one per entry whose `review` day is before [today]
 /// (the current day by default; an entry reviewed today is still valid).
 /// [linted] (root-relative, `/` separators) limits the stale check to the
 /// entries of those files; null means the whole of `lib/` was linted.
-List<M3Violation> applyAllowlist(
-  List<M3Violation> found,
+List<UiViolation> applyAllowlist(
+  List<UiViolation> found,
   List<AllowEntry> allowlist, {
   DateTime? today,
   Set<String>? linted,
 }) {
   final day = _dayOf(today ?? DateTime.now());
-  bool covers(AllowEntry e, M3Violation v) =>
+  bool covers(AllowEntry e, UiViolation v) =>
       _slashes(e.file) == v.path && e.rule == v.rule;
   final kept = [
     for (final v in found)
@@ -251,8 +336,8 @@ List<M3Violation> applyAllowlist(
     for (final e in allowlist)
       if ((linted == null || linted.contains(_slashes(e.file))) &&
           !found.any((v) => covers(e, v)))
-        M3Violation(
-          rule: 'M3L00',
+        UiViolation(
+          rule: 'UIL00',
           path: e.file,
           line: 0,
           message: 'stale allowlist entry for ${e.rule}',
@@ -261,8 +346,8 @@ List<M3Violation> applyAllowlist(
   final expired = [
     for (final e in allowlist)
       if (e.review.compareTo(day) < 0)
-        M3Violation(
-          rule: 'M3L00',
+        UiViolation(
+          rule: 'UIL00',
           path: e.file,
           line: 0,
           message:
@@ -273,12 +358,13 @@ List<M3Violation> applyAllowlist(
   return [...kept, ...stale, ...expired];
 }
 
-/// What an invocation resolved to: the Flutter class that owns it (if any)
-/// and its name. A constructor without a name is called `new`.
-typedef _Callee = ({String? owner, String name});
+/// What an invocation resolved to: the class that owns it (if any), its
+/// name, the library it comes from, and whether it makes a new object (a
+/// constructor or a static factory). A constructor without a name is `new`.
+typedef _Callee = ({String? owner, String name, String uri, bool creates});
 
-class _M3Visitor extends RecursiveAstVisitor<void> {
-  _M3Visitor({
+class _UiVisitor extends RecursiveAstVisitor<void> {
+  _UiVisitor({
     required this.relativePath,
     required this.lineInfo,
     required this.out,
@@ -286,10 +372,20 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
 
   final String relativePath;
   final LineInfo lineInfo;
-  final List<M3Violation> out;
+  final List<UiViolation> out;
   final Set<String> _seen = {};
 
   bool get _inThemeOwner => relativePath.startsWith(_themeOwnerPrefix);
+
+  bool get _isOverlayAdapter => _overlayAdapters.contains(relativePath);
+
+  @override
+  void visitImportDirective(ImportDirective node) {
+    final uri = node.uri.stringValue ?? '';
+    _checkMaterialImport(node, uri);
+    _checkForuiImport(node, uri);
+    super.visitImportDirective(node);
+  }
 
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
@@ -325,20 +421,70 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
     ];
     for (final type in supers) {
       final element = type.element;
-      if (!_fromFlutter(element)) continue;
+      if (!_fromUiLibrary(element) || _isOverlayAdapter) continue;
       final name = element?.name;
       if (!_overlayBaseRoutes.contains(name) &&
           !_overlayRoutes.contains(name)) {
         continue;
       }
       _report(
-        'M3L01',
+        'UIL01',
         type.offset,
-        'class ${node.declaredFragment?.name} builds on ${element?.name}; '
+        'class ${node.declaredFragment?.name} builds on $name; '
             'open overlays through the shared Mx adapters',
       );
     }
     super.visitClassDeclaration(node);
+  }
+
+  void _checkMaterialImport(ImportDirective node, String uri) {
+    if (!_isMaterialUri(uri)) return;
+    if (_materialHostFiles.contains(relativePath)) return;
+    if (uri.startsWith('package:flutter/src/') ||
+        uri.contains('/src/') ||
+        node.prefix != null) {
+      _report(
+        'UIL03',
+        node.offset,
+        '$uri: import Material through a `show` list of infrastructure names',
+      );
+      return;
+    }
+    final shown = [
+      for (final combinator in node.combinators)
+        if (combinator is ShowCombinator)
+          for (final name in combinator.shownNames) name,
+    ];
+    if (shown.isEmpty) {
+      _report(
+        'UIL03',
+        node.offset,
+        '$uri without `show`; ForUI and the Mx widgets draw the UI (ADR-025)',
+      );
+      return;
+    }
+    for (final name in shown) {
+      final scope = _materialInfrastructure[name.name];
+      if (scope != null && relativePath.startsWith(scope)) continue;
+      _report(
+        'UIL03',
+        name.offset,
+        scope == null
+            ? '${name.name} is a Material component; use ForUI or an Mx widget'
+            : '${name.name} belongs to $scope only',
+      );
+    }
+  }
+
+  void _checkForuiImport(ImportDirective node, String uri) {
+    if (!uri.startsWith(_foruiUriPrefix)) return;
+    if (_foruiOwnerPrefixes.any(relativePath.startsWith)) return;
+    _report(
+      'UIL06',
+      node.offset,
+      '$uri outside lib/core/theme, lib/shared and lib/app; '
+          'features use the Mx widgets',
+    );
   }
 
   void _checkCall(AstNode node, Element? element, ArgumentList args) {
@@ -349,67 +495,50 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
     };
     if (callee != null) {
       _checkOverlay(node, callee);
-      _checkCupertino(node, element, callee);
-      _checkColorScheme(node, callee);
+      _checkCupertino(node, callee);
       _checkTheme(node, callee, named);
-      _checkAppBar(node, callee, named);
     }
-    _checkScaffold(node, callee, named);
     _checkArguments(node, named);
   }
 
   void _checkOverlay(AstNode node, _Callee callee) {
+    if (_isOverlayAdapter) return;
     final owner = callee.owner;
     final isFunction = owner == null && _overlayFunctions.contains(callee.name);
-    if (!isFunction && !_overlayRoutes.contains(owner)) return;
+    final isRoute = _overlayRoutes.contains(owner) && callee.creates;
+    final isMessenger =
+        owner == 'ScaffoldMessengerState' &&
+        _messengerOverlays.contains(callee.name);
+    if (!isFunction && !isRoute && !isMessenger) return;
     _report(
-      'M3L01',
+      'UIL01',
       node.offset,
       '${owner ?? callee.name} bypasses the shared Mx overlay adapters',
     );
   }
 
-  void _checkCupertino(AstNode node, Element? element, _Callee callee) {
+  void _checkCupertino(AstNode node, _Callee callee) {
     final owner = callee.owner;
     final isFunction =
         owner == null && _cupertinoFunctions.contains(callee.name);
     final isClass = _cupertinoClasses.contains(owner);
-    final isAdaptive =
-        callee.name == 'adaptive' &&
-        (element?.library?.uri.toString().startsWith(
-              _flutterMaterialUriPrefix,
-            ) ??
-            false);
+    final isAdaptive = callee.name == 'adaptive' && _isMaterialUri(callee.uri);
     if (!isFunction && !isClass && !isAdaptive) return;
     _report(
-      'M3L02',
+      'UIL02',
       node.offset,
       '${owner ?? callee.name}${isAdaptive ? '.adaptive' : ''} is a '
-          'Cupertino or adaptive substitute; Material 3 only (ADR-001)',
-    );
-  }
-
-  void _checkScaffold(
-    AstNode node,
-    _Callee? callee,
-    Map<String, Expression> named,
-  ) {
-    if (callee?.owner != 'Scaffold') return;
-    if (!named.containsKey('drawerScrimColor')) return;
-    _report(
-      'M3L03',
-      node.offset,
-      'Scaffold.drawerScrimColor overrides the theme',
+          'Cupertino or adaptive substitute; Android, ForUI only (ADR-025)',
     );
   }
 
   void _checkArguments(AstNode node, Map<String, Expression> named) {
     if (named.containsKey('colorSchemeSeed')) {
-      _report('M3L06', node.offset, 'colorSchemeSeed builds a runtime scheme');
+      _report('UIL05', node.offset, 'colorSchemeSeed builds a runtime scheme');
     }
     if (_inThemeOwner) return;
     for (final name in named.keys.where(_barrierArguments.contains)) {
-      _report('M3L04', node.offset, '$name: belongs to lib/core/theme/');
+      _report('UIL04', node.offset, '$name: belongs to lib/core/theme/');
     }
   }
 
@@ -418,59 +547,33 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
     _Callee callee,
     Map<String, Expression> named,
   ) {
-    final isThemeData =
-        callee.owner == 'ThemeData' && named.containsKey('platform');
-    if (isThemeData) {
-      _report(
-        'M3L05',
-        node.offset,
-        'ThemeData(platform:) changes M3 behaviour',
-      );
-    }
-  }
-
-  void _checkColorScheme(AstNode node, _Callee callee) {
-    if (callee.owner != 'ColorScheme') return;
-    if (callee.name != 'fromSeed' && callee.name != 'fromImageProvider') return;
-    _report(
-      'M3L06',
-      node.offset,
-      'ColorScheme.${callee.name} builds a runtime scheme; '
-          'the scheme comes from design/tokens.json',
-    );
-  }
-
-  void _checkAppBar(
-    AstNode node,
-    _Callee callee,
-    Map<String, Expression> named,
-  ) {
     final owner = callee.owner;
-    if (!_appBarClasses.contains(owner)) return;
-    final hasIcons =
-        named.containsKey('iconTheme') || named.containsKey('foregroundColor');
-    if (hasIcons && !named.containsKey('actionsIconTheme')) {
-      _report(
-        'M3L07',
-        node.offset,
-        '$owner sets iconTheme or foregroundColor without actionsIconTheme',
-      );
+    if (!_themeClasses.contains(owner)) return;
+    if (owner == 'ThemeData' && named.containsKey('platform')) {
+      _report('UIL05', node.offset, 'ThemeData(platform:) changes behaviour');
+      return;
     }
-    final background = named['backgroundColor'];
-    if (background == null || !_appBarThemeClasses.contains(owner)) return;
-    if (_isWidgetStateColorOrNull(background.staticType)) return;
+    if (callee.name == 'fromSeed' || callee.name == 'fromImageProvider') {
+      _report(
+        'UIL05',
+        node.offset,
+        '$owner.${callee.name} builds a runtime scheme; '
+            'the palette is app_palette.dart',
+      );
+      return;
+    }
+    if (_inThemeOwner || !callee.creates) return;
     _report(
-      'M3L08',
-      background.offset,
-      '$owner.backgroundColor must be a WidgetStateColor, '
-          'not ${background.staticType}',
+      'UIL05',
+      node.offset,
+      '$owner is built in lib/core/theme/ only; read the theme instead',
     );
   }
 
   void _report(String rule, int offset, String message) {
     if (!_seen.add('$rule@$offset')) return;
     out.add(
-      M3Violation(
+      UiViolation(
         rule: rule,
         path: relativePath,
         line: lineInfo.getLocation(offset).lineNumber,
@@ -480,25 +583,29 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
   }
 }
 
-bool _fromFlutter(Element? element) =>
-    element?.library?.uri.toString().startsWith(_flutterUriPrefix) ?? false;
+bool _isMaterialUri(String uri) =>
+    uri.startsWith('package:flutter/material.dart') ||
+    uri.startsWith('package:flutter/src/material/') ||
+    uri.startsWith(_materialUiUriPrefix);
+
+String _libraryOf(Element? element) => element?.library?.uri.toString() ?? '';
+
+bool _fromUiLibrary(Element? element) {
+  final uri = _libraryOf(element);
+  return uri.startsWith(_flutterUriPrefix) ||
+      uri.startsWith(_materialUiUriPrefix) ||
+      uri.startsWith(_foruiUriPrefix);
+}
 
 _Callee? _calleeOf(Element? element) {
-  if (element is! ExecutableElement || !_fromFlutter(element)) return null;
+  if (element is! ExecutableElement || !_fromUiLibrary(element)) return null;
   final name = element.name;
   if (name == null) return null;
   final enclosing = element.enclosingElement;
   return (
     owner: enclosing is InterfaceElement ? enclosing.name : null,
     name: name,
+    uri: _libraryOf(element),
+    creates: element is ConstructorElement || element.isStatic,
   );
-}
-
-bool _isWidgetStateColorOrNull(DartType? type) {
-  if (type is! InterfaceType) return true;
-  if (type.isDartCoreNull) return true;
-  return [
-    type,
-    ...type.allSupertypes,
-  ].any((t) => t.element.name == 'WidgetStateColor' && _fromFlutter(t.element));
 }

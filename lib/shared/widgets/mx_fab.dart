@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tooltip.dart';
 
 /// The one pinned action: ForUI's primary icon button as a square
 /// `sizeFab` box with ForUI's shadow, icon only. [semanticLabel] is the
@@ -26,8 +27,8 @@ class MxFab extends StatelessWidget {
       FButtonSizeVariant.lg,
     });
     final size = context.dimens.sizeFab;
-    return FTooltip(
-      tipBuilder: (_, _) => Text(semanticLabel),
+    return MxTooltip(
+      label: semanticLabel,
       child: FButton.icon(
         onPress: onPressed,
         semanticsLabel: semanticLabel,

@@ -1,6 +1,7 @@
 """Tests for the hook that keeps deleted theme names from coming back: a Dart
 edit under lib/ or test/ that writes a removed name is refused (exit 2) with the
-replacement; generated theme files and the deleted paths cannot be written."""
+replacement; the deleted paths (the old generated theme among them) cannot be
+written."""
 
 from __future__ import annotations
 
@@ -29,7 +30,7 @@ class RemovedSymbolsTest(unittest.TestCase):
         result = run({"file_path": "lib/x.dart", "content": "final s = MxSemanticColors.light;"})
         self.assertEqual(result.returncode, 2)
         self.assertIn("'MxSemanticColors' đã bị xoá", result.stderr)
-        self.assertIn("MxColorsExtension", result.stderr)
+        self.assertIn("MxStatusColors", result.stderr)
 
     def test_new_string_of_an_edit_is_checked(self) -> None:
         result = run({"file_path": "test/a_test.dart", "new_string": "AppSpacing.gutter"})
@@ -48,11 +49,18 @@ class RemovedSymbolsTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("đã bị xoá", result.stderr)
 
-    def test_generated_theme_files_cannot_be_edited_by_hand(self) -> None:
-        result = run({"file_path": "lib/core/theme/generated/app_dimens.g.dart", "content": "x"})
+    def test_the_old_generated_theme_cannot_come_back(self) -> None:
+        for path in ("lib/core/theme/generated/app_dimens.g.dart", "design/tokens.json"):
+            with self.subTest(path=path):
+                result = run({"file_path": path, "content": "x"})
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("đã bị xoá", result.stderr)
+                self.assertIn("app_palette.dart", result.stderr)
+
+    def test_a_material_3_role_on_the_forui_palette_is_refused(self) -> None:
+        result = run({"file_path": "lib/x.dart", "content": "final c = context.colors.onSurfaceVariant;"})
         self.assertEqual(result.returncode, 2)
-        self.assertIn("design/tokens.json", result.stderr)
-        self.assertIn("tools/design/generate.py", result.stderr)
+        self.assertIn("mutedForeground", result.stderr)
 
     def test_clean_dart_passes(self) -> None:
         result = run({"file_path": "lib/x.dart", "content": "final d = context.dimens;"})
@@ -60,7 +68,7 @@ class RemovedSymbolsTest(unittest.TestCase):
 
     def test_a_regex_entry_matches_the_old_access_form_only(self) -> None:
         bad = run({"file_path": "lib/x.dart", "content": "final c = semantic.warning;"})
-        good = run({"file_path": "lib/x.dart", "content": "final c = context.mxColors.warning;"})
+        good = run({"file_path": "lib/x.dart", "content": "final c = context.status.warning;"})
         self.assertEqual(bad.returncode, 2)
         self.assertEqual(good.returncode, 0, good.stderr)
 

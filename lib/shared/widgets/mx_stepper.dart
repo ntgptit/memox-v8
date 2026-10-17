@@ -10,6 +10,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_tooltip.dart';
 import 'package:memox/shared/widgets/mx_tap_target.dart';
 
 /// How long a stepper button is held before it starts repeating (FE-A3 D6).
@@ -353,8 +354,8 @@ class _StepButtonState extends State<_StepButton> {
       onPointerMove: _move,
       onPointerUp: _stop,
       onPointerCancel: _stop,
-      child: FTooltip(
-        tipBuilder: (_, _) => Text(widget.label),
+      child: MxTooltip(
+        label: widget.label,
         child: FButton.icon(
           onPress: widget.onPressed == null ? null : _tap,
           // A 32 square in a 48 target.

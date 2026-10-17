@@ -17,6 +17,7 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/study_fixtures.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -188,7 +189,7 @@ void main() {
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(_en.openGallery), findsOneWidget);
+    expect(byControlLabel(_en.openGallery), findsOneWidget);
   });
 
   libraryTest('without the gallery there is no route and no action', (
@@ -199,7 +200,7 @@ void main() {
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(_en.openGallery), findsNothing);
+    expect(byControlLabel(_en.openGallery), findsNothing);
     final router = buildAppRouter(hasGallery: false);
     addTearDown(router.dispose);
     expect(

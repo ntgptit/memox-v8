@@ -44,6 +44,8 @@ fails until it does.
 | `package_info_plus` | 10.x | The app version and build number stamped on every log entry (ADR-018; owner 2026-09-29). Imported only by `lib/app/logging_bootstrap.dart`. |
 | `flutter_secure_storage` | 11.x | Keeps the anonymous-session backup and the claim token in Keychain / EncryptedSharedPreferences, never SharedPreferences (auth spec O13). Imported only by `lib/core/auth/secure_secret_store.dart`. |
 | `google_sign_in` | 7.x | Native Google sign-in: its `idToken` and `accessToken` go to Supabase `signInWithIdToken` / `linkIdentityWithIdToken` (auth spec O11). Imported only by `lib/core/auth/google_credential_source.dart`. |
+| `forui` | 0.27.6, pinned exactly | The visual component system (ADR-025): `FThemeData` is the app theme and the `Mx*` widgets in `lib/shared/widgets/` are built on its components. Imported only by `lib/core/theme/`, `lib/shared/` and `lib/app/`; `tools/ui_lint` (UIL06) keeps it out of `lib/features/`. A ForUI upgrade is a reviewed change: its styles move the goldens. |
+| `material_ui` | 1.4.0, pinned exactly | ForUI's own Material dependency (the decoupled Material package). Declared so the theme can extend its `ThemeExtension` and `AppThemeHost` can give ForUI's internals the `Theme` they read; nothing else imports it beyond the infrastructure names `tools/ui_lint` (UIL03) allows. |
 | ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. The row is struck rather than deleted because a session that has seen the old advice will look for it here. |
 
 Add only when the need is real:
@@ -65,7 +67,7 @@ Add only when the need is real:
 | `fake_async` | Drives timers and the day clock in tests. |
 | `integration_test` | Device scenarios (`DEVICE-E2E`, FE-D3), run by `tools/device/run_device_e2e.sh`; part of the Flutter SDK. |
 | `flutter_lints` | Baseline rule set that `analysis_options.yaml` extends. |
-| `analyzer` | `^14.4.0`, a caret so the generator stack (`drift_dev`, `riverpod_generator`, `build_runner`) can move it; `tools/m3_lint` reads resolved symbols with it (DEV-381). |
+| `analyzer` | `^14.4.0`, a caret so the generator stack (`drift_dev`, `riverpod_generator`, `build_runner`) can move it; `tools/ui_lint` reads resolved symbols with it (ADR-025). |
 | ~~`riverpod_lint`~~ | **Descoped** — it needs `custom_lint` as its host. Its checks moved to code-verification-guard. |
 | ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `drift_dev` and the Riverpod generator require. Its job is now code-verification-guard's (the `memox-v8` ruleset). |
 

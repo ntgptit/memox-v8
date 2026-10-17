@@ -3,859 +3,328 @@
   "title": "Design System: MemoX V8",
   "extensions": {
     "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Background",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#0A0A0A",
+        "tonalRamp": [
+          "#FFFFFF"
+        ],
+        "usage": "The page: screens, the app bar, the bottom bar, the rail, sheets."
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Foreground",
+        "canonical": "#0A0A0A",
+        "light": "#0A0A0A",
+        "dark": "#FAFAFA",
+        "tonalRamp": [
+          "#0A0A0A"
+        ],
+        "usage": "Primary text and glyphs on background, card and muted."
+      },
       "primary": {
         "role": "primary",
         "displayName": "Primary",
         "canonical": "#564BCB",
         "light": "#564BCB",
-        "dark": "#564BCB",
+        "dark": "#C5C0FF",
         "tonalRamp": [
           "#564BCB"
         ],
-        "usage": "FilledButton, active navigation icon and label (light), active page dot (light). Same value in both themes. As text on `surface`: light 6.43:1; dark 3.01:1, so dark text in `primary` only at 18sp+ or 14sp bold."
+        "usage": "The one primary action per decision, a selected control, accent text and glyphs."
       },
-      "on-primary": {
+      "primary-foreground": {
         "role": "primary",
-        "displayName": "On Primary",
+        "displayName": "Primary Foreground",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#FFFFFF",
+        "dark": "#1B1464",
         "tonalRamp": [
           "#FFFFFF"
         ],
-        "usage": "Text and icons on `primary` and `surfaceTint` (6.43:1 both themes)."
-      },
-      "primary-container": {
-        "role": "primary",
-        "displayName": "Primary Container",
-        "canonical": "#564BCB",
-        "light": "#564BCB",
-        "dark": "#564BCB",
-        "tonalRamp": [
-          "#564BCB"
-        ],
-        "usage": "FAB, soft emphasis. Equals `primary` here (fidelity keeps the seed), so do not place it next to a FilledButton."
-      },
-      "on-primary-container": {
-        "role": "primary",
-        "displayName": "On Primary Container",
-        "canonical": "#D9D4FF",
-        "light": "#D9D4FF",
-        "dark": "#D9D4FF",
-        "tonalRamp": [
-          "#D9D4FF"
-        ],
-        "usage": "Text and icons on `primaryContainer`."
-      },
-      "primary-fixed": {
-        "role": "primary",
-        "displayName": "Primary Fixed",
-        "canonical": "#E3DFFF",
-        "light": "#E3DFFF",
-        "dark": "#E3DFFF",
-        "tonalRamp": [
-          "#E3DFFF"
-        ],
-        "usage": "Decorative top-of-page glow in light (left stop). Same in both themes."
-      },
-      "primary-fixed-dim": {
-        "role": "primary",
-        "displayName": "Primary Fixed Dim",
-        "canonical": "#C5C0FF",
-        "light": "#C5C0FF",
-        "dark": "#C5C0FF",
-        "tonalRamp": [
-          "#C5C0FF"
-        ],
-        "usage": "Darker step of `primaryFixed`."
-      },
-      "on-primary-fixed": {
-        "role": "primary",
-        "displayName": "On Primary Fixed",
-        "canonical": "#130067",
-        "light": "#130067",
-        "dark": "#130067",
-        "tonalRamp": [
-          "#130067"
-        ],
-        "usage": "Text on `primaryFixed` and `primaryFixedDim`."
-      },
-      "on-primary-fixed-variant": {
-        "role": "primary",
-        "displayName": "On Primary Fixed Variant",
-        "canonical": "#3D2FB2",
-        "light": "#3D2FB2",
-        "dark": "#3D2FB2",
-        "tonalRamp": [
-          "#3D2FB2"
-        ],
-        "usage": "Secondary text on `primaryFixed`."
+        "usage": "Text and glyphs on primary."
       },
       "secondary": {
-        "role": "secondary",
+        "role": "neutral",
         "displayName": "Secondary",
-        "canonical": "#535E7A",
-        "light": "#535E7A",
-        "dark": "#BBC6E6",
+        "canonical": "#F5F5F5",
+        "light": "#F5F5F5",
+        "dark": "#262626",
         "tonalRamp": [
-          "#535E7A",
-          "#BBC6E6"
+          "#F5F5F5"
         ],
-        "usage": "Low-emphasis accents."
+        "usage": "The secondary button, the stepper steps, a pressed row."
       },
-      "on-secondary": {
-        "role": "secondary",
-        "displayName": "On Secondary",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#253049",
+      "secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Secondary Foreground",
+        "canonical": "#171717",
+        "light": "#171717",
+        "dark": "#FAFAFA",
         "tonalRamp": [
-          "#FFFFFF",
-          "#253049"
+          "#171717"
         ],
-        "usage": "Text on `secondary`."
+        "usage": "Text and glyphs on secondary."
       },
-      "secondary-container": {
-        "role": "secondary",
-        "displayName": "Secondary Container",
-        "canonical": "#D1DCFD",
-        "light": "#D1DCFD",
-        "dark": "#3B4661",
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#F5F5F5",
+        "light": "#F5F5F5",
+        "dark": "#262626",
         "tonalRamp": [
-          "#D1DCFD",
-          "#3B4661"
+          "#F5F5F5"
         ],
-        "usage": "Chip. NavigationBar has no indicator. Never a button background."
+        "usage": "Recessed grounds: the search field, tracks, skeleton bars, the segmented tray."
       },
-      "on-secondary-container": {
-        "role": "secondary",
-        "displayName": "On Secondary Container",
-        "canonical": "#55607C",
-        "light": "#55607C",
-        "dark": "#AAB5D4",
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Muted Foreground",
+        "canonical": "#616161",
+        "light": "#616161",
+        "dark": "#ADADAD",
         "tonalRamp": [
-          "#55607C",
-          "#AAB5D4"
+          "#616161"
         ],
-        "usage": "Text and icons on `secondaryContainer`."
+        "usage": "Secondary text, hints, captions and resting glyphs."
       },
-      "secondary-fixed": {
-        "role": "secondary",
-        "displayName": "Secondary Fixed",
-        "canonical": "#D9E2FF",
-        "light": "#D9E2FF",
-        "dark": "#D9E2FF",
+      "destructive": {
+        "role": "semantic",
+        "displayName": "Destructive",
+        "canonical": "#C4000A",
+        "light": "#C4000A",
+        "dark": "#FF6467",
         "tonalRamp": [
-          "#D9E2FF"
+          "#C4000A"
         ],
-        "usage": "Fixed secondary step, same in both themes."
+        "usage": "The destructive button's label over its soft tint."
       },
-      "secondary-fixed-dim": {
-        "role": "secondary",
-        "displayName": "Secondary Fixed Dim",
-        "canonical": "#BBC6E6",
-        "light": "#BBC6E6",
-        "dark": "#BBC6E6",
+      "destructive-foreground": {
+        "role": "semantic",
+        "displayName": "Destructive Foreground",
+        "canonical": "#FAFAFA",
+        "light": "#FAFAFA",
+        "dark": "#0A0A0A",
         "tonalRamp": [
-          "#BBC6E6"
+          "#FAFAFA"
         ],
-        "usage": "Darker step of `secondaryFixed`."
-      },
-      "on-secondary-fixed": {
-        "role": "secondary",
-        "displayName": "On Secondary Fixed",
-        "canonical": "#0F1B33",
-        "light": "#0F1B33",
-        "dark": "#0F1B33",
-        "tonalRamp": [
-          "#0F1B33"
-        ],
-        "usage": "Text on `secondaryFixed`."
-      },
-      "on-secondary-fixed-variant": {
-        "role": "secondary",
-        "displayName": "On Secondary Fixed Variant",
-        "canonical": "#3B4661",
-        "light": "#3B4661",
-        "dark": "#3B4661",
-        "tonalRamp": [
-          "#3B4661"
-        ],
-        "usage": "Secondary text on `secondaryFixed`."
-      },
-      "tertiary": {
-        "role": "tertiary",
-        "displayName": "Tertiary",
-        "canonical": "#723700",
-        "light": "#723700",
-        "dark": "#FFB785",
-        "tonalRamp": [
-          "#723700",
-          "#FFB785"
-        ],
-        "usage": "Third accent. Not used on the reviewed screens."
-      },
-      "on-tertiary": {
-        "role": "tertiary",
-        "displayName": "On Tertiary",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#502400",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#502400"
-        ],
-        "usage": "Text on `tertiary`."
-      },
-      "tertiary-container": {
-        "role": "tertiary",
-        "displayName": "Tertiary Container",
-        "canonical": "#964A00",
-        "light": "#964A00",
-        "dark": "#964A00",
-        "tonalRamp": [
-          "#964A00"
-        ],
-        "usage": "Promo and highlight cards."
-      },
-      "on-tertiary-container": {
-        "role": "tertiary",
-        "displayName": "On Tertiary Container",
-        "canonical": "#FFD0B2",
-        "light": "#FFD0B2",
-        "dark": "#FFD0B2",
-        "tonalRamp": [
-          "#FFD0B2"
-        ],
-        "usage": "Text on `tertiaryContainer`."
-      },
-      "tertiary-fixed": {
-        "role": "tertiary",
-        "displayName": "Tertiary Fixed",
-        "canonical": "#FFDCC6",
-        "light": "#FFDCC6",
-        "dark": "#FFDCC6",
-        "tonalRamp": [
-          "#FFDCC6"
-        ],
-        "usage": "Fixed tertiary step."
-      },
-      "tertiary-fixed-dim": {
-        "role": "tertiary",
-        "displayName": "Tertiary Fixed Dim",
-        "canonical": "#FFB785",
-        "light": "#FFB785",
-        "dark": "#FFB785",
-        "tonalRamp": [
-          "#FFB785"
-        ],
-        "usage": "Darker step of `tertiaryFixed`."
-      },
-      "on-tertiary-fixed": {
-        "role": "tertiary",
-        "displayName": "On Tertiary Fixed",
-        "canonical": "#301400",
-        "light": "#301400",
-        "dark": "#301400",
-        "tonalRamp": [
-          "#301400"
-        ],
-        "usage": "Text on `tertiaryFixed`."
-      },
-      "on-tertiary-fixed-variant": {
-        "role": "tertiary",
-        "displayName": "On Tertiary Fixed Variant",
-        "canonical": "#723700",
-        "light": "#723700",
-        "dark": "#723700",
-        "tonalRamp": [
-          "#723700"
-        ],
-        "usage": "Secondary text on `tertiaryFixed`."
+        "usage": "Text on a solid destructive fill."
       },
       "error": {
-        "role": "error",
+        "role": "semantic",
         "displayName": "Error",
-        "canonical": "#BA1A1A",
-        "light": "#BA1A1A",
-        "dark": "#FFB4AB",
+        "canonical": "#C4000A",
+        "light": "#C4000A",
+        "dark": "#FF6467",
         "tonalRamp": [
-          "#BA1A1A",
-          "#FFB4AB"
+          "#C4000A"
         ],
-        "usage": "Error borders and messages, notification badge; StatusBanner icon, text and its 16% tint."
+        "usage": "Error text, an invalid field's edge, the danger tint's edge."
       },
-      "on-error": {
-        "role": "error",
-        "displayName": "On Error",
+      "error-foreground": {
+        "role": "semantic",
+        "displayName": "Error Foreground",
+        "canonical": "#FAFAFA",
+        "light": "#FAFAFA",
+        "dark": "#0A0A0A",
+        "tonalRamp": [
+          "#FAFAFA"
+        ],
+        "usage": "Text on a solid error fill."
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#690005",
+        "dark": "#171717",
         "tonalRamp": [
-          "#FFFFFF",
-          "#690005"
+          "#FFFFFF"
         ],
-        "usage": "Text on `error`."
+        "usage": "Cards and the rows that are cards."
       },
-      "error-container": {
-        "role": "error",
-        "displayName": "Error Container",
-        "canonical": "#FFDAD6",
-        "light": "#FFDAD6",
-        "dark": "#93000A",
-        "tonalRamp": [
-          "#FFDAD6",
-          "#93000A"
-        ],
-        "usage": "Cancelled state tags. Not for StatusBanner, which uses a 16% tint of `error`."
-      },
-      "on-error-container": {
-        "role": "error",
-        "displayName": "On Error Container",
-        "canonical": "#93000A",
-        "light": "#93000A",
-        "dark": "#FFDAD6",
-        "tonalRamp": [
-          "#93000A",
-          "#FFDAD6"
-        ],
-        "usage": "Text on `errorContainer`."
-      },
-      "surface": {
+      "border": {
         "role": "neutral",
-        "displayName": "Surface",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#0A082D",
+        "displayName": "Border",
+        "canonical": "#E5E5E5",
+        "light": "#E5E5E5",
+        "dark": "#FFFFFF26",
         "tonalRamp": [
-          "#FFFFFF",
-          "#0A082D"
+          "#E5E5E5"
         ],
-        "usage": "Page background (Scaffold). Light is pure white; dark is the anchored navy."
+        "usage": "Every hairline: card and field edges, dividers, the app bar once content scrolls under it."
       },
-      "on-surface": {
+      "barrier": {
         "role": "neutral",
-        "displayName": "On Surface",
-        "canonical": "#1C1B21",
-        "light": "#1C1B21",
-        "dark": "#E5E1E9",
+        "displayName": "Barrier",
+        "canonical": "#00000033",
+        "light": "#00000033",
+        "dark": "#0000007A",
         "tonalRamp": [
-          "#1C1B21",
-          "#E5E1E9"
+          "#00000033"
         ],
-        "usage": "Primary text on `surface`, `cardSurface`, `searchSurface`; active navigation icon and label (dark); active page dot (dark). 17.10:1 light, 15.00:1 dark."
-      },
-      "surface-dim": {
-        "role": "neutral",
-        "displayName": "Surface Dim",
-        "canonical": "#DFE0E0",
-        "light": "#DFE0E0",
-        "dark": "#0A082D",
-        "tonalRamp": [
-          "#DFE0E0",
-          "#0A082D"
-        ],
-        "usage": "Lowest step of the surface ladder."
-      },
-      "surface-bright": {
-        "role": "neutral",
-        "displayName": "Surface Bright",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#313055",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#313055"
-        ],
-        "usage": "Highest-brightness step of the surface ladder."
-      },
-      "surface-container-lowest": {
-        "role": "neutral",
-        "displayName": "Surface Container Lowest",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#040227",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#040227"
-        ],
-        "usage": "Card and search bar in light (via `cardSurface`, `searchSurface`)."
-      },
-      "surface-container-low": {
-        "role": "neutral",
-        "displayName": "Surface Container Low",
-        "canonical": "#F9F9F9",
-        "light": "#F9F9F9",
-        "dark": "#141337",
-        "tonalRamp": [
-          "#F9F9F9",
-          "#141337"
-        ],
-        "usage": "Low cards, list sections."
-      },
-      "surface-container": {
-        "role": "neutral",
-        "displayName": "Surface Container",
-        "canonical": "#F3F3F3",
-        "light": "#F3F3F3",
-        "dark": "#18173B",
-        "tonalRamp": [
-          "#F3F3F3",
-          "#18173B"
-        ],
-        "usage": "Divider in dark (via `divider`). NavigationBar uses `surface`, not this."
-      },
-      "surface-container-high": {
-        "role": "neutral",
-        "displayName": "Surface Container High",
-        "canonical": "#EEEEEE",
-        "light": "#EEEEEE",
-        "dark": "#222145",
-        "tonalRamp": [
-          "#EEEEEE",
-          "#222145"
-        ],
-        "usage": "Card in dark (via `cardSurface`); divider in light; dark top glow."
-      },
-      "surface-container-highest": {
-        "role": "neutral",
-        "displayName": "Surface Container Highest",
-        "canonical": "#E8E8E8",
-        "light": "#E8E8E8",
-        "dark": "#2D2C51",
-        "tonalRamp": [
-          "#E8E8E8",
-          "#2D2C51"
-        ],
-        "usage": "Progress track and countdown ring track. Search bar in dark (via searchSurface). Not for text fields: in light it is a neutral grey."
-      },
-      "on-surface-variant": {
-        "role": "neutral",
-        "displayName": "On Surface Variant",
-        "canonical": "#3B4661",
-        "light": "#3B4661",
-        "dark": "#BBC6E6",
-        "tonalRamp": [
-          "#3B4661",
-          "#BBC6E6"
-        ],
-        "usage": "Secondary text, secondary icons, inactive navigation labels. On `surface`: 9.40:1 light, 11.36:1 dark."
-      },
-      "outline": {
-        "role": "neutral",
-        "displayName": "Outline",
-        "canonical": "#6C7794",
-        "light": "#6C7794",
-        "dark": "#8590AE",
-        "tonalRamp": [
-          "#6C7794",
-          "#8590AE"
-        ],
-        "usage": "Text field border, inactive page dots (dark). 3:1+ on surface and cardSurface."
-      },
-      "outline-variant": {
-        "role": "neutral",
-        "displayName": "Outline Variant",
-        "canonical": "#BBC6E6",
-        "light": "#BBC6E6",
-        "dark": "#3B4661",
-        "tonalRamp": [
-          "#BBC6E6",
-          "#3B4661"
-        ],
-        "usage": "Card and MatchTile border in dark, inactive page dots (light). Not for divider lines: use `divider`."
-      },
-      "shadow": {
-        "role": "neutral",
-        "displayName": "Shadow",
-        "canonical": "#000000",
-        "light": "#000000",
-        "dark": "#000000",
-        "tonalRamp": [
-          "#000000"
-        ],
-        "usage": "Shadows. Light cards and search bar use it at 8% opacity (`shadow-raised`)."
-      },
-      "scrim": {
-        "role": "neutral",
-        "displayName": "Scrim",
-        "canonical": "#000000",
-        "light": "#000000",
-        "dark": "#000000",
-        "tonalRamp": [
-          "#000000"
-        ],
-        "usage": "Modal overlay."
-      },
-      "inverse-surface": {
-        "role": "neutral",
-        "displayName": "Inverse Surface",
-        "canonical": "#313036",
-        "light": "#313036",
-        "dark": "#E5E1E9",
-        "tonalRamp": [
-          "#313036",
-          "#E5E1E9"
-        ],
-        "usage": "SnackBar, tooltip."
-      },
-      "on-inverse-surface": {
-        "role": "neutral",
-        "displayName": "On Inverse Surface",
-        "canonical": "#F3EFF7",
-        "light": "#F3EFF7",
-        "dark": "#313036",
-        "tonalRamp": [
-          "#F3EFF7",
-          "#313036"
-        ],
-        "usage": "Text on `inverseSurface`."
-      },
-      "inverse-primary": {
-        "role": "primary",
-        "displayName": "Inverse Primary",
-        "canonical": "#C5C0FF",
-        "light": "#C5C0FF",
-        "dark": "#564BCB",
-        "tonalRamp": [
-          "#C5C0FF",
-          "#564BCB"
-        ],
-        "usage": "Action label inside SnackBar, on `inverseSurface`."
-      },
-      "surface-tint": {
-        "role": "neutral",
-        "displayName": "Surface Tint",
-        "canonical": "#564BCB",
-        "light": "#564BCB",
-        "dark": "#564BCB",
-        "tonalRamp": [
-          "#564BCB"
-        ],
-        "usage": "Elevation tint. Mirrors `primary`."
+        "usage": "The scrim behind dialogs and bottom sheets."
       },
       "success": {
-        "role": "success",
+        "role": "semantic",
         "displayName": "Success",
         "canonical": "#006C49",
         "light": "#006C49",
         "dark": "#5ADDA4",
         "tonalRamp": [
-          "#006C49",
-          "#5ADDA4"
+          "#006C49"
         ],
-        "usage": "Status icons and text in success state; filled status buttons; StatusBanner icon, text and its 16% tint."
+        "usage": "Success text and glyphs: a right answer, mastery."
       },
-      "on-success": {
-        "role": "success",
-        "displayName": "On Success",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#003824",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#003824"
-        ],
-        "usage": "Text on `success-color`."
-      },
-      "success-container": {
-        "role": "success",
-        "displayName": "Success Container",
+      "success-fill": {
+        "role": "semantic",
+        "displayName": "Success Fill",
         "canonical": "#17AE79",
         "light": "#17AE79",
         "dark": "#17AE79",
         "tonalRamp": [
           "#17AE79"
         ],
-        "usage": "Progress bar value; success tags. Same in both themes. Not for StatusBanner, which uses a 16% tint of `success-color`."
+        "usage": "The mastery fill of the progress bar and the donut."
       },
-      "on-success-container": {
-        "role": "success",
-        "displayName": "On Success Container",
+      "on-success-fill": {
+        "role": "semantic",
+        "displayName": "On Success Fill",
         "canonical": "#003925",
         "light": "#003925",
         "dark": "#003925",
         "tonalRamp": [
           "#003925"
         ],
-        "usage": "Text on `success-container`."
+        "usage": "Text on success-fill."
       },
       "warning": {
-        "role": "warning",
+        "role": "semantic",
         "displayName": "Warning",
         "canonical": "#855300",
         "light": "#855300",
         "dark": "#FFC174",
         "tonalRamp": [
-          "#855300",
-          "#FFC174"
+          "#855300"
         ],
-        "usage": "Status icons and text in warning state; filled status buttons."
+        "usage": "Warning text and glyphs: a refusal or a limit, nothing lost."
       },
-      "on-warning": {
-        "role": "warning",
-        "displayName": "On Warning",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#472A00",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#472A00"
-        ],
-        "usage": "Text on `warning-color`."
-      },
-      "warning-container": {
-        "role": "warning",
-        "displayName": "Warning Container",
+      "warning-fill": {
+        "role": "semantic",
+        "displayName": "Warning Fill",
         "canonical": "#F59E0B",
         "light": "#F59E0B",
         "dark": "#F59E0B",
         "tonalRamp": [
           "#F59E0B"
         ],
-        "usage": "Warning tags and banners. Same in both themes."
+        "usage": "The warning button and the learning fill."
       },
-      "on-warning-container": {
-        "role": "warning",
-        "displayName": "On Warning Container",
+      "on-warning-fill": {
+        "role": "semantic",
+        "displayName": "On Warning Fill",
         "canonical": "#613B00",
         "light": "#613B00",
         "dark": "#613B00",
         "tonalRamp": [
           "#613B00"
         ],
-        "usage": "Text on `warning-container`."
+        "usage": "Text on warning-fill."
       },
       "info": {
-        "role": "info",
+        "role": "semantic",
         "displayName": "Info",
         "canonical": "#006684",
         "light": "#006684",
         "dark": "#A9E3FF",
         "tonalRamp": [
-          "#006684",
-          "#A9E3FF"
+          "#006684"
         ],
-        "usage": "Status icons and text in info state; filled status buttons."
+        "usage": "Information text and the deck glyph."
       },
-      "on-info": {
-        "role": "info",
-        "displayName": "On Info",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#003546",
-        "tonalRamp": [
-          "#FFFFFF",
-          "#003546"
-        ],
-        "usage": "Text on `info-color`."
-      },
-      "info-container": {
-        "role": "info",
-        "displayName": "Info Container",
+      "info-fill": {
+        "role": "semantic",
+        "displayName": "Info Fill",
         "canonical": "#50CCFC",
         "light": "#50CCFC",
         "dark": "#50CCFC",
         "tonalRamp": [
           "#50CCFC"
         ],
-        "usage": "Deck icon in dark (on `tileSurface`); info tags and banners. Same in both themes."
-      },
-      "on-info-container": {
-        "role": "info",
-        "displayName": "On Info Container",
-        "canonical": "#00546D",
-        "light": "#00546D",
-        "dark": "#00546D",
-        "tonalRamp": [
-          "#00546D"
-        ],
-        "usage": "Text on `info-container`."
-      },
-      "card-surface": {
-        "role": "neutral",
-        "displayName": "Card Surface",
-        "canonical": "#F1F1FB",
-        "light": "#F1F1FB",
-        "dark": "#222145",
-        "tonalRamp": [
-          "#F1F1FB",
-          "#222145"
-        ],
-        "usage": "Card background. Cards are raised by tone, not shadow (M3 tonal elevation): light is primary at 8% over surface (#ffffff), dark is surfaceContainerHigh. No shadow and no border in either theme."
-      },
-      "search-surface": {
-        "role": "neutral",
-        "displayName": "Search Surface",
-        "canonical": "#F1F1FB",
-        "light": "#F1F1FB",
-        "dark": "#222145",
-        "tonalRamp": [
-          "#F1F1FB",
-          "#222145"
-        ],
-        "usage": "SearchBar background, same tone as cardSurface. No shadow."
-      },
-      "tile-surface": {
-        "role": "neutral",
-        "displayName": "Tile Surface",
-        "canonical": "#EDF8FF",
-        "light": "#EDF8FF",
-        "dark": "#2E3953",
-        "tonalRamp": [
-          "#EDF8FF",
-          "#2E3953"
-        ],
-        "usage": "Background of the 64 × 64 deck icon tile (`size-tile`). Light also feeds the right stop of the top glow. Source: info palette tone 97 in light, secondary palette tone 24 in dark."
-      },
-      "divider": {
-        "role": "neutral",
-        "displayName": "Divider",
-        "canonical": "#EEEEEE",
-        "light": "#EEEEEE",
-        "dark": "#18173B",
-        "tonalRamp": [
-          "#EEEEEE",
-          "#18173B"
-        ],
-        "usage": "Hairline dividers, top border of NavigationBar. Source: surfaceContainerHigh in light, surfaceContainer in dark."
+        "usage": "The information fill of a badge."
       }
     },
     "typographyMeta": {
-      "display-term": {
-        "displayName": "Display Term",
-        "flutterRole": "displaySmall",
-        "purpose": "The word being studied on a flashcard (Flutter displaySmall). onSurface on cardSurface, centered, one line. Regular weight, as on the reference screen."
+      "figure": {
+        "displayName": "Figure",
+        "flutterRole": "context.texts.figure",
+        "purpose": "Key numbers that replace a sentence, in tabular figures."
       },
-      "term-tile": {
-        "displayName": "Term Tile",
-        "flutterRole": "headlineSmall",
-        "purpose": "Korean word inside a MatchTile (Flutter headlineSmall). onSurface on cardSurface, centered, max 2 lines."
+      "term": {
+        "displayName": "Term",
+        "flutterRole": "context.texts.term",
+        "purpose": "The word being studied on a flashcard."
       },
-      "display-stat": {
-        "displayName": "Display Stat",
-        "flutterRole": "displayMedium",
-        "purpose": "Key numbers that replace a sentence: due count, stat values (Flutter displayMedium). Numbers only, never words."
+      "term-compact": {
+        "displayName": "Term Compact",
+        "flutterRole": "context.texts.termCompact",
+        "purpose": "A word inside a match tile, a dialog title."
       },
-      "title-section": {
-        "displayName": "Title Section",
-        "flutterRole": "titleLarge",
-        "purpose": "Section headings on a screen (Flutter titleLarge). onSurface on surface."
+      "screen-title": {
+        "displayName": "Screen Title",
+        "flutterRole": "context.texts.screenTitle",
+        "purpose": "Screen and section headings, the app bar title."
       },
-      "title-card": {
-        "displayName": "Title Card",
-        "flutterRole": "titleMedium",
-        "purpose": "Card titles and key numbers in compact stats (Flutter titleMedium). onSurface on cardSurface. Max 2 lines."
+      "section-title": {
+        "displayName": "Section Title",
+        "flutterRole": "context.texts.sectionTitle",
+        "purpose": "Card titles and compact stats."
       },
-      "title-item": {
-        "displayName": "Title Item",
-        "flutterRole": "titleSmall",
-        "purpose": "Item and row titles: deck name, ActionRow label, card header row (Flutter titleSmall). onSurface. Max 2 lines."
+      "item-title": {
+        "displayName": "Item Title",
+        "flutterRole": "context.texts.itemTitle",
+        "purpose": "List and settings rows, sheet titles."
       },
-      "body-content": {
-        "displayName": "Body Content",
-        "flutterRole": "bodyLarge",
-        "purpose": "Card content the learner reads: meaning on Review, Recall and Fill cards (Flutter bodyLarge). onSurface on cardSurface. Kept at 16 for reading; interface copy uses body."
+      "content": {
+        "displayName": "Content",
+        "flutterRole": "context.texts.content",
+        "purpose": "A card's meaning, a study passage, the text typed in a field."
       },
       "body": {
         "displayName": "Body",
-        "flutterRole": "bodyMedium",
-        "purpose": "Interface copy: list subtitles, hints next to an icon (Flutter bodyMedium). onSurfaceVariant for subtitles."
+        "flutterRole": "context.texts.body",
+        "purpose": "Default running text and notes."
       },
-      "body-tile": {
-        "displayName": "Body Tile",
-        "flutterRole": "bodySmall",
-        "purpose": "Meaning text inside a MatchTile, on MatchScreen and as answer options on GuessScreen (Flutter bodySmall). onSurface on cardSurface, centered, max 7 lines."
+      "caption": {
+        "displayName": "Caption",
+        "flutterRole": "context.texts.caption",
+        "purpose": "A field's message and counter, a tile's meaning, captions."
       },
-      "label-button": {
-        "displayName": "Label Button",
-        "flutterRole": "labelLarge",
-        "purpose": "Button labels in both Button sizes (Flutter labelLarge). onPrimary on primary. Regular weight: button text is not bold."
+      "button": {
+        "displayName": "Button",
+        "flutterRole": "context.texts.button",
+        "purpose": "Every button label."
       },
-      "label-meta": {
-        "displayName": "Label Meta",
-        "flutterRole": "labelMedium",
-        "purpose": "Progress text, search placeholder, banner message, counts (Flutter labelMedium). onSurfaceVariant."
+      "label": {
+        "displayName": "Label",
+        "flutterRole": "context.texts.label",
+        "purpose": "Field labels, chips, metadata, the search field."
       },
-      "label-nav": {
-        "displayName": "Label Nav",
-        "flutterRole": "labelSmall",
-        "purpose": "NavigationBar labels (Flutter labelSmall). primary when selected in light, onSurface when selected in dark, onSurfaceVariant otherwise."
+      "meta": {
+        "displayName": "Meta",
+        "flutterRole": "context.texts.meta",
+        "purpose": "Navigation labels, counts and overlines."
       }
     },
     "shadows": [
       {
         "name": "shadow-raised",
-        "value": "none",
-        "dark": "none",
-        "purpose": "Kept for compatibility and set to none: cards and the search bar are raised by tone (cardSurface, searchSurface). Do not add shadows to cards."
-      }
-    ],
-    "motion": [
-      {
-        "name": "motion-easing-standard",
-        "value": "cubic-bezier(0.2, 0, 0, 1)",
-        "purpose": "Small, utility moves that start and end on screen (color, opacity changes)."
-      },
-      {
-        "name": "motion-easing-standard-decelerate",
-        "value": "cubic-bezier(0, 0, 0, 1)",
-        "purpose": "Small elements entering the screen."
-      },
-      {
-        "name": "motion-easing-standard-accelerate",
-        "value": "cubic-bezier(0.3, 0, 1, 1)",
-        "purpose": "Small elements leaving the screen, e.g. a matched MatchTile fading out."
-      },
-      {
-        "name": "motion-easing-emphasized",
-        "value": "cubic-bezier(0.2, 0, 0, 1)",
-        "purpose": "Expressive moves that start and end on screen: card swipe in ReviewScreen, page transitions. Flutter Easing.emphasizedDecelerate/Accelerate pair or Curves.easeInOutCubicEmphasized."
-      },
-      {
-        "name": "motion-easing-emphasized-decelerate",
-        "value": "cubic-bezier(0.05, 0.7, 0.1, 1)",
-        "purpose": "Expressive enter: next card or screen arriving."
-      },
-      {
-        "name": "motion-easing-emphasized-accelerate",
-        "value": "cubic-bezier(0.3, 0, 0.8, 0.15)",
-        "purpose": "Expressive exit: card or screen leaving."
-      },
-      {
-        "name": "motion-easing-linear",
-        "value": "linear",
-        "purpose": "Only for progress over time, such as the 15 s countdown ring."
-      },
-      {
-        "name": "motion-duration-short2",
-        "value": "100ms",
-        "purpose": "Selection and state-layer changes (tile selected, hover, pressed)."
-      },
-      {
-        "name": "motion-duration-short3",
-        "value": "150ms",
-        "purpose": "State color changes on tiles (MatchTile selected, correct, incorrect)."
-      },
-      {
-        "name": "motion-duration-short4",
-        "value": "200ms",
-        "purpose": "Small exits and fades: matched MatchTile fade-out, banner dismiss."
-      },
-      {
-        "name": "motion-duration-medium2",
-        "value": "300ms",
-        "purpose": "Small enters and component expand: banner appear, indicator pill move."
-      },
-      {
-        "name": "motion-duration-medium4",
-        "value": "400ms",
-        "purpose": "Card swipe and page transitions; also the hold time after a correct answer."
-      },
-      {
-        "name": "motion-duration-long4",
-        "value": "600ms",
-        "purpose": "Large transitions; also the hold time after a wrong match before tiles reset."
+        "value": "0px 1px 2px 0px #0000000D",
+        "dark": "0px 1px 2px 0px #0000000D",
+        "purpose": "ForUI shadow under the surfaces that float over the scroll: the FAB and the floating notice. Cards stay flat."
       }
     ],
     "breakpoints": [
@@ -874,81 +343,49 @@
       "name": "Button Primary",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The button primary of the generated theme.",
+      "description": "ForUI button primary as the theme resolves it on Android.",
       "html": "<span class=\"ds-button-primary\">Aa</span>",
-      "css": ".ds-button-primary { background: #564BCB; color: #FFFFFF; border-radius: 9999px; min-height: 40px; padding: 0 24px; display: inline-flex; align-items: center; }"
+      "css": ".ds-button-primary { background: #564BCB; color: #FFFFFF; border-radius: 10px; min-height: 48px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Button Secondary",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "The button secondary of the generated theme.",
+      "description": "ForUI button secondary as the theme resolves it on Android.",
       "html": "<span class=\"ds-button-secondary\">Aa</span>",
-      "css": ".ds-button-secondary { background: #F3F3F3; color: #1C1B21; border-radius: 9999px; min-height: 40px; padding: 0 24px; display: inline-flex; align-items: center; }"
+      "css": ".ds-button-secondary { background: #F5F5F5; color: #171717; border-radius: 10px; min-height: 48px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Button Outline",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "The button outline of the generated theme.",
+      "description": "ForUI button outline as the theme resolves it on Android.",
       "html": "<span class=\"ds-button-outline\">Aa</span>",
-      "css": ".ds-button-outline { color: #564BCB; border-radius: 9999px; min-height: 40px; padding: 0 24px; border: 1px solid #6C7794; display: inline-flex; align-items: center; }"
+      "css": ".ds-button-outline { background: #FFFFFF; color: #171717; border: 1px solid #E5E5E5; border-radius: 10px; min-height: 48px; display: inline-flex; align-items: center; }"
+    },
+    {
+      "name": "Button Ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "ForUI button ghost as the theme resolves it on Android.",
+      "html": "<span class=\"ds-button-ghost\">Aa</span>",
+      "css": ".ds-button-ghost { color: #171717; border-radius: 10px; min-height: 48px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Button Destructive",
       "kind": "button",
       "refersTo": "button-destructive",
-      "description": "The button destructive of the generated theme.",
+      "description": "ForUI button destructive as the theme resolves it on Android.",
       "html": "<span class=\"ds-button-destructive\">Aa</span>",
-      "css": ".ds-button-destructive { background: #BA1A1A; color: #FFFFFF; border-radius: 9999px; min-height: 40px; padding: 0 24px; display: inline-flex; align-items: center; }"
+      "css": ".ds-button-destructive { background: #C4000A1A; color: #C4000A; border-radius: 10px; min-height: 48px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "The card of the generated theme.",
+      "description": "ForUI card as the theme resolves it on Android.",
       "html": "<span class=\"ds-card\">Aa</span>",
-      "css": ".ds-card { background: #F1F1FB; border-radius: 12px; padding: 24px; display: inline-flex; align-items: center; }"
-    },
-    {
-      "name": "Search Field",
-      "kind": "input",
-      "refersTo": "search-field",
-      "description": "The search field of the generated theme.",
-      "html": "<span class=\"ds-search-field\">Aa</span>",
-      "css": ".ds-search-field { background: #F1F1FB; color: #1C1B21; border-radius: 9999px; min-height: 56px; display: inline-flex; align-items: center; }"
-    },
-    {
-      "name": "Text Field",
-      "kind": "input",
-      "refersTo": "text-field",
-      "description": "The text field of the generated theme.",
-      "html": "<span class=\"ds-text-field\">Aa</span>",
-      "css": ".ds-text-field { color: #1C1B21; border-radius: 12px; min-height: 56px; display: inline-flex; align-items: center; }"
-    },
-    {
-      "name": "Filter Chip",
-      "kind": "chip",
-      "refersTo": "filter-chip",
-      "description": "The filter chip of the generated theme.",
-      "html": "<span class=\"ds-filter-chip\">Aa</span>",
-      "css": ".ds-filter-chip { color: #3B4661; border-radius: 8px; min-height: 32px; display: inline-flex; align-items: center; }"
-    },
-    {
-      "name": "Filter Chip Selected",
-      "kind": "chip",
-      "refersTo": "filter-chip-selected",
-      "description": "The filter chip selected of the generated theme.",
-      "html": "<span class=\"ds-filter-chip-selected\">Aa</span>",
-      "css": ".ds-filter-chip-selected { background: #D1DCFD; color: #55607C; border-radius: 8px; min-height: 32px; display: inline-flex; align-items: center; }"
-    },
-    {
-      "name": "Nav Indicator",
-      "kind": "nav",
-      "refersTo": "nav-indicator",
-      "description": "The nav indicator of the generated theme.",
-      "html": "<span class=\"ds-nav-indicator\">Aa</span>",
-      "css": ".ds-nav-indicator { background: #D1DCFD; color: #55607C; border-radius: 9999px; min-width: 56px; min-height: 32px; display: inline-flex; align-items: center; }"
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 14px; display: inline-flex; align-items: center; }"
     }
   ],
   "narrative": {

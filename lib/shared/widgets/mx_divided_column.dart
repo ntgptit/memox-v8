@@ -7,8 +7,9 @@ import 'package:memox/core/theme/theme_context.dart';
 /// full-bleed card holds its rows in one; a row draws no edge of its own.
 /// A long, paged list keeps its rows lazy with [divided] instead.
 ///
-/// The line is ForUI's [FDivider] (its border colour, one hairline), inset
-/// 16 at each end, at the rows' own content edge.
+/// The line is ForUI's [FDivider] in the palette's `border`, the colour of
+/// every hairline (ForUI's own divider is the fainter `secondary`), inset 16
+/// at each end, at the rows' own content edge.
 class MxDividedColumn extends StatelessWidget {
   const MxDividedColumn({super.key, required this.children});
 
@@ -38,6 +39,7 @@ class _InsetDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FDivider(
     style: FDividerStyleDelta.delta(
+      color: context.colors.border,
       padding: EdgeInsetsGeometryDelta.value(
         EdgeInsetsDirectional.symmetric(horizontal: context.dimens.space16),
       ),

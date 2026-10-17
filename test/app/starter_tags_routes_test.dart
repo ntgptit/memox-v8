@@ -13,6 +13,9 @@ import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/starter_screen_fixtures.dart';
 import '../support/tag_fixtures.dart';
+import '../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 // The routes around Starter decks and Tags (FE-B2 + FE-B4 spec D2, D5,
 // D11, §5.1).
@@ -44,17 +47,17 @@ void main() {
     final library = StarterLibraryFake(env);
     await pumpMemoxApp(tester, env, overrides: [library.asOverride]);
 
-    await _tap(tester, find.byTooltip(_en.libraryStarterDecks));
+    await _tap(tester, byControlLabel(_en.libraryStarterDecks));
     expect(_barTitle(_en.starterTitle), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(_barTitle(_en.navLibrary), findsOneWidget);
 
-    await _tap(tester, find.byTooltip(_en.libraryTags));
+    await _tap(tester, byControlLabel(_en.libraryTags));
     expect(_barTitle(_en.tagsTitle), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
     expect(find.text('food'), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(MxBottomNav), findsOneWidget);
   });
 
@@ -73,7 +76,7 @@ void main() {
 
     expect(_barTitle(hangulTemplate.title), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(_barTitle(_en.navLibrary), findsOneWidget);
     expect(find.text(hangulTemplate.title), findsOneWidget);
   });
@@ -95,15 +98,15 @@ void main() {
       'name; Back returns to the Library (D11)', (tester, env) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.byTooltip(_en.libraryTags));
-    await _tap(tester, find.byTooltip(_en.tagsRowActions('food')));
+    await _tap(tester, byControlLabel(_en.libraryTags));
+    await _tap(tester, byControlLabel(_en.tagsRowActions('food')));
     await _tap(tester, find.text(_en.tagsFindCards));
     await tester.pump(searchDebounce);
     await tester.pumpAndSettle();
 
-    expect(find.widgetWithText(TextField, 'food'), findsOneWidget);
+    expect(find.widgetWithText(FTextField, 'food'), findsOneWidget);
     expect(find.text('bap · back'), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(_barTitle(_en.navLibrary), findsOneWidget);
   });
 }

@@ -15,6 +15,7 @@ import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/widget_harness.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -30,7 +31,7 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 Future<void> _back(WidgetTester tester) =>
-    _tap(tester, find.byTooltip(_en.commonBack));
+    _tap(tester, byControlLabel(_en.commonBack));
 
 /// Korean › Words › Verbs, with Grammar beside Words.
 Future<void> _seed(LibraryEnv env) async {
@@ -83,7 +84,7 @@ void main() {
     await _tap(tester, _crumb(_en.navLibrary));
 
     expect(_barTitle(_en.navLibrary), findsOneWidget);
-    expect(find.byTooltip(_en.commonBack), findsNothing);
+    expect(byControlLabel(_en.commonBack), findsNothing);
   });
 
   libraryTest('from search, a crumb off the stack opens over the root', (
@@ -112,7 +113,7 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
     await _openVerbs(tester);
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     await _tap(tester, find.text(_en.deckDelete));
     await _tap(tester, find.text(_en.trashMoveConfirm));
 
@@ -129,7 +130,7 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     await _tap(tester, find.text(_en.deckReviewAlgorithm));
 
     expect(find.text(_en.algorithmHeader.toUpperCase()), findsOneWidget);
@@ -145,7 +146,7 @@ void main() {
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Grammar'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     await _tap(tester, find.text(_en.deckMove));
     await _tap(tester, find.text('Korean › Words'));
 
@@ -227,7 +228,7 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
     }
-    await _tap(tester, find.byTooltip(_en.cardClose));
+    await _tap(tester, byControlLabel(_en.cardClose));
 
     expect(_barTitle('Words'), findsOneWidget);
     expect(find.text('bap'), findsOneWidget);
@@ -250,7 +251,7 @@ void main() {
       expect(_barTitle(_en.importTitle), findsOneWidget);
       expect(find.byType(MxBottomNav), findsNothing);
 
-      await _tap(tester, find.byTooltip(_en.importClose));
+      await _tap(tester, byControlLabel(_en.importClose));
       expect(_barTitle('Words'), findsOneWidget);
       expect(find.byType(MxBottomNav), findsOneWidget);
     },
@@ -269,7 +270,7 @@ void main() {
       await _tap(tester, find.text('Korean'));
       await _tap(tester, find.text('Words'));
 
-      await _tap(tester, find.byTooltip(_en.deckActions));
+      await _tap(tester, byControlLabel(_en.deckActions));
       await _tap(tester, find.text(_en.deckActionExport));
       expect(find.text(_en.exportTitleDeck(2)), findsOneWidget);
       await _tap(tester, find.widgetWithText(MxButton, _en.commonCancel));
@@ -294,7 +295,7 @@ void main() {
     await _tap(tester, find.widgetWithText(MxButton, _en.deckNewCard));
     await tester.enterText(find.byType(EditableText).at(0), 'bap');
     await tester.pump();
-    await _tap(tester, find.byTooltip(_en.cardClose));
+    await _tap(tester, byControlLabel(_en.cardClose));
     expect(find.text(_en.cardDiscardNewTitle), findsOneWidget);
 
     await _tap(tester, find.text(_en.cardDiscard));
@@ -316,12 +317,12 @@ void main() {
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Words'));
 
-    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
+    await _tap(tester, byControlLabel(_en.cardSearchOpen));
     await tester.enterText(find.byType(EditableText), 'bap');
     await tester.pumpAndSettle();
     expect(find.byType(CardRowWidget), findsOneWidget);
 
-    await _tap(tester, find.byTooltip(_en.cardSearchClose));
+    await _tap(tester, byControlLabel(_en.cardSearchClose));
     expect(find.byType(EditableText), findsNothing);
     expect(find.byType(CardRowWidget), findsNWidgets(2));
   });
@@ -351,7 +352,7 @@ void main() {
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Words'));
-    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
+    await _tap(tester, byControlLabel(_en.cardSearchOpen));
     await tester.enterText(find.byType(EditableText), 'bap');
     await tester.pumpAndSettle();
     await _tap(

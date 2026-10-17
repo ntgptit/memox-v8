@@ -40,8 +40,11 @@ class MxToggle extends StatelessWidget {
             minWidth: context.dimens.sizeControl,
             minHeight: context.dimens.sizeControl,
           ),
+          // Both factors: the box is as small as the target allows, also
+          // under a bounded height (a row of fixed height).
           child: Center(
             widthFactor: 1,
+            heightFactor: 1,
             child: FSwitch(
               value: isOn,
               onChange: onChanged,

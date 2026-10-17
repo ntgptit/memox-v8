@@ -18,7 +18,7 @@ import 'package:memox/core/theme/theme_context.dart';
 /// disabled. The nodes stay in the tree, so TalkBack still reads the row and
 /// its controls, but their tap actions are gone. A busy row is passed here as
 /// disabled.
-class MxRowInk extends StatelessWidget {
+class MxRowInk extends StatefulWidget {
   const MxRowInk({
     super.key,
     required this.onTap,
@@ -56,34 +56,50 @@ class MxRowInk extends StatelessWidget {
   final bool? isSelected;
 
   @override
+  State<MxRowInk> createState() => _MxRowInkState();
+}
+
+class _MxRowInkState extends State<MxRowInk> {
+  // The row's content and its semantics node keep their place in the tree
+  // whether the row is enabled, blocked, dimmed or static: the wrappers
+  // around them change, so global keys move them instead of remounting what
+  // the caller put inside the row.
+  final GlobalKey _coreKey = GlobalKey();
+  final GlobalKey _contentKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
-    final onTap = this.onTap;
-    final isBlocked = !isEnabled;
-    // The row's content keeps its place in the tree whether the row is
-    // enabled, blocked or static, so a flip does not remount what the caller
-    // put inside it.
+    final onTap = widget.onTap;
+    final isBlocked = !widget.isEnabled;
+    final content = KeyedSubtree(key: _contentKey, child: widget.child);
     final core = IgnorePointer(
+      key: _coreKey,
       ignoring: isBlocked,
       child: onTap == null
           ? Semantics(
-              container: isSelected != null,
+              container: widget.isSelected != null,
               enabled: isBlocked ? false : null,
-              selected: isSelected,
-              child: child,
+              selected: widget.isSelected,
+              child: content,
             )
-          : _tappable(context, onTap, isBlocked),
+          : _tappable(context, onTap, isBlocked, content),
     );
-    if (!isBlocked || !shouldDimWhenDisabled) return core;
+    if (!isBlocked || !widget.shouldDimWhenDisabled) return core;
     return Opacity(opacity: context.colors.disabledOpacity, child: core);
   }
 
-  Widget _tappable(BuildContext context, VoidCallback onTap, bool isBlocked) {
+  Widget _tappable(
+    BuildContext context,
+    VoidCallback onTap,
+    bool isBlocked,
+    Widget content,
+  ) {
     final colors = context.colors;
-    final radius = borderRadius ?? BorderRadius.zero;
+    final radius = widget.borderRadius ?? BorderRadius.zero;
     return FTappable.static(
       onPress: isBlocked ? null : onTap,
-      onLongPress: isBlocked ? null : onLongPress,
-      selected: isSelected ?? false,
+      onLongPress: isBlocked ? null : widget.onLongPress,
+      selected: widget.isSelected ?? false,
       focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
         borderRadius: radius,
       ),
@@ -99,7 +115,7 @@ class MxRowInk extends StatelessWidget {
         ),
         child: child,
       ),
-      child: child,
+      child: content,
     );
   }
 }

@@ -10,6 +10,9 @@ import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
+import '../support/forui_expect.dart';
+
+import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -53,11 +56,11 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
 
-    await _tap(tester, find.byTooltip(_en.libraryTrash));
+    await _tap(tester, byControlLabel(_en.libraryTrash));
     _expectTrash();
     expect(find.text(_en.trashEmptyTitle), findsOneWidget);
 
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(_barTitle(_en.navLibrary), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
   });
@@ -105,7 +108,7 @@ void main() {
     await _tap(
       tester,
       find.descendant(
-        of: find.byType(SnackBar),
+        of: find.byType(FToast),
         matching: find.text(_en.commonOpenTrash),
       ),
     );

@@ -1,4 +1,4 @@
-"""check.py: the theme's structure (allowed files, ThemeContext, extension fields)."""
+"""check.py: the theme's structure (allowed files, ThemeContext) and colour values."""
 
 from __future__ import annotations
 
@@ -37,45 +37,63 @@ class StructureTest(unittest.TestCase):
         problems = check.structure_problems(self.root)
         self.assertTrue(any("app_spacing.dart" in p for p in problems), problems)
 
-    def test_a_hand_written_file_in_generated_is_reported(self) -> None:
-        (self.root / THEME / "generated" / "extra.g.dart").write_text("// stray")
+    def test_a_generated_folder_is_reported(self) -> None:
+        (self.root / THEME / "generated").mkdir()
+        (self.root / THEME / "generated" / "color_schemes.g.dart").write_text("// back")
         problems = check.structure_problems(self.root)
-        self.assertTrue(any("extra.g.dart" in p for p in problems), problems)
+        self.assertTrue(any("color_schemes.g.dart" in p for p in problems), problems)
 
     def test_an_extra_theme_context_getter_is_reported(self) -> None:
         path = self.root / THEME / "theme_context.dart"
-        text = path.read_text(encoding="utf-8").replace(
-            "  AppDimens get dimens",
-            "  Color get primaryText => colors.primary;\n\n  AppDimens get dimens",
+        text = path.read_text(encoding="utf-8")
+        marker = "  AppDimens get dimens"
+        self.assertIn(marker, text)
+        path.write_text(
+            text.replace(marker, "  Color get accentInk => colors.primary;\n\n" + marker), encoding="utf-8"
         )
-        path.write_text(text, encoding="utf-8")
         problems = check.structure_problems(self.root)
-        self.assertTrue(any("primaryText" in p for p in problems), problems)
+        self.assertTrue(any("accentInk" in p for p in problems), problems)
 
     def test_a_missing_theme_context_getter_is_reported(self) -> None:
         path = self.root / THEME / "theme_context.dart"
-        text = path.read_text(encoding="utf-8").replace(
-            "  TextTheme get texts => Theme.of(this).textTheme;\n", ""
-        )
-        path.write_text(text, encoding="utf-8")
+        lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+        kept = [line for line in lines if " get hairline" not in line]
+        self.assertLess(len(kept), len(lines))
+        path.write_text("".join(kept), encoding="utf-8")
         problems = check.structure_problems(self.root)
-        self.assertTrue(any("texts" in p for p in problems), problems)
+        self.assertTrue(any("hairline" in p for p in problems), problems)
 
-    def test_an_extension_field_count_off_the_tokens_is_reported(self) -> None:
-        path = self.root / THEME / "generated" / "mx_colors_extension.g.dart"
-        text = path.read_text(encoding="utf-8").replace("  final Color divider;\n", "")
-        path.write_text(text, encoding="utf-8")
-        problems = check.structure_problems(self.root)
-        self.assertTrue(any("MxColorsExtension" in p for p in problems), problems)
 
-    def test_a_dimens_field_count_off_the_tokens_is_reported(self) -> None:
-        path = self.root / THEME / "generated" / "app_dimens.g.dart"
-        text = path.read_text(encoding="utf-8").replace(
-            "  final double space4;\n", "  final double space4;\n  final double space5;\n"
+class ColorValueTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        (self.root / THEME).mkdir(parents=True)
+        (self.root / "lib/shared").mkdir(parents=True)
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def test_a_hex_colour_in_a_widget_is_reported(self) -> None:
+        (self.root / "lib/shared/a.dart").write_text("final c = Color(0xFF564BCB);\n")
+        problems = check.color_value_problems(self.root)
+        self.assertEqual(len(problems), 1)
+        self.assertIn("lib/shared/a.dart:1", problems[0])
+
+    def test_a_material_swatch_is_reported(self) -> None:
+        (self.root / "lib/shared/a.dart").write_text("final c = Colors.blue;\n")
+        self.assertEqual(len(check.color_value_problems(self.root)), 1)
+
+    def test_the_palette_files_may_write_colours(self) -> None:
+        for name in ("app_palette.dart", "mx_status_colors.dart"):
+            (self.root / THEME / name).write_text("const c = Color(0xFF564BCB);\n")
+        self.assertEqual(check.color_value_problems(self.root), [])
+
+    def test_a_computed_colour_and_a_comment_stay_legal(self) -> None:
+        (self.root / THEME / "color_tint.dart").write_text(
+            "// Color(0xFF000000) is black.\nfinal c = Color.fromARGB(255, r, g, b);\n"
         )
-        path.write_text(text, encoding="utf-8")
-        problems = check.structure_problems(self.root)
-        self.assertTrue(any("AppDimens" in p for p in problems), problems)
+        self.assertEqual(check.color_value_problems(self.root), [])
 
 
 if __name__ == "__main__":

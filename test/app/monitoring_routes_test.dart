@@ -15,6 +15,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/monitoring_fakes.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -69,17 +70,17 @@ void main() {
     await _settle(tester);
     expect(find.byType(MonitoringDetailScreen), findsOneWidget);
 
-    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.tap(byControlLabel(_en.commonBack));
     await _settle(tester);
     expect(find.byType(MonitoringScreen), findsOneWidget);
     expect(find.text('sync.push_failed'), findsOneWidget);
     expect(repository.queries, hasLength(1), reason: 'the pages are kept');
 
-    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.tap(byControlLabel(_en.commonBack));
     await _settle(tester);
     expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
 
-    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.tap(byControlLabel(_en.commonBack));
     await _settle(tester);
     expect(find.byType(SettingsScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
@@ -108,7 +109,7 @@ void main() {
     );
     expect((detail.logId, detail.isLocal), ('a', true));
 
-    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.tap(byControlLabel(_en.commonBack));
     await _settle(tester);
     expect(find.byType(MonitoringScreen), findsOneWidget);
   });

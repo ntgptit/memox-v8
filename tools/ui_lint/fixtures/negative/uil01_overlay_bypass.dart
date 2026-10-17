@@ -22,3 +22,13 @@ Route<void> sheetRoute() =>
 abstract class OwnPopupRoute extends PopupRoute<void> {}
 
 abstract class OwnModalRoute implements ModalRoute<void> {}
+
+Future<void> openMaterialDialog(BuildContext context) =>
+    showDialog<void>(context: context, builder: _empty);
+
+Future<void> openMaterialSheet(BuildContext context) =>
+    showModalBottomSheet<void>(context: context, builder: _empty);
+
+void openSnackBar(BuildContext context) =>
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('')));

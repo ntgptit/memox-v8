@@ -64,10 +64,8 @@ class MxStudyTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final accentColor = colors.primary;
+    final accent = colors.primary;
     final trackHeight = context.dimens.sizeTrack;
-    // The badge text is ink: primaryInk on the primary tint.
-    final accentInk = context.colors.primary;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : Durations.short4;
@@ -97,7 +95,7 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: DecoratedBox(
                       decoration: ShapeDecoration(
-                        color: accentColor.tintOver(MxTintBase.of(context)),
+                        color: accent.tintOver(MxTintBase.of(context)),
                         shape: const StadiumBorder(),
                       ),
                       child: Padding(
@@ -116,7 +114,7 @@ class MxStudyTopBar extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: context.texts.meta.copyWith(
-                              color: accentInk,
+                              color: accent,
                             ),
                           ),
                         ),
@@ -140,7 +138,7 @@ class MxStudyTopBar extends StatelessWidget {
                                   FractionallySizedBox(
                                     widthFactor: fraction,
                                     heightFactor: 1,
-                                    child: ColoredBox(color: accentColor),
+                                    child: ColoredBox(color: accent),
                                   ),
                             ),
                           ),

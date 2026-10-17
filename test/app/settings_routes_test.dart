@@ -16,6 +16,7 @@ import 'package:memox/core/network/supabase_config.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
+import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -54,7 +55,7 @@ void main() {
       expect(_barTitle(title), findsOneWidget);
       expect(find.byType(MxBottomNav), findsNothing);
 
-      await _tap(tester, find.byTooltip(_en.commonBack));
+      await _tap(tester, byControlLabel(_en.commonBack));
       expect(_barTitle(_en.navSettings), findsOneWidget);
       expect(find.byType(MxBottomNav), findsOneWidget);
     });
@@ -70,7 +71,7 @@ void main() {
     expect(_barTitle(_en.settingsStudyDefaults), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
 
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyDefaultsScreen), findsNothing);
     expect(_barTitle(_en.navSettings), findsOneWidget);
   });
@@ -100,7 +101,7 @@ void main() {
     await env.decks.root('Korean');
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     await _tap(
       tester,
       find.descendant(
@@ -119,7 +120,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyOptionsScreen), findsNothing);
     expect(_barTitle('Korean'), findsOneWidget);
   });
@@ -129,7 +130,7 @@ void main() {
     await env.decks.root('Korean');
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, byControlLabel(_en.deckActions));
     await _tap(
       tester,
       find.descendant(
@@ -137,10 +138,10 @@ void main() {
         matching: find.text(_en.studyThisDeck),
       ),
     );
-    await _tap(tester, find.byTooltip(_en.deckStudyOptions));
+    await _tap(tester, byControlLabel(_en.deckStudyOptions));
 
     expect(find.byType(StudyOptionsScreen), findsOneWidget);
-    await _tap(tester, find.byTooltip(_en.commonBack));
+    await _tap(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyEntryScreen), findsOneWidget);
   });
 }

@@ -1,107 +1,68 @@
 ---
 name: MemoX V8
-description: A quiet, focused study space for spaced-repetition flashcards, in a light and a dark theme generated from one token file.
+description: A quiet, focused study space for spaced-repetition flashcards, drawn with ForUI in a light and a dark theme from one palette.
 colors:
+  background: "#FFFFFF"
+  foreground: "#0A0A0A"
   primary: "#564BCB"
-  on-primary: "#FFFFFF"
-  primary-container: "#564BCB"
-  on-primary-container: "#D9D4FF"
-  primary-fixed: "#E3DFFF"
-  primary-fixed-dim: "#C5C0FF"
-  on-primary-fixed: "#130067"
-  on-primary-fixed-variant: "#3D2FB2"
-  secondary: "#535E7A"
-  on-secondary: "#FFFFFF"
-  secondary-container: "#D1DCFD"
-  on-secondary-container: "#55607C"
-  secondary-fixed: "#D9E2FF"
-  secondary-fixed-dim: "#BBC6E6"
-  on-secondary-fixed: "#0F1B33"
-  on-secondary-fixed-variant: "#3B4661"
-  tertiary: "#723700"
-  on-tertiary: "#FFFFFF"
-  tertiary-container: "#964A00"
-  on-tertiary-container: "#FFD0B2"
-  tertiary-fixed: "#FFDCC6"
-  tertiary-fixed-dim: "#FFB785"
-  on-tertiary-fixed: "#301400"
-  on-tertiary-fixed-variant: "#723700"
-  error: "#BA1A1A"
-  on-error: "#FFFFFF"
-  error-container: "#FFDAD6"
-  on-error-container: "#93000A"
-  surface: "#FFFFFF"
-  on-surface: "#1C1B21"
-  surface-dim: "#DFE0E0"
-  surface-bright: "#FFFFFF"
-  surface-container-lowest: "#FFFFFF"
-  surface-container-low: "#F9F9F9"
-  surface-container: "#F3F3F3"
-  surface-container-high: "#EEEEEE"
-  surface-container-highest: "#E8E8E8"
-  on-surface-variant: "#3B4661"
-  outline: "#6C7794"
-  outline-variant: "#BBC6E6"
-  shadow: "#000000"
-  scrim: "#000000"
-  inverse-surface: "#313036"
-  on-inverse-surface: "#F3EFF7"
-  inverse-primary: "#C5C0FF"
-  surface-tint: "#564BCB"
+  primary-foreground: "#FFFFFF"
+  secondary: "#F5F5F5"
+  secondary-foreground: "#171717"
+  muted: "#F5F5F5"
+  muted-foreground: "#616161"
+  destructive: "#C4000A"
+  destructive-foreground: "#FAFAFA"
+  error: "#C4000A"
+  error-foreground: "#FAFAFA"
+  card: "#FFFFFF"
+  border: "#E5E5E5"
+  barrier: "#00000033"
   success: "#006C49"
-  on-success: "#FFFFFF"
-  success-container: "#17AE79"
-  on-success-container: "#003925"
+  success-fill: "#17AE79"
+  on-success-fill: "#003925"
   warning: "#855300"
-  on-warning: "#FFFFFF"
-  warning-container: "#F59E0B"
-  on-warning-container: "#613B00"
+  warning-fill: "#F59E0B"
+  on-warning-fill: "#613B00"
   info: "#006684"
-  on-info: "#FFFFFF"
-  info-container: "#50CCFC"
-  on-info-container: "#00546D"
-  card-surface: "#F1F1FB"
-  search-surface: "#F1F1FB"
-  tile-surface: "#EDF8FF"
-  divider: "#EEEEEE"
+  info-fill: "#50CCFC"
 typography:
-  display-term:
+  figure:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "24px"
-    fontWeight: 400
-    lineHeight: "32px"
+    fontSize: "30px"
+    fontWeight: 600
+    lineHeight: "39px"
     letterSpacing: "0px"
-  term-tile:
+  term:
+    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
+    fontSize: "22px"
+    fontWeight: 500
+    lineHeight: "30.8px"
+    letterSpacing: "0px"
+  term-compact:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "20px"
     fontWeight: 400
     lineHeight: "28px"
     letterSpacing: "0px"
-  display-stat:
-    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "28px"
-    fontWeight: 500
-    lineHeight: "36px"
-    letterSpacing: "0px"
-  title-section:
+  screen-title:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "20px"
     fontWeight: 600
     lineHeight: "28px"
     letterSpacing: "0px"
-  title-card:
+  section-title:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "18px"
+    fontWeight: 600
+    lineHeight: "27px"
+    letterSpacing: "0px"
+  item-title:
+    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
+    fontSize: "16px"
     fontWeight: 500
     lineHeight: "24px"
-    letterSpacing: "0.15px"
-  title-item:
-    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "14px"
-    fontWeight: 500
-    lineHeight: "20px"
-    letterSpacing: "0.1px"
-  body-content:
+    letterSpacing: "0px"
+  content:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 400
@@ -111,39 +72,42 @@ typography:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
-    lineHeight: "20px"
-    letterSpacing: "0.25px"
-  body-tile:
-    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "13px"
-    fontWeight: 400
-    lineHeight: "16px"
+    lineHeight: "21px"
     letterSpacing: "0px"
-  label-button:
+  caption:
+    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: "18px"
+    letterSpacing: "0px"
+  button:
+    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 500
+    lineHeight: "24px"
+    letterSpacing: "0px"
+  label:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "14px"
-    fontWeight: 400
-    lineHeight: "20px"
-    letterSpacing: "0.1px"
-  label-meta:
-    fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "14px"
-    fontWeight: 400
-    lineHeight: "20px"
-    letterSpacing: "0.5px"
-  label-nav:
+    fontWeight: 500
+    lineHeight: "21px"
+    letterSpacing: "0px"
+  meta:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 500
-    lineHeight: "16px"
-    letterSpacing: "0.5px"
+    lineHeight: "18px"
+    letterSpacing: "0px"
 rounded:
-  xs: "4px"
+  xs2: "4px"
+  xs: "6px"
   sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "28px"
-  full: "9999px"
+  md: "10px"
+  lg: "14px"
+  xl: "18px"
+  xl2: "22px"
+  xl3: "26px"
+  pill: "100px"
 spacing:
   space-4: "4px"
   space-8: "8px"
@@ -157,63 +121,36 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.full}"
-    height: "40px"
-    padding: "0 24px"
+    textColor: "{colors.primary-foreground}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    height: "48px"
   button-secondary:
-    backgroundColor: "{colors.surface-container}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.full}"
-    height: "40px"
-    padding: "0 24px"
+    backgroundColor: "{colors.secondary}"
+    textColor: "{colors.secondary-foreground}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    height: "48px"
   button-outline:
-    textColor: "{colors.primary}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.full}"
-    height: "40px"
-    padding: "0 24px"
+    backgroundColor: "{colors.background}"
+    textColor: "{colors.secondary-foreground}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    height: "48px"
+  button-ghost:
+    textColor: "{colors.secondary-foreground}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    height: "48px"
   button-destructive:
-    backgroundColor: "{colors.error}"
-    textColor: "{colors.on-error}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.full}"
-    height: "40px"
-    padding: "0 24px"
+    backgroundColor: "#C4000A1A"
+    textColor: "{colors.destructive}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    height: "48px"
   card:
-    backgroundColor: "{colors.card-surface}"
-    rounded: "{rounded.md}"
-    padding: "24px"
-  search-field:
-    backgroundColor: "{colors.search-surface}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.label-meta}"
-    rounded: "{rounded.full}"
-    height: "56px"
-  text-field:
-    textColor: "{colors.on-surface}"
-    typography: "{typography.body-content}"
-    rounded: "{rounded.md}"
-    height: "56px"
-  filter-chip:
-    textColor: "{colors.on-surface-variant}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.sm}"
-    height: "32px"
-  filter-chip-selected:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    typography: "{typography.label-button}"
-    rounded: "{rounded.sm}"
-    height: "32px"
-  nav-indicator:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    rounded: "{rounded.full}"
-    width: "56px"
-    height: "32px"
+    backgroundColor: "{colors.card}"
+    rounded: "{rounded.lg}"
 ---
 
 # Design System: MemoX V8

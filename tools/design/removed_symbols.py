@@ -1,7 +1,7 @@
 """Finds names listed in removed_symbols.json inside Dart source text.
 
-Shared by the PreToolUse hook, check.py and codemod.py so one definition of
-"a removed name" serves all three.
+Shared by the PreToolUse hook and check.py so one definition of
+"a removed name" serves both.
 """
 
 from __future__ import annotations
