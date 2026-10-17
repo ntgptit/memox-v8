@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';

@@ -1,78 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/focus_ring_border.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-
-import '../../support/theme_expect.dart';
-
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
+import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
-final _painted = find.descendant(
-  of: find.byType(TextButton),
-  matching: find.byType(Material),
-);
-
-Material _material(WidgetTester tester) =>
-    tester.widget<Material>(_painted.first);
+final _button = find.byType(FButton);
 
 void main() {
-  final scheme = lightColorScheme;
+  final colors = appLightColors;
 
   testWidgets('each size paints its height and keeps a 48 target', (
     tester,
   ) async {
-    const dimens = AppDimens();
     final heights = {
-      MxButtonSize.regular: dimens.sizeButton,
-      MxButtonSize.small: dimens.sizeButtonSmall,
-      MxButtonSize.chip: dimens.sizeChip,
-      MxButtonSize.study: dimens.sizeButton,
+      MxButtonSize.regular: 48.0,
+      MxButtonSize.small: 40.0,
+      MxButtonSize.chip: 32.0,
+      MxButtonSize.study: 48.0,
     };
     for (final MapEntry(key: size, value: height) in heights.entries) {
       await pumpMx(tester, MxButton(label: 'Go', size: size, onPressed: () {}));
 
-      expect(tester.getSize(_painted.first).height, height, reason: '$size');
+      expect(paintedRect(tester, _button).height, height, reason: '$size');
       expect(
-        tester.getSize(find.byType(TextButton)).height,
+        tester.getSize(_button).height,
         greaterThanOrEqualTo(48),
         reason: '$size',
       );
     }
   });
 
-  testWidgets('tones paint their fill, foreground and edge', (tester) async {
+  testWidgets("tones paint ForUI's variants: fill, label and edge", (
+    tester,
+  ) async {
     final expected = {
-      MxButtonTone.primary: (scheme.primary, scheme.onPrimary, BorderSide.none),
-      MxButtonTone.secondary: (
-        scheme.surfaceContainer,
-        scheme.onSurface,
+      MxButtonTone.primary: (
+        colors.primary,
+        colors.primaryForeground,
         BorderSide.none,
       ),
+      MxButtonTone.secondary: (
+        colors.secondary,
+        colors.secondaryForeground,
+        BorderSide.none,
+      ),
+      MxButtonTone.outline: (
+        colors.card,
+        colors.secondaryForeground,
+        BorderSide(color: colors.border),
+      ),
+      // ForUI's destructive is its soft tint, in the destructive colour.
       MxButtonTone.destructive: (
-        lightColorScheme.error,
-        lightColorScheme.onError,
+        colors.destructive.withValues(alpha: 0.1),
+        colors.destructive,
         BorderSide.none,
       ),
     };
     for (final MapEntry(key: tone, value: (fill, ink, edge))
         in expected.entries) {
       await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
-      final material = _material(tester);
 
-      expect(material.color, fill, reason: '$tone');
-      expect(material.textStyle!.color, ink, reason: '$tone');
-      expect((material.shape! as OutlinedBorder).side, edge);
+      expect(paintedDecoration(tester, _button).color, fill, reason: '$tone');
+      expect(textColor(tester, find.text('Go')), ink, reason: '$tone');
+      expect(paintedSide(tester, _button), edge, reason: '$tone');
     }
   });
 
+  testWidgets('text tone is the ghost: no fill and no edge', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Skip', tone: MxButtonTone.text, onPressed: () {}),
+    );
+
+    expect(paintedDecoration(tester, _button).color, isNull);
+    expect(paintedSide(tester, _button), BorderSide.none);
+    expect(textColor(tester, find.text('Skip')), colors.secondaryForeground);
+  });
+
   testWidgets(
-    'dangerTint paints the soft danger tint with the error foreground '
+    'dangerTint paints the soft danger tint with the error label and edge '
     '(FE-A6 P2, screen 16a)',
     (tester) async {
       await pumpMx(
@@ -83,39 +96,37 @@ void main() {
           onPressed: () {},
         ),
       );
-      final material = _material(tester);
 
-      expect(material.color, scheme.error.tintOver(scheme.surface));
-      expect(material.textStyle!.color, scheme.error);
       expect(
-        (material.shape! as OutlinedBorder).side,
-        BorderSide(
-          color: scheme.error,
-          width: const AppDimens().strokeHairline,
-        ),
+        paintedDecoration(tester, _button).color,
+        colors.error.tintOver(colors.background),
       );
+      expect(textColor(tester, find.text('Again')), colors.error);
+      expect(paintedSide(tester, _button).color, colors.error);
     },
   );
 
   testWidgets(
-    'warning paints the warning role with its foreground, above 4.5:1 in '
-    'both themes (spec D15)',
+    'warning paints the warning fill with its label, above 4.5:1 in both '
+    'themes (spec D15)',
     (tester) async {
       await pumpMx(
         tester,
         MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
       );
-      final material = _material(tester);
 
-      expect(material.color, MxColorsExtension.light.warningContainer);
       expect(
-        material.textStyle!.color,
-        MxColorsExtension.light.onWarningContainer,
+        paintedDecoration(tester, _button).color,
+        MxStatusColors.light.warningFill,
       );
-      expect((material.shape! as OutlinedBorder).side, BorderSide.none);
-      for (final colors in [MxColorsExtension.light, MxColorsExtension.dark]) {
+      expect(
+        textColor(tester, find.text('Merge')),
+        MxStatusColors.light.onWarningFill,
+      );
+      expect(paintedSide(tester, _button), BorderSide.none);
+      for (final status in [MxStatusColors.light, MxStatusColors.dark]) {
         expect(
-          _ratio(colors.warningContainer, colors.onWarningContainer),
+          _ratio(status.warningFill, status.onWarningFill),
           greaterThanOrEqualTo(4.5),
         );
       }
@@ -139,10 +150,10 @@ void main() {
       tester.getRect(find.text('6d')).top,
       greaterThanOrEqualTo(tester.getRect(find.text('Good')).bottom),
     );
-    expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
+    expect(textColor(tester, find.text('6d')), colors.secondaryForeground);
     expect(
-      tester.widget<Text>(find.text('6d')).style,
-      context.texts.label,
+      tester.widget<Text>(find.text('6d')).style!.fontSize,
+      context.texts.label.fontSize,
     );
   });
 
@@ -158,67 +169,25 @@ void main() {
     );
   });
 
-  testWidgets('outline tone has no fill, the accent, 1px outline', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, accentOf(scheme));
+  test('a glyph or a mark, not both', () {
     expect(
-      (material.shape! as OutlinedBorder).side,
-      BorderSide(
-        color: scheme.outline,
-        width: const AppDimens().strokeHairline,
+      () => MxButton(
+        label: 'Go',
+        icon: AppIcons.add,
+        mark: const AssetImage('assets/brand/google_g.png'),
+        onPressed: () {},
       ),
+      throwsAssertionError,
     );
   });
 
-  // Critique 2026-09-30 part 1 (R7): outlineVariant nearly vanished on the
-  // dark sheet (1.05:1).
-  testWidgets('dark: the outline edge is the dark outline', (tester) async {
+  testWidgets('dark: the outline edge is the dark border', (tester) async {
     await pumpMx(
       tester,
       MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
       brightness: Brightness.dark,
     );
-    expect(
-      (_material(tester).shape! as OutlinedBorder).side,
-      BorderSide(
-        color: darkColorScheme.outline,
-        width: const AppDimens().strokeHairline,
-      ),
-    );
-  });
-
-  testWidgets('chip size is the flat unselected chip: no fill, 8 corners', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(tester.getSize(_painted.first).height, 32);
-    expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, scheme.onSurfaceVariant);
-    expect(
-      (material.shape! as MxFocusRingBorder).base,
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: scheme.outlineVariant),
-      ),
-    );
-    expect(
-      tester.getTopLeft(find.text('Tag')).dx -
-          tester.getTopLeft(_painted.first).dx,
-      16,
-    );
+    expect(paintedSide(tester, _button).color, appDarkColors.border);
   });
 
   testWidgets('isAutofocused takes the focus when it shows', (tester) async {
@@ -235,10 +204,6 @@ void main() {
     await tester.pump();
 
     final focused = FocusManager.instance.primaryFocus!.context!;
-    expect(
-      find.ancestor(of: find.text('Keep'), matching: find.byType(TextButton)),
-      findsOneWidget,
-    );
     expect(focused.findAncestorWidgetOfExactType<MxButton>()?.label, 'Keep');
   });
 
@@ -246,29 +211,51 @@ void main() {
     var taps = 0;
     await pumpMx(tester, MxButton(label: 'Go', onPressed: () => taps++));
     await tester.tap(find.byType(MxButton));
+    await tester.pumpAndSettle();
 
     expect(taps, 1);
   });
 
-  testWidgets('disabled follows the disabled opacities and ignores taps', (
-    tester,
-  ) async {
+  testWidgets("disabled takes ForUI's disabled paint, ignores taps and says "
+      'so', (tester) async {
+    final handle = tester.ensureSemantics();
     await pumpMx(tester, const MxButton(label: 'Go', onPressed: null));
-    final context = tester.element(find.text('Go'));
-    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
 
     expect(
-      style.foregroundColor!.resolve({WidgetState.disabled}),
-      context.colors.foreground.withValues(
-        alpha: context.colors.disabledOpacity,
-      ),
+      paintedDecoration(tester, _button).color,
+      colors.disable(colors.primary),
     );
     expect(
-      style.backgroundColor!.resolve({WidgetState.disabled}),
-      context.colors.foreground.withValues(
-        alpha: context.dimens.opacityDisabledContainer,
+      textColor(tester, find.text('Go')),
+      colors.disable(colors.primaryForeground),
+    );
+    // ForUI's tappable reports a selected state too: never selected here.
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Go')),
+      matchesSemantics(
+        label: 'Go',
+        isButton: true,
+        hasEnabledState: true,
+        hasSelectedState: true,
       ),
     );
+    handle.dispose();
+  });
+
+  testWidgets('a loading button keeps its resting paint and width, spins, '
+      'and takes no tap', (tester) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxButton(label: 'Save', onPressed: () => taps++, isLoading: true),
+    );
+
+    expect(paintedDecoration(tester, _button).color, colors.primary);
+    await tester.tap(find.byType(MxButton), warnIfMissed: false);
+    await tester.pump(const Duration(seconds: 1));
+    expect(taps, 0);
+    // The spinner keeps turning; take it off before the test ends.
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('block fills the parent width', (tester) async {
@@ -280,7 +267,7 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(_painted.first).width, 300);
+    expect(tester.getSize(_button).width, 300);
   });
 
   testWidgets('small painted sizes still offer 48×48 labelled targets', (
@@ -319,13 +306,34 @@ void main() {
     expect(text.softWrap, isFalse);
   });
 
+  testWidgets('a regular label wraps to two lines in a narrow column', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 120,
+        child: MxButton(
+          label: 'Delete for good forever',
+          isBlock: true,
+          onPressed: () {},
+        ),
+      ),
+    );
+    expect(
+      tester.widget<Text>(find.text('Delete for good forever')).maxLines,
+      2,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('naturalWidth is the one-line label plus icon and padding', (
     tester,
   ) async {
     late double measured;
     const button = MxButton(
       label: 'Restore',
-      icon: Icons.restore,
+      icon: AppIcons.restore,
       onPressed: null,
     );
     await pumpMx(
@@ -338,10 +346,7 @@ void main() {
       ),
     );
     // Unconstrained, the button lays out at its natural width.
-    expect(
-      measured,
-      tester.getSize(find.byType(TextButton)).width.ceilToDouble(),
-    );
+    expect(measured, tester.getSize(_button).width.ceilToDouble());
   });
 
   testWidgets('naturalWidth of a loading button still measures its label', (
@@ -368,21 +373,8 @@ void main() {
     );
     expect(loading, idle);
   });
-  testWidgets('text tone has no fill and no edge, in the accent', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Skip', tone: MxButtonTone.text, onPressed: () {}),
-    );
-    final material = _material(tester);
 
-    expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, accentOf(scheme));
-    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
-  });
-
-  testWidgets('a brand mark is painted at 18 in the icon\'s place, and '
+  testWidgets("a brand mark is painted at 18 in the icon's place, and "
       'TalkBack reads the label only', (tester) async {
     await pumpMx(
       tester,
@@ -393,12 +385,16 @@ void main() {
       ),
     );
     final image = find.byType(Image);
+    final spacing = forUiTheme(
+      tester,
+      _button,
+    ).buttonStyles.primary.lg.contentStyle.spacing;
 
     expect(tester.getSize(image), const Size.square(18));
     expect(
       tester.getRect(find.text('Continue with Google')).left -
           tester.getRect(image).right,
-      const AppDimens().space8,
+      spacing,
     );
     expect(tester.widget<Image>(image).excludeFromSemantics, isTrue);
     expect(find.bySemanticsLabel('Continue with Google'), findsOneWidget);
@@ -407,10 +403,17 @@ void main() {
   testWidgets('naturalWidth counts the brand mark and its gap', (tester) async {
     late double plain;
     late double marked;
+    late double spacing;
     await pumpMx(
       tester,
       Builder(
         builder: (context) {
+          spacing = FTheme.of(context)
+              .buttonStyles
+              .primary
+              .lg
+              .contentStyle
+              .spacing;
           plain = MxButton(label: 'Go', onPressed: () {}).naturalWidth(context);
           marked = MxButton(
             label: 'Go',
@@ -422,13 +425,39 @@ void main() {
       ),
     );
 
-    // The mark and its 8 gap, less the 8 a leading glyph takes off the start
-    // padding (24 to 16).
-    const dimens = AppDimens();
-    expect(
-      marked - plain,
-      18 + dimens.space8 - (dimens.space24 - dimens.space16),
+    expect(marked - plain, 18 + spacing);
+  });
+
+  testWidgets('semanticLabel replaces the label on one node that keeps the '
+      'tap and the enabled state (SW-REV-005)', (tester) async {
+    final handle = tester.ensureSemantics();
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxButton(
+        label: '07:30',
+        semanticLabel: 'Reminder time, 07:30',
+        onPressed: () => taps++,
+      ),
     );
+
+    expect(find.bySemanticsLabel('Reminder time, 07:30'), findsOneWidget);
+    expect(find.bySemanticsLabel('07:30'), findsNothing);
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminder time, 07:30')),
+      matchesSemantics(
+        label: 'Reminder time, 07:30',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    tester.semantics.tap(find.semantics.byLabel('Reminder time, 07:30'));
+    await tester.pumpAndSettle();
+    expect(taps, 1);
+    handle.dispose();
   });
 }
 

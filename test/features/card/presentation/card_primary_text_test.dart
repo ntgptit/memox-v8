@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../../support/theme_expect.dart';
 
@@ -60,11 +60,11 @@ void main() {
       expect(fill.color, isNull);
       expect(
         glyphColor(tester, CardRemovableTagChipWidget),
-        darkColorScheme.onSurfaceVariant,
+        appDarkColors.mutedForeground,
       );
       expect(
         tester.widget<Text>(find.text('verb')).style!.color,
-        darkColorScheme.onSurfaceVariant,
+        appDarkColors.mutedForeground,
       );
     },
   );
@@ -125,7 +125,7 @@ void main() {
       decoration.shape,
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: lightColorScheme.outlineVariant),
+        side: BorderSide(color: appLightColors.border),
       ),
     );
     expect(

@@ -12,8 +12,8 @@ FThemeData buildLightTheme() => _light;
 /// light. Built once; every caller shares it.
 FThemeData buildDarkTheme() => _dark;
 
-final FThemeData _light = _build(AppPalette.light, 'MemoX Light');
-final FThemeData _dark = _build(AppPalette.dark, 'MemoX Dark');
+final FThemeData _light = _build(appLightColors, 'MemoX Light');
+final FThemeData _dark = _build(appDarkColors, 'MemoX Dark');
 
 /// The ForUI theme of [brightness]: what the composition root and the test
 /// harnesses select by the resolved theme mode.
@@ -53,10 +53,20 @@ sdk.ThemeData materialHostTheme(FThemeData theme) {
     outline: colors.border,
     outlineVariant: colors.border,
   );
+  final type = _hostTextTheme(theme.typography);
   return sdk.ThemeData(
     colorScheme: scheme,
-    fontFamily: theme.typography.body.fontFamily,
-    fontFamilyFallback: theme.typography.body.fontFamilyFallback,
+    // Every slot is a ForUI step, so the default text style a host Material
+    // (the Scaffold) sets under ForUI's is ForUI's, with no Material letter
+    // spacing merged in from the typography geometry.
+    typography: sdk.Typography(
+      black: type,
+      white: type,
+      englishLike: type,
+      dense: type,
+      tall: type,
+    ),
+    textTheme: type,
     scaffoldBackgroundColor: colors.background,
     canvasColor: colors.background,
     // ForUI draws every press and focus state; the host draws no ripple.
@@ -68,5 +78,31 @@ sdk.ThemeData materialHostTheme(FThemeData theme) {
     ),
     visualDensity: sdk.VisualDensity.standard,
     materialTapTargetSize: sdk.MaterialTapTargetSize.padded,
+  );
+}
+
+/// The SDK text theme of [typography]: each Material slot on the ForUI step
+/// ForUI's own Material bridge picks for it (`toApproximateMaterialTheme`),
+/// inked in the step's foreground. `bodyMedium`, the host's default text,
+/// is ForUI's default text (body `sm`).
+sdk.TextTheme _hostTextTheme(FTypography typography) {
+  final display = typography.display;
+  final body = typography.body;
+  return sdk.TextTheme(
+    displayLarge: display.xl4,
+    displayMedium: display.xl3,
+    displaySmall: display.xl2,
+    headlineLarge: display.xl3,
+    headlineMedium: display.xl2,
+    headlineSmall: display.xl,
+    titleLarge: body.lg,
+    titleMedium: body.md,
+    titleSmall: body.sm,
+    labelLarge: body.md,
+    labelMedium: body.sm,
+    labelSmall: body.xs,
+    bodyLarge: body.md,
+    bodyMedium: body.sm,
+    bodySmall: body.xs,
   );
 }

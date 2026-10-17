@@ -91,7 +91,7 @@ Decoration mxInsetDecoration(Decoration decoration, EdgeInsets inset) {
       gradient: decoration.gradient,
       image: decoration.image,
       shadows: decoration.shadows,
-      shape: _InsetShapeBorder(shape, inset),
+      shape: MxInsetShapeBorder(shape, inset),
     ),
     BoxDecoration() => mxInsetDecoration(
       ShapeDecoration.fromBoxDecoration(decoration),
@@ -101,9 +101,9 @@ Decoration mxInsetDecoration(Decoration decoration, EdgeInsets inset) {
   };
 }
 
-/// [base] drawn in a rect deflated by [inset].
-class _InsetShapeBorder extends ShapeBorder {
-  const _InsetShapeBorder(this.base, this.inset);
+/// [base] drawn in a rect deflated by [inset]: what mxInsetDecoration paints.
+class MxInsetShapeBorder extends ShapeBorder {
+  const MxInsetShapeBorder(this.base, this.inset);
 
   final ShapeBorder base;
   final EdgeInsets inset;
@@ -140,12 +140,12 @@ class _InsetShapeBorder extends ShapeBorder {
   );
 
   @override
-  ShapeBorder scale(double t) => _InsetShapeBorder(base.scale(t), inset * t);
+  ShapeBorder scale(double t) => MxInsetShapeBorder(base.scale(t), inset * t);
 
   @override
   ShapeBorder? lerpFrom(ShapeBorder? a, double t) {
-    if (a is _InsetShapeBorder) {
-      return _InsetShapeBorder(
+    if (a is MxInsetShapeBorder) {
+      return MxInsetShapeBorder(
         ShapeBorder.lerp(a.base, base, t)!,
         EdgeInsets.lerp(a.inset, inset, t)!,
       );
@@ -155,8 +155,8 @@ class _InsetShapeBorder extends ShapeBorder {
 
   @override
   ShapeBorder? lerpTo(ShapeBorder? b, double t) {
-    if (b is _InsetShapeBorder) {
-      return _InsetShapeBorder(
+    if (b is MxInsetShapeBorder) {
+      return MxInsetShapeBorder(
         ShapeBorder.lerp(base, b.base, t)!,
         EdgeInsets.lerp(inset, b.inset, t)!,
       );
@@ -166,7 +166,7 @@ class _InsetShapeBorder extends ShapeBorder {
 
   @override
   bool operator ==(Object other) =>
-      other is _InsetShapeBorder && other.base == base && other.inset == inset;
+      other is MxInsetShapeBorder && other.base == base && other.inset == inset;
 
   @override
   int get hashCode => Object.hash(base, inset);

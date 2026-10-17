@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
@@ -69,10 +69,7 @@ void main() {
 
     final label = find.text(_en.cardFieldExample);
     // A read-only field label: sentence case (critique 2026-09-30 part 2).
-    expect(
-      tester.widget<Text>(label).style,
-      tester.element(label).texts.label,
-    );
+    expect(tester.widget<Text>(label).style, tester.element(label).texts.label);
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [
       find.descendant(of: field, matching: find.byType(Icon)),
@@ -140,7 +137,7 @@ void main() {
     final scheme = darkColorScheme;
 
     expect(
-      MxColorsExtension.dark.cardSurface,
+      appDarkColors.card,
       isNot(MasteryRamp.track(scheme)),
     );
     // Boxes 1-3 are filled; 4-8 are the track.

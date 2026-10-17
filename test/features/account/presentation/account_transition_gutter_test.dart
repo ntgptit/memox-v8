@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';

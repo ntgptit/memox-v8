@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 
 import '../../support/widget_harness.dart';
@@ -55,8 +55,8 @@ void main() {
                 as Border)
             .bottom;
 
-    expect(edge.color, MxColorsExtension.light.divider);
-    expect(edge.color, isNot(lightColorScheme.outlineVariant));
+    expect(edge.color, appLightColors.border);
+    expect(edge.color, isNot(appLightColors.border));
     expect(tester.getRect(line).left - column.left, 16);
     expect(column.right - tester.getRect(line).right, 16);
   });

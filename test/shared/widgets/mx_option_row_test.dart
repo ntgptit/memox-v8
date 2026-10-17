@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/focus_ring_expect.dart';
 import '../../support/theme_expect.dart';
@@ -79,7 +79,7 @@ void main() {
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
       brightness: Brightness.dark,
     );
-    expect(_ring(tester).top.color, darkColorScheme.onSurfaceVariant);
+    expect(_ring(tester).top.color, appDarkColors.mutedForeground);
   });
 
   testWidgets('56 tall, 72 with a description; a long one grows the row', (

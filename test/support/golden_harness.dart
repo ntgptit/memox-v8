@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 
 import 'widget_harness.dart';
+import 'theme_harness.dart';
 
 const Duration _indicatorFrame = Duration(milliseconds: 300);
 
@@ -73,7 +74,8 @@ Future<void> expectThemedGoldens(
             debugShowCheckedModeBanner: false,
             // Otherwise the second pump still paints the previous theme.
             themeAnimationDuration: Duration.zero,
-            theme: theme,
+            theme: materialHostTheme(theme),
+            builder: mxThemeBuilder(theme),
             home: Scaffold(
               body: Padding(padding: const EdgeInsets.all(16), child: child),
             ),

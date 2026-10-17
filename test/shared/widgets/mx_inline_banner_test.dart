@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -29,7 +29,7 @@ BoxDecoration _ground(WidgetTester tester) =>
 
 void main() {
   final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
 
   testWidgets(
     'warning: amber ground, no border, 8 corner, warning text colour 16 '
@@ -249,7 +249,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       tester.widget<Text>(find.text('Title')).style!.color,
-      MxColorsExtension.dark.warning,
+      MxStatusColors.dark.warning,
     );
   });
 

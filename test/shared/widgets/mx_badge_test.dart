@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -27,7 +27,7 @@ Color? _ink(WidgetTester tester, String label) =>
 
 void main() {
   final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
 
   testWidgets(
     'tonal: the tone tinted over the surface under a tone label; a 22 pill, 8 inset',
@@ -98,7 +98,7 @@ void main() {
       expect(_pill(tester).color, mx.success.tintOver(scheme.surface));
       expect(_ink(tester, 'Ready · 2'), mx.success);
 
-      const darkSemantic = MxColorsExtension.dark;
+      const darkSemantic = MxStatusColors.dark;
       await pumpMx(
         tester,
         const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
@@ -108,7 +108,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         _pill(tester).color,
-        darkSemantic.success.tintOver(darkColorScheme.surface),
+        darkSemantic.success.tintOver(appDarkColors.background),
       );
       expect(_ink(tester, 'Ready · 2'), darkSemantic.success);
     },

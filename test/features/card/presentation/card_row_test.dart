@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_due_model.dart';

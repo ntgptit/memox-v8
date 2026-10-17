@@ -54,8 +54,12 @@ abstract final class AppTypography {
 /// A widget uses a role as it is and changes only its colour. Weights stop at
 /// 600, the heaviest Be Vietnam Pro the app bundles.
 extension type const MxTextRoles(FTypography _scale) {
-  /// A large figure: a stat's value (30, 600).
-  TextStyle get figure => _weighted(_scale.display.xl2, FontWeight.w600);
+  /// A large figure: a stat's value (30, 600), in tabular figures so a
+  /// count that changes does not shift its neighbours.
+  TextStyle get figure => _weighted(
+    _scale.display.xl2,
+    FontWeight.w600,
+  ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 
   /// The term on a study face, a sign-in code's digits (22, 500).
   TextStyle get term => _weighted(_scale.display.xl, FontWeight.w500);

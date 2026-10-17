@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
@@ -90,7 +90,7 @@ void main() {
           .first,
     );
 
-    expect(track.color, lightColorScheme.surfaceContainerHighest);
+    expect(track.color, appLightColors.secondary);
   });
 
   testWidgets('the fill animates over 200ms unless motion is reduced', (

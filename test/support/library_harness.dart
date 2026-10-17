@@ -26,6 +26,7 @@ import 'golden_harness.dart';
 import 'study_entry_fixtures.dart';
 import 'study_fixtures.dart';
 import 'test_database.dart';
+import 'theme_harness.dart';
 
 /// The day every Library test lives in: 2026-09-24, mid-morning local time.
 final DateTime libraryToday = DateTime(2026, 9, 24, 9);
@@ -115,17 +116,18 @@ Widget _app(
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
     themeAnimationDuration: Duration.zero,
-    theme: brightness == Brightness.light
-        ? buildLightTheme()
-        : buildDarkTheme(),
+    theme: materialHostTheme(themeFor(brightness)),
     locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     // Above the navigator, so sheets and dialogs scale with the screen.
-    builder: (context, child) => MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: TextScaler.linear(textScale)),
-      child: child!,
+    builder: (context, child) => mxThemeBuilder(themeFor(brightness))(
+      context,
+      MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
     ),
     home: screen,
   ),

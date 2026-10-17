@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -145,7 +145,7 @@ void main() {
   testWidgets('in a sheet: a divider rule on top, then 8 16 16', (
     tester,
   ) async {
-    final rule = MxColorsExtension.light.divider;
+    final rule = appLightColors.border;
     await pumpMx(
       tester,
       _width(

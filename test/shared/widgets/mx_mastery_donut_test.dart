@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 
 import '../../support/theme_expect.dart';
@@ -21,7 +21,7 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 
 void main() {
   final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
 
   testWidgets('56 box; the arc in the ramp fill, the label in its band\'s '
       'text colour (SW-REV-001)', (tester) async {

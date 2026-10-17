@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -288,9 +288,9 @@ void main() {
       Color? glyph(IconData icon) =>
           IconTheme.of(tester.element(find.byIcon(icon))).color;
 
-      expect(glyph(AppIcons.back), lightColorScheme.onSurface);
-      expect(glyph(AppIcons.search), lightColorScheme.onSurfaceVariant);
-      expect(glyph(AppIcons.more), lightColorScheme.onSurfaceVariant);
+      expect(glyph(AppIcons.back), appLightColors.foreground);
+      expect(glyph(AppIcons.search), appLightColors.mutedForeground);
+      expect(glyph(AppIcons.more), appLightColors.mutedForeground);
     });
 
     testWidgets('a disabled trailing icon dims onSurfaceVariant', (
@@ -312,7 +312,7 @@ void main() {
 
       expect(
         IconTheme.of(tester.element(find.byIcon(AppIcons.search))).color,
-        lightColorScheme.onSurfaceVariant.withValues(
+        appLightColors.mutedForeground.withValues(
           alpha: const AppDimens().opacityDisabledContent,
         ),
       );

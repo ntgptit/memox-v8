@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 
@@ -69,9 +69,7 @@ void main() {
 
     expect(
       subtitle.style,
-      context.texts.label.copyWith(
-        color: context.colors.mutedForeground,
-      ),
+      context.texts.label.copyWith(color: context.colors.mutedForeground),
     );
     expect(subtitle.maxLines, 1);
     expect(subtitle.overflow, TextOverflow.ellipsis);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
+import '../../support/theme_harness.dart';
 
 final _surfaceFinder = find
     .descendant(of: find.byType(MxDialog), matching: find.byType(Material))
@@ -216,7 +217,8 @@ void main() {
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           home: Builder(
             builder: (context) => Scaffold(
               body: Center(

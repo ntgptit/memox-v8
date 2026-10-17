@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';

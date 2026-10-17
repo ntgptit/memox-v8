@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -66,8 +66,8 @@ void main() {
     final tones = {
       MxEmptyStateTone.primary: scheme.primary,
       MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
-      MxEmptyStateTone.success: MxColorsExtension.light.success,
-      MxEmptyStateTone.warning: MxColorsExtension.light.warningContainer,
+      MxEmptyStateTone.success: MxStatusColors.light.success,
+      MxEmptyStateTone.warning: MxStatusColors.light.warningFill,
       MxEmptyStateTone.danger: scheme.error,
     };
     for (final MapEntry(key: tone, value: color) in tones.entries) {
@@ -80,16 +80,16 @@ void main() {
       // The tile sits in the state's card: its tint is over cardSurface.
       expect(
         (tile.decoration as BoxDecoration).color,
-        color.tintOver(MxColorsExtension.light.cardSurface),
+        color.tintOver(appLightColors.card),
         reason: '$tone',
       );
       // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
       // success glyph in its ink (critique 2026-09-30 tone pass, T7).
       final glyph = switch (tone) {
         MxEmptyStateTone.primary => accentOf(scheme),
-        MxEmptyStateTone.success => MxColorsExtension.light.success,
+        MxEmptyStateTone.success => MxStatusColors.light.success,
         // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
-        MxEmptyStateTone.warning => MxColorsExtension.light.warning,
+        MxEmptyStateTone.warning => MxStatusColors.light.warning,
         _ => color,
       };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);

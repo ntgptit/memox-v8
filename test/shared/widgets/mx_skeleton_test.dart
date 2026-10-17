@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -53,8 +53,8 @@ void main() {
   testWidgets('the bar is one step off the ground it sits on, on every '
       'ground, light and dark', (tester) async {
     for (final (brightness, colors, mx) in [
-      (Brightness.light, lightColorScheme, MxColorsExtension.light),
-      (Brightness.dark, darkColorScheme, MxColorsExtension.dark),
+      (Brightness.light, lightColorScheme, MxStatusColors.light),
+      (Brightness.dark, darkColorScheme, MxStatusColors.dark),
     ]) {
       // The grounds MxTintBase carries: the page, a card, a sheet, a dialog.
       for (final (name, ground, bar) in [

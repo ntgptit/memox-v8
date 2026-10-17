@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -39,7 +39,7 @@ void main() {
     final decoration = tester
         .widget<InputDecorator>(find.byType(InputDecorator))
         .decoration;
-    expect(edgeIn(decoration, {}).borderSide.color, lightColorScheme.outline);
+    expect(edgeIn(decoration, {}).borderSide.color, appLightColors.border);
   });
 
   accountTest('the way-out dialog leaves 24 dp between its banner and the '

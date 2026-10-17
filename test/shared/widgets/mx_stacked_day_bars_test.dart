@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
@@ -78,8 +78,8 @@ void main() {
   testWidgets('the empty-day mark is the progress track, visible on the card '
       'it sits in, light and dark', (tester) async {
     for (final (brightness, scheme, mx) in [
-      (Brightness.light, lightColorScheme, MxColorsExtension.light),
-      (Brightness.dark, darkColorScheme, MxColorsExtension.dark),
+      (Brightness.light, lightColorScheme, MxStatusColors.light),
+      (Brightness.dark, darkColorScheme, MxStatusColors.dark),
     ]) {
       await pumpMx(
         tester,

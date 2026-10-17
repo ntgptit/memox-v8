@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../support/theme_expect.dart';
@@ -25,7 +25,7 @@ void main() {
   for (final brightness in Brightness.values) {
     final isLight = brightness == Brightness.light;
     final scheme = isLight ? lightColorScheme : darkColorScheme;
-    final mx = isLight ? MxColorsExtension.light : MxColorsExtension.dark;
+    final mx = isLight ? MxStatusColors.light : MxStatusColors.dark;
 
     group(brightness.name, () {
       testWidgets(

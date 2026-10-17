@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';

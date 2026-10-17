@@ -1,118 +1,87 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/generated/text_theme.g.dart';
-
-import 'token_source.dart';
-
-final _slotPattern = RegExp(r'\(Flutter (\w+)\)');
-
-TextStyle? _slot(TextTheme theme, String name) => switch (name) {
-  'displayMedium' => theme.displayMedium,
-  'displaySmall' => theme.displaySmall,
-  'headlineSmall' => theme.headlineSmall,
-  'titleLarge' => theme.titleLarge,
-  'titleMedium' => theme.titleMedium,
-  'titleSmall' => theme.titleSmall,
-  'bodyLarge' => theme.bodyLarge,
-  'bodyMedium' => theme.bodyMedium,
-  'bodySmall' => theme.bodySmall,
-  'labelLarge' => theme.labelLarge,
-  'labelMedium' => theme.labelMedium,
-  'labelSmall' => theme.labelSmall,
-  _ => throw ArgumentError(name),
-};
-
-List<TextStyle?> _allSlots(TextTheme t) => [
-  t.displayLarge,
-  t.displayMedium,
-  t.displaySmall,
-  t.headlineLarge,
-  t.headlineMedium,
-  t.headlineSmall,
-  t.titleLarge,
-  t.titleMedium,
-  t.titleSmall,
-  t.bodyLarge,
-  t.bodyMedium,
-  t.bodySmall,
-  t.labelLarge,
-  t.labelMedium,
-  t.labelSmall,
-]; // fmt: skip
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final bound = AppTypography.bind(
-    Typography.material2021(platform: TargetPlatform.android).englishLike,
-  );
-  final groups = ((tokensJson['type'] as Map)['groups'] as List)
-      .cast<Map<String, dynamic>>();
-  final styles = [
-    for (final group in groups)
-      ...(group['styles'] as List).cast<Map<String, dynamic>>(),
+  final scale = AppTypography.build(appLightColors);
+  final roles = MxTextRoles(scale);
+  final named = <String, TextStyle>{
+    'figure': roles.figure,
+    'term': roles.term,
+    'termCompact': roles.termCompact,
+    'screenTitle': roles.screenTitle,
+    'sectionTitle': roles.sectionTitle,
+    'itemTitle': roles.itemTitle,
+    'content': roles.content,
+    'body': roles.body,
+    'caption': roles.caption,
+    'button': roles.button,
+    'label': roles.label,
+    'meta': roles.meta,
+  };
+  final steps = [
+    scale.body.xs3,
+    scale.body.xs2,
+    scale.body.xs,
+    scale.body.sm,
+    scale.body.md,
+    scale.body.lg,
+    scale.body.xl,
+    scale.body.xl2,
   ];
 
-  test('the JSON defines twelve roles', () => expect(styles, hasLength(12)));
-
-  for (final style in styles) {
-    final slot = _slotPattern.firstMatch(style['usage'] as String)!.group(1)!;
-    test('${style['name']} is bound to $slot exactly', () {
-      final actual = _slot(bound, slot)!;
-      final size = tokenNumber(style['fontSize'] as String);
-      final line = tokenNumber(style['lineHeight'] as String);
-      expect(actual.fontSize, size);
-      expect(actual.height, closeTo(line / size, 1e-9));
-      expect(
-        actual.fontWeight,
-        FontWeight.values[(style['fontWeight'] as int) ~/ 100 - 1],
-      );
-      expect(
-        actual.letterSpacing,
-        tokenNumber(style['letterSpacing'] as String),
-      );
-      expect(actual.fontFamily, kFontFamily);
-      expect(actual.fontFamilyFallback, kFontFamilyFallback);
-    });
-  }
-
-  test('the family and its fallback are the first two of the JSON stack', () {
-    final stack =
-        ((tokensJson['type'] as Map)['families'] as Map)['sans'] as String;
-    expect(stack, startsWith('"Be Vietnam Pro", "Noto Sans KR"'));
-    expect(kFontFamily, 'BeVietnamPro');
-    expect(kFontFamilyFallback, ['NotoSansKR']);
-  });
-
-  test('only the stat role uses tabular figures', () {
+  test("the scale is ForUI's touch sizes in Be Vietnam Pro, Noto Sans KR "
+      'behind it', () {
     expect(
-      bound.displayMedium!.fontFeatures,
-      contains(const FontFeature.tabularFigures()),
+      [for (final step in steps) step.fontSize],
+      [10, 12, 14, 16, 18, 20, 22, 30],
     );
-    expect(bound.bodyMedium!.fontFeatures, isNull);
-  });
-
-  test('every slot moves the wght axis with its weight', () {
-    for (final style in _allSlots(bound)) {
-      final weight = style!.fontWeight ?? FontWeight.w400;
-      expect(
-        style.fontVariations,
-        contains(FontVariation.weight(weight.value.toDouble())),
-        reason: '$style',
-      );
+    for (final step in steps) {
+      expect(step.fontFamily, 'BeVietnamPro');
+      expect(step.fontFamilyFallback, ['NotoSansKR']);
+      expect(step.color, appLightColors.foreground);
     }
   });
 
-  // A Material slot the Design System leaves out keeps the weight it
-  // declares, and its wght axis is that weight alone.
-  test('bind sets fontWeight and the wght axis together', () {
-    final style = AppTypography.bind(
-      const TextTheme(displayLarge: TextStyle(fontWeight: FontWeight.w700)),
-    ).displayLarge!;
-    expect(style.fontWeight, FontWeight.w700);
-    expect(style.fontVariations, [const FontVariation.weight(700)]);
+  test('a text step keeps a line height that does not clip stacked '
+      'Vietnamese diacritics', () {
+    for (final step in steps) {
+      final minimum = step.fontSize! <= 18 ? 1.5 : 1.3;
+      expect(step.height, greaterThanOrEqualTo(minimum), reason: '$step');
+    }
+  });
+
+  for (final MapEntry(key: name, value: style) in named.entries) {
+    test('$name is a step of the scale at a bundled weight, its wght axis '
+        'moved with it', () {
+      expect(
+        steps.map((step) => step.fontSize),
+        contains(style.fontSize),
+        reason: name,
+      );
+      final weight = style.fontWeight!;
+      expect([
+        FontWeight.w400,
+        FontWeight.w500,
+        FontWeight.w600,
+      ], contains(weight));
+      expect(style.fontVariations, [
+        FontVariation.weight(weight.value.toDouble()),
+      ]);
+    });
+  }
+
+  test('only the figure role uses tabular figures', () {
+    for (final MapEntry(key: name, value: style) in named.entries) {
+      final isTabular =
+          style.fontFeatures?.contains(const FontFeature.tabularFigures()) ??
+          false;
+      expect(isTabular, name == 'figure', reason: name);
+    }
   });
 
   for (final asset in [

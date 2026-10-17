@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_level_query_sheets_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -10,6 +10,8 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+
+import '../../../support/theme_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -20,7 +22,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: const Scaffold(body: DeckSortFilterSheetWidget(parentId: null)),
@@ -52,7 +55,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          theme: buildLightTheme(),
+          theme: materialHostTheme(buildLightTheme()),
+          builder: mxThemeBuilder(buildLightTheme()),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: const Scaffold(body: DeckSortFilterSheetWidget(parentId: null)),

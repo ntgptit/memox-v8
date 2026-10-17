@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';

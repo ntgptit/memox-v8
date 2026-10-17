@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -20,7 +20,7 @@ Color? _fill(WidgetTester tester, Finder finder) =>
     };
 
 void main() {
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
   final scheme = lightColorScheme;
 
   testWidgets(

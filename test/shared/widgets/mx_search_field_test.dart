@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -45,13 +45,10 @@ void main() {
         tester.getSize(find.byType(TextField)).height,
         const AppDimens().sizeSearch,
       );
-      expect(
-        field.style,
-        tester.element(find.byType(TextField)).texts.label,
-      );
+      expect(field.style, tester.element(find.byType(TextField)).texts.label);
       expect(
         field.decoration!.fillColor,
-        MxColorsExtension.light.searchSurface,
+        appLightColors.muted,
       );
       // The theme's field has no fill: the bar asks for its own.
       expect(
@@ -137,7 +134,7 @@ void main() {
     await tester.pump();
     final field = tester.widget<TextField>(find.byType(TextField));
 
-    expect(field.decoration!.fillColor, MxColorsExtension.light.searchSurface);
+    expect(field.decoration!.fillColor, appLightColors.muted);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
       accentOf(scheme),
@@ -177,7 +174,7 @@ void main() {
         );
         expect(
           field.decoration!.fillColor,
-          MxColorsExtension.light.searchSurface,
+          appLightColors.muted,
         );
         expect(find.text('Search decks'), findsOneWidget);
       },

@@ -3,15 +3,20 @@ import 'dart:ui' show Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 
+import '../../support/theme_harness.dart';
+
 Widget _host(Widget child, {Brightness brightness = Brightness.light}) =>
     MaterialApp(
-      theme: brightness == Brightness.light
-          ? buildLightTheme()
-          : buildDarkTheme(),
+      theme: materialHostTheme(
+        brightness == Brightness.light ? buildLightTheme() : buildDarkTheme(),
+      ),
+      builder: mxThemeBuilder(
+        brightness == Brightness.light ? buildLightTheme() : buildDarkTheme(),
+      ),
       home: Scaffold(
         body: Center(child: SizedBox(width: 300, child: child)),
       ),

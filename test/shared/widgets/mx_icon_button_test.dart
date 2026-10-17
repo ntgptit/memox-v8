@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -52,7 +52,7 @@ void main() {
     );
     final glyph = tester.element(find.byIcon(AppIcons.search));
 
-    expect(IconTheme.of(glyph).color, lightColorScheme.onSurface);
+    expect(IconTheme.of(glyph).color, appLightColors.foreground);
     expect(tester.widget<Material>(_painted.first).color?.a ?? 0, 0);
   });
 

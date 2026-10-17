@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -63,7 +63,7 @@ double _lineHeight(WidgetTester tester) {
 
 void main() {
   final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
 
   testWidgets('all three terms in order, each in its colour', (tester) async {
     await pumpMx(tester, _line());

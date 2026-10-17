@@ -4,7 +4,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_section.dart';

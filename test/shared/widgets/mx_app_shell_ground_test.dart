@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
@@ -33,15 +33,15 @@ void main() {
       tester,
     ) async {
       await pumpMxPage(tester, shell());
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
 
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
 
       await tester.drag(find.byKey(listKey), const Offset(0, 1000));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
     });
 
     testWidgets('a bar wrapped in a widget of its own takes the ground too', (
@@ -54,12 +54,12 @@ void main() {
           body: ListView(key: listKey, children: tall),
         ),
       );
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
 
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
     });
 
     testWidgets('a bar that paints its own ground keeps the shell out of it', (
@@ -76,7 +76,7 @@ void main() {
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
     });
 
     testWidgets('content that fits never scrolls under', (tester) async {
@@ -90,7 +90,7 @@ void main() {
       await tester.drag(find.byType(ListView), const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
     });
 
     testWidgets('swapping the scrolled body for one that does not scroll '
@@ -111,12 +111,12 @@ void main() {
       );
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
 
       body.value = const SizedBox.expand();
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
     });
 
     testWidgets('content that shrinks back into the viewport clears the '
@@ -140,12 +140,12 @@ void main() {
       );
       await tester.drag(find.byKey(listKey), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
 
       count.value = 2;
       await tester.pumpAndSettle();
 
-      expect(ground(tester), lightColorScheme.surface);
+      expect(ground(tester), appLightColors.background);
     });
 
     testWidgets('the colour eases in', (tester) async {
@@ -154,8 +154,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 50));
       final midway = ground(tester);
-      expect(midway, isNot(lightColorScheme.surface));
-      expect(midway, isNot(lightColorScheme.surfaceContainer));
+      expect(midway, isNot(appLightColors.background));
+      expect(midway, isNot(appLightColors.secondary));
       await tester.pumpAndSettle();
     });
 
@@ -173,7 +173,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 1));
 
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
     });
 
     testWidgets('on a wide window the ground runs the full width while the '
@@ -187,7 +187,7 @@ void main() {
 
       expect(tester.getSize(band).width, 1280);
       expect(tester.getSize(find.byKey(_barKey)).width, lessThan(1280));
-      expect(ground(tester), lightColorScheme.surfaceContainer);
+      expect(ground(tester), appLightColors.secondary);
     });
   });
 }

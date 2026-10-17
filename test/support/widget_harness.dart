@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 
+import 'theme_harness.dart';
+
 /// The phone frame every shared-widget test runs in (spec §8.2).
 const Size phoneSize = Size(360, 800);
 
@@ -32,9 +34,12 @@ Future<void> pumpMx(
   _usePhone(tester);
   return tester.pumpWidget(
     MaterialApp(
-      theme: brightness == Brightness.light
-          ? buildLightTheme()
-          : buildDarkTheme(),
+      theme: materialHostTheme(
+        brightness == Brightness.light ? buildLightTheme() : buildDarkTheme(),
+      ),
+      builder: mxThemeBuilder(
+        brightness == Brightness.light ? buildLightTheme() : buildDarkTheme(),
+      ),
       home: Builder(
         builder: (context) => MediaQuery(
           data: _media(context, textScale: textScale, padding: padding),
@@ -48,7 +53,8 @@ Future<void> pumpMx(
 /// [pumpMx] at the view size the test already set.
 Future<void> pumpMxAt(WidgetTester tester, Widget child) => tester.pumpWidget(
   MaterialApp(
-    theme: buildLightTheme(),
+    theme: materialHostTheme(buildLightTheme()),
+    builder: mxThemeBuilder(buildLightTheme()),
     home: Scaffold(body: Center(child: child)),
   ),
 );
@@ -62,7 +68,8 @@ Future<void> pumpMxPage(
   _usePhone(tester);
   return tester.pumpWidget(
     MaterialApp(
-      theme: buildLightTheme(),
+      theme: materialHostTheme(buildLightTheme()),
+      builder: mxThemeBuilder(buildLightTheme()),
       home: Builder(
         builder: (context) => MediaQuery(
           data: _media(context, padding: padding),
@@ -107,7 +114,8 @@ Future<void> pumpMxWide(
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
-      theme: buildLightTheme(),
+      theme: materialHostTheme(buildLightTheme()),
+      builder: mxThemeBuilder(buildLightTheme()),
       home: Directionality(textDirection: direction, child: shell),
     ),
   );

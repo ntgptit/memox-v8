@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -12,8 +12,8 @@ import '../../../support/library_harness.dart';
 // not onPrimary: the dark onPrimary is white since spec 2026-09-27 D1.
 void main() {
   for (final (brightness, mx) in [
-    (Brightness.light, MxColorsExtension.light),
-    (Brightness.dark, MxColorsExtension.dark),
+    (Brightness.light, MxStatusColors.light),
+    (Brightness.dark, MxStatusColors.dark),
   ]) {
     libraryTest('a done step checks in onMastery (${brightness.name})', (
       tester,
@@ -67,7 +67,7 @@ void main() {
   }
 
   test('onMastery reads 3:1 on the mastery fill in both themes', () {
-    for (final mx in [MxColorsExtension.light, MxColorsExtension.dark]) {
+    for (final mx in [MxStatusColors.light, MxStatusColors.dark]) {
       final ink = mx.onSuccessContainer.computeLuminance();
       final fill = mx.successContainer.computeLuminance();
       final (hi, lo) = ink > fill ? (ink, fill) : (fill, ink);

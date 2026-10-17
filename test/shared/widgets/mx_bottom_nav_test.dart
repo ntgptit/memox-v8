@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -79,7 +79,7 @@ void main() {
     expect(decoration.color, scheme.surface);
     expect(
       (decoration.border! as Border).top.color,
-      MxColorsExtension.light.divider,
+      appLightColors.border,
     );
     expect(find.byType(BackdropFilter), findsNothing);
   });

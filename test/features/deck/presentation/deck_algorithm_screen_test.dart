@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -187,10 +187,10 @@ void main() {
     Color? colorOf(String text) =>
         tester.widget<Text>(find.text(text)).style?.color;
 
-    expect(colorOf(_en.algorithmLockedTitle(1)), darkColorScheme.onSurface);
+    expect(colorOf(_en.algorithmLockedTitle(1)), appDarkColors.foreground);
     expect(
       colorOf(_en.algorithmLockedBody(date)),
-      darkColorScheme.onSurfaceVariant,
+      appDarkColors.mutedForeground,
     );
   });
 

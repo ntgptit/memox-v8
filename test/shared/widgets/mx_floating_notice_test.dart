@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
@@ -19,7 +19,7 @@ MxButton _action(String label) =>
 
 void main() {
   final scheme = lightColorScheme;
-  const mx = MxColorsExtension.light;
+  const mx = MxStatusColors.light;
 
   testWidgets('the warning card, lifted by the overlay shadow', (tester) async {
     await pumpMx(tester, _width(const MxFloatingNotice(message: _message)));
@@ -51,7 +51,7 @@ void main() {
       brightness: Brightness.dark,
     );
     await tester.pumpAndSettle();
-    const night = MxColorsExtension.dark;
+    const night = MxStatusColors.dark;
     final ground = tester.widget<Material>(
       find
           .descendant(
@@ -61,14 +61,14 @@ void main() {
           .first,
     );
 
-    expect(ground.color, night.warning.tintOver(darkColorScheme.surface));
+    expect(ground.color, night.warning.tintOver(appDarkColors.background));
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
       night.warning,
     );
     expect(
       tester.widget<Text>(find.text(_message)).style!.color,
-      darkColorScheme.onSurface,
+      appDarkColors.foreground,
     );
   });
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -46,7 +46,7 @@ void main() {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
     expect(
       _tile(tester).color,
-      accentOf(lightColorScheme).tintOver(lightColorScheme.surface),
+      accentOf(lightColorScheme).tintOver(appLightColors.background),
     );
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
@@ -62,7 +62,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       _tile(tester).color,
-      accentOf(darkColorScheme).tintOver(darkColorScheme.surface),
+      accentOf(darkColorScheme).tintOver(appDarkColors.background),
     );
   });
 
@@ -71,7 +71,7 @@ void main() {
   ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder, seed: _seed));
 
-    expect(_tile(tester).color, _seed.tintOver(lightColorScheme.surface));
+    expect(_tile(tester).color, _seed.tintOver(appLightColors.background));
     expect(tester.widget<Icon>(find.byType(Icon)).color, _seed);
   });
 
@@ -125,10 +125,10 @@ void main() {
         const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
       );
 
-      expect(_tile(tester).color, MxColorsExtension.light.warningContainer);
+      expect(_tile(tester).color, MxStatusColors.light.warningFill);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        MxColorsExtension.light.onWarningContainer,
+        MxStatusColors.light.onWarningFill,
       );
     },
   );

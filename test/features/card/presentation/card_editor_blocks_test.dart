@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
@@ -384,7 +384,7 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect((box.border! as Border).top.color, lightColorScheme.outline);
+    expect((box.border! as Border).top.color, appLightColors.border);
   });
 
   libraryTest('field labels are sentence case; Required is a caption '

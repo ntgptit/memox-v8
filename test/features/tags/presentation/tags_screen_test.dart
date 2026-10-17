@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
@@ -200,7 +200,7 @@ void main() {
           .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
           .style
           ?.color,
-      darkColorScheme.onSurfaceVariant,
+      appDarkColors.mutedForeground,
     );
   });
 

@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 
 import '../support/library_harness.dart';
+import '../support/theme_harness.dart';
 
 Future<void> _pumpGallery(WidgetTester tester, {Locale? locale}) async {
   tester.view.physicalSize = const Size(1080, 2400);
@@ -20,7 +21,8 @@ Future<void> _pumpGallery(WidgetTester tester, {Locale? locale}) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
-      theme: buildLightTheme(),
+      theme: materialHostTheme(buildLightTheme()),
+      builder: mxThemeBuilder(buildLightTheme()),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
