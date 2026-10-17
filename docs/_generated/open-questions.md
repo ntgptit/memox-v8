@@ -4,7 +4,7 @@
 
 ## [shared/ui/screen-handoff/34-topik-home.md](../shared/ui/screen-handoff/34-topik-home.md)
 
-- L54: - **Audit 2026-10-16 (DEV-394):** OPEN QUESTION Q-A-1: a level with tests only in Listening opens 35 on an empty Reading section (UC-TOPIK-001 step 2 fixes Reading as the default). Proposed: open the first section that has tests. Code unchanged until the owner rules.
+- L57: - **Audit 2026-10-16 (DEV-394):** OPEN QUESTION Q-A-1: a level with tests only in Listening opens 35 on an empty Reading section (UC-TOPIK-001 step 2 fixes Reading as the default). Proposed: open the first section that has tests. Code unchanged until the owner rules.
 
 ## [shared/ui/screen-handoff/35-topik-test-list.md](../shared/ui/screen-handoff/35-topik-test-list.md)
 
@@ -12,7 +12,7 @@
 
 ## [shared/ui/screen-handoff/36-topik-test-detail.md](../shared/ui/screen-handoff/36-topik-test-detail.md)
 
-- L78: - **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
+- L81: - **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
 
 ## [shared/ui/screen-handoff/37-topik-attempt.md](../shared/ui/screen-handoff/37-topik-attempt.md)
 
@@ -20,7 +20,7 @@
 
 ## [shared/ui/screen-handoff/39-topik-review.md](../shared/ui/screen-handoff/39-topik-review.md)
 
-- L79: - **Audit 2026-10-16 (DEV-394):** UC-TOPIK-005 A3 is rewritten to V5 and V9 as built (a question outside the current filter cannot occur). The right option marked is the snapshot's `correct_idx` (`topik_review_question_widget.dart`), while the stem, options and supporting content are the current content's: after an `answerIdx` correction the old index stays marked beside a current explanation. OPEN QUESTION Q-A-8: mark the current content's `answerIdx` as right (Review teaches the truth; the score stays from the snapshot and the banner says so) or keep the snapshot's. Code unchanged until the owner rules. "Back to summary" uses `go`, so Done on that summary lands on TOPIK home, not 36 (owner ruling Q-P6c, 2026-10-16: as built).
+- L86: - **Audit 2026-10-16 (DEV-394):** UC-TOPIK-005 A3 is rewritten to V5 and V9 as built (a question outside the current filter cannot occur). The right option marked is the snapshot's `correct_idx` (`topik_review_question_widget.dart`), while the stem, options and supporting content are the current content's: after an `answerIdx` correction the old index stays marked beside a current explanation. OPEN QUESTION Q-A-8: mark the current content's `answerIdx` as right (Review teaches the truth; the score stays from the snapshot and the banner says so) or keep the snapshot's. Code unchanged until the owner rules. "Back to summary" uses `go`, so Done on that summary lands on TOPIK home, not 36 (owner ruling Q-P6c, 2026-10-16: as built).
 
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
