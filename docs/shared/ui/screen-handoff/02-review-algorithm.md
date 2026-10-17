@@ -26,7 +26,7 @@ Algorithm descriptions:
 |---|---|---|---|
 | locked | `library_algorithm_locked_light.png` | `library_algorithm_locked_dark.png` | Date from `firstAnsweredAt`, local time. |
 | unlocked | `library_algorithm_unlocked_light.png` | `library_algorithm_unlocked_dark.png` | — |
-| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
+| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). The options and "Reset learning progress…" are off until it ends (audit 2026-10-17 LIB-13). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | no golden | no golden | Danger banner with Retry (UC-DECK-002 E2). |
 | resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `success` on the success tint (ADR-022); "the open session" only when a session is open. |
@@ -38,7 +38,7 @@ Beyond the states above:
 
 - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" / "Every card's schedule in this tree starts over and any open study session closes. No history is lost." / Cancel · Switch (UC-DECK-002 steps 3–4).
 - **Refused because the tree just locked:** the locked state and the reason (UC-DECK-002 E4).
-- **Loading, load error, not a root or gone:** skeleton, `MxErrorState`, the not-found state of screen 01.
+- **Loading, load error, not a root or gone:** skeleton, `MxErrorState`, the not-found state of screen 01, with its "Back to Library" and "Open Trash" (audit 2026-10-17 LIB-4; the router passes `onOpenTrash`, as for screen 01).
 
 ## Reset dialog copy
 

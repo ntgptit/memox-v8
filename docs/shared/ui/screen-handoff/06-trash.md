@@ -50,7 +50,8 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | selection | `trash_selection_light.png` | `trash_selection_dark.png` | "Restore ({n})" · "Delete ({n})" as a filled destructive button, the note hidden, the other kind dimmed (owner 2026-09-26). |
 | purgeConfirm | `trash_purge_confirm_light.png` | `trash_purge_confirm_dark.png` | No glyph, left-aligned (UI-base row 108). |
 | purged | no golden | no golden | — |
-| youngerInside | `trash_purge_blocked_light.png` | `trash_purge_blocked_dark.png` | "deleted earlier", in a warning banner (D6). |
+| youngerInside | `trash_purge_blocked_light.png` | `trash_purge_blocked_dark.png` | "deleted earlier", in a warning banner (D6). The banners stay through the filter and the selection until the next purge or restore (audit 2026-10-17 LIB-11). |
+| selecting, then emptied | no golden | no golden | When the last entry leaves the Trash (expiry, a purge elsewhere) the selection ends and the empty state shows under the plain app bar (audit 2026-10-17 TRASH-1). |
 | empty | `trash_empty_light.png` | `trash_empty_dark.png` | — |
 | loading | no golden | no golden | Skeleton rows. |
 | error | `trash_error_light.png` | `trash_error_dark.png` | The app's local-first body, "Nothing was lost. Try again in a moment." |

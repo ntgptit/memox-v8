@@ -32,11 +32,11 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | empty | no golden | no golden | The deck is unset again (E-L1): screen 01's unset state. |
 | searchEmpty | `card_list_search_light.png` | `card_list_search_dark.png` | Search open, no match (the copy below). |
 | searchResults | `card_list_search_results_light.png` | `card_list_search_results_dark.png` | Two matches with a 300 dp keyboard up: the summary card steps aside (critique 2026-09-30 part 3a). |
-| loading | no golden | no golden | — |
-| error | no golden | no golden | — |
+| loading | no golden | no golden | Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
+| error | no golden | no golden | Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
 | notFound | no golden | no golden | As screen 01 deckNotFound. |
 | deckActions | no golden | no golden | — |
-| selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020), or Select cards from `⋮` enters selection with nothing picked; Close ends it, unticking the last card does not (DEV-307). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
+| selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020), or Select cards from `⋮` enters selection with nothing picked; Close ends it, unticking the last card does not (DEV-307). Back ends it in every list state, loaded, loading or error. Picks of cards that left the deck while picked (deleted or moved elsewhere) drop out when the list changes, so a bulk action is not refused whole for them (audit 2026-10-17 CARD-14a). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | — |
 | noMoveTarget | no golden | no golden | — |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |

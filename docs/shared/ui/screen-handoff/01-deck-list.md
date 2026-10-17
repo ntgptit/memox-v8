@@ -84,6 +84,13 @@ One `MxBottomSheet`, "Sort & filter":
 | deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
 Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
 
+Transitions added by the audit of 2026-10-17:
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| reorder mode (root or open deck) | system Back | the list in browse mode, still on the screen (`PopScope` in `DeckLevelBodyWidget`, LIB-7) | `deck_reorder_test.dart` |
+| a row's or the open deck's `⋮` | the deck's view fails to read | the failure's sentence as a toast, no sheet (LIB-9) | `deck_level_screen_test.dart` |
+
 ## Rulings
 
 - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB; its empty state already offers New card and New sub-deck. The FAB returns once the deck holds sub-decks.
