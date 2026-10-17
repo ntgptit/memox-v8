@@ -79,7 +79,7 @@ turns the reminder on.
   it is a spinner named "Loading".
 - The time button is read as "Reminder time, {HH:mm}"; disabled while off.
 - The steppers name their buttons ("Earlier hour", "Later minute"…) and read their value
-  with "Hour" / "Minute"; a typed value out of range marks the stepper and keeps Save off.
+  with "Hour" / "Minute"; a typed value out of range marks the stepper and keeps Save off; a step on that stepper clears the mark and Save comes back (audit 2026-10-17).
 - Every control is at least 48 tall; the visual-audit companion checks both themes and
   text scales.
 

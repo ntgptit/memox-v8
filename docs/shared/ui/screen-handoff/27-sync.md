@@ -46,6 +46,7 @@ The images are the goldens.
 | syncing | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_dark.png) | Golden `sync_syncing_*`. |
 | loading | — | — | `MxSkeletonList`, two rows. |
 | read error | — | — | `MxErrorState` "Couldn't open Sync" with the local-first body and Retry (spec §6). |
+| unavailable | — | — | A build with no Supabase has no status (the stream is null): a neutral `MxEmptyState` "Sync isn't available" over "This version of MemoX keeps everything on this device. Nothing is lost.", with no Retry and no Sync now (audit 2026-10-17). |
 
 ## Rulings
 
@@ -66,3 +67,4 @@ The images are the goldens.
 - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} changes" · "Nothing waiting" · "No other changes waiting" · "MemoX syncs on its own when you're online. Your study never waits for it." · "Sync now".
 - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" · "Couldn't change that. Nothing was lost." · "Retry".
 - Error: "Couldn't open Sync" · "Nothing was lost. Try again in a moment." · "Retry".
+- No sync in this build: "Sync isn't available" · "This version of MemoX keeps everything on this device. Nothing is lost."

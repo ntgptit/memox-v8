@@ -27,10 +27,10 @@ step 2; specs [2026-09-26-settings-ui-design.md](../../../superpowers/specs/2026
 | New-card order sheet | `MxBottomSheet` + `MxOptionRow` × 2 | "New-card order": "In order", "Random", the current one selected; a pick closes the sheet and saves at once, as the speech language sheet does. |
 | Speech | `MxSection` + `MxSettingsRow` × 2, note | "Speech". "Read the term aloud" / "When a new card comes up while learning" with an `MxToggle` (speak tile); "Speech language" / "{language} · Used by decks that follow the defaults" (voice tile, the value first and a chevron), a tap opening the speech language sheet (study speech spec §6, BR-SETTINGS-009, BR-SETTINGS-010). The note: "Changes apply at once. A deck with its own speech language keeps it." (BR-STUDY-080). |
 | Speech language sheet | `MxBottomSheet` + `MxOptionRow` × 10 | As screen 15 records it: one row per `SpeechLanguage`, the current one selected and scrolled into view; a language the engine lacks says "No voice on this device · nothing is read" and stays selectable (spec D5, D12). |
-| Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order." · Retry; "Couldn't save the read-aloud switch." · Retry; "Couldn't save the speech language." · Retry (settings hub spec D9). |
+| Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order. Nothing changed." · Retry; "Couldn't save the read-aloud switch. Nothing changed." · Retry; "Couldn't save the speech language. Nothing changed." · Retry (settings hub spec D9). |
 
 The card limit is saved once a change settles: 600 ms after the last step, a hold
-included, or at once for a typed value. The toggle and a sheet pick save at once (D1). Back within those 600 ms still saves the value, but the page is gone, so
+included, or at once for a typed value. The toggle and a sheet pick save at once (D1). A new-card order picked while the card limit (or another order) is being written is kept and written once that write ends, as a limit changed meanwhile is; the last pick wins and a pick of the stored order writes nothing (audit 2026-10-17). Back within those 600 ms still saves the value, but the page is gone, so
 its "Saved" toast or failure toast is not shown; accepted (final review 2026-10-07): the
 hub's Study summary names the saved value on return.
 
@@ -62,5 +62,5 @@ Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loa
 ## Copy
 
 - "Study options" · "Session" · "Cards" · "Per session" · "Cards per session" (spoken) · "Fewer cards per session" · "More cards per session" · "Enter a number from {min} to {max}" · "New-card order" · "In order" · "Random" · "Changes apply to sessions you start from now on. A deck with its own study options keeps them." · "Speech" · "Read the term aloud" · "When a new card comes up while learning" · "Speech language" · "{language} · Used by decks that follow the defaults" · "No voice on this device · nothing is read" · "Changes apply at once. A deck with its own speech language keeps it."
-- Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order." · "Couldn't save the read-aloud switch." · "Couldn't save the speech language." · "Retry".
+- Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order. Nothing changed." · "Couldn't save the read-aloud switch. Nothing changed." · "Couldn't save the speech language. Nothing changed." · "Retry".
 - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · "Retry".

@@ -109,9 +109,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               minDigits: 2,
               isInvalid: _isMinuteInvalid,
               onDecrement: _minute > 0 ? () => _stepMinute(-1) : null,
-              onIncrement: _minute < _lastMinute
-                  ? () => _stepMinute(1)
-                  : null,
+              onIncrement: _minute < _lastMinute ? () => _stepMinute(1) : null,
               onValueSubmitted: (text) {
                 final (minute, isInvalid) = _typed(text, _minute, _lastMinute);
                 setState(() {

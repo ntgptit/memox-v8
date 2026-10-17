@@ -37,6 +37,10 @@ class SettingsController extends _$SettingsController {
   /// The limit changed again while its write ran: write it once that ends.
   var _isCardLimitQueued = false;
 
+  /// The order picked while the study defaults wrote: write it once that
+  /// ends, so the pick is not lost.
+  NewCardOrder? _queuedOrder;
+
   /// What Retry resubmits, per kind.
   final _retries = <SettingsSubmit, Future<void> Function()>{};
 
@@ -87,8 +91,12 @@ class SettingsController extends _$SettingsController {
 
   void chooseNewCardOrder(NewCardOrder order) {
     final persisted = _studyDefaults;
-    if (persisted == null || order == persisted.newCardOrder) return;
-    if (state.isStudyDefaultsBusy) return;
+    if (persisted == null) return;
+    if (state.isStudyDefaultsBusy) {
+      _queuedOrder = order;
+      return;
+    }
+    if (order == persisted.newCardOrder) return;
     // Only the order is written: a limit that arrived meanwhile stays
     // (BR-SETTINGS-007, DEV-217).
     unawaited(
@@ -209,6 +217,7 @@ class SettingsController extends _$SettingsController {
     if (!hasSaved) {
       // The control shows the persisted value again (E2).
       state = state.withDraft(null);
+      _chooseQueuedOrder();
       return;
     }
     _dropSavedDraft(_persisted);
@@ -224,6 +233,15 @@ class SettingsController extends _$SettingsController {
     if (!ref.mounted) return;
     if (hasSaved) _written = options;
     await _saveQueuedCardLimit();
+    _chooseQueuedOrder();
+  }
+
+  /// The order picked while the study defaults wrote: choose it now.
+  void _chooseQueuedOrder() {
+    final order = _queuedOrder;
+    if (order == null || !ref.mounted) return;
+    _queuedOrder = null;
+    chooseNewCardOrder(order);
   }
 
   /// The limit changed while its group wrote: write it now.

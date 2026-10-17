@@ -19,7 +19,7 @@ and the page stays open. UC-SETTINGS-001 step 5, BR-SETTINGS-006; spec
 | App bar | `MxAppBar` | Back and "Language". |
 | Rows | `MxSection` + `MxOptionRow` × 3, the note as its `MxNote` | "Follow the system" with what it resolves to now: "Phone is set to English", "Phone is set to Tiếng Việt", or "Your phone's language isn't available · English" (D8). "English", and "Tiếng Việt" with its name in the current language ("Vietnamese"); a sub-line that repeats the title is left out. |
 | Note | Text | "Applies at once — no restart, and you stay where you are. Your cards stay in their own language." |
-| Toasts | `MxSnackbar` | After a switch, in the new language: "Switched to English" or "Đã chuyển sang Tiếng Việt". "Couldn't change the language." · Retry; the stored choice stays selected. |
+| Toasts | `MxSnackbar` | After a switch, in the new language: "Switched to English" or "Đã chuyển sang Tiếng Việt". "Couldn't change the language. Nothing changed." · Retry; the stored choice stays selected. |
 
 ## States
 
@@ -44,5 +44,5 @@ Goldens: `test/features/settings/presentation/goldens/settings_language_{english
 "Language" · "Follow the system" · "Phone is set to {language}" · "Your phone's language
 isn't available · English" · "English" · "Tiếng Việt" · "Vietnamese" · "Applies at once —
 no restart, and you stay where you are. Your cards stay in their own language." ·
-"Switched to English" · "Đã chuyển sang Tiếng Việt" · "Couldn't change the language." ·
+"Switched to English" · "Đã chuyển sang Tiếng Việt" · "Couldn't change the language. Nothing changed." ·
 "Retry".

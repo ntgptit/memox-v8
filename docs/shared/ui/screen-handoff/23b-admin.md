@@ -24,7 +24,7 @@ Spec [2026-10-07-settings-hub-design.md](../../../superpowers/specs/2026-10-07-s
 |---|---|---|
 | Gate | `MonitoringAdminGateWidget` (title "Admin") | A non-admin sees the gate's refusal; while the account is being confirmed, a skeleton list. |
 | App bar | `MxAppBar` + Back | "Admin". |
-| Logs | `MxSection` + rows | "Logs". "Monitoring" / "Logs of the app and the server" (monitor tile, opens 28); "Log SQL statements" / "Each statement the app runs is logged, for performance checks. Turn off to keep the log small." with a trailing `MxToggle` on the debug-level tile (the account's value, synced; disabled while its save runs; a refused save shows "Couldn't change that. The switch is unchanged." with the row unchanged). |
+| Logs | `MxSection` + rows | "Logs". "Monitoring" / "Logs of the app and the server" (monitor tile, opens 28); "Log SQL statements" / "Each statement the app runs is logged, for performance checks. Turn off to keep the log small." with a trailing `MxToggle` on the debug-level tile (the account's value, synced; disabled while its save runs, and off and disabled while the value is not read yet or its read failed, so no ON is ever claimed (audit 2026-10-17); a refused save shows "Couldn't change that. The switch is unchanged." with the row unchanged). |
 | People | `MxSection` + row | "People". "Users" / "Who can manage the app" (people tile, opens 33). |
 
 ## States
