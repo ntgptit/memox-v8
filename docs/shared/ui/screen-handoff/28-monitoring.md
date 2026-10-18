@@ -84,9 +84,9 @@ The images are the goldens.
 | status sheet | — | — | `MxBottomSheet` "Mark fixed" / "Reopen" with the optional note and Cancel · Save. `monitoring_detail_screen_test.dart::Mark fixed asks for an optional note, says so, and the button becomes Reopen`; no golden. |
 | detail, change failed | — | — | The log as it was, toast "Couldn't change that. Nothing changed." with Retry; the toast leaves with the page. `::a change that fails offline says nothing changed and Retry does it`, `::leaving the page takes its failed-change toast with it`. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
-| list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
-| list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). |
-| detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; gone: a neutral `MxEmptyState`, "This log is gone" / "It may have been cleaned up." (owner 2026-10-08) |
+| list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. VERIFIED (closing acceptance 2026-10-18): `monitoring/presentation/monitoring_screen_test.dart::another failure is a local-first error with a Retry` |
+| list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). VERIFIED (closing acceptance 2026-10-18): `monitoring/presentation/monitoring_screen_test.dart::FORBIDDEN says only an admin can see this` |
+| detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; gone: a neutral `MxEmptyState`, "This log is gone" / "It may have been cleaned up." (owner 2026-10-08) VERIFIED (closing acceptance 2026-10-18): `monitoring/presentation/monitoring_detail_screen_test.dart::while it loads the page is a skeleton, with no actions`; `monitoring/presentation/monitoring_state_coverage_test.dart::detail, error: a failure that is neither offline nor FORBIDDEN is the local-first error with Retry and no actions; Retry reads again`; `::offline and other failures offer Retry, not an admin its words`; `::a log that is gone says it may have been cleaned up` |
 
 Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,list_all_levels,list_empty,list_offline,not_sent,level_sheet}_{light,dark}.png` and `monitoring_detail_{open,open_trace,fixed,local}_{light,dark}.png`.
 

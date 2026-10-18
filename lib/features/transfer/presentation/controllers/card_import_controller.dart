@@ -180,6 +180,9 @@ class CardImportController extends _$CardImportController {
     if (result == null || !ref.mounted) return;
     // A name the user typed before Back stays (U4).
     final name = draft.defaultDeckName ?? defaultDeckName;
+    // [draft] is the state before the read: a fresh preview drops the
+    // problem it carried, such as the stale preview Preview again answers
+    // (E9).
     state = switch (result) {
       Ok(:final value) => draft.copyWith(
         step: CardImportStep.preview,
@@ -188,6 +191,7 @@ class CardImportController extends _$CardImportController {
         defaultDeckName: name,
         preview: value.preview(defaultDeckName: name, choices: const {}),
         isBusy: false,
+        isProblemCleared: true,
       ),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
     };

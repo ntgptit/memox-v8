@@ -22,7 +22,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 ## Deck action sheet (`⋮`)
 
 Study this deck · Rename · Select cards (enters selection with nothing picked, DEV-307) ·
-Move to another deck · Import cards (screen 11) · Export cards (screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
+Study options (screen 15) · Move to another deck · Import cards (screen 11) · Export cards (screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
 
 ## States
 
@@ -36,7 +36,7 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | loading | no golden | no golden | Four skeleton rows while the first window loads; a later request keeps the rows already shown (ruling P3-L5). Code read: `card_list_section_widget.dart`. Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
 | error | no golden | no golden | `MxErrorState` "Couldn't open this deck" · "Nothing was lost. Try again in a moment." with Retry, even over rows loaded before (spec §5). `card_list_section_test.dart::a load error says so plainly and offers Retry`, `::an error after the rows loaded still says so, with Retry`. Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
 | notFound | no golden | no golden | As screen 01 deckNotFound. |
-| deckActions | no golden | no golden | — |
+| deckActions | no golden | no golden | — VERIFIED (closing acceptance 2026-10-18): `card/presentation/card_list_state_coverage_test.dart::deckActions: the ⋮ of a deck of cards lists Study, Rename, Select cards, Move, Import, Export and Move to Trash in that order` |
 | selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020), or Select cards from `⋮` enters selection with nothing picked; Close ends it, unticking the last card does not (DEV-307). Back ends it in every list state, loaded, loading or error. Picks of cards that left the list while picked (deleted, moved elsewhere, or no longer matching the search and filters, the same set Select all reads) drop out when the list changes; a card picked while that read runs stays, so a bulk action is not refused whole for them (audit 2026-10-17 CARD-14a). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | The deck picker, targets named by path; one move at a time. `card_bulk_actions_test.dart::Move sends the cards to another deck of the root`. |
 | moveTargetsLoading | no golden | no golden | `MxDeckPickerLoadingSheet`: title, rule and three skeleton rows. Code read: `card_move_sheet_widget.dart`. |
@@ -55,7 +55,7 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | tagFilterNoCard | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` | A tag with no card in this deck, applied (A7): "No cards with these tags" with "Clear tag filter". `card_tag_filter_test.dart::a tag with no card here shows none, and offers to clear the tag filter (A7)`. |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
-| delDeck | no golden | no golden | As screen 01 deckDelete. |
+| delDeck | no golden | no golden | As screen 01 deckDelete. VERIFIED (closing acceptance 2026-10-18): `card/presentation/card_list_state_coverage_test.dart::delDeck: Move to Trash from a deck of cards names the deck and its cards, moves it once and offers Undo` |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card

@@ -46,10 +46,10 @@ The images are the goldens.
 | syncing | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_dark.png) | Golden `sync_syncing_*`. |
 | retrying | — | — | After Try again: its button spins and the other two are disabled (`SyncTask.retry`). Code read: `sync_notice_widget.dart`; no golden. |
 | keeping | — | — | After Keep in the dialog: its button spins and the other two are disabled (`SyncTask.keep`). Code read: same file; no golden. |
-| change failed | — | — | A command threw: toast "Couldn't change that. Nothing was lost." with Retry. Code read: `sync_screen.dart` `_say`; no golden. |
+| change failed | — | — | A command threw: toast "Couldn't change that. Nothing was lost." with Retry. Code read: `sync_screen.dart` `_say`; no golden. VERIFIED (closing acceptance 2026-10-18): `settings/presentation/sync_state_coverage_test.dart::change failed: a command that throws says nothing was lost with a toast offering Retry; Retry runs it again` |
 | loading | — | — | `MxSkeletonList`, two rows. |
 | read error | — | — | `MxErrorState` "Couldn't open Sync" with the local-first body and Retry (spec §6). |
-| unavailable | — | — | A build with no Supabase has no status (the stream is null): a neutral `MxEmptyState` "Sync isn't available" over "This version of MemoX keeps everything on this device. Nothing is lost.", with no Retry and no Sync now (audit 2026-10-17). |
+| unavailable | — | — | A build with no Supabase has no status (the stream is null): a neutral `MxEmptyState` "Sync isn't available" over "This version of MemoX keeps everything on this device. Nothing is lost.", with no Retry and no Sync now (audit 2026-10-17). VERIFIED (closing acceptance 2026-10-18): `settings/presentation/sync_screen_test.dart::a build without sync says so, neutrally and with no Retry (audit 2026-10-17 SET-10)` |
 
 ## Transitions
 
