@@ -26,6 +26,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | emptyForm | `card_editor_create_light.png` | `card_editor_create_dark.png` | Blank fields, Save disabled, caption "Front and back are required to save." |
+| keyboard | `card_editor_create_keyboard_light.png` | `card_editor_create_keyboard_dark.png` | The form with 300 dp of keyboard open: the deck path steps aside while typing and returns after. `card_editor_golden_test.dart::card editor, create, keyboard, $theme`; `card_editor_keyboard_test.dart::the deck path steps aside while typing and comes back after (audit P1)`. |
 | valid | no golden | no golden | Front and back filled: Save is enabled, caption "You can keep adding cards after saving." `card_editor_screen_test.dart::Save waits for a front and a back`. |
 | details | no golden | no golden | The opened example, hint and pronunciation are live `MxTextField`s. |
 | validationErr | `card_editor_errors_light.png` | `card_editor_errors_dark.png` | The message shows only once the back field has been touched (ruling P4a-L2). |
@@ -38,7 +39,6 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | pendingTag | no golden | no golden | A tag typed but not added is part of the card: Save adds it first (a refused tag stops the save, takes the focus and shows its error), and leaving asks first. `card_tag_input_test.dart::create: Save adds the pending tag, and the next card starts with none and an empty field (Review Focus 2)`, `::create: a refused tag stops Save and takes the focus, so its error is in view (final review)`. |
 | discardNew | no golden | no golden | Back, Close or Cancel on a changed form: "Discard this card?" · "What you typed is not saved." · Keep editing / Discard; an unchanged form closes at once. `card_editor_screen_test.dart::Back on a changed form asks; Keep editing keeps it (RF2)`, `card_editor_blocks_test.dart::the discard dialog answers Discard or Keep editing`. |
 | deckGone | no golden | no golden | Save finds the deck gone: `CardGoneWidget` "This deck is no longer here" (nothing was saved), Back to deck + Open Trash; no footer. Reached on a save, not while typing. Code read: `card_editor_form_widget.dart` (`_afterSave`). |
-Other goldens: `card_editor_create_keyboard_light.png` / `card_editor_create_keyboard_dark.png` (the form with the keyboard open).
 
 Two further states, both built as
 extensions of ruling P4a-L1…L5 (§9 row 79, "gone state" + discard confirm) from

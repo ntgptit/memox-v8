@@ -28,10 +28,12 @@ touch the study state or history).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `card_editor_edit_light.png` | `card_editor_edit_dark.png` | Save is off until the draft differs from the saved card; the caption reads "Edits never change the schedule or history." `card_editor_save_test.dart::edit: Save waits for a change and goes quiet when it is undone (critique 2026-09-30 part 3d-1)`. |
+| dirty | no golden | no golden | A field, a tag or the flag differs from the saved card: Save is on and the caption no longer reads "Edits never change the schedule or history." `card_editor_save_test.dart::edit: Save waits for a change and goes quiet when it is undone (critique 2026-09-30 part 3d-1)`. |
+| more | `card_editor_more_light.png` | `card_editor_more_dark.png` | The form scrolled to its last block, the More card with Move to Trash (kit 09); the golden test then taps it for delConfirm. `card_editor_golden_test.dart::card editor, Move to Trash, $theme`. |
 | loading | no golden | no golden | A single generic `MxSkeletonList` (4 rows) stands in for the whole form; no field-shaped skeletons — see Rulings. The flag/Save actions and the deck path also hold off until loaded. |
 | loadError | no golden | no golden | Full-screen `MxErrorState`, "Couldn't load this card" — the body is the shared "Nothing was lost. Try again in a moment." |
 | notFound | no golden | no golden | `CardGoneWidget`; both actions are live now that Trash exists (§9 row 87, closed by FE-B1 D11). |
-| validationErr | `card_editor_errors_light.png` | `card_editor_errors_dark.png` | Error shown only once the back field is touched (ruling P4a-L2). |
+| validationErr | no golden | no golden | Error shown only once the back field is touched (ruling P4a-L2). The create form's `card_editor_errors_*` (screen 08) draws the same field errors; the edit form has no golden of its own. `card_editor_screen_test.dart::an edited card missing its back asks for the missing field (kit 09 validation)`. |
 | dirtySaving | no golden | no golden | The button shows only its spinner in place of the label (see Rulings). Cancel, the back arrow and the flag are off (dimmed, read as disabled), system Back is held, and the fields are read-only until the write answers (as on 08; closing audit 2026-10-17). |
 | saveFailed | no golden | no golden | The form keeps the edits; the footer shows the danger banner and the button reads "Retry save". The banner names the changes, not the card: "Couldn't save changes." (`cardSaveChangesFailedTitle`; create keeps "Couldn't save card."), over the shared body "Nothing was lost. Tap Retry save to try again." (`cardSaveFailedBody`, which names the button as it reads). VERIFIED `card_editor_save_failure_test.dart::edit: a failed save names the changes, not the card, and the body names the button as it reads (audit 2026-10-17)`; the banner as a block: `card_editor_blocks_test.dart::the footer turns a failure into an inline banner and a retry`. |
 | flagToggled | no golden | no golden | The app bar flag swaps `flag` / `flagged` and reads under one stable name, "Flag this card", with its on / off state (never a name that flips to "Remove flag, on"); the flag alone is a change that enables Save; Save writes the flag only when it was toggled here (DEV-220). `card_editor_save_test.dart::edit: the flag alone is a change (Review Focus 3)`, `::edit: a flag toggled in the editor is saved (DEV-220)`, `::edit: a flag set while the editor was open survives a content-only save (BR-CARD-009, DEV-220)`. |
@@ -41,8 +43,6 @@ touch the study state or history).
 | goneOnSave | no golden | no golden | Save (or the live read) finds the card gone: `CardGoneWidget` "This card is no longer here"; Back to deck (closes the card's detail underneath too, the editor popping `true` as after Move to Trash) and Open Trash. `card_editor_screen_test.dart::a card deleted while editing shows it is gone (RF3)`. |
 | discard | no golden | no golden | The body names what was edited ("You edited the meaning and the hint…"). |
 | delConfirm | `card_editor_trash_dialog_light.png` | `card_editor_trash_dialog_dark.png` | Minus the glyph beside the title (§9 row 108) and the answer count in the note (§9 row 110); spins while the move commits (FE-B1 D15). |
-Other goldens: `card_editor_more_light.png` / `card_editor_more_dark.png` (the More card with Move to Trash).
-
 
 Every state above is built.
 

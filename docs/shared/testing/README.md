@@ -38,6 +38,9 @@ Bốn kịch bản Navigation liên quan trực tiếp tới chức năng học 
 `IT-NAV-008` tới `IT-NAV-010`. Vì vậy tổng phạm vi Study cần kiểm kê khi chạy là
 **68 kịch bản**: 64 kịch bản năng lực Study cộng bốn kịch bản điều hướng.
 
+Toàn bộ danh mục có **161 ID kịch bản** (`scenario-catalog.md`): 69 `HOST-FLOW`, 51
+`HOST-WIDGET`, 31 mang cả hai profile host và 10 `DEVICE-E2E`.
+
 AI agent MUST đọc theo thứ tự:
 
 1. File này — phạm vi và dữ liệu nghiệp vụ chung.

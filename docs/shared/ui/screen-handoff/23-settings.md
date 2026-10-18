@@ -54,6 +54,7 @@ admin; only Reset falls below the fold (spec §5.1, measured on the goldens).
 | account, signed in | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_dark.png) | (FE-B10) the account row and its chevron. |
 | account, re-auth | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_dark.png) | (FE-B10) the banner leads the section. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
+| gallery (debug build) | `app_gallery_light.png` | `app_gallery_dark.png` | The component gallery opened from the app bar's gallery icon (D11); the dark golden is taken after the gallery's own theme switch. A developer surface, exempt from the screen audits. `test/app/app_golden_test.dart::Gallery, ${brightness.name}`; `test/app/gallery_test.dart::the theme switch flips the gallery to dark`. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,admin_row,reset_confirm,reset_done,sync_synced,sync_failed,sync_rejected}_{light,dark}.png`.
 

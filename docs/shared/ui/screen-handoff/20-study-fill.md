@@ -40,10 +40,8 @@ keyboard neither offers the term nor corrects what was typed (BR-STUDY-026).
 |---|---|---|---|
 | input | `study_fill_input_light.png` | `study_fill_input_dark.png` | No edit button (see Rulings). |
 | hint | `study_fill_hint_light.png` | `study_fill_hint_dark.png` | "Show hint" is gone once used, "Check" remains. |
+| answering | none | none | The typed answer is being written (Check or IME Done): the controls are locked while the write runs. A right answer has no frame of its own, the next turn follows at once (BR-STUDY-063, BR-STUDY-064); a wrong one becomes `wrong`. `study_fill_test.dart::a right answer moves on at once, with no feedback frame (F3, BR-STUDY-064; case and outer spaces ignored)`. |
 | wrong | `study_fill_wrong_light.png` | `study_fill_wrong_dark.png` | With the corrected footer copy. |
-
-Not captured: the correct-answer path has no dedicated visual — the turn
-commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).
 
 **Built (FE-A6 P4):** `StudyFillWidget` in the session route's mode switch. The field is
 `MxTextField`'s bare `study` variant in the study term role (P4 ruling F1); it has focus

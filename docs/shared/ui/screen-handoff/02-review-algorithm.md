@@ -26,6 +26,10 @@ Algorithm descriptions:
 |---|---|---|---|
 | locked | `library_algorithm_locked_light.png` | `library_algorithm_locked_dark.png` | Date from `firstAnsweredAt`, local time. |
 | unlocked | `library_algorithm_unlocked_light.png` | `library_algorithm_unlocked_dark.png` | — |
+| loading | no golden | no golden | Four skeleton rows (`MxSkeletonList`, `commonLoading`) while the deck view is read. `UNVERIFIED (code read)`: `deck_algorithm_screen.dart`; no test holds the read open. |
+| error | no golden | no golden | `MxErrorState` "Couldn't open this deck" · "Nothing was lost. Try again in a moment." with Retry (it spins while the read runs). `UNVERIFIED (code read)`: `deck_algorithm_screen.dart`; no test fails the read. |
+| gone | no golden | no golden | The not-found state of screen 01 (`DeckGoneStateWidget`) with "Back to Library" and "Open Trash", for a root deleted while open and for a sub-deck, which has no algorithm (BR-DECK-025, audit 2026-10-17 LIB-4). `deck_algorithm_screen_test.dart::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)`. |
+| switchConfirm | no golden | no golden | The switch confirmation: `MxDialog`, non-destructive, "Switch to {algorithm}?" with Cancel · Switch (UC-DECK-002 steps 3–4; copy under "Notes on the states above"). `deck_algorithm_screen_test.dart::unlocked: the current algorithm is selected; switching asks first`. |
 | switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). The options and "Reset learning progress…" are off until it ends (audit 2026-10-17 LIB-13). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | no golden | no golden | Danger banner "Couldn't switch." · "The deck still uses {algorithm}." with Retry (UC-DECK-002 E2). `deck_algorithm_screen_test.dart::a switch that fails says the deck kept its algorithm; Retry switches (E2)`. |
@@ -38,11 +42,10 @@ Algorithm descriptions:
 | resetSummaryError | no golden | no golden | The summary read fails: the body is the failure message (or "Nothing was lost, but something went wrong. Try again." for anything else); the confirm stays off. Code read: `deck_reset_dialog_widget.dart`. |
 | resetFailed | no golden | no golden | The reset fails (E1): the dialog stays, the confirm stops spinning and a toast gives the failure; nothing changed. `deck_reset_dialog_test.dart::a reset that fails keeps the dialog for another try (E1)`. An unexpected error is logged and shown as the unknown-failure toast; the dialog stays. |
 
-Beyond the states above:
+Notes on the states above:
 
 - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" / "Every card's schedule in this tree starts over and any open study session closes. No history is lost." / Cancel · Switch (UC-DECK-002 steps 3–4).
 - **Refused because the tree just locked:** the locked state and the reason (UC-DECK-002 E4).
-- **Loading, load error, not a root or gone:** four skeleton rows; `MxErrorState` "Couldn't open this deck" with Retry; the not-found state of screen 01, with its "Back to Library" and "Open Trash" (audit 2026-10-17 LIB-4), for a deleted deck and for a sub-deck, which has no algorithm (BR-DECK-025, `deck_algorithm_screen_test.dart::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)`).
 
 ## Reset dialog copy
 
@@ -62,14 +65,14 @@ Beyond the states above:
 
 | From | Event | To | Evidence |
 |---|---|---|---|
-| (loading) | the deck lands as a root | locked / unlocked | VERIFIED `deck_algorithm_screen_test.dart::unlocked: the current algorithm is selected; switching asks first`, `::locked: cycle and date named, options disabled, the note points to the reset` |
-| (loading) | the read fails | the error state | `UNVERIFIED (code read)`: `deck_algorithm_screen.dart` shows `MxErrorState`; no test fails the read |
-| the error state | Retry | loading, then the screen | `UNVERIFIED (code read)`: invalidates `deckViewProvider` |
-| (loading) | the deck is deleted or is a sub-deck | the gone state | VERIFIED `::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)` |
-| unlocked | tap the other algorithm | the switch confirmation | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
+| loading | the deck lands as a root | locked / unlocked | VERIFIED `deck_algorithm_screen_test.dart::unlocked: the current algorithm is selected; switching asks first`, `::locked: cycle and date named, options disabled, the note points to the reset` |
+| loading | the read fails | error | `UNVERIFIED (code read)`: `deck_algorithm_screen.dart` shows `MxErrorState`; no test fails the read |
+| error | Retry | loading, then the screen | `UNVERIFIED (code read)`: invalidates `deckViewProvider` |
+| loading | the deck is deleted or is a sub-deck | gone | VERIFIED `::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)` |
+| unlocked | tap the other algorithm | switchConfirm | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
 | unlocked | tap the current algorithm | nothing | VERIFIED `::tapping the current algorithm does nothing (UC-DECK-002 A4)` |
-| switch confirmation | Cancel | unlocked, nothing changed | VERIFIED `::cancelling the switch changes nothing (UC-DECK-002 A3)` |
-| switch confirmation | Switch | switching, then switched (the toast) and the new algorithm selected | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
+| switchConfirm | Cancel | unlocked, nothing changed | VERIFIED `::cancelling the switch changes nothing (UC-DECK-002 A3)` |
+| switchConfirm | Switch | switching, then switched (the toast) and the new algorithm selected | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
 | switching | both rows are off and the target spins | a second choice is not possible | `UNVERIFIED (code read)`: `deck_algorithm_options_widget.dart` (`isChoosable`) |
 | switching | the tree has just locked or the deck is gone | the locked state from the stream, the reason as a toast | VERIFIED `::a switch refused because the tree just locked says why (E4)` |
 | switching | the switch fails | switchFailed | VERIFIED `::a switch that fails says the deck kept its algorithm; Retry switches (E2)` |

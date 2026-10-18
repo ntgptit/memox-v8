@@ -47,6 +47,12 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | tagDialog | no golden | no golden | "Add a tag" with the "Tag name" field, Cancel · Add. A name rule stays under the field; any other refusal closes the dialog with a toast and keeps the selection (IT-ORG-014). `card_bulk_actions_test.dart::Tag adds one tag to every selected card`, `::a blank tag stays in the dialog, under the field`. |
 | tagFilterLoading | no golden | no golden | The tag filter sheet while the tags load: title, "Show cards with any of the chosen tags", three skeleton rows. Code read: `card_tag_filter_sheet_widget.dart`. |
 | tagFilterError | no golden | no golden | The sheet keeps its head; "Couldn't load tags" with Retry, and Close beside it. `card_tag_filter_test.dart::a failed load keeps the sheet head, Retry and a dismiss`. |
+| tagFilterNone | `card_tag_filter_none_light.png` | `card_tag_filter_none_dark.png` | The sheet "Filter by tags" with a row per tag of the library: the name and its cards in this deck, 0 included, in the catalog's order; nothing chosen, Clear off. `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`. |
+| tagFilterOne | `card_tag_filter_one_light.png` | `card_tag_filter_one_dark.png` | One tag chosen: its row checked, the subtitle "1 chosen · cards with any of them", Clear on. `card_tag_filter_test.dart::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`. |
+| tagFilterSeveral | `card_tag_filter_several_light.png` | `card_tag_filter_several_dark.png` | Several chosen: a card passes with any of them (BR-TAG-004); a checked row never moves. Same test as tagFilterOne. |
+| tagFilterNoTags | no golden | no golden | No tag in the library: "No tags yet. Add tags while creating or editing cards." with Close. `card_tag_filter_test.dart::no tag in the library: the sheet says where tags come from and closes`. |
+| tagFilterApplied | `card_tag_filter_applied_light.png` | `card_tag_filter_applied_dark.png` | After Apply: the sheet closed, the list narrowed to the cards with any chosen tag, the Tags chip selected with the count, the selection cleared (BR-TAG-005). `card_tag_filter_test.dart::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`. |
+| tagFilterNoCard | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` | A tag with no card in this deck, applied (A7): "No cards with these tags" with "Clear tag filter". `card_tag_filter_test.dart::a tag with no card here shows none, and offers to clear the tag filter (A7)`. |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
@@ -76,15 +82,8 @@ Shaped by Impeccable before the plan (FE-B2 D3,
   (BR-TAG-005). A tag deleted or merged away leaves the applied set (D12).
 - **No card with these tags (A7):** "No cards with these tags" with "Clear tag filter".
 
-| State | Golden (light) | Golden (dark) |
-|---|---|---|
-| none chosen | `card_tag_filter_none_light.png` | `card_tag_filter_none_dark.png` |
-| one chosen | `card_tag_filter_one_light.png` | `card_tag_filter_one_dark.png` |
-| several chosen | `card_tag_filter_several_light.png` | `card_tag_filter_several_dark.png` |
-| applied | `card_tag_filter_applied_light.png` | `card_tag_filter_applied_dark.png` |
-| no card (A7) | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` |
-
-The goldens are in `test/features/card/presentation/goldens/`.
+The tag filter's frames are rows of the States table (tagFilter*), their goldens in
+`test/features/card/presentation/goldens/`.
 
 ## Transitions
 
@@ -99,11 +98,11 @@ The goldens are in `test/features/card/presentation/goldens/`.
 | loaded | TalkBack reaches the sort trigger | named "Sort cards, {order}" | VERIFIED `card_list_audit_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
 | loaded | tap the sort pill | sortSheet; a choice re-orders at once | VERIFIED order only `::due first puts the soonest due first and new cards last`; the sheet `UNVERIFIED (code read)` |
 | loaded | scroll near the end | the window grows once per request, the rows kept | VERIFIED `::the window grows near the end and keeps its rows (RF4)`, `card_list_audit_test.dart::after a new request the window grows again: a growth is asked once per request, not once per screen` |
-| loaded | tap the Tags chip | tag filter sheet (loading, none chosen / picker, error) | VERIFIED `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`; loading `UNVERIFIED (code read)` |
-| tag filter | Apply | loaded with the tags applied; the selection clears; no card: "No cards with these tags" | VERIFIED `::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`, `::a tag with no card here shows none, and offers to clear the tag filter (A7)` |
-| tag filter | dismissed any other way | what was applied stays | VERIFIED `::closing without Apply keeps what was applied (A5)` |
-| tag filter | a tag is deleted or merged away | it leaves the applied set | VERIFIED `::a tag deleted meanwhile leaves the applied set (D12)` |
-| tag filter error | Retry | loading, then the picker | `UNVERIFIED (code read)`: `card_tag_filter_sheet_widget.dart` invalidates the provider |
+| loaded | tap the Tags chip | tagFilterLoading, then tagFilterNone, tagFilterNoTags or tagFilterError | VERIFIED `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`; loading `UNVERIFIED (code read)` |
+| tagFilterOne / tagFilterSeveral | Apply | tagFilterApplied (loaded with the tags applied; the selection clears), or tagFilterNoCard: "No cards with these tags" | VERIFIED `::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`, `::a tag with no card here shows none, and offers to clear the tag filter (A7)` |
+| tagFilterNone / tagFilterOne / tagFilterSeveral | dismissed any other way | what was applied stays | VERIFIED `::closing without Apply keeps what was applied (A5)` |
+| tagFilterNone / tagFilterOne / tagFilterSeveral | a tag is deleted or merged away | it leaves the applied set | VERIFIED `::a tag deleted meanwhile leaves the applied set (D12)` |
+| tagFilterError | Retry | tagFilterLoading, then the picker | `UNVERIFIED (code read)`: `card_tag_filter_sheet_widget.dart` invalidates the provider |
 | loaded | tap a row | the card detail (screen 10) | `UNVERIFIED (code read)`: `card_list_section_widget.dart` `onOpenCard`; the row's content is VERIFIED above |
 | loaded | long-press a row, or Select cards from ⋮ | selection | VERIFIED `card_selection_test.dart::a long-press selects that card`; ⋮ path `deck_action_sheet_test.dart::Select cards shows only from an open deck of cards and enters selection with nothing picked (DEV-307)` |
 | selection | tap a row | toggles; unticking the last one keeps the mode | VERIFIED `card_selection_test.dart::a tap toggles; unticking the last one keeps selection` |

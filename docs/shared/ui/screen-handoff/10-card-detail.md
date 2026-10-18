@@ -25,6 +25,7 @@ current schedule), BR-CARD-015/017 (paginated, generation-grouped history).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `card_detail_top_light.png` | `card_detail_top_dark.png` | `card_detail_screen_test.dart::the detail shows the card under its path; Edit asks for it`. |
+| history | `card_detail_history_light.png` | `card_detail_history_dark.png` | The loaded card scrolled to its history: one row per answer with the values its row stored (BR-CARD-016). `card_history_scroll_test.dart::each answer shows the values its row stored (BR-CARD-016)`. |
 | historyLoading | no golden | no golden | The card shows (content, schedule); three skeleton rows stand in for the history while its first page reads. Code read: `card_history_scroll_widget.dart`. |
 | historyError | no golden | no golden | The first history page fails: `MxErrorState` "Couldn't load the history" · "Nothing was lost. Try again in a moment." with Retry, under the content and schedule. Code read: `card_history_scroll_widget.dart`. |
 | loadMore | no golden | no golden | A secondary block `MxButton` "Load older history"; it spins while the page reads, the rows stay. `card_history_scroll_test.dart::Load older history adds the rest, then the history ends (A5)`. |
@@ -33,8 +34,6 @@ current schedule), BR-CARD-015/017 (paginated, generation-grouped history).
 | loading | no golden | no golden | A single generic `MxSkeletonList` (4 rows) replaces the whole body (see Rulings). |
 | error | no golden | no golden | Full-screen `MxErrorState`, "Couldn't load this card" — the body is the shared "Nothing was lost. Try again in a moment." `card_detail_screen_test.dart::a failed read offers Retry and hides the cause (E3)`. |
 | notFound | no golden | no golden | `CardGoneWidget` (shared with the editor's gone state); both actions live now that Trash exists (§9 row 87, closed by FE-B1 D11). The deck path is hidden here. `card_detail_screen_test.dart::a card deleted while open shows it is gone (E2)`, `::a link to a card that does not exist shows it is gone (E1)`. |
-Other goldens: `card_detail_history_light.png` / `card_detail_history_dark.png` (the history scrolled into view).
-
 
 Every state above is built.
 

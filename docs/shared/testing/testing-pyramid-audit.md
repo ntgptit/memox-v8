@@ -8,13 +8,20 @@ tách ghi "Tách thành" ngay dưới tiêu đề của nó.
 
 | Profile | Số kịch bản | Tỉ lệ |
 |---|---|---|
-| `HOST-FLOW` | **88** | 54% |
-| `HOST-WIDGET` | **67** | 41% |
-| `DEVICE-E2E` | **8** | 5% |
-| | **163** | |
+| `HOST-FLOW` | **69** | 43% |
+| `HOST-WIDGET` | **51** | 32% |
+| `HOST-FLOW` + `HOST-WIDGET` | **31** | 19% |
+| `DEVICE-E2E` | **10** | 6% |
+| | **161** | |
 
-`DEVICE-E2E` chiếm **5%**, dưới ngưỡng khuyến nghị 20–25% cho lớp cần
-emulator/thiết bị.
+Số liệu đếm theo cột `Profile` của [`scenario-catalog.md`](scenario-catalog.md) (161
+ID, 2026-10-18); một kịch bản mang hai profile host được đếm một lần, ở dòng riêng.
+Bảng cũ (88 / 67 / 8, tổng 163) đếm từng ID tách thành hai và chưa có `IT-PLAT-009`,
+`IT-TOPIK-019`.
+
+`DEVICE-E2E` chiếm **6%**, dưới ngưỡng khuyến nghị 20–25% cho lớp cần
+emulator/thiết bị. Tám trong mười kịch bản đó có phase trong `integration_test/`
+([device-e2e.md](device-e2e.md)).
 
 **Khởi động lại không phải một luật nghiệp vụ; nó là một ranh giới nền
 tảng.** Chứng minh một lần rằng dữ liệu đã ghi sống sót qua một lần chết

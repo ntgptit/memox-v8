@@ -38,14 +38,13 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 | onlyNew | `study_entry_only_new_light.png` | `study_entry_only_new_dark.png` | Due = 0, only the Learn row and its footer CTA show. |
 | nothing | `study_entry_nothing_light.png` | `study_entry_nothing_dark.png` | Positive empty state, no footer (BR-STUDY-008, BR-STUDY-054). |
 | resume | `study_entry_resume_light.png` | `study_entry_resume_dark.png` | The Continue banner with a primary, static dot and its progress track (see Rulings); the footer's start is outline (critique 2026-09-30 part 1). |
+| directionSheet | `study_entry_direction_sheet_light.png` | `study_entry_direction_sheet_dark.png` | The sheet the footer's Review opens on `sm2`: Term first is chosen at first, with "Start review" (UC-STUDY-003; see Rulings). `study_entry_actions_test.dart::Review opens the direction sheet, Term first chosen; Start review opens the review in the direction picked (UC-STUDY-003)`. |
 | starting | `study_entry_starting_light.png` | `study_entry_starting_dark.png` | Footer shows the spinner, every option locks (BR-STUDY-004). |
 | refused | `study_entry_refused_light.png` | `study_entry_refused_dark.png` | Inline warning banner; the footer stays usable (plan R5). |
 | startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again". |
 | loading | `study_entry_loading_light.png` | `study_entry_loading_dark.png` | Skeletons in the hero and option-list shapes. |
 | error | none | none | `MxErrorState` with Retry (`studyEntryErrorTitle`, `studyEntryErrorBody`) under the breadcrumb; no footer. Code read: `study_entry_body_widget.dart`; VERIFIED without a golden by `study_entry_screen_test.dart::a read that fails says so and Retry reads again (UC-STUDY-001)`. |
 | deckGone | none | none | Not a frame: the deck was deleted while the entry was open, so the screen shows the toast "This deck no longer exists" and pops (UC-STUDY-001 E1). VERIFIED `study_entry_screen_test.dart::a deck deleted while its entry is open leaves with a message (UC-STUDY-001 E1)`. |
-Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_sheet_dark.png` (the Direction sheet).
-
 
 Every state above is built.
 
@@ -74,9 +73,9 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 | any loaded state | the deck is deleted (a `notFound` read) | deckGone: toast, then pop, once | VERIFIED `::a deck deleted while its entry is open leaves with a message (UC-STUDY-001 E1)`; the `isCurrent` guard that keeps a later emission from a second toast is `UNVERIFIED (code read)` |
 | any loaded state | tap the Study options icon | screen 15 | VERIFIED `::the app bar's Study options icon opens the deck's options (FE-A3 D3, kit 14)` |
 | sm2 / eightBox / onlyNew | tap Learn (the row's button, or the footer when only new cards exist) | starting, then the learning session opens | VERIFIED `study_entry_actions_test.dart::Learn on the row opens a learning session (BR-STUDY-051)`, `::with only new cards the footer is "Learn 2 new cards" with the nothing-due caption (kit onlyNew)` |
-| sm2 | tap Review | the Direction sheet | VERIFIED `::Review opens the direction sheet, Term first chosen; Start review opens the review in the direction picked (UC-STUDY-003)` |
-| Direction sheet | Start review | starting, then the review session opens in that direction | VERIFIED same test |
-| Direction sheet | close without Start review | back on the entry, nothing written | VERIFIED `::closing the sheet without Start review writes nothing (BR-STUDY-020)` |
+| sm2 | tap Review | directionSheet | VERIFIED `::Review opens the direction sheet, Term first chosen; Start review opens the review in the direction picked (UC-STUDY-003)` |
+| directionSheet | Start review | starting, then the review session opens in that direction | VERIFIED same test |
+| directionSheet | close without Start review | back on the entry, nothing written | VERIFIED `::closing the sheet without Start review writes nothing (BR-STUDY-020)` |
 | eightBox | pick a mode row | the footer follows the pick; no sheet; the pick is not kept | VERIFIED `::eight_box: Match is picked at first; picking Guess moves the footer, which opens a Guess review with no sheet (E1)` |
 | resume | tap Continue | starting, then today's session opens | VERIFIED `::today's open session shows the resume banner; Continue opens it, and the footer offers a new review instead (kit resume)` |
 | resume | tap Continue on a session that ended meanwhile | refused (warning banner "That session can't be continued.") | the controller's refusal is VERIFIED `study_entry_controller_test.dart::Continue on a session that ended meanwhile is refused`; the banner copy for this reason is `UNVERIFIED (code read)` (`study_entry_banner_widget.dart` default branch) |

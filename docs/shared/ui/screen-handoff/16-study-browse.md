@@ -138,11 +138,7 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_browse_light.png` | `study_browse_dark.png` | — |
-Other goldens: `study_browse_looking_back_light.png` / `study_browse_looking_back_dark.png` (after swiping back to an earlier card).
-
-
-Not captured: the swipe-back preview of an earlier card in the round
-(BR-STUDY-048) is an interaction inside `default`, not a separate state.
+| lookingBack | `study_browse_looking_back_light.png` | `study_browse_looking_back_dark.png` | After a right swipe (or TalkBack "Previous card") the earlier card of the round with a neutral "Looking back" badge (BR-STUDY-048); nothing is written and the counter does not move. `study_browse_test.dart::left advances one stop; right looks back without writing; left from a look-back returns and does not answer twice (IT-MODE-002 steps 4–6, BR-STUDY-048)`. |
 
 **Built (FE-A6 P1c):** `StudyBrowseWidget` inside `StudySessionScreen`. Looking back shows a neutral
 "Looking back" badge on the card (BR-STUDY-048: the screen says it is looking back) and reads the

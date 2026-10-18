@@ -44,9 +44,7 @@ not to Tags (plan C4).
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
 | opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). The toast outlives the screen, so Retry runs from the app's container and the root navigator, not the screen's `ref`; after leaving Tags it still writes and says how it ended (audit 2026-10-17 LIB-1). |
 | tagGone | `tags_tag_gone_light.png` | `tags_tag_gone_dark.png` | The gone state (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
-| read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. |
-Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag list could not be read).
-
+| read error | `tags_read_error_light.png` | `tags_read_error_dark.png` | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. `tags_screen_test.dart::a failed read shows the error with Retry (E1, D10)`. |
 
 Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,search_empty,sheet,rename,rename_merge,name_too_long,del,busy,op_error,tag_gone,read_error}_{light,dark}.png`.
 

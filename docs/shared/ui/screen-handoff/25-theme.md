@@ -28,6 +28,7 @@ once, and the page stays open. UC-SETTINGS-001 step 4, BR-SETTINGS-005; spec
 | system | `settings_theme_system_light.png` | `settings_theme_system_dark.png` | Titled "Theme", with plain descriptors (D7); no "THEME" overline. |
 | light | `settings_theme_light_light.png` | `settings_theme_light_dark.png` | As system. |
 | dark | `settings_theme_dark_light.png` | `settings_theme_dark_dark.png` | As system. |
+| loading | — | — | Before the `app_settings` stream emits: `MxSkeletonList`, two rows (`theme_screen.dart:119`, `_skeletonRows = 2`). `UNVERIFIED (code read)`: no test or golden pins it. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with Retry. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,light,dark}_{light,dark}.png`.

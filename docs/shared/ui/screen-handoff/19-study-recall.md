@@ -29,6 +29,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | countingDown | `study_recall_counting_light.png` | `study_recall_counting_dark.png` | — |
 | revealed | `study_recall_revealed_light.png` | `study_recall_revealed_dark.png` | Clock is stopped, not zeroed (BR-STUDY-036). |
 | timedOut | `study_recall_timed_out_light.png` | `study_recall_timed_out_dark.png` | The outcome is already committed (wrong) before this paints (BR-STUDY-063). |
+| answered | none | none | Not a frame: Forgot or Remembered writes the answer (forgot or remembered) and the next card follows at once, with no held frame (R2, BR-STUDY-065). `study_recall_test.dart::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)`, `::Forgot records a wrong answer and moves on`. |
 
 **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, over
 `RecallCountdownBarWidget` and `StudyCtaRowWidget`. The clock is the widget's own
@@ -49,7 +50,7 @@ Continue (spec D5). Goldens:
 | revealed | the reveal commits (TalkBack) | announced "The meaning is {meaning}.": Show the meaning held the focus and goes | VERIFIED `study_recall_test.dart::the reveal is announced: the focused button goes, the meaning is read (TalkBack)` |
 | countingDown | a double tap on Show the meaning | revealed only; Forgot and Remembered take no tap for 400 ms | VERIFIED `::a double tap on Show the meaning answers nothing: Forgot and Remembered settle first (critique 2026-09-30 part 3c-2, R1)` |
 | countingDown | the database refuses the reveal | the clock counts down again from where it stopped; the turn is as it was | `UNVERIFIED (code read)`: `didUpdateWidget` (`isRefused`) in `study_recall_widget.dart`; the controller leaves the turn as it was |
-| revealed | tap Remembered / Forgot | the answer is written and the next card follows at once, no held frame | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)`, `::Forgot records a wrong answer and moves on` |
+| revealed | tap Remembered / Forgot | answered: the answer is written and the next card follows at once, no held frame | VERIFIED `::Show the meaning reveals with the time left and stops the clock; Remembered moves on at once (R2, BR-STUDY-065)`, `::Forgot records a wrong answer and moves on` |
 | countingDown | the clock reaches 0 | timedOut: the turn is written as forgot, announced "Time is up. Counted as forgot. …", held until Continue | VERIFIED `::at zero the turn counts as forgot, is announced, and waits for Continue (R2, BR-STUDY-033, BR-STUDY-066)` |
 | countingDown | a tap on Show the meaning in the instant the clock runs out | the timed-out turn is not skipped | VERIFIED `::a tap in the instant the clock runs out does not skip the timed-out turn (Review Focus 2)` |
 | timedOut | tap Continue | the next card; nothing more is recorded (BR-STUDY-066) | VERIFIED in the zero test above |
@@ -57,7 +58,7 @@ Continue (spec D5). Goldens:
 | countingDown | tap ✕ or system Back: the exit dialog opens | the clock stops while the dialog asks (`isPaused`) | VERIFIED `::the clock stops while the exit dialog asks, and Keep going takes it up where it stopped (BR-STUDY-036)` |
 | countingDown (dialog open) | Keep going | the clock resumes where it stopped; the turn does not time out behind the dialog | VERIFIED the same test (15 s left before, 12 s after 3 s more) |
 | countingDown | leave the screen mid-turn (✕ then Stop, Back) | the time left is saved when the widget goes | VERIFIED `::closing the screen mid-turn saves the time left (D12)` |
-| session reopened | the turn had been revealed | revealed with its clock stopped; Forgot or Remembered | VERIFIED `::a turn resumed after a reveal opens revealed, its clock stopped, and asks Forgot or Remembered (BR-STUDY-036)` |
+| (entry) | the session reopens on a turn that had been revealed | revealed with its clock stopped; Forgot or Remembered | VERIFIED `::a turn resumed after a reveal opens revealed, its clock stopped, and asks Forgot or Remembered (BR-STUDY-036)` |
 | revealed / timedOut | the answer write is refused by a busy database | the unsaved-answer banner with Retry; the buttons are disabled while a write runs | the banner path is VERIFIED from Browse (16); this screen's frame is `UNVERIFIED (code read)` |
 | any | ✕, system Back, deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |
 
