@@ -140,6 +140,46 @@ void main() {
     handle.dispose();
   });
 
+  libraryTest('an answer a busy database kept stays the first pick: the '
+      'options wait for Retry, which saves it (BR-STUDY-041 first pick; '
+      'audit 2026-10-17)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await _guess(env);
+    env.sessions.isLocked = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+    final other = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .map((node) => node.properties.label)
+        .whereType<String>()
+        .firstWhere(
+          (label) => label.startsWith('Option ') && !label.endsWith(': apple'),
+        )
+        .split(': ')
+        .last;
+
+    await tester.tap(find.text('apple'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text(_en.studyAnswerBusyTitle), findsOneWidget);
+    await tester.tap(find.text(other), warnIfMissed: false);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    tester.takeAnnouncements();
+
+    env.sessions.isLocked = false;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(
+      tester.takeAnnouncements().map((a) => a.message),
+      contains(_en.studyGuessAnnounceRight),
+    );
+    handle.dispose();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+  });
+
   libraryTest('a second tap while the turn is held writes nothing '
       '(BR-STUDY-042)', (tester, env) async {
     final id = await _guess(env);

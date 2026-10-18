@@ -480,6 +480,15 @@
     },
     "description": "Screen 37: what TalkBack reads for the speed chip, its purpose and its current value, as Playback speed, 1× (the speed is formatted by topikSpeed)."
   },
+  "topikSortTrigger": "Sort tests, {order}",
+  "@topikSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 35 (Q-A-2): TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
+  },
   "topikAudioFailed": "Couldn't play this audio",
   "@topikAudioFailed": {
     "description": "Screen 37: the audio banner's title (BR-TOPIK-017)."
@@ -1356,6 +1365,15 @@
   "@cardSortTitle": {
     "description": "Title of the card sort sheet."
   },
+  "cardSortTrigger": "Sort cards, {order}",
+  "@cardSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 07: TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
+  },
   "cardSortNewest": "Newest",
   "@cardSortNewest": {
     "description": "Card sort: newest first."
@@ -1859,9 +1877,13 @@
   "@cardSaveFailedTitle": {
     "description": "Inline banner title after a failed save."
   },
-  "cardSaveFailedBody": "Nothing was lost. Tap Save to try again.",
+  "cardSaveChangesFailedTitle": "Couldn't save changes.",
+  "@cardSaveChangesFailedTitle": {
+    "description": "Screen handoff 09: the failed save's title in edit (audit 2026-10-17)."
+  },
+  "cardSaveFailedBody": "Nothing was lost. Tap Retry save to try again.",
   "@cardSaveFailedBody": {
-    "description": "Inline banner body after a failed save."
+    "description": "Screen handoff 08/09: the failed save's body; names the button as it reads (audit 2026-10-17)."
   },
   "cardDeckRejectsTitle": "This deck no longer accepts cards.",
   "@cardDeckRejectsTitle": {
@@ -2829,6 +2851,15 @@
     },
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortPillDueOnly."
   },
+  "deckSortTrigger": "Sort decks, {order}",
+  "@deckSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01: TalkBack name of the sort trigger, with the order shown (audit 2026-10-17)."
+  },
   "deckSortFilterTitle": "Sort & filter",
   "@deckSortFilterTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortFilterTitle."
@@ -2872,6 +2903,22 @@
   "deckStudyOptions": "Study options",
   "@deckStudyOptions": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
+  },
+  "studyOptionsLoadErrorTitle": "Couldn't open Study options",
+  "@studyOptionsLoadErrorTitle": {
+    "description": "Screen handoff 15: the read error's title, naming this screen (audit 2026-10-17)."
+  },
+  "studyOptionsDiscardTitle": "Discard your changes?",
+  "@studyOptionsDiscardTitle": {
+    "description": "Screen handoff 15: Back with unsaved options asks first (audit 2026-10-17)."
+  },
+  "studyOptionsDiscardBody": "The deck keeps the options it had.",
+  "@studyOptionsDiscardBody": {
+    "description": "Screen handoff 15: the discard question's body (audit 2026-10-17)."
+  },
+  "studyOptionsDiscard": "Discard",
+  "@studyOptionsDiscard": {
+    "description": "Screen handoff 15: the discard question's confirm (audit 2026-10-17)."
   },
   "deckStudyOptionsHint": "Cards per session · new-card order",
   "@deckStudyOptionsHint": {
@@ -2988,7 +3035,7 @@
   "@searchErrorTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorTitle."
   },
-  "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
+  "searchErrorBody": "Nothing was lost. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
   },
@@ -4384,17 +4431,17 @@
   "@importProblemSectionsTitle": {
     "description": "Title: a file with * rows imported into a deck of cards (UC-TRANSFER-001 E7)."
   },
-  "importProblemSectionsBody": "A deck of cards can’t hold decks. Import from its parent deck instead. Nothing was added.",
+  "importProblemSectionsBody": "Nothing was added. A deck of cards can’t hold decks: import from its parent deck instead.",
   "@importProblemSectionsBody": {
-    "description": "Guidance for E7."
+    "description": "Screen handoff 11 (E7): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemDepthTitle": "No room for another level",
   "@importProblemDepthTitle": {
     "description": "Title: the target is at level 10 (UC-TRANSFER-001 E8)."
   },
-  "importProblemDepthBody": "Decks go at most 10 levels deep. Import from a higher deck. Nothing was added.",
+  "importProblemDepthBody": "Nothing was added. Decks go at most 10 levels deep: import from a higher deck.",
   "@importProblemDepthBody": {
-    "description": "Guidance for E8."
+    "description": "Screen handoff 11 (E8): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemChangedTitle": "A deck changed meanwhile",
   "@importProblemChangedTitle": {
@@ -4675,6 +4722,18 @@
     },
     "description": "Import mapping: the field picker sheet title."
   },
+  "importFieldTrigger": "Column {letter} goes to {field}",
+  "@importFieldTrigger": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      },
+      "field": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 11: TalkBack name of a column's field chip (audit 2026-10-17)."
+  },
   "importMappingNote": "Known header names were mapped for you. Term and meaning are required; the rest is optional.",
   "@importMappingNote": {
     "description": "Import mapping: the note under the columns."
@@ -4867,17 +4926,17 @@
   "@importProblemEncodingTitle": {
     "description": "Import problem: BR-TRANSFER-006."
   },
-  "importProblemEncodingBody": "Save it again as UTF-8 (CSV UTF-8 in Excel or Sheets) and choose it once more. Nothing was read.",
+  "importProblemEncodingBody": "Nothing was read. Save it again as UTF-8 (CSV UTF-8 in Excel or Sheets) and choose it once more.",
   "@importProblemEncodingBody": {
-    "description": "Import problem: how to fix the encoding."
+    "description": "Screen handoff 11 (E1): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemUnreadableTitle": "This file can't be read",
   "@importProblemUnreadableTitle": {
     "description": "Import problem: E1."
   },
-  "importProblemUnreadableBody": "Choose a CSV, TSV or XLSX file that is not protected. Nothing was read.",
+  "importProblemUnreadableBody": "Nothing was read. Choose a CSV, TSV or XLSX file that is not protected.",
   "@importProblemUnreadableBody": {
-    "description": "Import problem: how to fix an unreadable file."
+    "description": "Screen handoff 11 (E1): local-first, nothing lost first (audit 2026-10-17)."
   },
   "importProblemEmptyTitle": "There are no rows to import",
   "@importProblemEmptyTitle": {
@@ -5261,6 +5320,15 @@
   "@studySelfAssessShowAnswer": {
     "description": "Screen handoff 16a (FE-A6 P2): the reveal button."
   },
+  "studySelfAssessAnnounceRevealed": "The answer is {answer}.",
+  "@studySelfAssessAnnounceRevealed": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 16a: announced when Show answer reveals it (audit 2026-10-17)."
+  },
   "studySelfAssessHintPrompt": "Recall the answer, then show it",
   "@studySelfAssessHintPrompt": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint before the reveal."
@@ -5530,7 +5598,7 @@
   },
   "studyRecallHintRevealed": "The next card follows automatically",
   "@studyRecallHintRevealed": {
-    "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed."
+    "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed; vi matches the English (audit 2026-10-17)."
   },
   "studyRecallHintTimedOut": "This card comes back in a later round",
   "@studyRecallHintTimedOut": {
@@ -5544,6 +5612,15 @@
       }
     },
     "description": "Screen handoff 19 (FE-A6 P4): announced when the timeout commits."
+  },
+  "studyRecallAnnounceRevealed": "The meaning is {meaning}.",
+  "@studyRecallAnnounceRevealed": {
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 19: announced when Show the meaning reveals it (audit 2026-10-17)."
   },
   "studyFillField": "Your answer",
   "@studyFillField": {
@@ -5612,9 +5689,13 @@
   "@studyHomeResume": {
     "description": "Screen handoff 13 (FE-A8): takes the session up (UC-STUDY-002)."
   },
-  "studyHomeResumeRefused": "This session can't be continued any more",
+  "studyHomeResumeRefused": "That session has ended. Its answers are kept.",
   "@studyHomeResumeRefused": {
-    "description": "Screen handoff 13 (FE-A8): toast when Resume is refused (H3)."
+    "description": "Screen handoff 13 (H3, S8): toast when Resume is refused, local-first (audit 2026-10-17)."
+  },
+  "studyHomeResumeFailed": "Your answers are kept. Couldn't resume the session, so try again.",
+  "@studyHomeResumeFailed": {
+    "description": "Screen handoff 13: toast when Resume cannot be written, local-first (audit 2026-10-17)."
   },
   "studyHomeWaiting": "Waiting for you",
   "@studyHomeWaiting": {
@@ -6179,7 +6260,7 @@
   "@settingsAppliesAtOnce": {
     "description": "Footnote of screen 25 (BR-SETTINGS-005)."
   },
-  "settingsThemeSaveFailed": "Couldn't change the theme.",
+  "settingsThemeSaveFailed": "Couldn't change the theme. Nothing changed.",
   "@settingsThemeSaveFailed": {
     "description": "Toast when saving the theme failed (E2); offers Retry."
   },
@@ -6228,7 +6309,7 @@
   "@settingsLanguageSwitched": {
     "description": "Toast after a language switch, read in the language switched to."
   },
-  "settingsLanguageSaveFailed": "Couldn't change the language.",
+  "settingsLanguageSaveFailed": "Couldn't change the language. Nothing changed.",
   "@settingsLanguageSaveFailed": {
     "description": "Toast when saving the language failed (E2); offers Retry."
   },
@@ -6436,15 +6517,15 @@
     },
     "description": "Toast when saving the card limit failed (E2); names the value that stands, and offers Retry."
   },
-  "settingsOrderSaveFailed": "Couldn't save the new-card order.",
+  "settingsOrderSaveFailed": "Couldn't save the new-card order. Nothing changed.",
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language.",
+  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language. Nothing changed.",
   "@settingsSpeechLanguageSaveFailed": {
     "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
   },
-  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch.",
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch. Nothing changed.",
   "@settingsSpeechAutoPlaySaveFailed": {
     "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
   },
@@ -6719,7 +6800,7 @@
   "@starterLoadErrorTitle": {
     "description": "Screen 03: the read error title (loadFailed)."
   },
-  "starterLoadErrorBody": "Your library is unaffected. Try again in a moment.",
+  "starterLoadErrorBody": "Nothing was lost. Try again in a moment.",
   "@starterLoadErrorBody": {
     "description": "Screen 03: the read error body (loadFailed)."
   },
@@ -6819,6 +6900,10 @@
   "tagsRename": "Rename tag",
   "@tagsRename": {
     "description": "Screen 05: the rename action and the rename dialog title."
+  },
+  "tagsRowBusy": "Saving this tag",
+  "@tagsRowBusy": {
+    "description": "Screen handoff 05: what TalkBack hears on a tag row while its write runs (audit 2026-10-17)."
   },
   "tagsRenameHint": "Renaming onto an existing name merges the two",
   "@tagsRenameHint": {
@@ -7038,6 +7123,10 @@
   "studyExitStop": "Stop",
   "@studyExitStop": {
     "description": "The exit confirm dialog: stop the session."
+  },
+  "studyExitFailed": "Everything you answered is kept. Couldn't stop the session, so try again.",
+  "@studyExitFailed": {
+    "description": "Screen handoff 16 (session route): toast when Stop cannot be written (audit 2026-10-17, local-first)."
   },
   "cardCaptionAddMissing": "Add the missing field to enable save.",
   "@cardCaptionAddMissing": {
@@ -7553,6 +7642,14 @@
   "@syncLoadErrorTitle": {
     "description": "Screen 27 (SB-U1): the status stream failed (spec §6)."
   },
+  "syncUnavailableTitle": "Sync isn't available",
+  "@syncUnavailableTitle": {
+    "description": "Screen handoff 27: the title when this build has no sync, so there is no status to show; no Retry (audit 2026-10-17)."
+  },
+  "syncUnavailableBody": "This version of MemoX keeps everything on this device. Nothing is lost.",
+  "@syncUnavailableBody": {
+    "description": "Screen handoff 27: the body when this build has no sync; says first that nothing is lost (audit 2026-10-17)."
+  },
   "studyHomeSyncRejected": "{count, plural, =1{1 change wasn't accepted.} other{{count} changes weren't accepted.}}",
   "@studyHomeSyncRejected": {
     "placeholders": {
@@ -7781,7 +7878,15 @@
   "@monitoringNoMore": {
     "description": "Screen 28: the end of the list."
   },
-  "monitoringLoadMoreFailed": "Couldn't load more logs.",
+  "monitoringRefresh": "Refresh",
+  "@monitoringRefresh": {
+    "description": "Screen 28: the app bar action that reads the Server tab's first page again, for a screen reader or a keyboard (audit 2026-10-17)."
+  },
+  "monitoringRefreshFailed": "Couldn't refresh. What is shown is still correct.",
+  "@monitoringRefreshFailed": {
+    "description": "Screen 28: the banner above the rows when a pull to refresh failed; Retry follows (audit 2026-10-17)."
+  },
+  "monitoringLoadMoreFailed": "Couldn't load more logs. What is shown is still correct.",
   "@monitoringLoadMoreFailed": {
     "description": "Screen 28: the end of the list when the next page failed."
   },

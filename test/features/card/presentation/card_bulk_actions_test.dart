@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -5,8 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
+import 'package:memox/features/card/presentation/providers/add_tag_to_cards_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -159,6 +163,38 @@ void main() {
     await _bulk(tester, _en.cardTag);
     await tester.enterText(find.byType(EditableText).last, 'greetings');
     await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pumpAndSettle();
+
+    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 2);
+    expect(find.text(_en.cardTaggedToast(2, 'greetings')), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Tag holds its dialog while it writes: Cancel in the same '
+      'instant does nothing, and the write still says so', (tester, env) async {
+    final ids = await _seed(env);
+    final gate = Completer<void>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(ids.words),
+      overrides: [
+        cardActionsControllerProvider.overrideWith(() => _SlowActions(gate)),
+      ],
+    );
+    await _select(tester, ['annyeong', 'gamsa']);
+    await _bulk(tester, _en.cardTag);
+    await tester.enterText(find.byType(EditableText).last, 'greetings');
+    await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pump();
+    // The write is still running: the dialog is held and Cancel is off.
+    final cancel = find.ancestor(
+      of: _inDialog(_en.commonCancel),
+      matching: find.byType(MxButton),
+    );
+    expect(tester.widget<MxButton>(cancel.first).onPressed, isNull);
+    expect(tester.widget<MxDialog>(find.byType(MxDialog)).isHeld, isTrue);
+    gate.complete();
     await tester.pumpAndSettle();
 
     expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 2);
@@ -415,4 +451,23 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
     },
   );
+}
+
+/// Tags only once [gate] opens, so a test can act while the write runs.
+final class _SlowActions extends CardActionsController {
+  _SlowActions(this.gate);
+
+  final Completer<void> gate;
+
+  @override
+  Future<Outcome<void, TagRejection>> addTag({
+    required Set<String> cardIds,
+    required String tagName,
+  }) async {
+    // Read before the wait, as the real call does: nothing keeps this
+    // controller alive across it.
+    final addTag = ref.read(addTagToCardsUseCaseProvider);
+    await gate.future;
+    return addTag(cardIds: cardIds, tagName: tagName);
+  }
 }

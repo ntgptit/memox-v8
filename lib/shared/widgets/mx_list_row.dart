@@ -29,6 +29,7 @@ class MxListRow extends StatelessWidget {
     this.onTap,
     this.isEnabled = true,
     this.isBusy = false,
+    this.busyLabel,
     this.titleMaxLines = 1,
   }) : assert(subtitle == null || meta == null, 'a subtitle or meta'),
        assert(trailing == null || !hasChevron, 'a trailing or the chevron');
@@ -67,6 +68,10 @@ class MxListRow extends StatelessWidget {
   /// A spinner takes the trailing slot while the row's action runs.
   final bool isBusy;
 
+  /// What TalkBack hears while [isBusy]; without it the spinner is silent
+  /// and the busy state is not said (audit 2026-10-17).
+  final String? busyLabel;
+
   /// 2 for a name the person chose (tag, deck), which must stay
   /// recognisable; content lists keep 1 so rows are one height (audit
   /// 2026-09-29, pattern 2).
@@ -95,7 +100,7 @@ class MxListRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final end = switch ((isBusy, hasChevron)) {
-      (true, _) => const MxSpinner(),
+      (true, _) => MxSpinner(semanticLabel: busyLabel),
       (false, true) => Icon(
         AppIcons.chevronRight,
         size: context.dimens.sizeIconCompact,

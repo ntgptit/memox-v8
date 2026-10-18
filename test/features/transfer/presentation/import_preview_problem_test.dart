@@ -8,6 +8,7 @@ import 'package:memox/features/transfer/domain/models/import_sections_model.dart
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_commit_bar_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/sections/import_mapping_section_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_preview_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -100,4 +101,80 @@ void main() {
       );
     });
   }
+
+  for (final (problem, title) in [
+    (TransferRejection.emptySource, _en.importProblemEmptyTitle),
+    (TransferRejection.targetRejected, _en.importRejectsTitle),
+  ]) {
+    libraryTest('$problem at Columns says why; Preview waits for a change '
+        '(audit 2026-10-17: no silent refusal)', (tester, env) async {
+      final draft = CardImportDraft(
+        step: CardImportStep.columns,
+        table: const SourceTable(
+          rows: [
+            ['front', 'back'],
+          ],
+        ),
+        mapping: _faces,
+        problem: problem,
+      );
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: SingleChildScrollView(
+            child: ImportMappingSectionWidget(
+              draft: draft,
+              onHeaderRow: (_) {},
+              onAssign: (_, _) {},
+            ),
+          ),
+          bottomNavigationBar: ImportCommitBarWidget(
+            draft: draft,
+            onCancel: () {},
+            onRead: () {},
+            onPreview: () {},
+            onCommit: () {},
+          ),
+        ),
+      );
+
+      expect(find.text(title), findsOneWidget);
+      if (problem == TransferRejection.emptySource) {
+        expect(
+          tester
+              .widget<MxButton>(
+                find.widgetWithText(MxButton, _en.importPreviewAction),
+              )
+              .onPressed,
+          isNull,
+        );
+      }
+    });
+  }
+
+  libraryTest('a refusal on the preview that is not stale still says why', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: SingleChildScrollView(
+          child: ImportPreviewSectionWidget(
+            draft: _draft(TransferRejection.targetRejected),
+            onIncludeDuplicates: (_) {},
+            onChooseSection: (_, _) {},
+            onChooseAllSections: (_) {},
+            onRenameDefault: (_) {},
+            onPreviewAgain: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text(_en.importRejectsTitle), findsOneWidget);
+    expect(find.text(_en.importPreviewAgain), findsNothing);
+  });
 }

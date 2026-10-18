@@ -77,21 +77,30 @@ class MxErrorState extends StatelessWidget {
             ),
             // Ruling O4: the tile → title gap is UNSPECIFIED; EmptyState's.
             SizedBox(height: context.dimens.space16),
-            // It swaps in for the skeleton in place: announce it (SW-REV-006).
-            Semantics(
-              liveRegion: true,
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: context.texts.itemTitle,
-              ),
-            ),
-            const SizedBox(height: _titleGap),
-            Text(
-              body,
-              textAlign: TextAlign.center,
-              style: context.texts.body.copyWith(
-                color: context.colors.mutedForeground,
+            // It swaps in for the skeleton in place: announce it
+            // (SW-REV-006), the title with the body that says nothing was
+            // lost (audit 2026-10-17).
+            MergeSemantics(
+              child: Semantics(
+                liveRegion: true,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: context.texts.itemTitle,
+                    ),
+                    const SizedBox(height: _titleGap),
+                    Text(
+                      body,
+                      textAlign: TextAlign.center,
+                      style: context.texts.body.copyWith(
+                        color: context.colors.mutedForeground,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if ((retryLabel, onRetry) case (

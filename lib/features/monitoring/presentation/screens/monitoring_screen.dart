@@ -44,6 +44,7 @@ class MonitoringScreen extends ConsumerStatefulWidget {
 class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
   final _search = TextEditingController();
   var _tab = MonitoringTab.server;
+  var _isRefreshing = false;
 
   @override
   void dispose() {
@@ -54,6 +55,18 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
   void _clearFilters() {
     _search.clear();
     ref.read(monitoringListControllerProvider.notifier).clearFilters();
+  }
+
+  /// The Refresh action stays off until the first page lands, so a tap is
+  /// seen (and heard as disabled) rather than doing nothing visible.
+  Future<void> _refresh(MonitoringListController controller) async {
+    if (_isRefreshing) return;
+    setState(() => _isRefreshing = true);
+    try {
+      await controller.refresh();
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
   }
 
   @override
@@ -70,6 +83,7 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
         (state) => state.logs.value?.total ?? 0,
       ),
     );
+    final listController = ref.watch(monitoringListControllerProvider.notifier);
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.monitoringTitle,
@@ -78,6 +92,18 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        actions: [
+          // The drag down has no TalkBack or keyboard equivalent; the Not
+          // sent tab watches its rows and needs none.
+          if (_tab == MonitoringTab.server)
+            MxIconButton(
+              icon: AppIcons.retry,
+              semanticLabel: l10n.monitoringRefresh,
+              onPressed: _isRefreshing
+                  ? null
+                  : () => unawaited(_refresh(listController)),
+            ),
+        ],
       ),
       body: Column(
         children: [

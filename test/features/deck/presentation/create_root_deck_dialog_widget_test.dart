@@ -200,6 +200,42 @@ void main() {
     expect(await _decks(env), hasLength(1));
   });
 
+  libraryTest('while Create writes, the dialog is held, Cancel is off and '
+      'Create spins (M3 B2: every async confirm)', (tester, env) async {
+    final slow = _SlowDecks(env.decks);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(),
+      overrides: [
+        createRootDeckUseCaseProvider.overrideWithValue(
+          CreateRootDeckUseCase(slow),
+        ),
+      ],
+    );
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'Korean');
+    await chooseEightBox(tester);
+    await tester.tap(find.text(_en.deckCreateConfirm));
+    await tester.pump();
+
+    expect(tester.widget<MxDialog>(find.byType(MxDialog)).isHeld, isTrue);
+    final cancel = find.ancestor(
+      of: find.text(_en.commonCancel),
+      matching: find.byType(MxButton),
+    );
+    expect(tester.widget<MxButton>(cancel.first).onPressed, isNull);
+    final create = find.ancestor(
+      of: find.text(_en.deckCreateConfirm),
+      matching: find.byType(MxButton),
+    );
+    expect(tester.widget<MxButton>(create.first).isLoading, isTrue);
+
+    slow.release();
+    await tester.pumpAndSettle();
+    expect(await _decks(env), hasLength(1));
+  });
+
   libraryTest('a database failure keeps the dialog and says so plainly (RF4)', (
     tester,
     env,

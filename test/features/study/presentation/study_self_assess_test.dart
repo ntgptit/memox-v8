@@ -69,6 +69,41 @@ void main() {
     expect(await turnKindsOf(env.db, 'R1'), isEmpty);
   });
 
+  libraryTest('the reveal is announced: the answer is read, term-first and '
+      'meaning-first alike (TalkBack)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _reveal(tester);
+
+    expect(
+      tester.takeAnnouncements().map((a) => a.message),
+      contains(_en.studySelfAssessAnnounceRevealed('meaning 1')),
+    );
+    handle.dispose();
+  });
+
+  libraryTest('a meaning-first reveal announces the term', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await openSelfAssessReview(
+      env.db,
+      env.decks,
+      libraryToday,
+      cards: 1,
+      direction: DirectionChoice.meaningToKorean,
+    );
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _reveal(tester);
+
+    expect(
+      tester.takeAnnouncements().map((a) => a.message),
+      contains(_en.studySelfAssessAnnounceRevealed('term 1')),
+    );
+    handle.dispose();
+  });
+
   libraryTest('tapping the prompt card reveals, as Show answer does', (
     tester,
     env,

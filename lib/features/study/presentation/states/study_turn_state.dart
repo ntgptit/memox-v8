@@ -15,6 +15,11 @@ final class StudyTurnState {
 
   /// The answer a busy database refused, kept for Retry (UC-STUDY-001 E2).
   final PendingAnswer? unsaved;
+
+  /// No new answer is taken: a write runs, or an answer a busy database
+  /// refused waits for Retry. It stays the turn's answer: a second pick
+  /// never replaces it (BR-STUDY-041, the first pick counts).
+  bool get isLocked => isBusy || unsaved != null;
 }
 
 /// A turn whose outcome stays on screen after its write committed

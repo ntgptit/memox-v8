@@ -9,7 +9,7 @@ superseded_by:
 
 Tab Server MUST tải tối đa 100 dòng một trang, theo con trỏ keyset gồm `occurred_at` và `id` của dòng cuối (mới nhất trước), không theo offset. Server MUST kẹp `limit` trong 1 đến 100. Một trang nhận đủ 100 dòng MUST được coi là còn trang sau; một trang ít hơn MUST là trang cuối. Trang kế MUST tự tải khi mười dòng cuối vào tầm nhìn; trong lúc đó MUST hiện spinner dưới dòng cuối, và một trang đang tải MUST NOT tải trang nữa.
 
-Trang kế lỗi MUST hiện "Couldn't load more logs." với Retry và MUST NOT tự hỏi lại ở mỗi lần cuộn. Hết trang MUST hiện "No more logs". Các dòng đã tải MUST ở lại trong lúc trang kế đến hoặc lỗi.
+Trang kế lỗi MUST hiện "Couldn't load more logs. What is shown is still correct." với Retry và MUST NOT tự hỏi lại ở mỗi lần cuộn. Hết trang MUST hiện "No more logs". Các dòng đã tải MUST ở lại trong lúc trang kế đến hoặc lỗi.
 
 **Enforced by:** `lib/features/monitoring/domain/models/log_page_model.dart` (`size`, `next`), `lib/features/monitoring/presentation/controllers/monitoring_list_controller.dart` (`loadMore`), `lib/features/monitoring/presentation/widgets/sections/monitoring_server_list_widget.dart`, server (`public.log_query`: `before`, `limit`)
 **Liên quan:** BR-MONITORING-003, BR-MONITORING-010

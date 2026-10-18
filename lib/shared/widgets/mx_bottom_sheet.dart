@@ -77,7 +77,9 @@ class MxBottomSheet extends StatelessWidget {
   final Widget child;
 
   /// A head drawn by the caller, for one that is not a title and a line
-  /// (a chip, a 16 inset); most sheets pass [title] instead.
+  /// (a chip, a 16 inset); most sheets pass [title] instead. The caller
+  /// marks its heading as [title] is marked: `Semantics(header: true,
+  /// namesRoute: true)` around it.
   final Widget? header;
 
   /// The sheet's head: the compact title 24 in, at most two lines, and

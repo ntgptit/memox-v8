@@ -64,6 +64,18 @@ int _value(WidgetTester tester) =>
     tester.state<_BoundedState>(find.byType(_Bounded)).value;
 
 void main() {
+  _test('while the number is typed, the field keeps the value\'s name for '
+      'TalkBack (audit 2026-10-17)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _Bounded(onSubmitted: (_) {}));
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+    expect(_field, findsOneWidget);
+
+    expect(find.bySemanticsLabel('Cards per session'), findsOneWidget);
+    handle.dispose();
+  });
+
   _test('a tap steps once; a hold repeats after its delay, then at '
       'its interval, and stops on release', (tester) async {
     await pumpMx(tester, const _Bounded());

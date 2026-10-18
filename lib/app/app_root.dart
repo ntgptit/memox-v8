@@ -27,7 +27,16 @@ class _AppRootState extends State<AppRoot> {
 
   Future<void> _retry() async {
     setState(() => _isRetrying = true);
-    final result = await retryStartApp(_container);
+    var result = _result;
+    try {
+      result = await retryStartApp(_container);
+    } on Object catch (error, stackTrace) {
+      // A bug past the database's open, not a closed file (ADR-016): report
+      // it, and leave Retry tappable instead of spinning for good.
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+    }
     if (!mounted) return;
     setState(() {
       _result = result;

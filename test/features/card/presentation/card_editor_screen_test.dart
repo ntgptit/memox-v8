@@ -328,7 +328,8 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
-  libraryTest('the flag toggle reports its state (ruling P4a-L6)', (
+  libraryTest('the flag toggle reports its state under one stable name, '
+      'never a label that contradicts it (ruling P4a-L6; audit 2026-10-17)', (
     tester,
     env,
   ) async {
@@ -344,7 +345,7 @@ void main() {
     await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.pump();
     expect(
-      tester.getSemantics(byControlLabel(_en.cardFlagClear)),
+      tester.getSemantics(byControlLabel(_en.cardFlagLabel)),
       isSemantics(hasToggledState: true, isToggled: true),
     );
     await tester.pump(const Duration(milliseconds: 200));

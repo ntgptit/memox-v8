@@ -243,12 +243,8 @@ class _Progress extends StatelessWidget {
                     ),
                   )
                 else ...[
-                  Center(
-                    child: MxSpinner(
-                      size: MxSpinnerSize.large,
-                      semanticLabel: step,
-                    ),
-                  ),
+                  // No label: the live region below speaks the step alone.
+                  const Center(child: MxSpinner(size: MxSpinnerSize.large)),
                   SizedBox(height: context.dimens.space24),
                   Semantics(
                     liveRegion: true,

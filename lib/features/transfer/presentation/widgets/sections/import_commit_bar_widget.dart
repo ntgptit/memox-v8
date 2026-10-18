@@ -51,7 +51,7 @@ class ImportCommitBarWidget extends StatelessWidget {
         AppIcons.preview,
         draft.mapping.isComplete &&
                 !(draft.table?.isBlank ?? false) &&
-                !isImportTargetProblem(draft.problem)
+                !isStalePreviewProblem(draft.problem)
             ? onPreview
             : null,
         l10n.importCaptionColumns,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/features/account/presentation/controllers/code_controller.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
@@ -34,27 +35,35 @@ class CodeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     void back() => unawaited(Navigator.of(context).maybePop());
-    return MxAppShell(
-      appBar: MxAppBar(
-        titleWidget: const SizedBox.shrink(),
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: back,
-        ),
-      ),
-      body: MxScreenScroll(
-        children: [
-          CodeFormWidget(
-            email: email,
-            purpose: purpose,
-            onUseAnotherEmail: back,
-            onSignedIn: () {
-              saySignedIn(context, stateAfterCommand(ref));
-              onSignedIn();
-            },
+    // Back is held while the six digits are checked: a pop then would drop
+    // the "Signed in" toast and the end of the flow with the screen.
+    final isVerifying = ref.watch(
+      codeControllerProvider(email, purpose).select((s) => s.isVerifying),
+    );
+    return PopScope(
+      canPop: !isVerifying,
+      child: MxAppShell(
+        appBar: MxAppBar(
+          titleWidget: const SizedBox.shrink(),
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: isVerifying ? null : back,
           ),
-        ],
+        ),
+        body: MxScreenScroll(
+          children: [
+            CodeFormWidget(
+              email: email,
+              purpose: purpose,
+              onUseAnotherEmail: back,
+              onSignedIn: () {
+                saySignedIn(context, stateAfterCommand(ref));
+                onSignedIn();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -20,6 +20,12 @@ bool isStalePreviewProblem(TransferRejection? problem) =>
     problem == TransferRejection.sectionTargetChanged ||
     problem == TransferRejection.emptySource;
 
+/// Whether a refusal is said as a banner of its own. An incomplete mapping
+/// already has its warning above; every other refusal is said, never
+/// dropped (audit 2026-10-17).
+bool isShownImportProblem(TransferRejection? problem) =>
+    problem != null && problem != TransferRejection.mappingIncomplete;
+
 /// The import screen's copy for its domain values (kit 11).
 extension ImportLabels on AppLocalizations {
   String importStepName(CardImportStep step) => switch (step) {
@@ -95,6 +101,10 @@ extension ImportLabels on AppLocalizations {
         TransferRejection.sectionTargetChanged => (
           title: importProblemChangedTitle,
           body: importProblemChangedBody,
+        ),
+        TransferRejection.targetRejected => (
+          title: importRejectsTitle,
+          body: importRejectsBody,
         ),
         _ => (
           title: importProblemUnreadableTitle,

@@ -108,6 +108,14 @@ class StudyEntryBodyWidget extends ConsumerWidget {
           onContinue: () => onContinue(resumable.sessionId),
         ),
       ],
+      // A refused or failed start reads here, under the hero, above the
+      // choices: the footer's Try again points at it, and below the choices
+      // it could sit past the fold (audit 2026-10-17).
+      if (start.status == StudyStartStatus.refused ||
+          start.status == StudyStartStatus.failed) ...[
+        SizedBox(height: context.dimens.space12),
+        StudyEntryBannerWidget(start: start),
+      ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space12),
         const _NothingDue(),
@@ -130,11 +138,6 @@ class StudyEntryBodyWidget extends ConsumerWidget {
           isLocked: start.isStarting,
           onPick: (mode) => _pick(ref, mode),
         ),
-      ],
-      if (start.status == StudyStartStatus.refused ||
-          start.status == StudyStartStatus.failed) ...[
-        SizedBox(height: context.dimens.space12),
-        StudyEntryBannerWidget(start: start),
       ],
     ];
   }

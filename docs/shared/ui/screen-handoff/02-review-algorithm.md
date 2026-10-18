@@ -26,19 +26,23 @@ Algorithm descriptions:
 |---|---|---|---|
 | locked | `library_algorithm_locked_light.png` | `library_algorithm_locked_dark.png` | Date from `firstAnsweredAt`, local time. |
 | unlocked | `library_algorithm_unlocked_light.png` | `library_algorithm_unlocked_dark.png` | — |
-| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
+| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). The options and "Reset learning progress…" are off until it ends (audit 2026-10-17 LIB-13). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
-| switchFailed | no golden | no golden | Danger banner with Retry (UC-DECK-002 E2). |
+| switchFailed | no golden | no golden | Danger banner "Couldn't switch." · "The deck still uses {algorithm}." with Retry (UC-DECK-002 E2). `deck_algorithm_screen_test.dart::a switch that fails says the deck kept its algorithm; Retry switches (E2)`. |
 | resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `success` on the success tint (ADR-022); "the open session" only when a session is open. |
 | resetting | no golden | no golden | The confirm spins and Cancel is off (M3 review B2). |
 | resetDone | no golden | no golden | Then the unlocked state. |
-| nothingToLose | no golden | no golden | When `hasProgressToLose` is false (UC-SRS-001 A2). |
+| nothingToLose | no golden | no golden | When `hasProgressToLose` is false (UC-SRS-001 A2): no Kept and Lost tiles, the confirm stays on. `deck_reset_dialog_test.dart::nothing to lose says so and still resets (UC-SRS-001 A2)`. |
+| resetSummaryLoading | no golden | no golden | The dialog while the summary is read: title, one skeleton row and the algorithm choice; no intro; the confirm is off until the summary lands. Code read: `deck_reset_dialog_widget.dart`. |
+| resetSummaryRejected | no golden | no golden | The summary is refused (the deck is gone, or is not a root): the dialog body says why (the SRS rejection copy); the confirm stays off, Cancel closes. Code read: `deck_reset_dialog_widget.dart`. |
+| resetSummaryError | no golden | no golden | The summary read fails: the body is the failure message (or "Nothing was lost, but something went wrong. Try again." for anything else); the confirm stays off. Code read: `deck_reset_dialog_widget.dart`. |
+| resetFailed | no golden | no golden | The reset fails (E1): the dialog stays, the confirm stops spinning and a toast gives the failure; nothing changed. `deck_reset_dialog_test.dart::a reset that fails keeps the dialog for another try (E1)`. An unexpected error is logged and shown as the unknown-failure toast; the dialog stays. |
 
 Beyond the states above:
 
 - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" / "Every card's schedule in this tree starts over and any open study session closes. No history is lost." / Cancel · Switch (UC-DECK-002 steps 3–4).
 - **Refused because the tree just locked:** the locked state and the reason (UC-DECK-002 E4).
-- **Loading, load error, not a root or gone:** skeleton, `MxErrorState`, the not-found state of screen 01.
+- **Loading, load error, not a root or gone:** four skeleton rows; `MxErrorState` "Couldn't open this deck" with Retry; the not-found state of screen 01, with its "Back to Library" and "Open Trash" (audit 2026-10-17 LIB-4), for a deleted deck and for a sub-deck, which has no algorithm (BR-DECK-025, `deck_algorithm_screen_test.dart::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)`).
 
 ## Reset dialog copy
 
@@ -51,6 +55,35 @@ Beyond the states above:
 - Buttons: "Cancel" · "Reset" (warning tone; the intro names the cycle it starts, DEV-179); while it runs the confirm spins and Cancel is off
 - Done: "Cycle {n+1} started · {count} cards are new again"
 - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry"
+- Summary refused or unread: the body is the rejection or failure message; no tiles, the confirm off.
+- Reset failed: a toast with the failure message; the dialog stays.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (loading) | the deck lands as a root | locked / unlocked | VERIFIED `deck_algorithm_screen_test.dart::unlocked: the current algorithm is selected; switching asks first`, `::locked: cycle and date named, options disabled, the note points to the reset` |
+| (loading) | the read fails | the error state | `UNVERIFIED (code read)`: `deck_algorithm_screen.dart` shows `MxErrorState`; no test fails the read |
+| the error state | Retry | loading, then the screen | `UNVERIFIED (code read)`: invalidates `deckViewProvider` |
+| (loading) | the deck is deleted or is a sub-deck | the gone state | VERIFIED `::a root deleted while open shows the gone state`, `::a sub-deck has no algorithm screen (BR-DECK-025)` |
+| unlocked | tap the other algorithm | the switch confirmation | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
+| unlocked | tap the current algorithm | nothing | VERIFIED `::tapping the current algorithm does nothing (UC-DECK-002 A4)` |
+| switch confirmation | Cancel | unlocked, nothing changed | VERIFIED `::cancelling the switch changes nothing (UC-DECK-002 A3)` |
+| switch confirmation | Switch | switching, then switched (the toast) and the new algorithm selected | VERIFIED `::unlocked: the current algorithm is selected; switching asks first` |
+| switching | both rows are off and the target spins | a second choice is not possible | `UNVERIFIED (code read)`: `deck_algorithm_options_widget.dart` (`isChoosable`) |
+| switching | the tree has just locked or the deck is gone | the locked state from the stream, the reason as a toast | VERIFIED `::a switch refused because the tree just locked says why (E4)` |
+| switching | the switch fails | switchFailed | VERIFIED `::a switch that fails says the deck kept its algorithm; Retry switches (E2)` |
+| switchFailed | Retry | switching, then switched | VERIFIED same test |
+| switching | the screen is left | no state is set | `UNVERIFIED (code read)`: `deck_algorithm_screen.dart` returns on `!mounted` |
+| locked | tap an algorithm | nothing (both rows are disabled) | VERIFIED `::locked: cycle and date named, options disabled, the note points to the reset` |
+| locked / unlocked | tap Reset learning progress… | resetConfirm (with the summary read), or its loading / rejected / error variants | VERIFIED `deck_reset_dialog_test.dart::with progress: cycle, Kept and Lost; keeping the algorithm resets it (UC-SRS-001)`; loading, rejected and error `UNVERIFIED (code read)` |
+| resetConfirm | Cancel | the screen, nothing changed | VERIFIED `deck_reset_dialog_test.dart::cancelling the reset changes nothing (UC-SRS-001 A3)` |
+| resetConfirm | choose the other algorithm, Reset | resetting, then resetDone with the other algorithm | VERIFIED `::switching in the reset starts the new cycle on the other algorithm` |
+| resetConfirm | Reset | resetting, then resetDone: the toast "Cycle {n} started · {count} cards are new again", the unlocked state | VERIFIED `::with progress: cycle, Kept and Lost; keeping the algorithm resets it (UC-SRS-001)` |
+| resetting | the confirm spins and Cancel is off | no second reset | VERIFIED `::while the reset runs the confirm spins and Cancel is off` |
+| resetting | the reset fails | resetFailed: the dialog stays for another try | VERIFIED `::a reset that fails keeps the dialog for another try (E1)` |
+| resetConfirm | a reset made elsewhere while open | the cycle named moves on | VERIFIED `::a reset made elsewhere while the dialog is open moves its cycle on` |
+| nothingToLose | Reset | resetDone | VERIFIED `::nothing to lose says so and still resets (UC-SRS-001 A2)` |
 
 ## Rulings
 
@@ -60,4 +93,4 @@ Beyond the states above:
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.
-- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the unlocked lock strip is a plain card with no hero ground (it states status and is not a door; DESIGN.md "a hero leads somewhere tappable"); the reset confirm "Reset and start cycle {n}" takes the warning tone, as the dialog's Lost tile does.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the unlocked lock strip is a plain card with no hero ground (it states status and is not a door; DESIGN.md "a hero leads somewhere tappable"); the reset confirm takes the warning tone, as the dialog's Lost tile does.

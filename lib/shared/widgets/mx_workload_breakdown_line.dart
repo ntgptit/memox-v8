@@ -10,7 +10,9 @@ import 'package:memox/l10n/meta_line.dart';
 /// - The order is urgency first, and it never changes.
 /// - When nothing is due, [fallback] is the whole line.
 ///
-/// It paints no top margin: the row that stacks it owns the 2 gap (S12).
+/// It sets in the meta role (12/500), below the row title (owner ruling
+/// 2026-10-17), and paints no top margin: the row that stacks it owns the 2
+/// gap (S12).
 class MxWorkloadBreakdownLine extends StatelessWidget {
   const MxWorkloadBreakdownLine({
     super.key,
@@ -115,7 +117,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     final isFallbackShown = !terms.any((term) => term.$5 != null);
     return Text.rich(
       TextSpan(
-        style: context.texts.label.copyWith(
+        style: context.texts.meta.copyWith(
           color: context.colors.mutedForeground,
         ),
         children: [
@@ -128,8 +130,8 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
             TextSpan(
               text: _termText(label(count)),
               style: count > 0
-                  ? context.texts.label.copyWith(color: ink)
-                  : context.texts.label.copyWith(
+                  ? context.texts.meta.copyWith(color: ink)
+                  : context.texts.meta.copyWith(
                       color: context.colors.mutedForeground,
                     ),
             ),
@@ -165,7 +167,7 @@ class _GlyphStatement extends StatelessWidget {
     if (terms.isEmpty) {
       return Text(
         fallback,
-        style: context.texts.label.copyWith(
+        style: context.texts.meta.copyWith(
           color: context.colors.mutedForeground,
         ),
       );
@@ -196,14 +198,14 @@ class _GlyphStatement extends StatelessWidget {
                 Flexible(
                   child: Text.rich(
                     TextSpan(
-                      style: context.texts.label.copyWith(
+                      style: context.texts.meta.copyWith(
                         color: context.colors.mutedForeground,
                       ),
                       children: [
                         TextSpan(
                           text: label(count),
                           style: count > 0
-                              ? context.texts.label.copyWith(color: ink)
+                              ? context.texts.meta.copyWith(color: ink)
                               : null,
                         ),
                         if (index < terms.length - 1)

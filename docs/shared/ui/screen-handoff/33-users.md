@@ -9,7 +9,7 @@ auth spec O9; spec
 ## Entry points
 
 - Screen 23b (Admin, admin only), People, row "Users" · "Who can manage the app" (settings hub spec D4).
-  Route `/settings/users`, on the root navigator; Back returns to 23.
+  Route `/settings/users`, on the root navigator; Back returns to 23b, which pushes it (`lib/app/router/admin_routes.dart`); a deep link straight to it returns to the hub (settings hub spec D5).
 - A deep link meets the admin gate: a non-admin sees "Only an admin can see this" under
   the app bar "Users" (P4 plan ruling 2).
 
@@ -52,9 +52,41 @@ The images are the goldens.
 | role sheet, changed | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_changed_light.png) | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_changed_dark.png) | Admin chosen; Save enabled. Golden `users_role_sheet_changed_*`. |
 | role sheet, refused | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_refused_light.png) | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_refused_dark.png) | LAST_ADMIN said inside the sheet. Golden `users_role_sheet_refused_*`. |
 | loading | — | — | `MxSkeletonList`. |
+| loading more | — | — | An `MxSpinner` under the last row while the next page loads. Code read: `users_list_widget.dart` `_End`; no golden. |
+| load more failed | — | — | The rows stay; a danger `MxInlineBanner` "Couldn't load more users." with a small Retry. `users_controller_test.dart::the next page joins the list; a failed page waits for its retry`; no golden. |
+| end | — | — | "No more users" once `next` is null. `users_screen_test.dart::the accounts, their join date and role, and the end`. |
+| role sheet, saving | — | — | Save spins and is the only live control; the sheet is held (Back, scrim and drag wait). `users_screen_test.dart::a drag while saving keeps the sheet, so a refusal is still said (P4 minor M3)`; no golden. |
 | no accounts | — | — | "No accounts yet". |
 | error | — | — | "Couldn't load users" + Retry. |
 | not an admin | — | — | the lock empty state, no search. |
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the first page lands | loaded / no match / no accounts | users spec §3. VERIFIED `users_screen_test.dart::the accounts, their join date and role, and the end`, `::no match, and no account at all`; `users_controller_test.dart::the first page loads at once` |
+| loading | the read fails | offline / error / not an admin | VERIFIED `::offline says so first, with Retry`, `::not an admin: only that is said` |
+| offline / error | Retry | loading, then the state the read gives | `UNVERIFIED (code read)` for the tap (`UsersController.retry`); the error is VERIFIED in the test above |
+| loaded | type in the search | the first page of the query, 400 ms after the last key; spaces alone ask nothing | P4 minor M5. VERIFIED `users_controller_test.dart::a search waits 400 ms after the last keystroke, then asks once`, `::a search that differs only in spaces does not ask again (P4 minor M5)` |
+| loading (a search) | an older answer lands after a newer ask | dropped | VERIFIED `users_controller_test.dart::an older answer never overwrites a newer one (Review Focus 1)` |
+| loaded | scroll within ten rows of the end | loading more | VERIFIED `users_controller_test.dart::the next page joins the list; a failed page waits for its retry` |
+| loading more | the page fails | load more failed (rows kept) | VERIFIED same test |
+| load more failed | Retry | loading more | VERIFIED same test |
+| loading more | the answer is "not an admin" | not an admin: the whole screen, not a failed page | final review I1. VERIFIED `users_controller_test.dart::no longer an admin while paging: the screen says so, not a failed page (final review I1)` |
+| loaded | pull down | the first page again, the rows kept until it lands | `UNVERIFIED (code read)`: `UsersController.refresh`, `_Refreshable`; no test pulls |
+| loaded | tap an account's row | the role sheet | VERIFIED `users_screen_test.dart::the sheet saves only a different role (Review Focus 3), and the row changes` |
+| loaded | tap the admin's own row | nothing (no tap target) | U1. VERIFIED `users_screen_test.dart::the admin's own row says You and opens nothing (Review Focus 2)` |
+| role sheet | choose another role | Save enabled | VERIFIED the Review Focus 3 test above |
+| role sheet | Cancel, or choose the current role | no change; Save disabled for the current role | `UNVERIFIED (code read)` for Cancel; the disabled Save is VERIFIED in the Review Focus 3 test and the golden `users_role_sheet_*` |
+| role sheet | Save | role sheet, saving | VERIFIED `::a drag while saving keeps the sheet, so a refusal is still said (P4 minor M3)` |
+| role sheet, saving | saved | the sheet closes, the badge changes in place, toast "{email} is now an admin" / "… a user" | VERIFIED `::the sheet saves only a different role (Review Focus 3), and the row changes`; `users_controller_test.dart::a saved role changes the row in place` |
+| role sheet, saving | the last admin | the sheet stays with the warning banner; a new choice clears it | VERIFIED `::the last admin stays, and the sheet says why`; `users_controller_test.dart::the server's refusals leave the list as it was (Review Focus 4)` |
+| role sheet, saving | anonymous, offline or another failure | the sheet stays with the banner | `users_controller_test.dart::the server's refusals leave the list as it was (Review Focus 4)` for the controller; the banner texts are `UNVERIFIED (code read)` |
+| role sheet, saving | the account is gone | the sheet closes, toast "That account no longer exists.", the list reloads | VERIFIED `::a user gone closes the sheet and says so`; `users_controller_test.dart::a user gone is said, and the list reloads` |
+| role sheet, saving | no longer an admin | the sheet closes; the screen shows not an admin | VERIFIED `users_controller_test.dart::no longer an admin: the screen says so, from a save or a list (Review Focus 5)` |
+| role sheet, saving | a first-page read in flight lands | the saved role stays | VERIFIED `users_controller_test.dart::a refresh asked before a save does not put the old role back (P4 minor M2)`, `::a list in flight does not bring the rows back over "not an admin" (P4 minor M1)` |
+| any | the screen is left while the sheet saves | the sheet is held, so the screen cannot be left from it | `UNVERIFIED (code read)`: `MxBottomSheet.isHeld` |
+| (deep link) | a non-admin | the gate titled "Users" | VERIFIED `test/app/account_routes_test.dart::a non-admin's deep link to Users meets the gate, titled Users` |
 
 ## Rulings
 

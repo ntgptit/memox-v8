@@ -85,7 +85,7 @@ reverse, and nothing in `lib/` reads `Theme.of(context)` for a colour.
 |---|---|---|---|
 | `showMxDialog` / `MxDialog` | `FDialogRoute` subclass with `MxHeldRoute`, on the root navigator (the scrim covers the bottom bar) | `FColors.barrier`; label and hint from `MaterialLocalizations` | A held popup ignores barrier taps and Back |
 | `showMxBottomSheet` / `MxBottomSheet` | `FModalSheetRoute` subclass with `MxHeldRoute`, on the nearest navigator (owner ruling M3C-52) | `FColors.barrier`; label, hint and grabber from `MaterialLocalizations` | Also absorbs the drag |
-| `showMxSnackbar` | ForUI's `FToast` in the root overlay (not ForUI's toaster, whose tap-to-pause lands on the screen's root semantics node unlabelled) | none | Returns `MxSnackbarController`; one toast at a time; a live region; swipe down dismisses; stays while TalkBack is on and it has an action; motion is ForUI's `FToastMotion` with ForUI's reduced-motion rule |
+| `showMxSnackbar` | ForUI's `FToast` in `MxToastHost`, a `Stack` above the Navigator mounted by `app_theme_host.dart` (not ForUI's toaster, whose tap-to-pause lands on the screen's root semantics node unlabelled) | none | Returns `MxSnackbarController`; one toast at a time; a live region; swipe down dismisses, and a TalkBack dismiss action does too; stays while TalkBack is on and it has an action; motion is ForUI's `FToastMotion` with ForUI's reduced-motion rule |
 
 ForUI's `FLocalizations` gives Vietnamese barrier strings that reach TalkBack
 as "Scrim" and a literal `$modalRouteContentName`, so the adapters read

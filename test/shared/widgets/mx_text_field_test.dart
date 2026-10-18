@@ -340,6 +340,24 @@ void main() {
     );
   });
 
+  testWidgets('a study answer gets no suggestions and no autocorrect; a form '
+      'field keeps them (BR-STUDY-026, audit 2026-10-17)', (tester) async {
+    await pumpMx(
+      tester,
+      const Column(
+        children: [
+          MxTextField(variant: MxTextFieldVariant.study, label: 'Answer'),
+          MxTextField(label: 'Name'),
+        ],
+      ),
+    );
+    final fields = tester.widgetList<EditableText>(find.byType(EditableText));
+    expect(fields.first.autocorrect, isFalse);
+    expect(fields.first.enableSuggestions, isFalse);
+    expect(fields.last.autocorrect, isTrue);
+    expect(fields.last.enableSuggestions, isTrue);
+  });
+
   testWidgets('study is bare: no edge in any state, centred, one line, in '
       'the study term role (FE-A6 P4 F1)', (tester) async {
     await pumpMx(

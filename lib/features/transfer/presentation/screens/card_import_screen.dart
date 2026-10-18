@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_import_controller.dart';
@@ -12,6 +13,7 @@ import 'package:memox/features/transfer/presentation/widgets/sections/import_pre
 import 'package:memox/features/transfer/presentation/widgets/sections/import_result_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_source_section_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_step_tracker_widget.dart';
+import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -20,6 +22,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
@@ -55,6 +58,16 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
   void _onBack() {
     if (_wizard.stepBack()) return;
     widget.onClose();
+  }
+
+  /// A step's read that fails says why; the wizard has already left busy.
+  Future<void> _read(Future<void> Function() read) async {
+    try {
+      await read();
+    } on Failure catch (failure) {
+      if (!mounted) return;
+      showMxSnackbar(context, message: context.l10n.failure(failure));
+    }
   }
 
   void _close() {
@@ -108,9 +121,13 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
       footer: ImportCommitBarWidget(
         draft: draft,
         onCancel: _close,
-        onRead: () => unawaited(_wizard.readSource()),
+        onRead: () => unawaited(_read(_wizard.readSource)),
         onPreview: () => unawaited(
-          _wizard.previewRows(defaultDeckName: l10n.importDefaultDeckName),
+          _read(
+            () => _wizard.previewRows(
+              defaultDeckName: l10n.importDefaultDeckName,
+            ),
+          ),
         ),
         onCommit: () => unawaited(_wizard.commit()),
       ),
@@ -131,7 +148,7 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
           onPaste: _wizard.pasteText,
           onClear: _wizard.clearSource,
           onChooseSheet: (index) =>
-              unawaited(_wizard.readSource(sheetIndex: index)),
+              unawaited(_read(() => _wizard.readSource(sheetIndex: index))),
         ),
         SizedBox(height: context.dimens.space16),
         if (step == CardImportStep.columns)
@@ -149,8 +166,10 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
             onChooseAllSections: _wizard.chooseAllSections,
             onRenameDefault: _wizard.renameDefaultDeck,
             onPreviewAgain: () => unawaited(
-              _wizard.previewRows(
-                defaultDeckName: context.l10n.importDefaultDeckName,
+              _read(
+                () => _wizard.previewRows(
+                  defaultDeckName: context.l10n.importDefaultDeckName,
+                ),
               ),
             ),
           ),

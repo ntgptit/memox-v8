@@ -19,8 +19,8 @@ each renamed, merged or deleted from its actions. UC-TAG-001; BR-TAG-001…011; 
 | App bar | `MxAppBar` (content) | Back and "Tags". |
 | Search | `MxSearchField` | "Search tags". It narrows the catalog with the fold the store writes and searches with (BR-TAG-003): `ĐỘNG TỪ` finds `động từ`. With no tags at all it is not shown. |
 | Header | `MxListSectionHeader` | "{n} tags" or "No matches", with "A→Z" as plain text: there is one order, and nothing to tap (critique P2b). |
-| Rows | `MxSection` + `MxListRow` | A tag tile, the name (one line, ellipsis), "{n} cards" and ⋮ ("Actions for {tag}"). While the tag's write runs, ⋮ is a spinner and the row cannot be tapped. |
-| Action sheet | `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 | The chip "{tag} · {n}" and "Tag actions"; "Find cards with this tag" / "Search the library for “{tag}”"; "Rename tag" / "Renaming onto an existing name merges the two"; "Delete tag" / "Removes it from {n} cards · the cards stay" (destructive). |
+| Rows | `MxSection` + `MxListRow` | A tag tile, the name (up to two lines, then an ellipsis: `titleMaxLines: 2` in `tag_row_widget.dart`), "{n} cards" and ⋮ ("Actions for {tag}"). A tap on the row opens the same action sheet as ⋮. While the tag's write runs, the row shows a spinner, says "Saving this tag" to TalkBack, and cannot be tapped. |
+| Action sheet | `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 | The chip "{tag} · {n}", marked as the sheet's heading (`header` and `namesRoute`, as `MxBottomSheet`'s own title is), and "Tag actions"; "Find cards with this tag" / "Search the library for “{tag}”"; "Rename tag" / "Renaming onto an existing name merges the two"; "Delete tag" / "Removes it from {n} cards · the cards stay" (destructive). |
 | Rename dialog | `MxDialog` + `MxTextField` + `MxSheetActions` | "Rename tag", "Renaming updates every card that uses “{tag}”.", the label "New name" above the field, the field prefilled, "Tag names are case-insensitive." as its supporting text; Cancel / Rename. The name rules are checked as it is typed; what the rename would do is read 250 ms after the name stops changing (D8). Rename is off while the name is unchanged. |
 | Delete dialog | `MxDialog` + `MxNote` + `MxSheetActions` | "Delete this tag?", "“{tag}” is removed from {n} cards and disappears from the catalog. Tags are not kept in Trash.", the note (a neutral `MxNote`, not a success card) "No card is deleted, hidden or changed — all {n} cards stay exactly where they are."; Cancel / "Delete" (destructive) (The Footer Pair Rule, DEV-169; the verb alone, DEV-179). |
 
@@ -42,13 +42,41 @@ not to Tags (plan C4).
 | nameTooLong | `tags_name_too_long_light.png` | `tags_name_too_long_dark.png` | The counter "{len} / 50" in the error colour at the trailing end of the row under the field, beside "A tag name can be at most 50 characters.", Rename off. The field keeps one line. A blank name and a control character show their own messages (E2). |
 | del | `tags_del_light.png` | `tags_del_dark.png` | No glyph over the title; the text is left-aligned; the buttons stay side by side ("Delete tag", The Footer Pair Rule) (UI-base row 139). |
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
-| opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). |
+| opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). The toast outlives the screen, so Retry runs from the app's container and the root navigator, not the screen's `ref`; after leaving Tags it still writes and says how it ended (audit 2026-10-17 LIB-1). |
 | tagGone | `tags_tag_gone_light.png` | `tags_tag_gone_dark.png` | The gone state (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
-| read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" with Retry. |
+| read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. |
 Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag list could not be read).
 
 
 Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,search_empty,sheet,rename,rename_merge,name_too_long,del,busy,op_error,tag_gone,read_error}_{light,dark}.png`.
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the catalog lands | loaded, or empty with no tag at all | VERIFIED `tags_screen_test.dart::loaded: every tag with its cards, by folded name; the header counts them and A→Z is not a control`, `::empty: a library without tags says where they come from` |
+| loading | the read fails | read error | VERIFIED `::a failed read shows the error with Retry (E1, D10)` |
+| read error | Retry | loading, then loaded / empty | Retry is on screen in the test above; the read after it is `UNVERIFIED (code read)`: `tags_screen.dart` invalidates `tagCatalogProvider` |
+| empty | Go to library | the Library (Back) | `UNVERIFIED (code read)`: `tags_screen.dart` `_back()`; the state itself is VERIFIED above |
+| loaded | type in the search | loaded (narrowed) or searchEmpty | VERIFIED `::search uses the catalog's fold: ĐỘNG TỪ finds động từ (BR-TAG-003)`, `::searchEmpty: no tag matches, which is not "no tags" (A6)` |
+| loaded | tap a row or its ⋮ | sheet | VERIFIED `::sheet: the tag with its count and three commands; Find cards hands over the name (D11)` for the ⋮; the row tap shares `_openActions`: `UNVERIFIED (code read)` |
+| sheet | Find cards with this tag | the Library search on the tag's name (screen 04); Back returns to the Library | VERIFIED `::sheet: ...` for the hand-over; Back landing on the Library is plan C4: `UNVERIFIED (code read)` |
+| sheet | Rename tag | rename | VERIFIED `::rename: prefilled, nothing to write until the name changes; a new name renames in place (step 5)` |
+| rename | the name breaks a rule | nameTooLong, or a blank / control-character message; Rename off | VERIFIED `::nameTooLong: the counter and the field say so, and Rename is off; a blank name has its own message (E2)` |
+| rename | the name settles on an existing tag | renameMerge | VERIFIED `::renameMerge: the merge is told before it is confirmed, with the union count, and confirmed in the warning tone (A1)` |
+| rename / renameMerge | Rename or Merge tags | busy on the row, then the catalog shows the new name; no toast | VERIFIED `::rename: prefilled, ...`; `tag_actions_controller_test.dart::rename keeps the id; merge folds into the confirmed target` |
+| renameMerge | the write finds a merge nobody confirmed | the dialog opens again on the name typed | VERIFIED `::a merge that appeared after the plan opens the dialog again on the name typed (mergeNotConfirmed)` |
+| rename | the tag is deleted elsewhere while the dialog is open | the dialog closes, "no longer exists" toast, nothing written | VERIFIED `::a tag deleted elsewhere while its rename dialog is open closes the dialog and says it is gone (E3)` |
+| rename | Cancel | the catalog, nothing changed | `UNVERIFIED (code read)`: `tag_rename_dialog_widget.dart` |
+| sheet | Delete tag | del | VERIFIED `::del: the dialog says no card is deleted; the tag goes and every card stays (A3)` |
+| del | Delete | busy on the row, then the tag leaves the catalog and every card stays | VERIFIED same test; `tag_actions_controller_test.dart::delete removes the tag and keeps every card (A3)` |
+| sheet | TalkBack opens the sheet | the chip "{tag} · {n}" is read as the sheet's heading and names the route | VERIFIED `tags_screen_test.dart::sheet: the tag with its count and three commands; Find cards hands over the name (D11)` (it asserts `isHeader` and `namesRoute`) |
+| busy | TalkBack reads the row | "Saving this tag" for the spinner (`MxListRow.busyLabel`) | the shared mechanism is VERIFIED `test/shared/widgets/mx_list_row_test.dart::a busy row says it is busy to TalkBack with the caller's label (audit 2026-10-17)`; the tag row passing `tagsRowBusy` is `UNVERIFIED (code read)`: `tag_row_widget.dart` |
+| busy | tap the row or ⋮ | ignored (the row is not tappable) | `UNVERIFIED (code read)`: `tag_row_widget.dart` `onTap: isBusy ? null : …`; the spinner is VERIFIED `::busy: the row spins instead of ⋮ while its write runs` |
+| busy | the write fails | opError: a toast, nothing changed, with Retry | VERIFIED `::opError: a failed delete changes nothing and offers Retry, which deletes (E5)`; `tag_actions_controller_test.dart::a failed write changes nothing and says so (E4, E5)` |
+| opError | Retry | busy again with the same write | VERIFIED same screen test (delete); the rename path shares `_write`: `UNVERIFIED (code read)` |
+| busy | the tag is gone | tagGone: a toast, nothing written | VERIFIED `::tagGone: a tag deleted elsewhere says so and writes nothing (E3)` |
+| busy | the screen is left before the write ends | the toast is not shown | `UNVERIFIED (code read)`: `tags_screen.dart` `_write` returns on `!mounted`; the busy flag is cleared only while the controller is mounted |
 
 ## Rulings
 

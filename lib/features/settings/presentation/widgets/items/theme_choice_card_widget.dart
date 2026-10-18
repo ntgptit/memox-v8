@@ -10,8 +10,8 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
 /// One theme on screen 25 (kit 25): a preview in that theme's own colours,
-/// its name and its line (FE-A3 D7). One TalkBack node, selected when
-/// chosen.
+/// its name and its line (FE-A3 D7). One TalkBack node: a radio of the
+/// group, checked when chosen.
 class ThemeChoiceCardWidget extends StatelessWidget {
   const ThemeChoiceCardWidget({
     super.key,
@@ -90,7 +90,9 @@ class ThemeChoiceCardWidget extends StatelessWidget {
       child: Semantics(
         container: true,
         excludeSemantics: true,
-        button: true,
+        // One radio group, as Language's rows are.
+        checked: isSelected,
+        inMutuallyExclusiveGroup: true,
         selected: isSelected,
         label: l10n.settingsThemeCard(name, hint),
         // The excluded card's tap, kept on this one node (SW-REV-005).

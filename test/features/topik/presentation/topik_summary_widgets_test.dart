@@ -19,6 +19,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_type_st
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/library_harness.dart';
@@ -238,6 +239,22 @@ void main() {
     await tester.tap(find.text('Correct'));
     expect(picks, [TopikAnswerFilter.correct]);
     await tester.pump(const Duration(milliseconds: 200));
+  });
+
+  libraryTest('the chip row fades its cut edge at 360 dp instead of '
+      'clipping "Correct" (audit 2026-10-17 TOPIK-2)', (tester, env) async {
+    await host(
+      tester,
+      env,
+      TopikAnswerFilterChipsWidget(
+        summary: _summary([_answer(31, selected: 1)]),
+        selected: TopikAnswerFilter.all,
+        onSelected: (_) {},
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
   });
 
   libraryTest('an answer row: yours, the right one and the time; the eye '

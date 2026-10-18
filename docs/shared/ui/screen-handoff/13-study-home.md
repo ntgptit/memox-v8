@@ -11,7 +11,7 @@ snapshot. UC-STUDY-002.
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | "Study"; no date (see Rulings). |
-| Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
+| Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a static primary dot (`MxDotOverline`, ruling S3); "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload card | `MxCard` (no hero: a summary, not a door; sessions start per deck, critique 2026-09-30 part 3c-1, R2) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (small secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
 | Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + small `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" (outline, a link out of a warning, not the screen's decision; critique 2026-09-30 part 1) on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
@@ -44,8 +44,9 @@ Every state above is built.
 **Built (FE-A8, study roadmap P6):** `StudyHomeScreen` in the Study tab's branch, over
 `WatchStudyHomeUseCase`; it writes nothing but Resume (BR-STUDY-075).
 - Resume runs `ResumeStudySessionUseCase` and opens the session route. A refusal
-  shows the toast "This session can't be continued any more", and a failed write shows
-  "Couldn't start the session."; the stream refreshes by itself.
+  shows the toast "That session has ended. Its answers are kept.", and a failed write
+  shows "Your answers are kept. Couldn't resume the session, so try again."; the
+  stream refreshes by itself.
 - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open the
   Library root, and "Browse starter decks" the Starter Library. All navigate into the
   Library branch, as the summary's "Study again" does.
@@ -57,6 +58,7 @@ Every state above is built.
 | From | Event | To | Evidence |
 |---|---|---|---|
 | loaded (Resume card shown) | tap Resume | the session route; a refusal keeps 13 with a toast | BR-STUDY-075. VERIFIED `study_home_screen_test.dart::Resume takes today's session up and opens it (H3)`, `::a refused Resume says so and opens nothing (H3, S8)` |
+| loaded (Resume card shown) | tap Resume, and the write fails (a busy database) | 13 stays and opens nothing; the toast "Your answers are kept. Couldn't resume the session, so try again." | VERIFIED `study_home_screen_test.dart::a Resume that cannot be written says so, local-first, and opens nothing (audit 2026-10-17)` |
 | loaded | tap a deck row | that deck's Study Entry (14); a deck with no card is not a target | BR-STUDY-076. VERIFIED `::a deck with no card is disabled; a deck row opens its entry; Library opens the Library (S4, H3)` |
 | loaded | tap Library | the Library root (01) | E-L3. VERIFIED same test |
 | noDecks | tap Browse starter decks / Go to Library | the Starter Library (03) / the Library root | UC-STUDY-002 A4. VERIFIED `::no root deck: "Browse starter decks" first, then "Go to Library" (UC-STUDY-002 A4, 13 noDecks)` |
@@ -104,7 +106,8 @@ Every state above is built.
 - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" · "Resume".
 - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks".
 - Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow." · "…on {date}." · "Every card is resting." (ruling S2).
-- Resume refused: "This session can't be continued any more".
+- Resume refused: "That session has ended. Its answers are kept."
+- Resume failed: "Your answers are kept. Couldn't resume the session, so try again."
 - Section: "Your decks" · "Library".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".

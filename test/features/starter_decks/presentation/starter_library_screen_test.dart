@@ -130,6 +130,16 @@ void main() {
     await _addHangul(tester, _en.starterAddToLibrary);
 
     expect(find.text(_en.starterSheetTitle(hangulTemplate.title)), findsOne);
+    // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
+    final headingProbe = tester.ensureSemantics();
+    await tester.pump();
+    expect(
+      tester.getSemantics(
+        find.text(_en.starterSheetTitle(hangulTemplate.title)),
+      ),
+      isSemantics(isHeader: true, namesRoute: true),
+    );
+    headingProbe.dispose();
     // The lock, not the counts the card already states (critique
     // 2026-09-30 part 3d-2, E6).
     expect(find.text(_en.deckSchedulerNote), findsOneWidget);
@@ -315,6 +325,9 @@ void main() {
     loaded.complete();
     await tester.pumpAndSettle();
     expect(find.text(_en.starterLoadErrorTitle), findsOneWidget);
+    // The same local-first wording as the deck, tags and Trash screens
+    // (audit LIB-10).
+    expect(find.text(_en.libraryLoadErrorBody), findsOneWidget);
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.textContaining('load failed'), findsNothing);
     expect(find.text(_en.commonRetry), findsOneWidget);

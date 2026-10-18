@@ -96,7 +96,10 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Held while the tag is written, as every async confirm is: the scrim,
+    // Back and Cancel wait, and the confirm spins.
     return MxDialog(
+      isHeld: _isSubmitting,
       title: l10n.cardTagTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -117,9 +120,10 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(false),
+        onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(false),
         confirmLabel: l10n.cardTagConfirm,
         onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
       ),
     );
   }

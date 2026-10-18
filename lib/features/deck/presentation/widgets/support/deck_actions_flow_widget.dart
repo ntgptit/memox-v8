@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
@@ -9,6 +10,7 @@ import 'package:memox/features/deck/presentation/widgets/overlays/deck_action_sh
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_move_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
+import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -42,6 +44,12 @@ Future<void> openDeckActions(
   final Outcome<DeckView, DeckRejection> outcome;
   try {
     outcome = await ref.read(provider.future);
+  } on Failure catch (failure) {
+    // The callers do not await this: a failed read says so here.
+    if (context.mounted) {
+      showMxSnackbar(context, message: context.l10n.failure(failure));
+    }
+    return;
   } finally {
     keepAlive.close();
   }

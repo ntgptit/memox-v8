@@ -57,6 +57,34 @@ The images are the goldens.
 | delete dialog | ![](../../../../test/features/account/presentation/goldens/account_delete_confirm_light.png) | ![](../../../../test/features/account/presentation/goldens/account_delete_confirm_dark.png) |  Golden `account_delete_confirm_*`. |
 | delete, offline | ![](../../../../test/features/account/presentation/goldens/account_delete_offline_light.png) | ![](../../../../test/features/account/presentation/goldens/account_delete_offline_dark.png) | The confirm disabled (B6). Golden `account_delete_offline_*`. |
 | last admin | ![](../../../../test/features/account/presentation/goldens/account_last_admin_light.png) | ![](../../../../test/features/account/presentation/goldens/account_last_admin_dark.png) | A refused deletion (B7). Golden `account_last_admin_*`. |
+| command running | — | — | A dialog was confirmed and the command is going (`accountManageControllerProvider` is true): the three command rows are disabled until it returns; the transition layer then covers the screen. `account_manage_controller_test.dart::a second command while one runs sends nothing (Review Focus 4)`; no golden. |
+| transitioning | — | — | The coordinator is in a blocking transition (a switch, sign-out or deletion): the commands are disabled because the state is not `Ready`, and the layer covers the app; the screen stays under it (P3b plan ruling 4). `account_redirect_test.dart::screen 32 needs an account; a transition keeps it (Review Focus 3)` (in `test/app/`); no golden of the screen itself. |
+| command refused | — | — | A toast, with nothing changed: "No connection. Nothing changed; try again when you're online." (offline) or "Couldn't finish that. Nothing changed; try again." (any other failure, or the account no longer in `Ready`). `account_manage_controller_test.dart::a deletion refused offline says so, and nothing changed`, `::a command in the wrong state is a failure, not a crash`; the toast itself is `UNVERIFIED (code read)`: `sayAccountResult`. |
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| (entry) | the device is plainly anonymous | redirect to 23 | P3b ruling 4. VERIFIED `test/app/account_redirect_test.dart::screen 32 needs an account; a transition keeps it (Review Focus 3)` |
+| ready | tap Switch account | switch dialog | FE-B10. VERIFIED `account_screen_test.dart::Switch account asks, then starts the switch` |
+| switch dialog | Cancel, Back or the scrim | ready, nothing started | `UNVERIFIED (code read)`: `confirmAccountStep` is true only on the confirm |
+| switch dialog | Switch | command running, then transitioning: the layer's target sign-in (R1) | VERIFIED `::Switch account asks, then starts the switch` |
+| ready | tap Sign out | the network is read once, then the sign-out dialog (warning), or the loss dialog (destructive) offline with changes unsent | B2, B4. VERIFIED `::Sign out online confirms in warning: nothing is lost, but the phone is cleared (critique 2026-10-02, F3)`, `::Sign out offline with unsent changes names the loss`; `account_manage_controller_test.dart::online, a sign-out loses nothing; offline, the unsent changes` |
+| sign-out dialog | Cancel | ready, nothing started | `UNVERIFIED (code read)` |
+| sign-out dialog | the confirm | command running, then transitioning; the changes are sent first | `UNVERIFIED (code read)` for the tap: `AccountScreen._signOut`; the layer is VERIFIED on 30 |
+| sign-out dialog | the network goes after the dialog opened online | the sign-out stops on the unsent changes and the layer offers the loss | VERIFIED `account_manage_controller_test.dart::the network gone after the online dialog: the sign-out stops on the unsent changes and the layer offers the loss (Review Focus 2)` |
+| ready | tap Delete account | the network is read, then the delete dialog; offline it shows the note and the confirm is disabled | B6. VERIFIED `::Delete offline cannot be confirmed`, `::Delete confirms with the short verb (owner 2026-10-06)`; `account_manage_controller_test.dart::a deletion needs the network` |
+| delete dialog | Delete | command running, then transitioning | `UNVERIFIED (code read)` for the tap: `AccountScreen._delete` |
+| transitioning (a deletion) | the server refuses: the last admin | the last-admin dialog from the app root, OK closes it | B7. VERIFIED `account_transition_layer_test.dart::a refused last-admin deletion is a dialog, not a toast (P3b B7)`; `account_confirm_dialog_test.dart::the last-admin dialog explains and closes on OK` |
+| transitioning | finishes (sign-out, deletion, continue without) | 23, on an anonymous device | P3b ruling 5. VERIFIED `test/app/account_routes_test.dart::signing out from screen 32 lands on Settings`, `::signing out from screen 32 pushed over Settings leaves it (device check D6, F1)` |
+| command running | a second tap on any command row | ignored: no second dialog | M3. VERIFIED `::a second tap while a command asks opens no second dialog (P3b minor M3)`; `account_manage_controller_test.dart::a second command while one runs sends nothing (Review Focus 4)` |
+| command running | the command is refused (offline, failed, account not `Ready`) | command refused: a toast; the dialog's answer is not repeated | see the state row above; the controller side is VERIFIED |
+| ready | the connection check fails | validating: the commands wait and the note says why | B3. VERIFIED `::checked again offline: the commands wait and say why (Review Focus 5)` |
+| validating | the account is confirmed | ready: the commands enable | `UNVERIFIED (code read)`: `canManage` follows `authStateProvider` |
+| ready | the sign-in is refused | reauth: the banner, the commands wait | FE-B10. VERIFIED golden `account_reauth_*`; the banner and its Sign in `::an expired sign-in shows the banner, whose Sign in opens 30` |
+| reauth | tap Sign in | 30 `reauth`; back to 32 when signed in again | B9. VERIFIED `::an expired sign-in shows the banner, whose Sign in opens 30`; the return is `UNVERIFIED (code read)` |
+| any | the screen is left while a dialog or a command is open | the answer is dropped | `UNVERIFIED (code read)`: `context.mounted` after each `await` in `account_screen.dart` |
+| any | Back | 23 | VERIFIED `test/app/account_routes_test.dart::Settings › the account row opens screen 32; Back returns` |
 
 ## Rulings
 

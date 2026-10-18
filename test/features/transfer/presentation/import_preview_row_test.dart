@@ -6,11 +6,14 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 
 // Kit 11 preview table: `alignItems: 'center'` on every row.
+
+final _en = lookupAppLocalizations(const Locale('en'));
 
 void main() {
   libraryTest('the row number and the status mark are centred on a row of '
@@ -101,5 +104,33 @@ void main() {
       IconTheme.of(tester.element(mark)).color,
       tester.element(mark).status.success,
     );
+  });
+
+  libraryTest('a row with a note says it once to TalkBack, not in the text '
+      'and again on its mark (audit 2026-10-17)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: Column(
+          children: [
+            ImportPreviewRowWidget(
+              row: ImportRow(
+                rowNumber: 3,
+                kind: ImportRowKind.invalid,
+                draft: CardDraft(front: 'bul', back: ''),
+                reason: CardRejection.blankContent,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final row = tester.getSemantics(find.byType(ImportPreviewRowWidget));
+    final note = _en.importRowBackEmpty;
+    expect(row.label.split(note).length - 1, 1);
+    handle.dispose();
   });
 }

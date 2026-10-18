@@ -12,11 +12,11 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 | App bar | `MxAppBar` | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16), and the trailing "Study options" icon, which opens screen 15 (FE-A3 D3). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
 | Hero | `MxCard` (plain, not a hero card: a summary, not a door) + `MxStatTile` × 2 (FE-A6 spec D17) | The overline names the algorithm alone ("EIGHT BOXES", "SM-2"); a plain line under it reads "Up to {n} cards per session" (BR-STUDY-024), so no word is left alone on a wrapped line (critique 2026-09-30 part 3c-1, R5); two stat tiles, New and Due, boxed on the Muted Fill so they read as boxes on the plain card (DEV-231): Due above zero in primary, New above zero muted, a zero in plain text colour (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning text, when any are overdue. |
-| Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
+| Resume banner | `MxCard` | "Session from today" overline with a static primary dot (`MxDotOverline`), "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
 | Nothing-due state | `MxEmptyState` (compact, success tone) | "Nothing to do right now" (BR-STUDY-008, BR-STUDY-054). |
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing small `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051) while a review leads the footer; with only new cards the footer offers Learn and the row has no button (critique 2026-09-30 part 3d-1, D2). |
 | Review options | `MxListSectionHeader` (overline) + full-bleed `MxCard` of `MxOptionRow`s + `MxNote` | Eight boxes: Match · Guess · Recall · Fill, each with its own `MxBadge` "{n} cards" or "Not available" plus the unavailable reason as the row's subtitle (BR-STUDY-044, BR-STUDY-045, BR-MODE-009); a single available mode skips this list and opens directly (BR-STUDY-055). SM-2 has one mode, so this list never appears for it — see the Direction sheet. |
-| Inline banners | `MxInlineBanner` | `refused` (warning): counts changed since the screen opened. `startFailed` (danger): the write failed; nothing was saved (BR-STUDY-018). |
+| Inline banners | `MxInlineBanner` | `refused` (warning): counts changed since the screen opened. `startFailed` (danger): the write failed; nothing was saved (BR-STUDY-018). The banner sits under the hero (and the resume banner), above the choices, so it is never below the fold; the body's 12 gaps space it (`hasBottomMargin: false`). |
 | Footer | `MxFooterBar` | A caption line plus one block `MxButton` (primary; outline while the resume banner shows, "Try again" included, since Continue is then the one primary, critique 2026-09-30 part 1): "Learn {n} new cards" / "Review {n} due cards" / "Continue" / "Start a new review instead" / "Try again"; `MxSpinner` + "Starting…" while a session opens, and the button plus every option lock (BR-STUDY-004). |
 
 ## Direction sheet (SM-2 only)
@@ -42,6 +42,8 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 | refused | `study_entry_refused_light.png` | `study_entry_refused_dark.png` | Inline warning banner; the footer stays usable (plan R5). |
 | startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again". |
 | loading | `study_entry_loading_light.png` | `study_entry_loading_dark.png` | Skeletons in the hero and option-list shapes. |
+| error | none | none | `MxErrorState` with Retry (`studyEntryErrorTitle`, `studyEntryErrorBody`) under the breadcrumb; no footer. Code read: `study_entry_body_widget.dart`; VERIFIED without a golden by `study_entry_screen_test.dart::a read that fails says so and Retry reads again (UC-STUDY-001)`. |
+| deckGone | none | none | Not a frame: the deck was deleted while the entry was open, so the screen shows the toast "This deck no longer exists" and pops (UC-STUDY-001 E1). VERIFIED `study_entry_screen_test.dart::a deck deleted while its entry is open leaves with a message (UC-STUDY-001 E1)`. |
 Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_sheet_dark.png` (the Direction sheet).
 
 
@@ -61,10 +63,34 @@ Learn is offered whenever new cards exist and nothing says "Coming soon". A deck
 the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 `test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the read lands | sm2 / eightBox / onlyNew / nothing / resume, by the counts and the open session | VERIFIED per state in `study_entry_screen_test.dart` (e.g. `::nothing new and nothing due is the calm empty state (BR-STUDY-008)`); the skeleton is `::loading draws the hero and the option list as skeletons (kit loading)` |
+| loading | the read fails | error | VERIFIED `::a read that fails says so and Retry reads again (UC-STUDY-001)` |
+| error | Retry | loading, then the state the read gives | the read runs again: VERIFIED in the test above; the landing after Retry is `UNVERIFIED (code read)`: `StudyEntryBodyWidget._retry` invalidates `studyEntryProvider` |
+| any loaded state | the stream errors after data was shown | error: the body and the footer are replaced | `UNVERIFIED (code read)`: the `AsyncError` branch of `study_entry_body_widget.dart`; the footer is built only for `AsyncData(Ok)` |
+| any loaded state | the deck is deleted (a `notFound` read) | deckGone: toast, then pop, once | VERIFIED `::a deck deleted while its entry is open leaves with a message (UC-STUDY-001 E1)`; the `isCurrent` guard that keeps a later emission from a second toast is `UNVERIFIED (code read)` |
+| any loaded state | tap the Study options icon | screen 15 | VERIFIED `::the app bar's Study options icon opens the deck's options (FE-A3 D3, kit 14)` |
+| sm2 / eightBox / onlyNew | tap Learn (the row's button, or the footer when only new cards exist) | starting, then the learning session opens | VERIFIED `study_entry_actions_test.dart::Learn on the row opens a learning session (BR-STUDY-051)`, `::with only new cards the footer is "Learn 2 new cards" with the nothing-due caption (kit onlyNew)` |
+| sm2 | tap Review | the Direction sheet | VERIFIED `::Review opens the direction sheet, Term first chosen; Start review opens the review in the direction picked (UC-STUDY-003)` |
+| Direction sheet | Start review | starting, then the review session opens in that direction | VERIFIED same test |
+| Direction sheet | close without Start review | back on the entry, nothing written | VERIFIED `::closing the sheet without Start review writes nothing (BR-STUDY-020)` |
+| eightBox | pick a mode row | the footer follows the pick; no sheet; the pick is not kept | VERIFIED `::eight_box: Match is picked at first; picking Guess moves the footer, which opens a Guess review with no sheet (E1)` |
+| resume | tap Continue | starting, then today's session opens | VERIFIED `::today's open session shows the resume banner; Continue opens it, and the footer offers a new review instead (kit resume)` |
+| resume | tap Continue on a session that ended meanwhile | refused (warning banner "That session can't be continued.") | the controller's refusal is VERIFIED `study_entry_controller_test.dart::Continue on a session that ended meanwhile is refused`; the banner copy for this reason is `UNVERIFIED (code read)` (`study_entry_banner_widget.dart` default branch) |
+| starting | a second tap on Learn, Review or Continue | dropped; every option and the footer are locked | VERIFIED `study_entry_controller_test.dart::a second start while one runs is dropped (BR-STUDY-004)`; `study_entry_actions_test.dart::while a session opens every action is locked and the footer says Starting… (BR-STUDY-004, kit starting)`, `::while a start runs the review rows keep their pick (E1, BR-STUDY-004)` |
+| refused / startFailed | the banner is drawn | it reads under the hero, above the choices, where the footer's Try again points | VERIFIED `study_entry_actions_test.dart::a failed start says so and Try again starts it again (screen 14 startFailed)` (the title sits above `StudyEntryLearnWidget`) |
+| starting | the cards changed meanwhile (nothing due, nothing to learn, mode unavailable or not offered, deck or session gone) | refused: warning banner, footer rebuilt from the new counts | VERIFIED `study_entry_actions_test.dart::a start the counts no longer allow is refused with the warning banner; the footer follows the new counts`; `study_entry_banner_test.dart::self-assess no longer offered says the review algorithm changed, not that the session ended (UC-STUDY-003 E1)` |
+| starting | the write fails, or any other refusal | startFailed: danger banner under the hero, above the choices; the footer is "Try again" | VERIFIED `study_entry_actions_test.dart::a failed start says so and Try again starts it again (screen 14 startFailed)`, `::a failed start beside an open session keeps one primary (final review, critique 2026-09-30 part 1)`; the banner's place above the first choice (the Learn row) is asserted in the first of them (audit 2026-10-17) |
+| startFailed | tap Try again | starting with the same start (direction included) | VERIFIED same test (`study_entry_controller.dart` `retry`) |
+| starting | Back, so the screen is gone before the start answers | no navigation to the session | `UNVERIFIED (code read)`: the controller returns null on `!ref.mounted` and `_open` checks `context.mounted`; nothing is rolled back if the write already landed, and Continue on 14 or Resume on 13 takes that session up |
+
 ## Accessibility
 
-- The app bar's `titleWidget` is the deck header, so the route has no name for TalkBack: `MxAppBar` names the route only through its `title` (M3F-08, open as DEV-393).
-- TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n}", "Due: {n}" — each stat tile is one node), the overdue note, then the rows and the footer. The resume banner's pulse dot is decorative.
+- The app bar's `titleWidget` is the deck header and the screen sets `isTitleWidgetRouteName: true`, so the deck header names the route for TalkBack (`study_entry_screen.dart`). `UNVERIFIED (code read)`: no test reads the route's semantics name.
+- TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n}", "Due: {n}" — each stat tile is one node), the overdue note, then the rows and the footer. The resume banner's dot is decorative.
 - Single-line text that ellipsizes keeps line-height 1.5 for stacked marks (UI-base §9 row 102). Touch targets are at least 48 × 48.
 - While a session opens, the locked footer and options stay in the reading order and read as disabled.
 

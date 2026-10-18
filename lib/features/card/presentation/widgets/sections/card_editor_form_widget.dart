@@ -293,13 +293,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   }
 
   /// Leaves once the frame shows the form as leaving, so the guard lets go.
-  void _leave() {
+  /// A card found gone on save closes its detail too ([result] true, as
+  /// after Move to Trash).
+  void _leave({bool result = false}) {
     setState(() {
       _isLeaving = true;
       _isSaving = false;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(Navigator.of(context).maybePop());
+      if (mounted) unawaited(Navigator.of(context).maybePop(result));
     });
   }
 
@@ -312,7 +314,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     if (discard && mounted) _leave();
   }
 
-  void _close() => unawaited(Navigator.of(context).maybePop());
+  /// Cancel, ✕ and Back are held while a save runs: the write lands either
+  /// way, so asking to discard it would say something untrue.
+  void _close() {
+    if (_isSaving) return;
+    unawaited(Navigator.of(context).maybePop());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +329,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     return PopScope(
       canPop: _isLeaving || _isGone || !_isDirty,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_confirmLeave());
+        if (didPop || _isSaving) return;
+        unawaited(_confirmLeave());
       },
       child: MxAppShell(
         appBar: _appBar(l10n),
@@ -333,9 +341,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                 saveLabel: _isCreating
                     ? l10n.cardSaveCard
                     : l10n.cardSaveChanges,
+                failedTitle: _isCreating
+                    ? l10n.cardSaveFailedTitle
+                    : l10n.cardSaveChangesFailedTitle,
                 hasFailed: _hasFailed,
                 isSaving: _isSaving,
-                onCancel: _close,
+                onCancel: _isSaving ? null : _close,
                 onSave: _onSave,
               ),
         body: _isGone
@@ -344,7 +355,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                     ? l10n.cardDeckGoneTitle
                     : l10n.cardGoneTitle,
                 body: _isCreating ? l10n.cardDeckGoneBody : l10n.cardGoneBody,
-                onBack: _leave,
+                onBack: () => _leave(result: !_isCreating),
                 onOpenTrash: widget.onOpenTrash,
               )
             : Column(
@@ -371,21 +382,24 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     leading: MxIconButton(
       icon: _isCreating ? AppIcons.close : AppIcons.back,
       semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,
-      onPressed: _close,
+      onPressed: _isSaving ? null : _close,
     ),
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
       if (!_isCreating && !_isGone)
-        // One node: the button and its toggled state.
+        // One node: the button and its toggled state, under one name ("Flag
+        // this card, on"): a name that flips with the state would read as
+        // its contradiction ("Remove flag, on").
         MergeSemantics(
           child: Semantics(
             toggled: _isFlagged,
             child: MxIconButton(
               icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
-              semanticLabel: _isFlagged
-                  ? l10n.cardFlagClear
-                  : l10n.cardFlagLabel,
-              onPressed: () => setState(() => _isFlagged = !_isFlagged),
+              semanticLabel: l10n.cardFlagLabel,
+              // The draft in flight already carries the flag.
+              onPressed: _isSaving
+                  ? null
+                  : () => setState(() => _isFlagged = !_isFlagged),
             ),
           ),
         ),
@@ -409,6 +423,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller: _front,
       focusNode: _frontFocus,
       isRequired: true,
+      isReadOnly: _isSaving,
       variant: MxTextFieldVariant.term,
       errorText: errors[_Field.front],
       onChanged: (_) => _touch(_Field.front),
@@ -419,6 +434,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
+      isReadOnly: _isSaving,
       variant: MxTextFieldVariant.detail,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
@@ -428,6 +444,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       isOpen: _isDetailsOpen,
       hasHeader: !_isCreating,
       onOpen: () => setState(() => _isDetailsOpen = true),
+      isReadOnly: _isSaving,
       example: _input(_Field.example, _example, errors),
       hint: _input(_Field.hint, _hint, errors),
       pronunciation: _input(_Field.pronunciation, _pronunciation, errors),

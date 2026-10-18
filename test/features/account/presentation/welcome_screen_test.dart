@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/data/repositories/account_device_repository_impl.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
@@ -178,6 +179,47 @@ void main() {
     expect(dones, 1);
   });
 
+  for (final starting in <AuthState>[const Booting(), const Bootstrapping()]) {
+    accountTest('while the account starts (${starting.runtimeType}), Welcome '
+        'keeps its three ways, disabled, and never looks offline (audit '
+        '2026-10-17 ACC-2)', (tester, env, world) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        screen(),
+        overrides: [...accountOverrides(world), shown, authStateOf(starting)],
+      );
+
+      MxButton button(String label) =>
+          tester.widget<MxButton>(find.widgetWithText(MxButton, label));
+      expect(button(_en.accountContinueGoogle).onPressed, isNull);
+      expect(button(_en.accountContinueEmail).onPressed, isNull);
+      expect(button(_en.accountContinueWithout).tone, MxButtonTone.text);
+      expect(button(_en.accountContinueWithout).onPressed, isNotNull);
+      expect(find.text(_en.accountOfflineNote), findsNothing);
+    });
+  }
+
+  accountTest('offline with a session (Validating stays until the network '
+      'returns), Welcome says it is offline (closing review 2026-10-17)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [
+        ...accountOverrides(world),
+        shown,
+        authStateOf(const Validating(null)),
+      ],
+    );
+
+    expect(find.text(_en.accountOfflineNote), findsOneWidget);
+  });
+
   accountTest('the lead says MemoX works without an account, and two '
       'benefits follow', (tester, env, world) async {
     await pumpLibraryScreen(
@@ -249,6 +291,36 @@ void main() {
     // The Google account picked on Welcome signs in to its account at once:
     // no second sign-in page (owner 2026-10-08).
     expect(world.state, _signedInAs('g@example.com'));
+  });
+
+  accountTest('Cancel on the merge sheet forgets the picked Google account: '
+      'the next press shows the picker again', (tester, env, world) async {
+    world.server.addUser(email: 'g@example.com');
+    await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    expect(find.byType(MergeChoiceSheetWidget), findsOneWidget);
+    await tester.tap(find.text(_en.commonCancel));
+    await _settle(tester);
+
+    // The person picks another Google account, one that is free.
+    world.gateway.google = const GoogleCredential(
+      idToken: 'google-id-token-2',
+      email: 'h@example.com',
+    );
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MergeChoiceSheetWidget), findsNothing);
+    expect(world.server.userByEmail('h@example.com'), isNotNull);
   });
 
   accountTest("an empty phone whose Google account is another account's "

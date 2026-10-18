@@ -82,6 +82,40 @@ void main() {
     expect(row.isEnabled, isFalse);
   });
 
+  for (final starting in <AuthState>[const Booting(), const Bootstrapping()]) {
+    accountTest('while the account starts (${starting.runtimeType}), Sign in '
+        'waits without saying it needs a connection (audit 2026-10-17, as '
+        'ACC-2)', (tester, env, world) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        section(),
+        overrides: [...accountOverrides(world), authStateOf(starting)],
+      );
+
+      expect(find.text(_en.accountSignInLater), findsNothing);
+      expect(find.text(_en.accountSignInHint), findsOneWidget);
+      final row = tester.widget<MxSettingsRow>(find.byType(MxSettingsRow));
+      expect(row.isEnabled, isFalse);
+    });
+  }
+
+  accountTest('offline with a session (Validating stays until the network '
+      'returns), Sign in says it needs a connection (closing review '
+      '2026-10-17)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      section(),
+      overrides: [
+        ...accountOverrides(world),
+        authStateOf(const Validating(null)),
+      ],
+    );
+
+    expect(find.text(_en.accountSignInLater), findsOneWidget);
+  });
+
   accountTest('an attached account shows its email', (
     tester,
     env,

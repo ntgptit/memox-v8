@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
+import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
 import 'package:memox/features/account/presentation/providers/switch_code_request_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
@@ -150,9 +153,12 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     final count = ref
         .read(signInControllerProvider(widget.purpose))
         .unsentCount;
+    // Read before the await: the form may be gone when the answer comes, and
+    // its controller with it; the coordinator outlives both (ACC-5).
+    final coordinator = ref.read(accountCoordinatorProvider);
     final isSure = await confirmUnsentLoss(context, count);
     if (!isSure) {
-      if (isGoogle) _controller.forgetPickedGoogle();
+      if (isGoogle) coordinator?.forgetPickedGoogle();
       return;
     }
     if (!mounted) return;
@@ -184,10 +190,12 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
         : null;
     // Plan ruling 6: only a link waits for the account to be ready.
     // A Google sign-in in flight turns the account away from linking for a
-    // moment: that is not waiting (final review F2).
+    // moment: that is not waiting (final review F2). Nor is an account still
+    // starting: it is not offline yet.
     final isWaiting =
         !widget.isEnabled &&
         !state.isRunning &&
+        !ref.watch(isAccountStartingProvider) &&
         widget.purpose == SignInPurpose.link;
     // A re-auth and a prefilled target already hold their address: only an
     // empty one takes the keyboard, and not while Google signs in, as the

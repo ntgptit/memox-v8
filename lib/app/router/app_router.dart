@@ -132,6 +132,7 @@ GoRouter buildAppRouter({
                         builder: (context, state) => DeckAlgorithmScreen(
                           deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                           onOpenAncestor: (id) => _openAncestor(context, id),
+                          onOpenTrash: _openTrash(context),
                         ),
                       ),
                     ],
@@ -453,11 +454,11 @@ StarterLibraryScreen _starterDecks(
 }
 
 /// Opens the editor over the card detail. The editor closes with true when
-/// it moved the card to the Trash; the detail, whose card is gone, closes
-/// with it (FE-B1 D13).
+/// the card is gone, moved to the Trash there (FE-B1 D13) or found gone
+/// meanwhile; the detail, which would only say the same, closes with it.
 Future<void> _editCard(BuildContext context, String cardId) async {
-  final isTrashed = await context.push<bool>(AppRoutes.editCard(cardId));
-  if (isTrashed == true && context.mounted) context.pop();
+  final isCardGone = await context.push<bool>(AppRoutes.editCard(cardId));
+  if (isCardGone == true && context.mounted) context.pop();
 }
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).

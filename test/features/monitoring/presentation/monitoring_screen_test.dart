@@ -6,10 +6,12 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
+import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -31,6 +33,12 @@ List<Element> _shownBadges() => find
           badge.findAncestorWidgetOfExactType<Visibility>()?.visible != false,
     )
     .toList();
+
+/// The app bar's refresh, which a screen reader can reach where the drag
+/// down is out of reach (audit 2026-10-17 SET-11).
+final _refreshAction = find.byWidgetPredicate(
+  (widget) => widget is MxIconButton && widget.semanticLabel == 'Refresh',
+);
 
 void main() {
   libraryTest('it opens on open warnings and errors, with their count', (
@@ -286,7 +294,10 @@ void main() {
     await tester.fling(find.byType(ListView), const Offset(0, -20000), 8000);
     await tester.pumpAndSettle();
 
-    expect(find.text("Couldn't load more logs."), findsOneWidget);
+    expect(
+      find.text("Couldn't load more logs. What is shown is still correct."),
+      findsOneWidget,
+    );
     expect(repository.queries, hasLength(2), reason: 'no retry loop');
     await tester.tap(find.text('Retry'));
     await tester.pump();
@@ -304,6 +315,65 @@ void main() {
 
     expect(repository.queries, hasLength(2));
     expect(repository.lastQuery.after, isNull);
+  });
+
+  libraryTest('a failed pull to refresh keeps the rows, says so and offers '
+      'Retry (audit 2026-10-17 MON-1)', (tester, env) async {
+    final repository = FakeMonitoringRepository();
+    await pumpMonitoring(tester, env, repository);
+    repository.lastQuery.answer(pageOf(2));
+    await settleMonitoring(tester);
+
+    await tester.fling(find.byType(ListView), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(repository.queries, hasLength(2));
+    repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text('2 LOGS'), findsOneWidget);
+    expect(
+      find.text("Couldn't refresh. What is shown is still correct."),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    expect(repository.queries, hasLength(3));
+    repository.lastQuery.answer(pageOf(2));
+    await tester.pump(const Duration(seconds: 1));
+    expect(
+      find.text("Couldn't refresh. What is shown is still correct."),
+      findsNothing,
+    );
+  });
+
+  libraryTest('the app bar refreshes the Server tab for a screen reader '
+      '(audit 2026-10-17 SET-11)', (tester, env) async {
+    final repository = FakeMonitoringRepository()..autoPage = pageOf(2);
+    await pumpMonitoring(tester, env, repository);
+    expect(repository.queries, hasLength(1));
+
+    await tester.tap(_refreshAction);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(repository.queries, hasLength(2));
+    expect(repository.lastQuery.after, isNull);
+  });
+
+  libraryTest('the Not sent tab has no refresh action: its rows are watched '
+      '(audit 2026-10-17 SET-11)', (tester, env) async {
+    final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
+    await pumpMonitoring(tester, env, repository);
+    repository.watches.single.feed.add(
+      PendingLogs(items: [summary('p1', status: null)], total: 1),
+    );
+    await settleMonitoring(tester);
+    await tester.tap(find.text('Not sent (1)'));
+    await tester.pumpAndSettle();
+
+    expect(_refreshAction, findsNothing);
   });
 
   libraryTest('the search asks once the field has been still for 400 ms', (

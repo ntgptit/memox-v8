@@ -169,6 +169,13 @@ class _ToastViewState extends State<_ToastView>
   void initState() {
     super.initState();
     widget.controller._isShown.addListener(_onShownChanged);
+    // Replaced before it was ever built (two toasts in one frame): it
+    // leaves at once, or nothing would ever take it off.
+    if (!widget.controller._isShown.value) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => widget.controller._remove(),
+      );
+    }
   }
 
   @override
@@ -235,9 +242,12 @@ class _ToastViewState extends State<_ToastView>
                   key: ObjectKey(widget.controller),
                   direction: DismissDirection.down,
                   onDismissed: (_) => widget.controller._remove(),
+                  // A toast kept for TalkBack is dismissed by TalkBack too,
+                  // not only by the swipe it cannot make.
                   child: Semantics(
                     container: true,
                     liveRegion: true,
+                    onDismiss: widget.controller.close,
                     child: ConstrainedBox(
                       constraints: style.toastStyles.primary.constraints,
                       // The message reads as a banner message, below

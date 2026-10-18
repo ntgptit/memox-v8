@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_palette.dart';
@@ -14,6 +16,7 @@ import 'package:memox/features/srs/domain/repositories/schedule_repository.dart'
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_lock_strip_widget.dart';
@@ -28,11 +31,12 @@ import '../../../support/widget_harness.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 
 /// The real schedules, except that the first switch fails in the database
-/// (UC-DECK-002 E2).
+/// (UC-DECK-002 E2), and every switch waits for [hold] when it is set.
 final class _FirstSwitchFails implements ScheduleRepository {
-  _FirstSwitchFails(this._real);
+  _FirstSwitchFails(this._real, {this.hold});
 
   final ScheduleRepository _real;
+  final Completer<void>? hold;
   var _hasFailed = false;
 
   @override
@@ -40,6 +44,7 @@ final class _FirstSwitchFails implements ScheduleRepository {
     required String rootDeckId,
     required SchedulerType newType,
   }) async {
+    await hold?.future;
     if (!_hasFailed) {
       _hasFailed = true;
       throw const DatabaseLockedFailure(cause: 'locked');
@@ -267,18 +272,56 @@ void main() {
     expect(_option(tester, _en.deckSchedulerEightBox).isSelected, isTrue);
   });
 
+  libraryTest('Reset learning progress is off while a switch runs (audit '
+      'LIB-13)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    final hold = Completer<void>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+      overrides: [
+        scheduleRepositoryProvider.overrideWithValue(
+          _FirstSwitchFails(ScheduleRepositoryImpl(env.db), hold: hold),
+        ),
+      ],
+    );
+    MxButton reset() => tester.widget<MxButton>(
+      find.widgetWithText(
+        MxButton,
+        _en.algorithmResetAction,
+        skipOffstage: false,
+      ),
+    );
+    expect(reset().onPressed, isNotNull);
+
+    await tester.tap(find.text(_en.deckSchedulerEightBox));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.algorithmSwitchConfirm));
+    await tester.pump();
+    await tester.pump();
+
+    expect(reset().onPressed, isNull);
+
+    hold.complete();
+    await tester.pumpAndSettle();
+    expect(reset().onPressed, isNotNull);
+  });
+
   libraryTest('a root deleted while open shows the gone state', (
     tester,
     env,
   ) async {
     final korean = await env.decks.root('Korean');
     String? ancestor = 'unset';
+    var trashOpened = false;
     await pumpLibraryScreen(
       tester,
       env,
       deckAlgorithmScreen(
         deckId: korean.id,
         onOpenAncestor: (id) => ancestor = id,
+        onOpenTrash: () => trashOpened = true,
       ),
     );
 
@@ -286,6 +329,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
+    // Screen 01's gone state offers the Trash where the deck went (audit
+    // LIB-4).
+    await tester.tap(find.text(_en.commonOpenTrash));
+    expect(trashOpened, isTrue);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
     await tester.pump(const Duration(milliseconds: 200));

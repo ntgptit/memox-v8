@@ -57,31 +57,34 @@ class MonitoringServerListWidget extends ConsumerWidget {
           _failure(context, failure, controller),
         ],
       ),
-      MonitoringListLoaded(:final items) when items.isEmpty => _Refreshable(
-        onRefresh: controller.refresh,
-        child: MxScreenScroll(
-          children: [
-            SizedBox(height: context.dimens.space8),
-            if (state.filter.isDefault)
-              MxEmptyState(
-                icon: AppIcons.learned,
-                title: l10n.monitoringEmptyTitle,
-                body: l10n.monitoringEmptyBody,
-                tone: MxEmptyStateTone.success,
-                isCompact: true,
-              )
-            else
-              MxEmptyState(
-                icon: AppIcons.searchOff,
-                title: l10n.monitoringNoMatchTitle,
-                tone: MxEmptyStateTone.neutral,
-                isCompact: true,
-                actionLabel: l10n.monitoringClearFilters,
-                onAction: onClearFilters,
-              ),
-          ],
+      final MonitoringListLoaded loaded when loaded.items.isEmpty =>
+        _Refreshable(
+          onRefresh: controller.refresh,
+          child: MxScreenScroll(
+            children: [
+              SizedBox(height: context.dimens.space8),
+              if (loaded.hasRefreshFailed)
+                _RefreshFailed(onRetry: controller.refresh),
+              if (state.filter.isDefault)
+                MxEmptyState(
+                  icon: AppIcons.learned,
+                  title: l10n.monitoringEmptyTitle,
+                  body: l10n.monitoringEmptyBody,
+                  tone: MxEmptyStateTone.success,
+                  isCompact: true,
+                )
+              else
+                MxEmptyState(
+                  icon: AppIcons.searchOff,
+                  title: l10n.monitoringNoMatchTitle,
+                  tone: MxEmptyStateTone.neutral,
+                  isCompact: true,
+                  actionLabel: l10n.monitoringClearFilters,
+                  onAction: onClearFilters,
+                ),
+            ],
+          ),
         ),
-      ),
       final MonitoringListLoaded loaded => _Rows(
         loaded: loaded,
         // One status chosen: the chip and the header say it (critique
@@ -181,6 +184,8 @@ class _Rows extends ConsumerWidget {
         child: MxScreenScroll(
           children: [
             SizedBox(height: context.dimens.space8),
+            if (loaded.hasRefreshFailed)
+              _RefreshFailed(onRetry: controller.refresh),
             MxListSectionHeader(label: header),
             // Lazy, as the list grows with every load-more.
             ...MxDividedColumn.divided([
@@ -196,6 +201,33 @@ class _Rows extends ConsumerWidget {
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// A pull to refresh failed: the rows below stand, and Retry asks again.
+class _RefreshFailed extends StatelessWidget {
+  const _RefreshFailed({required this.onRetry});
+
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: EdgeInsets.only(bottom: context.dimens.space8),
+      child: MxInlineBanner(
+        tone: MxBannerTone.danger,
+        message: l10n.monitoringRefreshFailed,
+        hasBottomMargin: false,
+        actions: [
+          MxButton(
+            label: l10n.commonRetry,
+            size: MxButtonSize.small,
+            onPressed: () => unawaited(onRetry()),
+          ),
+        ],
       ),
     );
   }

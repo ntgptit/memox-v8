@@ -51,6 +51,9 @@ class TopikTestListHeaderWidget extends StatelessWidget {
               ),
               MxChipTrigger(
                 label: l10n.topikOrderName(order),
+                semanticLabel: l10n.topikSortTrigger(
+                  l10n.topikOrderName(order),
+                ),
                 onPressed: onSort,
               ),
             ],

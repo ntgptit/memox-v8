@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_learn_widget.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
@@ -150,6 +151,12 @@ void main() {
 
     expect(find.text(_en.studyEntryStartFailedTitle), findsOneWidget);
     expect(opened, isNull);
+    // It reads under the hero, above the choices, where the footer's
+    // Try again points: never below the fold (audit 2026-10-17).
+    expect(
+      tester.getTopLeft(find.text(_en.studyEntryStartFailedTitle)).dy,
+      lessThan(tester.getTopLeft(find.byType(StudyEntryLearnWidget)).dy),
+    );
 
     env.entries.isFailing = false;
     await tester.tap(_button(_en.studyEntryTryAgain));

@@ -171,8 +171,10 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
           ),
         ),
         _actions(context, canShowHint: canShowHint),
+        // An instruction takes the info glyph and a wrong answer the repeat
+        // one, as in every mode (critique 2026-10-02 F7).
         SessionFooterHintWidget(
-          icon: AppIcons.edit,
+          icon: _isWrong ? AppIcons.repeat : AppIcons.info,
           text: _isWrong
               ? l10n.studyFillHintWrong
               : isHintShown

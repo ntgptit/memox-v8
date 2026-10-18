@@ -14,7 +14,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8); see the shared section. |
-| Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
+| Context line | `SessionContextLine` | "{deck} · Review · round {n}"; a learning session adds its stage: "{deck} · Learning · stage {n} of {total} · round {n}" (`session_context_state.dart`). |
 | Prompt | new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted to shared — a session face is meaningless outside a session) | Overline "What is this?" in flow placement, the term below it, the speaker ("Read aloud · {language}", disabled with "No {language} voice on this device" when the device lacks the voice) under the term (BR-STUDY-079; 16-study-browse.md, Speech). |
 | Options | 5 rows, new: `GuessOptionRow` (feature-local) | Lettered A–E badge + meaning text. After the first tap: the chosen and the correct row switch to their tone (correct/wrong), the rest fade; matched by card id, never by display string (BR-STUDY-041). |
 | Footer hint | `SessionFooterHint` | "The right option is highlighted" once answered. |
@@ -36,10 +36,29 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 1200 ms or until a tap. Goldens:
 `test/features/study/presentation/goldens/study_guess_{idle,wrong,right,blocked}_*`.
 
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| default | tap an option | answering; the first pick is written | VERIFIED `study_guess_test.dart::the term is asked under "What is this?" with five lettered options (BR-STUDY-037)` for the layout; the pick in the two tests below |
+| answering | the pick is right | right: the option in the success tone, "Correct" announced, held 1200 ms, then the next question | VERIFIED `::the right pick shows as correct, is announced, and the next question follows after 1.2 s (G1, G2, C3)` |
+| answering | the pick is wrong | wrong: the pick wrong, the right option correct (by card id), the rest faded, announced "Wrong. The answer is …" | VERIFIED `::a wrong pick marks it wrong and the right one correct, fades the rest, and a tap continues early (G1, C1, C3)` |
+| right / wrong | a tap anywhere | the next question at once | VERIFIED the wrong-pick test above |
+| right / wrong | a second tap on an option while the turn is held | nothing is written (BR-STUDY-042) | VERIFIED `::a second tap while the turn is held writes nothing (BR-STUDY-042)` |
+| right / wrong | TalkBack is on | no auto-advance; a "Next" button continues | VERIFIED `::with TalkBack on nothing advances by itself; Next does (C6)` |
+| default | a tap while the write runs | dropped (BR-STUDY-004) | `UNVERIFIED (code read)`: `onTap` is null while `isBusy` (the screen passes `turn.isLocked`) |
+| default | the busy database refuses the pick | the unsaved-answer banner with Retry; the options are locked (`StudyTurnState.isLocked`) and the first pick stays the answer (BR-STUDY-041) | VERIFIED `study_guess_test.dart::an answer a busy database kept stays the first pick: the options wait for Retry, which saves it (BR-STUDY-041 first pick; audit 2026-10-17)`; the banner path from Browse is VERIFIED in 16 |
+| default (refused) | tap another option | ignored; the first pick stays | VERIFIED the same test |
+| default (refused) | Retry | the first pick is saved; right / wrong follows as above | VERIFIED the same test (it ends on "Correct" announced) |
+| default | the question cannot be built (blocked) | blocked: the notice with Close | VERIFIED `::a blocked question shows the notice, and Close ends the session (BR-STUDY-040, G3, C2)` |
+| blocked | tap Close | the exit dialog; Stop ends the session as `user_exit`, nothing written for the question | VERIFIED same test |
+| right / wrong | leave the screen before the 1200 ms end | the timer is cancelled with the widget | `UNVERIFIED (code read)`: `dispose` cancels `_timer` |
+| default | ✕, system Back, deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |
+
 ## Rulings
 
 - **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` role (its tint over the surface, a `success` edge and text); green is mastery-only.
-- **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This question can't be shown", whose Close ends the session; nothing is written or skipped.
+- **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This question can't be shown", whose Close opens the shared exit dialog and, on Stop, ends the session (`onClose` is the screen's `_abandon`); nothing is written or skipped.
 - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" button instead of advancing by itself.
 - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick counts".
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
@@ -57,7 +76,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 
 ## Copy
 
-- Context line: "{deck} · Review · round {n}".
+- Context line: "{deck} · Review · round {n}" · "{deck} · Learning · stage {n} of {total} · round {n}".
 - Prompt overline: "What is this?".
 - Footer hint: "Only your first pick counts" (before the pick) · "The right option is highlighted".
 - Blocked: "This question can't be shown" · "Its options could not be built. Close the session; every answer so far is kept." · "Close the session".

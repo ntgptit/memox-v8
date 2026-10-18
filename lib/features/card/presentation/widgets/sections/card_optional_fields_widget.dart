@@ -28,6 +28,7 @@ class CardOptionalFieldsWidget extends StatelessWidget {
     required this.example,
     required this.hint,
     required this.pronunciation,
+    this.isReadOnly = false,
   });
 
   final bool isOpen;
@@ -38,6 +39,9 @@ class CardOptionalFieldsWidget extends StatelessWidget {
   final CardOptionalInput example;
   final CardOptionalInput hint;
   final CardOptionalInput pronunciation;
+
+  /// Held while the card saves, as the required fields are.
+  final bool isReadOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +80,7 @@ class CardOptionalFieldsWidget extends StatelessWidget {
             variant: MxTextFieldVariant.detail,
             errorText: input.errorText,
             onChanged: (_) => input.onChanged(),
+            isReadOnly: isReadOnly,
           ),
       ],
     );

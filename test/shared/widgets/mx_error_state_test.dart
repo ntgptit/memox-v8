@@ -171,18 +171,19 @@ void main() {
     );
   });
 
-  // SW-REV-006: a load failure swaps in for the skeleton in place, so its
-  // title is announced when it appears.
-  testWidgets('the title is a live region', (tester) async {
+  // SW-REV-006: a load failure swaps in for the skeleton in place, so it is
+  // announced when it appears: the title and the body that says nothing
+  // was lost, as one live region (audit 2026-10-17).
+  testWidgets('the title and the body are one live region', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
       const MxErrorState(title: "Couldn't load", body: 'Nothing was lost.'),
     );
-    expect(
-      tester.getSemantics(find.text("Couldn't load")),
-      isSemantics(isLiveRegion: true),
-    );
+    final node = tester.getSemantics(find.text("Couldn't load"));
+    expect(node, isSemantics(isLiveRegion: true));
+    expect(node.label, contains("Couldn't load"));
+    expect(node.label, contains('Nothing was lost.'));
     handle.dispose();
   });
 }

@@ -43,7 +43,13 @@ class StudyRecallWidget extends StatefulWidget {
     required this.onTimeUp,
     required this.onContinue,
     required this.speechLanguage,
+    this.isPaused = false,
   });
+
+  /// The screen asks something over the turn (the exit dialog): the clock
+  /// stops and takes up where it stopped once it is false again
+  /// (BR-STUDY-036: only time spent on the turn counts).
+  final bool isPaused;
 
   /// The language the term is read in; null until the session knows it.
   final SpeechLanguage? speechLanguage;
@@ -105,6 +111,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
       WidgetsBinding.instance.addPostFrameCallback((_) => _timeUp());
       return;
     }
+    if (widget.isPaused) return;
     unawaited(_clock.reverse());
   }
 
@@ -112,6 +119,16 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
   void didUpdateWidget(StudyRecallWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.result == null && widget.result != null) _announceTimeout();
+    // Show the meaning removes the focused button: the meaning is read.
+    if (!oldWidget.item.isRevealed &&
+        widget.item.isRevealed &&
+        widget.result == null) {
+      _announce(context.l10n.studyRecallAnnounceRevealed(widget.item.back));
+    }
+    if (oldWidget.isPaused != widget.isPaused && _isRunning) {
+      _clock.stop();
+      if (!widget.isPaused) unawaited(_clock.reverse());
+    }
     // A reveal the database refused: the turn counts down again.
     final isRefused =
         oldWidget.isBusy &&
@@ -147,7 +164,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
   void _onLifecycle(AppLifecycleState state) {
     if (!_isRunning) return;
     if (state == AppLifecycleState.resumed) {
-      unawaited(_clock.reverse());
+      if (!widget.isPaused) unawaited(_clock.reverse());
       return;
     }
     _clock.stop();
@@ -160,10 +177,13 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
     widget.onReveal(_remainingMs);
   }
 
-  void _announceTimeout() => unawaited(
+  void _announceTimeout() =>
+      _announce(context.l10n.studyRecallAnnounceTimedOut(widget.item.back));
+
+  void _announce(String message) => unawaited(
     SemanticsService.sendAnnouncement(
       View.of(context),
-      context.l10n.studyRecallAnnounceTimedOut(widget.item.back),
+      message,
       Directionality.of(context),
     ),
   );

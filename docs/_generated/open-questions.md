@@ -8,7 +8,7 @@
 
 ## [shared/ui/screen-handoff/35-topik-test-list.md](../shared/ui/screen-handoff/35-topik-test-list.md)
 
-- L59: - **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name is the current order alone ("Newest round"); nothing in the node says it sorts. `MxChipTrigger` has no semantic label slot, so the fix is shared: OPEN QUESTION Q-A-2 for the owner. BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
+- L59: - **Audit 2026-10-16 (DEV-394):** the sort trigger's TalkBack name was the current order alone ("Newest round"); nothing in the node said it sorts. Q-A-2 is RESOLVED: `MxChipTrigger` has a `semanticLabel` slot (`mx_chip_trigger.dart`), and the sort trigger now passes "Sort tests, {order}" (`topik_test_list_header_widget.dart`). BR-TOPIK-025 asks for `score / max` while the status line shows "Best 88" (BR-TOPIK-022's own example): OPEN QUESTION Q-A-3, whether the list row is exempt.
 
 ## [shared/ui/screen-handoff/36-topik-test-detail.md](../shared/ui/screen-handoff/36-topik-test-detail.md)
 

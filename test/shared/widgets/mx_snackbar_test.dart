@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -317,6 +320,60 @@ void main() {
       expect(find.text('Moved to Trash'), findsNothing);
       expect(find.text('Saved'), findsOneWidget);
     });
+  });
+
+  testWidgets('two toasts shown in one frame: the second replaces the first, '
+      'whose closed completes (audit 2026-10-17)', (tester) async {
+    late MxSnackbarController first;
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => MxButton(
+          label: 'Show both',
+          onPressed: () {
+            first = showMxSnackbar(context, message: 'First');
+            showMxSnackbar(context, message: 'Second');
+          },
+        ),
+      ),
+    );
+    var isFirstClosed = false;
+
+    await tester.tap(find.text('Show both'));
+    unawaited(first.closed.then((_) => isFirstClosed = true));
+    await tester.pumpAndSettle();
+
+    expect(find.text('First'), findsNothing);
+    expect(find.text('Second'), findsOneWidget);
+    expect(isFirstClosed, isTrue);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  testWidgets('a toast kept for TalkBack can be dismissed by TalkBack, not '
+      'only by a swipe (audit 2026-10-17)', (tester) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(accessibleNavigation: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, trigger());
+    await show(tester);
+
+    final node = tester.getSemantics(
+      find
+          .ancestor(
+            of: find.text('Moved to Trash'),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics && widget.properties.liveRegion == true,
+            ),
+          )
+          .first,
+    );
+    expect(node.getSemanticsData().hasAction(SemanticsAction.dismiss), isTrue);
+    node.owner!.performAction(node.id, SemanticsAction.dismiss);
+    await tester.pumpAndSettle();
+    expect(find.text('Moved to Trash'), findsNothing);
+    handle.dispose();
   });
 
   testWidgets('close() takes the toast off and completes closed', (

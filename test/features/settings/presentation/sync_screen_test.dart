@@ -122,6 +122,29 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
+  libraryTest('a build without sync says so, neutrally and with no Retry '
+      '(audit 2026-10-17 SET-10)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: [
+        syncStatusProvider.overrideWith(
+          (ref) => Stream<SyncStatus?>.value(null),
+        ),
+        syncCommandsProvider.overrideWithValue(FakeSyncCommands()),
+      ],
+    );
+    await _settle(tester);
+
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text("Couldn't open Sync"), findsNothing);
+    expect(find.text('Retry'), findsNothing);
+    expect(find.text('Sync now'), findsNothing);
+    expect(find.text("Sync isn't available"), findsOneWidget);
+    expect(find.textContaining('Nothing is lost'), findsOneWidget);
+  });
+
   libraryTest('a second command waits for the first', (tester, env) async {
     final commands = FakeSyncCommands()..hold = Completer<bool>();
     await pumpLibraryScreen(

@@ -69,7 +69,7 @@ class MxStudyTopBar extends StatelessWidget {
       color: colors.background,
       child: SafeArea(
         bottom: false,
-        // Ruling R1: 56 at minimum, grows with text scaling.
+        // Ruling R1: the app bar height at minimum, grows with text scaling.
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeAppBar),
           child: Padding(

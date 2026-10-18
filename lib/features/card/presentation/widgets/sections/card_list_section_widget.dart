@@ -92,8 +92,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// Ruling P3-L5: the rows stay while a new window, filter or term loads.
   CardListView? _lastView;
 
-  /// The window a growth was asked from, so one end of list asks once.
-  int? _grownFrom;
+  /// The request a growth was asked from, so one end of list asks once.
+  /// Every new request (a filter, a sort, a term, tags) starts back at the
+  /// first window and may grow again.
+  CardListRequestState? _grownFrom;
 
   /// Ruling E-L6: the last Flag failed; the selection stays. Flag's sheet
   /// closes before the write, so the section says so; Move, Tag and Delete
@@ -120,9 +122,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   CardSelection _selection() =>
       ref.read(cardSelectionProvider(widget.deckId).notifier);
 
-  void _growFrom(int windowSize) {
-    if (_grownFrom == windowSize) return;
-    _grownFrom = windowSize;
+  void _growFrom(CardListRequestState request) {
+    if (identical(_grownFrom, request)) return;
+    _grownFrom = request;
     _request().grow();
   }
 
@@ -184,6 +186,23 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   Future<void> _clearAfter(Future<bool> write) async {
     setState(() => _failedFlag = null);
     if (await write && mounted) _selection().clear();
+  }
+
+  /// Drops the picks of cards that left the deck, deleted or moved from
+  /// elsewhere: a bulk action over one is refused whole (`notFound`). Every
+  /// card [request] lets through is read, not only the loaded window, as
+  /// Select all picks beyond it. A failed read keeps the picks.
+  Future<void> _pruneSelection(CardListRequestState request) async {
+    final checked = ref.read(cardSelectionProvider(widget.deckId)).ids;
+    if (checked.isEmpty) return;
+    try {
+      final live = await ref
+          .read(cardActionsControllerProvider.notifier)
+          .selectAll(deckId: widget.deckId, query: request.query);
+      if (mounted) _selection().retain(live, checked: checked);
+    } on Failure {
+      // The next change of the list tries again.
+    }
   }
 
   /// The one selected card's text, when its row is loaded (kit 07).
@@ -300,42 +319,55 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       windowSize: request.windowSize,
     );
     final async = ref.watch(provider);
-    // A failure always says so, even over rows loaded before (spec §5).
-    if (async.hasError) {
-      return MxScreenScroll(
-        clearance: clearance,
-        children: [
-          MxErrorState(
-            title: l10n.cardLoadErrorTitle,
-            body: l10n.libraryLoadErrorBody,
-            retryLabel: l10n.commonRetry,
-            onRetry: () => ref.invalidate(provider),
-            isRetrying: async.isLoading,
-          ),
-        ],
-      );
-    }
-    final view = _lastView = async.value ?? _lastView;
-    if (view == null) {
-      return MxScreenScroll(
-        clearance: clearance,
-        children: [
-          MxSkeletonList(
-            semanticLabel: context.l10n.commonLoading,
-            rows: _skeletonRows,
-          ),
-        ],
-      );
-    }
-    // A larger window is asked for only once the current one has loaded.
-    final canGrow = async.hasValue && view.hasMore;
-    // Back leaves selection before it leaves the deck (IT-ORG-013).
-    return PopScope(
+    // The list changed under a selection: cards that left it leave the
+    // selection (audit CARD-14).
+    ref.listen(provider, (_, next) {
+      if (next.hasValue) unawaited(_pruneSelection(request));
+    });
+    // Back leaves selection before it leaves the deck (IT-ORG-013), whatever
+    // the list shows: the app bar holds the selection in every branch.
+    Widget leavingSelectionFirst(Widget child) => PopScope(
       canPop: !isSelecting,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _selection().clear();
       },
-      child: Column(
+      child: child,
+    );
+    // A failure always says so, even over rows loaded before (spec §5).
+    if (async.hasError) {
+      return leavingSelectionFirst(
+        MxScreenScroll(
+          clearance: clearance,
+          children: [
+            MxErrorState(
+              title: l10n.cardLoadErrorTitle,
+              body: l10n.libraryLoadErrorBody,
+              retryLabel: l10n.commonRetry,
+              onRetry: () => ref.invalidate(provider),
+              isRetrying: async.isLoading,
+            ),
+          ],
+        ),
+      );
+    }
+    final view = _lastView = async.value ?? _lastView;
+    if (view == null) {
+      return leavingSelectionFirst(
+        MxScreenScroll(
+          clearance: clearance,
+          children: [
+            MxSkeletonList(
+              semanticLabel: context.l10n.commonLoading,
+              rows: _skeletonRows,
+            ),
+          ],
+        ),
+      );
+    }
+    // A larger window is asked for only once the current one has loaded.
+    final canGrow = async.hasValue && view.hasMore;
+    return leavingSelectionFirst(
+      Column(
         children: [
           Expanded(
             child: NotificationListener<ScrollNotification>(
@@ -343,7 +375,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
                 if (canGrow &&
                     notification.depth == 0 &&
                     notification.metrics.extentAfter < _growWithin) {
-                  _growFrom(request.windowSize);
+                  _growFrom(request);
                 }
                 return false;
               },
@@ -442,6 +474,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           trailing: MxChipTrigger(
             label: l10n.cardSort(request.sort),
             icon: AppIcons.sort,
+            semanticLabel: l10n.cardSortTrigger(l10n.cardSort(request.sort)),
             onPressed: () => _sort(request),
           ),
         ),

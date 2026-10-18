@@ -35,6 +35,33 @@ Future<String> _words(LibraryEnv env) async {
 }
 
 void main() {
+  libraryTest('create: Cancel, close and Back are held while the card saves; '
+      'the save lands and says so, with no discard dialog', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      CardEditorScreen.create(deckId: deckId, deckContext: _context),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(0), 'bap');
+    await tester.enterText(_field(1), 'rice');
+    await tester.pump();
+
+    // Save starts the write; Cancel lands in the same instant, before the
+    // write answers.
+    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.tap(find.widgetWithText(MxButton, _en.commonCancel));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardDiscardNewTitle), findsNothing);
+    expect(find.text(_en.cardAddedToast), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
   MxButton saveChanges(WidgetTester tester) =>
       tester.widget<MxButton>(_footerSave(_en.cardSaveChanges));
 

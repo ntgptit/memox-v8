@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -69,6 +69,28 @@ final class _BrokenImport implements CardTransferRepository {
       now: now,
     );
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Fails the write with a bug, not a Failure.
+final class _BuggyImport implements CardTransferRepository {
+  _BuggyImport(this._cards);
+
+  final CardTransferRepository _cards;
+
+  @override
+  Future<Set<({String front, String back})>> foldedPairs(String deckId) =>
+      _cards.foldedPairs(deckId);
+
+  @override
+  Future<Outcome<CardImportResult, CardRejection>> importCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required bool includeDuplicates,
+    DateTime? now,
+  }) async => throw StateError('a bug, not a Failure');
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -295,6 +317,49 @@ void main() {
       );
     },
   );
+
+  test('Back does nothing while the preview is read: a late result never '
+      'throws the person forward again', () async {
+    final c = container();
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+    await wizard.readSource();
+
+    final reading = wizard.previewRows(defaultDeckName: 'Uncategorized');
+    expect(draftOf(c).isBusy, isTrue);
+    expect(wizard.stepBack(), isTrue);
+    expect(draftOf(c).step, CardImportStep.columns);
+
+    await reading;
+    expect(draftOf(c).step, CardImportStep.preview);
+  });
+
+  test('a bug in the write (not a Failure) ends on Try again, never stuck '
+      'on importing with Back and Close inert (ADR-016)', () async {
+    final c = container(wrap: _BuggyImport.new);
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+    await wizard.readSource();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
+
+    final reported = <FlutterErrorDetails>[];
+    final previous = FlutterError.onError;
+    FlutterError.onError = reported.add;
+    addTearDown(() => FlutterError.onError = previous);
+    await wizard.commit();
+
+    expect(
+      c.read(cardImportControllerProvider(leaf.id)),
+      isA<CardImportFailed>().having(
+        (s) => s.isTargetRejected,
+        'target rejected',
+        isFalse,
+      ),
+    );
+    expect(reported.single.exception, isA<StateError>());
+  });
 
   test('Include duplicates writes them as new cards (A4)', () async {
     await insertCard(

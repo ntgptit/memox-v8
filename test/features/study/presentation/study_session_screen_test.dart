@@ -157,6 +157,65 @@ void main() {
     await _expectLeftForGood(env, id);
   });
 
+  libraryTest('Stop that cannot be written says so, local-first, and the '
+      'session stays open on the same card', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    env.sessions.isAbandonLocked = true;
+    await _pumpScreen(tester, env, id);
+    final front = _front(tester);
+
+    await tester.tap(byControlLabel(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyExitStop));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyExitFailed), findsOneWidget);
+    expect(_front(tester), front);
+    final session = await sessionOf(env.db, id);
+    expect(session.read<String>('status'), 'in_progress');
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  libraryTest('Stop on a held turn shows the summary at once: the hold '
+      'does not outlive the session', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    await _pumpScreen(tester, env, id);
+    final first = (await watchSessionOnce(env.db, id)).currentItem!;
+    await _controllerOf(
+      tester,
+      id,
+    ).answer(first, const AdvanceAnswer(), shouldHoldFeedback: true);
+    await tester.pumpAndSettle();
+
+    await tester.tap(byControlLabel(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyExitStop));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+  });
+
+  libraryTest('the deck gone while the exit dialog is open closes it and '
+      'leaves, never a blank page', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    final left = <String?>[];
+    await _pumpScreen(tester, env, id, onLeave: left.add);
+
+    await tester.tap(byControlLabel(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    final session = await sessionOf(env.db, id);
+    await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyExitTitle), findsNothing);
+    expect(left, [null]);
+    expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
+    expect(
+      (await sessionOf(env.db, id)).read<String?>('end_reason'),
+      isNot('user_exit'),
+    );
+  });
+
   libraryTest('Keep studying in the exit dialog changes nothing: the '
       'session stays open on the same card (IT-CONT-004)', (tester, env) async {
     final id = await _session(env, ['a', 'b']);
@@ -358,6 +417,35 @@ void main() {
     controller.release();
     await tester.pumpAndSettle();
     expect((await watchSessionOnce(env.db, id)).isStalled, isFalse);
+  });
+
+  libraryTest('system Back on a session that cannot be read leaves, as its '
+      '✕ does, without asking to stop', (tester, env) async {
+    final left = <String?>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      StudySessionScreen(
+        sessionId: 's',
+        onDone: (_) {},
+        onStudyDeck: (_) {},
+        onLeave: left.add,
+      ),
+      overrides: [
+        studySessionProvider('s').overrideWith(
+          (_) => Stream.error(
+            const UnknownDatabaseFailure(cause: '/data/memox.sqlite'),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyExitTitle), findsNothing);
+    expect(left, [null]);
   });
 
   libraryTest('a session that cannot be read says so and Retry reads again '

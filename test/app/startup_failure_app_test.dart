@@ -80,6 +80,35 @@ void main() {
     );
   });
 
+  testWidgets('a Retry that dies on a bug, not a closed file, is reported and '
+      'lets Retry be tapped again (audit 2026-10-17)', (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWith((ref) => throw StateError('a bug')),
+      ],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: AppRoot(initial: _failure()),
+      ),
+    );
+
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+    await tester.pump();
+
+    // Reported (Riverpod wraps the bug in its own exception).
+    expect(tester.takeException(), isNotNull);
+    expect(
+      tester.widget<MxErrorState>(find.byType(MxErrorState)).isRetrying,
+      isFalse,
+    );
+    // ForUI's press timer.
+    await tester.pump(const Duration(seconds: 1));
+  });
+
   testWidgets('Retry on AppRoot runs the start again and swaps in the app '
       'once the file opens', (tester) async {
     final root = Directory.systemTemp.createTempSync('memox_root');

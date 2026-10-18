@@ -22,6 +22,7 @@ class CardFieldWidget extends StatelessWidget {
     this.focusNode,
     this.errorText,
     this.onChanged,
+    this.isReadOnly = false,
   });
 
   final String label;
@@ -41,6 +42,10 @@ class CardFieldWidget extends StatelessWidget {
   final FocusNode? focusNode;
   final String? errorText;
   final ValueChanged<String>? onChanged;
+
+  /// Held while the card saves, so nothing typed meanwhile is lost to the
+  /// form clearing for the next card.
+  final bool isReadOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +83,7 @@ class CardFieldWidget extends StatelessWidget {
                 : l10n.cardFieldCount(count, limit),
             errorText: errorText,
             variant: variant,
+            isReadOnly: isReadOnly,
             // The term and a form field move on; a meaning or detail breaks
             // the line.
             textInputAction: switch (variant) {

@@ -44,8 +44,38 @@ The images are the goldens.
 | rejected | ![](../../../../test/features/settings/presentation/goldens/sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_rejected_dark.png) | Golden `sync_rejected_*`. |
 | keepDialog | ![](../../../../test/features/settings/presentation/goldens/sync_keep_dialog_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_keep_dialog_dark.png) | Golden `sync_keep_dialog_*` (critique 2026-09-30 part 1). |
 | syncing | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_dark.png) | Golden `sync_syncing_*`. |
+| retrying | — | — | After Try again: its button spins and the other two are disabled (`SyncTask.retry`). Code read: `sync_notice_widget.dart`; no golden. |
+| keeping | — | — | After Keep in the dialog: its button spins and the other two are disabled (`SyncTask.keep`). Code read: same file; no golden. |
+| change failed | — | — | A command threw: toast "Couldn't change that. Nothing was lost." with Retry. Code read: `sync_screen.dart` `_say`; no golden. |
 | loading | — | — | `MxSkeletonList`, two rows. |
 | read error | — | — | `MxErrorState` "Couldn't open Sync" with the local-first body and Retry (spec §6). |
+| unavailable | — | — | A build with no Supabase has no status (the stream is null): a neutral `MxEmptyState` "Sync isn't available" over "This version of MemoX keeps everything on this device. Nothing is lost.", with no Retry and no Sync now (audit 2026-10-17). |
+
+## Transitions
+
+| From | Event | To | Evidence |
+|---|---|---|---|
+| loading | the status stream emits | synced / neverSynced / pending / failedNetwork / failedServer / rejected | SB-U1. VERIFIED `sync_screen_test.dart::Sync now leads while changes wait (critique 2026-09-30)`, `::Sync now steps back when nothing waits (critique 2026-09-30)`, `::a failure shows its sentence and no code`; labels `sync_labels_test.dart::the status line: refused, then failure, then success, then never` |
+| loading | the stream fails, or has no status | read error | spec §6. VERIFIED `sync_screen_test.dart::while a Retry reloads, the error stays and its Retry spins`; a null status (a build without Supabase) shows the same error and is `UNVERIFIED (code read)`, though the screen has no entry then |
+| read error | Retry | error with Retry spinning, then the state the read gives | VERIFIED `::while a Retry reloads, the error stays and its Retry spins` |
+| any | tap Sync now | syncing: the button becomes a spinner and "Syncing…", Try again and Keep disabled | D5. VERIFIED `::while Sync now runs the screen says Syncing…; the button comes back after (critique 2026-09-30 part 3d-1, D5)` |
+| syncing | the run succeeds | synced (or the state the status gives); toast "Synced" | VERIFIED `::Sync now runs and says Synced` |
+| syncing | the run does not succeed | the state the status gives, the failure back; toast "Couldn't sync. Nothing was lost." | VERIFIED `::a failed Sync now says nothing was lost`, `::a sync that fails while Syncing… shows brings the button and the failure back (Review Focus 5)` |
+| syncing | the command throws | the button back; toast "Couldn't change that. Nothing was lost." with Retry (re-runs Sync now) | `UNVERIFIED (code read)`: `SyncController.run` catches `Object` and sets `SyncChangeFailed`; no test throws from `syncNow` |
+| any | a second command while one runs | ignored; the other buttons are disabled | VERIFIED `::a second command waits for the first` |
+| rejected | tap Try again | retrying: Try again spins, Sync now and Keep disabled | `UNVERIFIED (code read)`: `isLoading: task == SyncTask.retry`; no golden |
+| retrying | the run succeeds | the state the status gives (no banner if nothing is refused); toast "Synced" | `UNVERIFIED (code read)`; the tap reaching `retryRejected` is VERIFIED `::refused rows offer Try again and Keep on device` |
+| retrying | the run does not succeed | the banner stays; toast "Couldn't sync. Nothing was lost." | `UNVERIFIED (code read)` |
+| rejected | tap Keep on device | keepDialog | R4. VERIFIED `::Keep asks first and keeps only on confirm` |
+| keepDialog | Cancel, Back or the scrim | rejected, nothing written | R4. VERIFIED `::dismissing the Keep dialog keeps the refused rows` (Cancel and Back; the scrim is `UNVERIFIED (code read)`) |
+| keepDialog | Keep | keeping: Keep spins, Try again and Sync now disabled | R4. VERIFIED `::Keep asks first and keeps only on confirm` for the write; the spinner is `UNVERIFIED (code read)` |
+| keeping | the write lands | toast "Kept on this device"; the status then drops the banner and the waiting row reads "No other changes waiting" | VERIFIED `::Keep asks first and keeps only on confirm` for the write and the toast; the status change is the stream's (the fake commands do not move it), `UNVERIFIED (code read)` |
+| keeping | the write fails | the banner stays; toast "Couldn't change that. Nothing was lost." with Retry (re-runs Keep, without asking again) | spec §6. `UNVERIFIED (code read)`: `SyncChangeFailed(task).onAction` calls `_run(ref, task)`, which skips the dialog |
+| any | the status changes under the screen (a background sync lands, a change is queued) | the same state, relabelled | `UNVERIFIED (code read)`: the body watches `syncStatusProvider` |
+| any | the screen is left while a command runs | the command ends; no toast is shown (no listener) | `UNVERIFIED (code read)`: `ref.mounted` guard in `SyncController.run` |
+| settled | all is well | no banner; the waiting row ends with a success check | T3. VERIFIED `::settled sync ends the waiting row with a success check (critique 2026-09-30 tone pass, T3)`, `::changes still waiting show no success check (T3)` |
+| failedNetwork | | a neutral note, Sync now outline | critique 2026-10-02. VERIFIED `sync_offline_note_test.dart::a network failure is a neutral note, and Sync now steps down to outline even with changes waiting` |
+| failedServer | | the warning banner, Sync now primary | VERIFIED `sync_offline_note_test.dart::a server failure stays a warning and Sync now leads` |
 
 ## Rulings
 
@@ -66,3 +96,4 @@ The images are the goldens.
 - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} changes" · "Nothing waiting" · "No other changes waiting" · "MemoX syncs on its own when you're online. Your study never waits for it." · "Sync now".
 - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" · "Couldn't change that. Nothing was lost." · "Retry".
 - Error: "Couldn't open Sync" · "Nothing was lost. Try again in a moment." · "Retry".
+- No sync in this build: "Sync isn't available" · "This version of MemoX keeps everything on this device. Nothing is lost."

@@ -12,6 +12,7 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/repositories/topik_attempt_repository.dart';
 import 'package:memox/features/topik/domain/usecases/answer_topik_question_use_case.dart';
 import 'package:memox/features/topik/domain/usecases/submit_topik_attempt_use_case.dart';
+import 'package:memox/features/topik/presentation/controllers/topik_attempt_controller.dart';
 import 'package:memox/features/topik/presentation/providers/answer_topik_question_use_case_provider.dart';
 import 'package:memox/features/topik/presentation/providers/submit_topik_attempt_use_case_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.dart';
@@ -70,6 +71,24 @@ final class _HeldSubmit implements TopikAttemptRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// The attempt controller that counts how often the screen drives its clock.
+final class _ClockSpy extends TopikAttemptController {
+  static var shows = 0;
+  static var hides = 0;
+
+  @override
+  void showQuestion() {
+    shows++;
+    super.showQuestion();
+  }
+
+  @override
+  Future<void> hideQuestion() {
+    hides++;
+    return super.hideQuestion();
+  }
 }
 
 // Screen 37 (UC-TOPIK-003; BR-TOPIK-010…016): answering, moving, the clock,
@@ -155,6 +174,34 @@ void main() {
         if (answer.timeSpentMs > 0) answer.questionNo: answer.timeSpentMs,
     };
     expect(times, {1: 7000, 2: 4000});
+  });
+
+  libraryTest('the clock follows the state, not the build: a rebuild that '
+      'changes nothing drives it no more (audit 2026-10-17 TOPIK-3)', (
+    tester,
+    env,
+  ) async {
+    _ClockSpy.shows = 0;
+    _ClockSpy.hides = 0;
+    final attempt = await topikSeedAttempt(env, reading);
+    await pumpTopikAttempt(
+      tester,
+      env,
+      attempt.id,
+      catalog: [reading],
+      overrides: [topikAttemptControllerProvider.overrideWith(_ClockSpy.new)],
+    );
+    expect(_ClockSpy.shows, 1);
+
+    // A pick, a move and a script toggle each rebuild the screen.
+    await tester.tap(find.text('① 보기 1'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 / 50'), findsOneWidget);
+    expect(_ClockSpy.shows, 1);
+    expect(_ClockSpy.hides, 0);
   });
 
   libraryTest('in the background no time runs (BR-TOPIK-015)', (

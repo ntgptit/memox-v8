@@ -21,13 +21,20 @@ class TrashController extends _$TrashController {
   @override
   TrashState build() => const TrashState();
 
-  void chooseFilter(TrashFilter filter) => state = TrashState(filter: filter);
+  // The filter and the selection are views, not commands: the last purge's
+  // skipped batches stay through them until the next purge or restore.
+  void chooseFilter(TrashFilter filter) =>
+      state = TrashState(filter: filter, blocked: state.blocked);
 
   /// "Select": the rows become checkboxes, nothing chosen yet.
-  void startSelecting() =>
-      state = TrashState(filter: state.filter, isSelecting: true);
+  void startSelecting() => state = TrashState(
+    filter: state.filter,
+    isSelecting: true,
+    blocked: state.blocked,
+  );
 
-  void stopSelecting() => state = TrashState(filter: state.filter);
+  void stopSelecting() =>
+      state = TrashState(filter: state.filter, blocked: state.blocked);
 
   /// A tap while selecting, or the long-press that starts it. An entry of
   /// the other kind is refused (BR-TRASH-011).
@@ -40,6 +47,7 @@ class TrashController extends _$TrashController {
       filter: state.filter,
       isSelecting: true,
       selected: selected,
+      blocked: state.blocked,
     );
   }
 
@@ -52,7 +60,7 @@ class TrashController extends _$TrashController {
       batchIds: batchIds,
       deckId: deckId,
     );
-    if (outcome is Ok && ref.mounted) stopSelecting();
+    if (outcome is Ok && ref.mounted) _endAfterRestore();
     return outcome;
   }
 
@@ -66,9 +74,12 @@ class TrashController extends _$TrashController {
       batchIds: batchIds,
       parentId: parentId,
     );
-    if (outcome is Ok && ref.mounted) stopSelecting();
+    if (outcome is Ok && ref.mounted) _endAfterRestore();
     return outcome;
   }
+
+  /// A restore is a command: the selection ends and the purge note goes.
+  void _endAfterRestore() => state = TrashState(filter: state.filter);
 
   /// Deletes [batchIds] for good (UC-TRASH-001 A3). The batches the store
   /// skips stay, and the screen names them (spec D6).

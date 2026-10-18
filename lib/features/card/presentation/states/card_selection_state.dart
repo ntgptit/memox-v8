@@ -39,5 +39,15 @@ class CardSelection extends _$CardSelection {
   void selectAll(Set<String> cardIds) =>
       state = CardSelectionState(isSelecting: true, ids: {...cardIds});
 
+  /// Drops the picks in [checked] that are not in [liveIds]: cards that left
+  /// the list while picked. A bulk action over a card that is gone is
+  /// refused whole. A pick made after [checked] was taken was not read
+  /// against [liveIds] and stays.
+  void retain(Set<String> liveIds, {required Set<String> checked}) {
+    final kept = state.ids.difference(checked.difference(liveIds));
+    if (!state.isSelecting || kept.length == state.ids.length) return;
+    state = CardSelectionState(isSelecting: true, ids: kept);
+  }
+
   void clear() => state = CardSelectionState.none;
 }

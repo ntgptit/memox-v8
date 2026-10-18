@@ -31,7 +31,7 @@ code: [lib/features/monitoring/domain/models/log_filter_model.dart, lib/features
 - **A3 — Rỗng ở bộ lọc khác:** "Nothing matches" với "Clear filters", đưa bộ lọc và ô tìm kiếm về mặc định.
 - **A4 — Kéo xuống để làm mới:** tải lại từ trang đầu với cùng bộ lọc; một tìm kiếm đang chờ được hỏi ngay (BR-MONITORING-003).
 - **A5 — Bộ đệm rỗng:** "Nothing waiting" ("Every log on this device has been sent."); bộ đệm có dòng nhưng không ở mức đã chọn: "No logs at these levels" ("Try another level.").
-- **A6 — Một trang kế lỗi:** banner danger "Couldn't load more logs." với Retry; các dòng đã tải ở lại (BR-MONITORING-005).
+- **A6 — Một trang kế lỗi:** banner danger "Couldn't load more logs. What is shown is still correct." với Retry; các dòng đã tải ở lại (BR-MONITORING-005).
 
 **Error flows:**
 - **E1 — Không phải admin:** deep link tới `/settings/monitoring` bởi tài khoản khác hiện "Only an admin can see this" và không đọc gì, kể cả bộ đệm; khi server từ chối giữa chừng, ô tìm kiếm và chip biến mất cùng danh sách (BR-ACCOUNT-019, BR-MONITORING-003).

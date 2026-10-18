@@ -14,6 +14,7 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
+import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/study_options_provider.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -133,6 +134,40 @@ void main() {
     expect(stored.options.newCardOrder, NewCardOrder.random);
   });
 
+  libraryTest('Back with unsaved changes asks first; Keep editing keeps them, '
+      'Discard leaves (audit 2026-10-17)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (_) => _screen(ids.subId))),
+          child: const Text('open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyOptionsDiscardTitle), findsOneWidget);
+    await tester.tap(find.text(_en.deckKeepEditing));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyOptionsScreen), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyOptionsDiscard));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyOptionsScreen), findsNothing);
+  });
+
   libraryTest('while app defaults are on the values are read-only text; '
       'turning them off brings the controls back with the same values (E1; '
       'critique 2026-09-30)', (tester, env) async {
@@ -245,6 +280,25 @@ void main() {
     expect(find.byKey(_valueKey), findsNothing);
   });
 
+  libraryTest('the app defaults that cannot be read show the error with Retry, '
+      'never an endless skeleton (audit 2026-10-17)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(korean.id),
+      overrides: [
+        appSettingsProvider.overrideWith(
+          (ref) => Stream.error(FlakySettingsRepository.failure),
+        ),
+      ],
+    );
+
+    expect(find.byType(MxSkeletonList), findsNothing);
+    expect(find.text(_en.studyOptionsLoadErrorTitle), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+  });
+
   libraryTest('before the first read the screen shows skeleton rows and no '
       'Save (loading)', (tester, env) async {
     final never = StreamController<Never>();
@@ -299,6 +353,16 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_en.studyOptionsLocalOnly), findsOneWidget);
+    // One 16 gap below it, as below the note, not the banner's own 16 plus
+    // a spacer (audit 2026-10-17).
+    final box = find
+        .descendant(of: banner, matching: find.byType(DecoratedBox))
+        .first;
+    expect(
+      tester.getTopLeft(find.byType(MxSection).first).dy -
+          tester.getBottomLeft(box).dy,
+      const AppDimens().space16,
+    );
 
     // An edit keeps it; a save that lands clears it (critique 2026-09-30
     // part 3d-2, E13; Review Focus 4).

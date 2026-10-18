@@ -31,9 +31,18 @@ FThemeData _build(FColors colors, String label) {
     typography: AppTypography.build(colors),
     extensions: const [AppDimens()],
   );
-  // The selected tab's icon is an accent icon; its label stays primary.
+  // The selected tab's icon and the selected radio's dot are accent marks;
+  // the tab's label and the radio's ring keep their colours.
   final accentMark = colors.extension<MxStatusColors>().accentMark;
   return theme.copyWith(
+    radioStyle: FRadioStyleDelta.delta(
+      indicatorColor: FVariantsValueDelta.delta([
+        FVariantValueDeltaOperation.base(accentMark),
+        FVariantValueDeltaOperation.match({
+          FRadioVariant.disabled,
+        }, colors.disable(accentMark)),
+      ]),
+    ),
     bottomNavigationBarStyle: FBottomNavigationBarStyleDelta.delta(
       itemStyle: FBottomNavigationBarItemStyleDelta.delta(
         iconStyle: FVariantsDelta.delta([
