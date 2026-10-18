@@ -1,13 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
@@ -19,18 +14,10 @@ import 'package:memox/features/transfer/domain/usecases/read_import_source_use_c
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
-import '../../../support/test_database.dart';
+import '../../../support/transfer_fixtures.dart';
 
 // The sectioned import use cases over the real repositories (spec 2026-10-08,
 // UC-TRANSFER-001 A6, E7, E9).
-
-DateTime _now() => DateTime(2026, 9, 26);
-
-T _ok<T>(Outcome<T, TransferRejection> result) =>
-    (result as Ok<T, TransferRejection>).value;
-
-TransferRejection _reason(Outcome<Object?, TransferRejection> result) =>
-    (result as Rejected<Object?, TransferRejection>).reason;
 
 void main() {
   late AppDatabase db;
@@ -43,21 +30,7 @@ void main() {
   late PreviewImportUseCase preview;
   late CommitImportUseCase commit;
   setUp(() async {
-    db = openTestDatabase();
-    decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardTransferRepositoryImpl(
-      db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        DeckTreeDataSource(db),
-        now: _now,
-      ),
-      decks,
-    );
-    root = await decks.root('r');
-    leaf = await decks.sub(root.id, 'Nhà hàng');
+    (:db, :decks, :cards, :root, :leaf) = await openTransferWorld();
     read = const ReadImportSourceUseCase(files);
     preview = PreviewImportUseCase(cards);
     commit = CommitImportUseCase(cards);
@@ -68,8 +41,8 @@ void main() {
   const sheet = 'Term,Meaning\n*Part 1,\na,b\nc,d\n*관용어,\ne,f\n';
 
   Future<ImportPlan> planOf(String deckId, String text) async {
-    final table = _ok(await read(PastedSource(text)));
-    return _ok(
+    final table = transferOk(await read(PastedSource(text)));
+    return transferOk(
       await preview(
         deckId: deckId,
         table: table,
@@ -86,7 +59,7 @@ void main() {
       choices: const {},
     );
 
-    final summary = _ok(
+    final summary = transferOk(
       await commit(deckId: root.id, preview: rows, includeDuplicates: false),
     );
 
@@ -99,10 +72,10 @@ void main() {
 
   test('sections from a deck of cards are refused at preview (E7)', () async {
     await insertCard(db, id: 'x', deckId: leaf.id, front: 'a', back: 'b');
-    final table = _ok(await read(const PastedSource(sheet)));
+    final table = transferOk(await read(const PastedSource(sheet)));
 
     expect(
-      _reason(
+      transferReason(
         await preview(
           deckId: leaf.id,
           table: table,
@@ -123,7 +96,7 @@ void main() {
     );
 
     expect(
-      _reason(
+      transferReason(
         await commit(deckId: root.id, preview: rows, includeDuplicates: false),
       ),
       TransferRejection.sectionChoiceMissing,
@@ -142,7 +115,7 @@ void main() {
     await decks.moveDeck(deckId: part.id, newParentId: other.id);
 
     expect(
-      _reason(
+      transferReason(
         await commit(deckId: root.id, preview: rows, includeDuplicates: false),
       ),
       TransferRejection.sectionTargetChanged,
@@ -156,7 +129,7 @@ void main() {
 
   test('a flat file from a root goes into one default deck (§4.2)', () async {
     final plan = await planOf(root.id, 'Term,Meaning\na,b\n');
-    final summary = _ok(
+    final summary = transferOk(
       await commit(
         deckId: root.id,
         preview: plan.preview(
@@ -180,10 +153,10 @@ void main() {
       for (var level = 3; level <= DeckEntity.maxDepth; level++) {
         deepest = await decks.sub(deepest.id, 'L$level');
       }
-      final table = _ok(await read(const PastedSource(sheet)));
+      final table = transferOk(await read(const PastedSource(sheet)));
 
       expect(
-        _reason(
+        transferReason(
           await preview(
             deckId: deepest.id,
             table: table,

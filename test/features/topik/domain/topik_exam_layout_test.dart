@@ -8,38 +8,55 @@ import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 
 void main() {
   group('TopikExamLayout (BR-TOPIK-001, BR-TOPIK-002)', () {
-    test('TOPIK I listening is 30 questions 1–30 worth 3 or 4', () {
-      final layout = TopikExamLayout.of(
-        TopikLevel.topik1,
-        TopikSection.listening,
-      );
-      expect(layout.questionCount, 30);
-      expect(layout.firstQuestionNo, 1);
-      expect(layout.lastQuestionNo, 30);
-      expect(layout.allowedPoints, {3, 4});
-    });
-
-    test('TOPIK I reading is 40 questions numbered 31–70 worth 2 or 3', () {
-      final layout = TopikExamLayout.of(
-        TopikLevel.topik1,
-        TopikSection.reading,
-      );
-      expect(layout.questionCount, 40);
-      expect(layout.firstQuestionNo, 31);
-      expect(layout.lastQuestionNo, 70);
-      expect(layout.allowedPoints, {2, 3});
-    });
-
-    test('TOPIK II listening and reading are 50 questions 1–50 worth 2', () {
-      for (final section in TopikSection.values) {
-        final layout = TopikExamLayout.of(TopikLevel.topik2, section);
-        expect(layout.questionCount, 50);
-        expect(layout.firstQuestionNo, 1);
-        expect(layout.lastQuestionNo, 50);
-        expect(layout.allowedPoints, {2});
-      }
-      expect(TopikExamLayout.sectionTotal, 100);
-    });
+    final layouts = [
+      (
+        name: 'TOPIK I listening is 30 questions 1–30 worth 3 or 4',
+        level: TopikLevel.topik1,
+        section: TopikSection.listening,
+        count: 30,
+        first: 1,
+        last: 30,
+        points: {3, 4},
+      ),
+      (
+        name: 'TOPIK I reading is 40 questions numbered 31–70 worth 2 or 3',
+        level: TopikLevel.topik1,
+        section: TopikSection.reading,
+        count: 40,
+        first: 31,
+        last: 70,
+        points: {2, 3},
+      ),
+      // TOPIK II listening and reading are 50 questions 1–50 worth 2.
+      (
+        name: 'TOPIK II listening is 50 questions 1–50 worth 2',
+        level: TopikLevel.topik2,
+        section: TopikSection.listening,
+        count: 50,
+        first: 1,
+        last: 50,
+        points: {2},
+      ),
+      (
+        name: 'TOPIK II reading is 50 questions 1–50 worth 2',
+        level: TopikLevel.topik2,
+        section: TopikSection.reading,
+        count: 50,
+        first: 1,
+        last: 50,
+        points: {2},
+      ),
+    ];
+    for (final c in layouts) {
+      test(c.name, () {
+        final layout = TopikExamLayout.of(c.level, c.section);
+        expect(layout.questionCount, c.count);
+        expect(layout.firstQuestionNo, c.first);
+        expect(layout.lastQuestionNo, c.last);
+        expect(layout.allowedPoints, c.points);
+        expect(TopikExamLayout.sectionTotal, 100);
+      });
+    }
   });
 
   group('play count (BR-TOPIK-004)', () {

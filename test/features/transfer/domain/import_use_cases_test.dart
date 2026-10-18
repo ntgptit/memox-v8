@@ -1,13 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
@@ -20,45 +15,22 @@ import 'package:memox/features/transfer/domain/usecases/read_import_source_use_c
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
-import '../../../support/test_database.dart';
+import '../../../support/transfer_fixtures.dart';
 
 // The import use cases run over the real repositories, so each test asserts
 // what the person sees (UC-TRANSFER-001).
-
-DateTime _now() => DateTime(2026, 9, 26);
-
-T _ok<T>(Outcome<T, TransferRejection> result) =>
-    (result as Ok<T, TransferRejection>).value;
-
-TransferRejection _reason(Outcome<Object?, TransferRejection> result) =>
-    (result as Rejected<Object?, TransferRejection>).reason;
 
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late CardTransferRepositoryImpl cards;
-  late DeckEntity root;
   late DeckEntity leaf;
   const files = TransferFileRepositoryImpl();
   late ReadImportSourceUseCase read;
   late PreviewImportUseCase preview;
   late CommitImportUseCase commit;
   setUp(() async {
-    db = openTestDatabase();
-    decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardTransferRepositoryImpl(
-      db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        DeckTreeDataSource(db),
-        now: _now,
-      ),
-      decks,
-    );
-    root = await decks.root('r');
-    leaf = await decks.sub(root.id, 'Nhà hàng');
+    (:db, :decks, :cards, root: _, :leaf) = await openTransferWorld();
     read = const ReadImportSourceUseCase(files);
     preview = PreviewImportUseCase(cards);
     commit = CommitImportUseCase(cards);
@@ -66,8 +38,8 @@ void main() {
   tearDown(() => db.close());
 
   Future<ImportPreview> previewOf(String text) async {
-    final table = _ok(await read(PastedSource(text)));
-    return _ok(
+    final table = transferOk(await read(PastedSource(text)));
+    return transferOk(
       await preview(
         deckId: leaf.id,
         table: table,
@@ -89,7 +61,7 @@ void main() {
       'front,back,tags\nmenu,thực đơn,food\nbill,,\ntip,tiền boa,\n,,\nmenu,thực đơn,\n',
     );
 
-    final summary = _ok(
+    final summary = transferOk(
       await commit(deckId: leaf.id, preview: rows, includeDuplicates: false),
     );
 
@@ -116,7 +88,7 @@ void main() {
   });
 
   test('a clean source ends on success; a blank row alone does not make it partial', () async {
-    final summary = _ok(
+    final summary = transferOk(
       await commit(
         deckId: leaf.id,
         preview: await previewOf('front,back\na,b\n,\nc,d'),
@@ -132,7 +104,7 @@ void main() {
     final rows = await previewOf('front,back\na,b\nc,\nd,e');
     await insertCard(db, id: 'raced', deckId: leaf.id, front: 'a', back: 'b');
 
-    final summary = _ok(
+    final summary = transferOk(
       await commit(deckId: leaf.id, preview: rows, includeDuplicates: false),
     );
 
@@ -153,7 +125,7 @@ void main() {
       final rows = await previewOf('front,back\na,b');
       await insertCard(db, id: 'raced', deckId: leaf.id, front: 'a', back: 'b');
 
-      final summary = _ok(
+      final summary = transferOk(
         await commit(deckId: leaf.id, preview: rows, includeDuplicates: false),
       );
 
@@ -168,9 +140,11 @@ void main() {
   );
 
   test('an unmapped face, and a preview with nothing to write, are refused before any write', () async {
-    final table = _ok(await read(const PastedSource('term,meaning\na,b')));
+    final table = transferOk(
+      await read(const PastedSource('term,meaning\na,b')),
+    );
     expect(
-      _reason(
+      transferReason(
         await preview(
           deckId: leaf.id,
           table: table,
@@ -183,7 +157,7 @@ void main() {
 
     final allInvalid = await previewOf('front,back\na,');
     expect(
-      _reason(
+      transferReason(
         await commit(
           deckId: leaf.id,
           preview: allInvalid,
@@ -195,10 +169,10 @@ void main() {
   });
 
   test('a header without data rows is an empty source (E2)', () async {
-    final table = _ok(await read(const PastedSource('front,back\n')));
+    final table = transferOk(await read(const PastedSource('front,back\n')));
 
     expect(
-      _reason(
+      transferReason(
         await preview(
           deckId: leaf.id,
           table: table,
@@ -217,7 +191,7 @@ void main() {
       await decks.sub(leaf.id, 'child');
 
       expect(
-        _reason(
+        transferReason(
           await commit(
             deckId: leaf.id,
             preview: rows,

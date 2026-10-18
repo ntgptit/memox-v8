@@ -1,16 +1,13 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/di/card_transfer_repository_provider.dart';
-import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/export_share_repository_provider.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/export_artifact_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
-import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 import 'package:memox/features/transfer/domain/usecases/build_export_use_case.dart';
 import 'package:memox/features/transfer/presentation/providers/build_export_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
@@ -21,11 +18,12 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_export_share.dart';
+import '../../../support/held_transfer_files.dart';
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../visual_audit/screen_audit.dart';
+import 'support/words_deck.dart';
 
 // The export sheet over the real backend and a fake share sheet
 // (UC-TRANSFER-002, kit 12, rulings E1–E6).
@@ -53,26 +51,6 @@ class _Host extends StatelessWidget {
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
 
-/// The real encoders, inline, each write waiting for [hold].
-final class _HeldFiles implements TransferFileRepository {
-  final _inner = TransferFileRepositoryImpl(
-    run: <Q, R>(callback, message) async => callback(message),
-  );
-  final hold = Completer<void>();
-
-  @override
-  Future<Outcome<Uint8List, TransferRejection>> write(
-    List<List<String>> rows,
-    TransferFormat format,
-  ) async {
-    await hold.future;
-    return _inner.write(rows, format);
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.tap(finder);
   await tester.pumpAndSettle();
@@ -84,8 +62,7 @@ Future<({String deckId, FakeExportShare share})> _seed(
   CardExportScope Function(String deckId)? scope,
   bool isWholeDeckEntry = false,
 }) async {
-  final root = await env.decks.root('Korean');
-  final deck = await env.decks.sub(root.id, 'Words');
+  final deck = await seedWordsDeck(env);
   await insertCard(env.db, id: 'a', deckId: deck.id, front: 'mul');
   await insertCard(env.db, id: 'b', deckId: deck.id, front: 'bul');
   final share = FakeExportShare();
@@ -235,11 +212,10 @@ void main() {
     libraryTest(
       '$how while the file is prepared shares nothing, even once it is ready (A5, ruling E6)',
       (tester, env) async {
-        final root = await env.decks.root('Korean');
-        final deck = await env.decks.sub(root.id, 'Words');
+        final deck = await seedWordsDeck(env);
         await insertCard(env.db, id: 'a', deckId: deck.id);
         final share = FakeExportShare();
-        final files = _HeldFiles();
+        final files = HeldTransferFiles()..hold = Completer<void>();
         await pumpLibraryScreen(
           tester,
           env,
@@ -271,7 +247,7 @@ void main() {
         await dismiss(tester);
         // The file is ready while the sheet is still sliding away.
         await tester.pump(const Duration(milliseconds: 50));
-        files.hold.complete();
+        files.hold!.complete();
         await tester.pumpAndSettle();
 
         expect(find.byType(CardExportSheetWidget), findsNothing);
@@ -303,8 +279,7 @@ void main() {
   libraryTest(
     'the sheet meets the target guidelines at the default text size',
     (tester, env) async {
-      final root = await env.decks.root('Korean');
-      final deck = await env.decks.sub(root.id, 'Words');
+      final deck = await seedWordsDeck(env);
       await insertCard(env.db, id: 'a', deckId: deck.id);
       await auditProductionScreen(
         tester,

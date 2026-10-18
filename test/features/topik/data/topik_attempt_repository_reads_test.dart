@@ -4,12 +4,9 @@ import 'package:memox/features/topik/data/repositories/topik_attempt_repository_
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 
-import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
+import '../../../support/topik_attempt_store.dart';
 import '../../../support/topik_content_fixtures.dart';
-
-final _t0 = DateTime.utc(2026, 10, 15, 9);
-DateTime _at(int seconds) => _t0.add(Duration(seconds: seconds));
 
 void main() {
   late AppDatabase db;
@@ -17,21 +14,20 @@ void main() {
   final test2 = topikTestFixture();
   final test1 = topikTestFixture(level: TopikLevel.topik1);
   setUp(() {
-    db = openTestDatabase();
-    repository = TopikAttemptRepositoryImpl(db, now: () => _t0);
+    (:db, :repository) = openTopikAttemptStore();
   });
   tearDown(() => db.close());
 
   Future<TopikAttempt> completed(int startedSecond) async {
     final attempt = topikOk(
-      await repository.start(test2, now: _at(startedSecond)),
+      await repository.start(test2, now: topikAt(startedSecond)),
     );
     return topikOk(
       await repository.submit(
         attemptId: attempt.id,
         test: test2,
         elapsedMs: 0,
-        now: _at(startedSecond + 1),
+        now: topikAt(startedSecond + 1),
       ),
     );
   }
@@ -40,8 +36,8 @@ void main() {
       '(BR-TOPIK-021)', () async {
     final first = await completed(0);
     final second = await completed(10);
-    final open = topikOk(await repository.start(test2, now: _at(20)));
-    topikOk(await repository.start(test1, now: _at(30)));
+    final open = topikOk(await repository.start(test2, now: topikAt(20)));
+    topikOk(await repository.start(test1, now: topikAt(30)));
 
     final attempts = await repository.watchAttemptsOfTest(test2.testId).first;
 
@@ -50,7 +46,7 @@ void main() {
 
   test('a tie inside one second keeps creation order, newest first', () async {
     final a = await completed(0);
-    final b = topikOk(await repository.start(test2, now: _at(0)));
+    final b = topikOk(await repository.start(test2, now: topikAt(0)));
     final attempts = await repository.watchAttemptsOfTest(test2.testId).first;
     expect(attempts.map((x) => x.id), [b.id, a.id]);
   });
@@ -83,7 +79,7 @@ void main() {
 
   test('test statuses fold every attempt (BR-TOPIK-022)', () async {
     await completed(0);
-    topikOk(await repository.start(test2, now: _at(20)));
+    topikOk(await repository.start(test2, now: topikAt(20)));
 
     final statuses = await repository.watchTestStatuses().first;
 
@@ -92,6 +88,6 @@ void main() {
     expect(status.hasInProgress, isTrue);
     expect(status.completedCount, 1);
     expect(status.bestScore, 0);
-    expect(status.lastActivityAt.isAtSameMomentAs(_at(20)), isTrue);
+    expect(status.lastActivityAt.isAtSameMomentAs(topikAt(20)), isTrue);
   });
 }
