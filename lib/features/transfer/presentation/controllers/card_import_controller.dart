@@ -11,6 +11,7 @@ import 'package:memox/features/transfer/presentation/providers/import_file_picke
 import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/read_import_source_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_import_controller.g.dart';
@@ -259,33 +260,28 @@ class CardImportController extends _$CardImportController {
     if (draft == null || preview == null || draft.isBusy) return;
     if (!draft.canCommit) return;
     state = draft.copyWith(step: CardImportStep.importing, isBusy: true);
-    try {
-      final result = await ref.read(commitImportUseCaseProvider)(
-        deckId: deckId,
-        preview: preview,
-        includeDuplicates: draft.isIncludingDuplicates,
-      );
-      if (!ref.mounted) return;
-      state = switch (result) {
-        Ok(:final value) => CardImportDone(value),
-        Rejected(reason: TransferRejection.targetRejected) => CardImportFailed(
-          draft: draft,
-          isTargetRejected: true,
-        ),
-        Rejected(:final reason) => draft.copyWith(problem: reason),
-      };
-    } on Failure {
-      if (!ref.mounted) return;
-      state = CardImportFailed(draft: draft, isTargetRejected: false);
-    } on Object catch (error, stackTrace) {
-      // A bug, not a Failure (ADR-016): report it, and never leave the
-      // wizard on importing, where Back and Close wait (step 5).
-      FlutterError.reportError(
-        FlutterErrorDetails(exception: error, stack: stackTrace),
-      );
-      if (!ref.mounted) return;
-      state = CardImportFailed(draft: draft, isTargetRejected: false);
-    }
+    await runHeld(
+      () async {
+        final result = await ref.read(commitImportUseCaseProvider)(
+          deckId: deckId,
+          preview: preview,
+          includeDuplicates: draft.isIncludingDuplicates,
+        );
+        if (!ref.mounted) return;
+        state = switch (result) {
+          Ok(:final value) => CardImportDone(value),
+          Rejected(reason: TransferRejection.targetRejected) =>
+            CardImportFailed(draft: draft, isTargetRejected: true),
+          Rejected(:final reason) => draft.copyWith(problem: reason),
+        };
+      },
+      // A Failure or a bug never leaves the wizard on importing, where Back
+      // and Close wait (step 5).
+      onFailed: (_) {
+        if (!ref.mounted) return;
+        state = CardImportFailed(draft: draft, isTargetRejected: false);
+      },
+    );
   }
 
   /// "Try again" after a failed write: the same preview, committed again

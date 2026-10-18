@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -9,6 +8,7 @@ import 'package:memox/features/deck/presentation/controllers/deck_actions_contro
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -94,29 +94,35 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
       _isSubmitting = true;
       _rejection = null;
     });
-    try {
-      final outcome = await widget.submit(
-        ref.read(deckActionsControllerProvider.notifier),
-        _name.text,
-      );
-      if (!mounted) return;
-      switch (outcome) {
-        case Ok():
-          Navigator.of(context).pop();
-        case Rejected(:final reason) when _nameReasons.contains(reason):
-          setState(() {
-            _rejection = reason;
-            _isSubmitting = false;
-          });
-        case Rejected(:final reason):
-          showMxSnackbar(context, message: context.l10n.deckRejection(reason));
-          Navigator.of(context).pop();
-      }
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+    await runHeld(
+      () async {
+        final outcome = await widget.submit(
+          ref.read(deckActionsControllerProvider.notifier),
+          _name.text,
+        );
+        if (!mounted) return;
+        switch (outcome) {
+          case Ok():
+            Navigator.of(context).pop();
+          case Rejected(:final reason) when _nameReasons.contains(reason):
+            setState(() {
+              _rejection = reason;
+              _isSubmitting = false;
+            });
+          case Rejected(:final reason):
+            showMxSnackbar(
+              context,
+              message: context.l10n.deckRejection(reason),
+            );
+            Navigator.of(context).pop();
+        }
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

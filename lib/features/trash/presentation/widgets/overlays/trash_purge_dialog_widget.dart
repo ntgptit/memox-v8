@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -48,27 +48,30 @@ class _TrashPurgeDialogWidgetState
     // is drawn.
     if (_isPurging) return;
     setState(() => _isPurging = true);
-    try {
-      final report = await ref.read(trashControllerProvider.notifier).purge({
-        for (final entry in widget.entries) entry.batchId,
-      });
-      if (!mounted) return;
-      final purged = report.purged.length;
-      if (purged > 0) {
-        final l10n = context.l10n;
-        showMxSnackbar(
-          context,
-          message: _isCards
-              ? l10n.trashPurgedCards(purged)
-              : l10n.trashPurgedDecks(purged),
-        );
-      }
-      Navigator.of(context).pop(true);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isPurging = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+    await runHeld(
+      () async {
+        final report = await ref.read(trashControllerProvider.notifier).purge({
+          for (final entry in widget.entries) entry.batchId,
+        });
+        if (!mounted) return;
+        final purged = report.purged.length;
+        if (purged > 0) {
+          final l10n = context.l10n;
+          showMxSnackbar(
+            context,
+            message: _isCards
+                ? l10n.trashPurgedCards(purged)
+                : l10n.trashPurgedDecks(purged),
+          );
+        }
+        Navigator.of(context).pop(true);
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isPurging = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

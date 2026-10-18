@@ -85,6 +85,7 @@ Notes on the states above:
 | resetConfirm | Reset | resetting, then resetDone: the toast "Cycle {n} started · {count} cards are new again", the unlocked state | VERIFIED `::with progress: cycle, Kept and Lost; keeping the algorithm resets it (UC-SRS-001)` |
 | resetting | the confirm spins and Cancel is off | no second reset | VERIFIED `::while the reset runs the confirm spins and Cancel is off` |
 | resetting | the reset fails | resetFailed: the dialog stays for another try | VERIFIED `::a reset that fails keeps the dialog for another try (E1)` |
+| held write (switching, resetting) | a bug (not a `Failure`) | switching: switchFailed, the same banner and Retry as a `Failure`, the bug reported; resetting: released with the toast "Nothing was lost, but something went wrong. Try again." (`failureUnknown`), reported, the dialog is no longer held and Back closes it | VERIFIED `deck_held_bug_test.dart::a switch that dies on a bug stops spinning and offers Retry, as a Failure does (UC-DECK-002 E2)`, `::a reset that dies on a bug releases the dialog (UC-SRS-001 E1)` |
 | resetConfirm | a reset made elsewhere while open | the cycle named moves on | VERIFIED `::a reset made elsewhere while the dialog is open moves its cycle on` |
 | nothingToLose | Reset | resetDone | VERIFIED `::nothing to lose says so and still resets (UC-SRS-001 A2)` |
 

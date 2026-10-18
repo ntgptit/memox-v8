@@ -98,6 +98,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 | purgeConfirm | Delete | purging, then purged; the selection ends | VERIFIED `::while the purge runs, Keep in Trash and Back wait for it; nothing is deleted behind a closed dialog` |
 | purging | the store skips a batch | purged for the rest, youngerInside for the skipped | VERIFIED `::a purge the store skips names what it still holds (spec D6)` |
 | purging | the purge fails | purgeFailed | `UNVERIFIED (code read)`: `trash_purge_dialog_widget.dart` |
+| held write (purging, restoring) | a bug (not a `Failure`) | released with the toast "Nothing was lost, but something went wrong. Try again." (`failureUnknown`); the bug is reported. The dialog or sheet is no longer held and Back closes it | VERIFIED `trash_held_bug_test.dart::a purge that dies on a bug releases the dialog (UC-TRASH-001 A3)`, `::a restore that dies on a bug releases the sheet (UC-TRASH-001 steps 5-7)` |
 | all | tap Hide this note | noteDismissed | VERIFIED `trash_screen_test.dart::the retention note can be hidden, and stays hidden (critique 2026-09-30)` |
 
 ## Rulings

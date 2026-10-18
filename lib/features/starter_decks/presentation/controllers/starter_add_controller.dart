@@ -1,9 +1,9 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/domain/failures/starter_failure.dart';
 import 'package:memox/features/starter_decks/presentation/providers/add_starter_deck_use_case_provider.dart';
 import 'package:memox/features/starter_decks/presentation/states/starter_add_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'starter_add_controller.g.dart';
@@ -26,23 +26,28 @@ class StarterAddController extends _$StarterAddController {
   }) async {
     if (state.isAdding) return null;
     state = const StarterAddState(isAdding: true);
-    try {
-      final outcome = await ref.read(addStarterDeckUseCaseProvider)(
-        templateId: templateId,
-        schedulerType: schedulerType,
-        allowSecondCopy: allowSecondCopy,
-      );
-      final result = switch (outcome) {
-        Ok(:final value) => StarterAdded(value),
-        Rejected(reason: StarterRejection.alreadyInLibrary) =>
-          const StarterAlreadyPresent(),
-        Rejected(reason: StarterRejection.templateNotFound) => null,
-      };
-      if (ref.mounted) state = StarterAddState(hasFailed: result == null);
-      return result;
-    } on Failure {
-      if (ref.mounted) state = const StarterAddState(hasFailed: true);
-      return null;
-    }
+    StarterAddResult? result;
+    await runHeld(
+      () async {
+        final outcome = await ref.read(addStarterDeckUseCaseProvider)(
+          templateId: templateId,
+          schedulerType: schedulerType,
+          allowSecondCopy: allowSecondCopy,
+        );
+        result = switch (outcome) {
+          Ok(:final value) => StarterAdded(value),
+          Rejected(reason: StarterRejection.alreadyInLibrary) =>
+            const StarterAlreadyPresent(),
+          Rejected(reason: StarterRejection.templateNotFound) => null,
+        };
+        if (ref.mounted) state = StarterAddState(hasFailed: result == null);
+      },
+      // A bug takes the Failure's way out: the sheet shows the failed banner
+      // and is never held for good.
+      onFailed: (_) {
+        if (ref.mounted) state = const StarterAddState(hasFailed: true);
+      },
+    );
+    return result;
   }
 }

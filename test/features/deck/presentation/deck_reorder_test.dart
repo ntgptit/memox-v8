@@ -5,7 +5,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
@@ -18,10 +17,10 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../../support/deck_fixtures.dart';
+import '../../../support/deck_reorder_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
-import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -79,47 +78,6 @@ Future<List<String>> _rootOrder(LibraryEnv env) async => [
     row.read<String>('name'),
 ];
 
-/// The deck names in reorder mode, top to bottom.
-List<String> _shownOrder(WidgetTester tester) => [
-  for (final row in tester.widgetList<DeckReorderRowWidget>(
-    find.byType(DeckReorderRowWidget),
-  ))
-    row.tile.name,
-];
-
-/// Drags [name]'s handle down one row, past the next deck.
-Future<void> _dragPastNext(WidgetTester tester, String name) async {
-  final row = find.widgetWithText(DeckReorderRowWidget, name);
-  final handle = find.descendant(
-    of: row,
-    matching: find.byIcon(AppIcons.dragHandle),
-  );
-  final step = tester.getSize(row).height * 0.5;
-  final gesture = await tester.startGesture(tester.getCenter(handle));
-  await tester.pump();
-  await gesture.moveBy(Offset(0, step));
-  await tester.pump();
-  await gesture.moveBy(Offset(0, step));
-  await tester.pump();
-  await gesture.up();
-  await tester.pumpAndSettle();
-}
-
-/// Reorder starts from a row's action sheet (ruling C-L4).
-Finder get _anyRowMore =>
-    byControlLabel(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}')).first;
-
-Future<void> _openRowSheet(WidgetTester tester) async {
-  await tester.tap(_anyRowMore);
-  await tester.pumpAndSettle();
-}
-
-Future<void> _startReorder(WidgetTester tester) async {
-  await _openRowSheet(tester);
-  await tester.tap(find.text(_en.deckReorder));
-  await tester.pumpAndSettle();
-}
-
 Future<void> _closeSheet(WidgetTester tester) async {
   await tester.tapAt(const Offset(180, 40));
   await tester.pumpAndSettle();
@@ -132,14 +90,14 @@ void main() {
   ) async {
     await env.decks.root('A');
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _openRowSheet(tester);
+    await openRowSheet(tester);
     expect(find.text(_en.deckReorder), findsNothing);
     await _closeSheet(tester);
 
     await env.decks.root('B');
     await tester.pump();
     await tester.pump();
-    await _openRowSheet(tester);
+    await openRowSheet(tester);
     expect(find.text(_en.deckReorder), findsOneWidget);
     await _closeSheet(tester);
 
@@ -149,7 +107,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.commonDone));
     await tester.pumpAndSettle();
-    await _openRowSheet(tester);
+    await openRowSheet(tester);
     expect(find.text(_en.deckReorder), findsNothing);
   });
 
@@ -159,7 +117,7 @@ void main() {
       await env.decks.root(name);
     }
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _startReorder(tester);
+    await startReorder(tester);
     expect(find.text(_en.libraryReorderDone), findsOneWidget);
 
     final left = await tester
@@ -181,7 +139,7 @@ void main() {
       await env.decks.root(name);
     }
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _startReorder(tester);
+    await startReorder(tester);
 
     expect(find.byType(MxFab), findsNothing);
     // M3-D2: reorder keeps the browse shape, one card per deck.
@@ -192,10 +150,10 @@ void main() {
       ),
       findsOneWidget,
     );
-    await _dragPastNext(tester, 'A');
+    await dragPastNext(tester, 'A');
 
     expect(await _rootOrder(env), ['B', 'A', 'C']);
-    expect(_shownOrder(tester), ['B', 'A', 'C']);
+    expect(shownOrder(tester), ['B', 'A', 'C']);
   });
 
   for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
@@ -209,7 +167,7 @@ void main() {
         env,
         WindowWidthScope(width: width, child: deckScreen()),
       );
-      await _startReorder(tester);
+      await startReorder(tester);
 
       expect(
         tester.getTopLeft(find.byType(DeckReorderRowWidget).first).dx,
@@ -230,7 +188,7 @@ void main() {
       await env.decks.root(name);
     }
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _startReorder(tester);
+    await startReorder(tester);
     final handle = tester.ensureSemantics();
     final widgets = WidgetsLocalizations.of(
       tester.element(find.byType(DeckReorderRowWidget).first),
@@ -260,7 +218,7 @@ void main() {
       await env.decks.root(name);
     }
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _startReorder(tester);
+    await startReorder(tester);
     await tester.tap(find.text(_en.libraryReorderDone));
     await tester.pumpAndSettle();
 
@@ -285,10 +243,10 @@ void main() {
         ),
       ],
     );
-    await _startReorder(tester);
-    await _dragPastNext(tester, 'A');
+    await startReorder(tester);
+    await dragPastNext(tester, 'A');
 
-    expect(_shownOrder(tester), ['A', 'B', 'C']);
+    expect(shownOrder(tester), ['A', 'B', 'C']);
     expect(find.text(_en.deckRejectionNotSiblings), findsOneWidget);
   });
 
@@ -297,7 +255,7 @@ void main() {
       await env.decks.root(name);
     }
     await pumpLibraryScreen(tester, env, deckScreen());
-    await _startReorder(tester);
+    await startReorder(tester);
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
@@ -319,19 +277,19 @@ void main() {
         reorderDeckUseCaseProvider.overrideWithValue(ReorderDeckUseCase(gated)),
       ],
     );
-    await _startReorder(tester);
-    await _dragPastNext(tester, 'A');
-    expect(_shownOrder(tester), ['B', 'A', 'C']);
+    await startReorder(tester);
+    await dragPastNext(tester, 'A');
+    expect(shownOrder(tester), ['B', 'A', 'C']);
 
     // Another change reaches the level while the drop is still saving.
     await env.decks.renameDeck(deckId: decks.last.id, name: 'Cc');
     await tester.pump();
     await tester.pump();
-    expect(_shownOrder(tester), ['B', 'A', 'Cc']);
+    expect(shownOrder(tester), ['B', 'A', 'Cc']);
 
     gated.release();
     await tester.pumpAndSettle();
-    expect(_shownOrder(tester), ['B', 'A', 'Cc']);
+    expect(shownOrder(tester), ['B', 'A', 'Cc']);
     expect(await _rootOrder(env), ['B', 'A', 'Cc']);
   });
 
@@ -343,7 +301,7 @@ void main() {
     await pumpLibraryScreen(tester, env, deckScreen());
     expect(find.byType(MxSearchField), findsOneWidget);
 
-    await _startReorder(tester);
+    await startReorder(tester);
     expect(find.byType(MxSearchField), findsNothing);
 
     await tester.tap(find.text(_en.libraryReorderDone));

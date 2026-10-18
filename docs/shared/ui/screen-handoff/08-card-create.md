@@ -59,6 +59,7 @@ card?") when leaving a dirty new-card form without saving.
 | saving | the fields while the write runs | read-only (`isReadOnly: _isSaving`) | `UNVERIFIED (code read)`: `card_editor_form_widget.dart`, `card_field_widget.dart`, `card_optional_fields_widget.dart` |
 | saving | a second tap on Save | one card | VERIFIED `::a double tap on Save adds one card` |
 | saving | the write fails | saveFailed, the typed content kept | VERIFIED `::a failed save keeps the form and offers Retry save (RF4)` |
+| held write (saving) | a bug (not a `Failure`) | saveFailed, the same banner and "Retry save" as a `Failure`; the bug is reported | The create and edit saves share `_save`; VERIFIED for the edit save `card_held_bug_test.dart::a save that dies on a bug leaves the editor saying so, with its controls back (Ruling P4a-L3)`; the create call itself `UNVERIFIED (code read)` |
 | saveFailed | Retry save | saving, then saved | `UNVERIFIED (code read)`: `card_editor_form_widget.dart` (`_save` clears `_hasFailed`) |
 | saving | the deck now holds sub-decks | deckRejects: warning banner, Save off, nothing written | VERIFIED `::a deck that now holds decks refuses with a warning banner` |
 | saving | the deck is gone | deckGone | `UNVERIFIED (code read)`: `card_editor_form_widget.dart` (`_afterSave`); the edit-side twin is VERIFIED `::a card deleted while editing shows it is gone (RF3)` |

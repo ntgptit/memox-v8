@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart' show ReorderableListView;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
@@ -12,6 +11,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_
 import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_anchor_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -66,26 +66,29 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
         ..insert(newIndex, moving);
     });
     _savingDrops++;
-    try {
-      final outcome = await ref
-          .read(deckActionsControllerProvider.notifier)
-          .reorderDeck(
-            deckId: moving.id,
-            anchorId: anchor.anchorId,
-            placement: anchor.placement,
-          );
-      _savingDrops--;
-      if (!mounted) return;
-      if (outcome case Rejected(:final reason)) {
+    await runHeld(
+      () async {
+        final outcome = await ref
+            .read(deckActionsControllerProvider.notifier)
+            .reorderDeck(
+              deckId: moving.id,
+              anchorId: anchor.anchorId,
+              placement: anchor.placement,
+            );
+        _savingDrops--;
+        if (!mounted) return;
+        if (outcome case Rejected(:final reason)) {
+          setState(() => _order = widget.tiles);
+          showMxSnackbar(context, message: context.l10n.deckRejection(reason));
+        }
+      },
+      onFailed: (failure) {
+        _savingDrops--;
+        if (!mounted) return;
         setState(() => _order = widget.tiles);
-        showMxSnackbar(context, message: context.l10n.deckRejection(reason));
-      }
-    } on Failure catch (failure) {
-      _savingDrops--;
-      if (!mounted) return;
-      setState(() => _order = widget.tiles);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

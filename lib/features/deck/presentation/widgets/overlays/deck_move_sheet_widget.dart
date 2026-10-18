@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
@@ -12,6 +11,7 @@ import 'package:memox/core/text/path_label.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -47,25 +47,28 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
   Future<void> _move(DeckMoveTarget target) async {
     if (_isMoving) return;
     setState(() => _isMoving = true);
-    try {
-      final outcome = await ref
-          .read(deckActionsControllerProvider.notifier)
-          .moveDeck(deckId: widget.deck.id, newParentId: target.id);
-      if (!mounted) return;
-      final l10n = context.l10n;
-      showMxSnackbar(
-        context,
-        message: switch (outcome) {
-          Ok() => l10n.deckMovedToast(target.name),
-          Rejected(:final reason) => l10n.deckRejection(reason),
-        },
-      );
-      Navigator.of(context).pop();
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isMoving = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+    await runHeld(
+      () async {
+        final outcome = await ref
+            .read(deckActionsControllerProvider.notifier)
+            .moveDeck(deckId: widget.deck.id, newParentId: target.id);
+        if (!mounted) return;
+        final l10n = context.l10n;
+        showMxSnackbar(
+          context,
+          message: switch (outcome) {
+            Ok() => l10n.deckMovedToast(target.name),
+            Rejected(:final reason) => l10n.deckRejection(reason),
+          },
+        );
+        Navigator.of(context).pop();
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isMoving = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

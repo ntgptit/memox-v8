@@ -14,6 +14,7 @@ import 'package:memox/features/srs/domain/models/reset_learning_summary_model.da
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -57,38 +58,32 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   Future<void> _reset(DeckView view, ResetLearningSummary summary) async {
     setState(() => _isResetting = true);
     final cycle = _nextCycle(view);
-    try {
-      final outcome = await ref
-          .read(deckActionsControllerProvider.notifier)
-          .resetLearning(
-            rootDeckId: view.deck.id,
-            schedulerType: _choice == view.schedulerType ? null : _choice,
-          );
-      if (!mounted) return;
-      final l10n = context.l10n;
-      showMxSnackbar(
-        context,
-        message: switch (outcome) {
-          Ok() => l10n.resetDoneToast(cycle, summary.cardCount),
-          Rejected(:final reason) => l10n.srsRejection(reason),
-        },
-      );
-      Navigator.of(context).pop();
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      // E1: rolled back; the dialog stays for another try.
-      setState(() => _isResetting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    } on Object catch (error, stackTrace) {
-      // A bug, not a Failure (ADR-016): log it, and never leave the held
-      // dialog without a way out (final review 2026-10-08).
-      FlutterError.reportError(
-        FlutterErrorDetails(exception: error, stack: stackTrace),
-      );
-      if (!mounted) return;
-      setState(() => _isResetting = false);
-      showMxSnackbar(context, message: context.l10n.failureUnknown);
-    }
+    await runHeld(
+      () async {
+        final outcome = await ref
+            .read(deckActionsControllerProvider.notifier)
+            .resetLearning(
+              rootDeckId: view.deck.id,
+              schedulerType: _choice == view.schedulerType ? null : _choice,
+            );
+        if (!mounted) return;
+        final l10n = context.l10n;
+        showMxSnackbar(
+          context,
+          message: switch (outcome) {
+            Ok() => l10n.resetDoneToast(cycle, summary.cardCount),
+            Rejected(:final reason) => l10n.srsRejection(reason),
+          },
+        );
+        Navigator.of(context).pop();
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        // E1: rolled back; the dialog stays for another try.
+        setState(() => _isResetting = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

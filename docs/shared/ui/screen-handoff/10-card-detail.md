@@ -54,6 +54,7 @@ Every state above is built.
 | loaded | tap Load older history | loadMore (spinner), then more rows, then the "Beginning of history" mark | VERIFIED `card_history_scroll_test.dart::Load older history adds the rest, then the history ends (A5)` |
 | loadMore | a second tap | ignored | `UNVERIFIED (code read)`: `card_history_controller.dart` `loadMore()` returns while loading; the button also spins |
 | loadMore | the page fails | loadMoreFailed, the rows kept | VERIFIED `::a failed older page keeps the rows and offers Retry (E4)` |
+| loadMore | the page read dies on a bug (not a `Failure`) | loadMoreFailed, the rows kept, as for a `Failure`: Retry shows, no spinner for good; the bug is reported | VERIFIED `card_held_bug_test.dart::an older history page that dies on a bug offers Retry, not a spinner for good (UC-CARD-002 E4)` |
 | loadMoreFailed | Retry | loadMore at the same cursor | VERIFIED same test |
 | loadMore | a late or duplicate page arrives | dropped | `UNVERIFIED (code read)`: `card_history_controller.dart` compares the cursor (E5) |
 | loaded | the card is edited in the editor and the editor closes | the detail shows the new content | the detail reads the card as a stream; `UNVERIFIED (code read)` for the return path |

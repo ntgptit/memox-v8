@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/tag_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -60,37 +60,40 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       _isSubmitting = true;
       _rejection = null;
     });
-    try {
-      final outcome = await ref
-          .read(cardActionsControllerProvider.notifier)
-          .addTag(cardIds: widget.cardIds, tagName: _name.text);
-      if (!mounted) return;
-      final l10n = context.l10n;
-      switch (outcome) {
-        case Ok():
-          showMxSnackbar(
-            context,
-            message: l10n.cardTaggedToast(
-              widget.cardIds.length,
-              _name.text.trim(),
-            ),
-          );
-          Navigator.of(context).pop(true);
-        case Rejected(:final reason) when _nameReasons.contains(reason):
-          setState(() {
-            _rejection = reason;
-            _isSubmitting = false;
-          });
-        // IT-ORG-014: nothing was written; the selection stays.
-        case Rejected(:final reason):
-          showMxSnackbar(context, message: l10n.tagRejection(reason));
-          Navigator.of(context).pop(false);
-      }
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+    await runHeld(
+      () async {
+        final outcome = await ref
+            .read(cardActionsControllerProvider.notifier)
+            .addTag(cardIds: widget.cardIds, tagName: _name.text);
+        if (!mounted) return;
+        final l10n = context.l10n;
+        switch (outcome) {
+          case Ok():
+            showMxSnackbar(
+              context,
+              message: l10n.cardTaggedToast(
+                widget.cardIds.length,
+                _name.text.trim(),
+              ),
+            );
+            Navigator.of(context).pop(true);
+          case Rejected(:final reason) when _nameReasons.contains(reason):
+            setState(() {
+              _rejection = reason;
+              _isSubmitting = false;
+            });
+          // IT-ORG-014: nothing was written; the selection stays.
+          case Rejected(:final reason):
+            showMxSnackbar(context, message: l10n.tagRejection(reason));
+            Navigator.of(context).pop(false);
+        }
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override

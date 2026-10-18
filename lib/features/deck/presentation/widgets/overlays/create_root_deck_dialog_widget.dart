@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -13,6 +12,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -79,26 +79,29 @@ class _CreateRootDeckDialogWidgetState
       _isSubmitting = true;
       _rejection = null;
     });
-    try {
-      final outcome = await ref
-          .read(deckActionsControllerProvider.notifier)
-          .createRootDeck(name: _name.text, schedulerType: scheduler);
-      if (!mounted) return;
-      switch (outcome) {
-        case Ok(:final value):
-          Navigator.of(context).pop(value);
-        // Ruling L3: both reasons this use case returns are about the name.
-        case Rejected(:final reason):
-          setState(() {
-            _rejection = reason;
-            _isSubmitting = false;
-          });
-      }
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+    await runHeld(
+      () async {
+        final outcome = await ref
+            .read(deckActionsControllerProvider.notifier)
+            .createRootDeck(name: _name.text, schedulerType: scheduler);
+        if (!mounted) return;
+        switch (outcome) {
+          case Ok(:final value):
+            Navigator.of(context).pop(value);
+          // Ruling L3: both reasons this use case returns are about the name.
+          case Rejected(:final reason):
+            setState(() {
+              _rejection = reason;
+              _isSubmitting = false;
+            });
+        }
+      },
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
   }
 
   @override
