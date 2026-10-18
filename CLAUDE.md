@@ -119,6 +119,12 @@ relevant paths and types, and every reference found before a change
   `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`
   (bundled, failures only), once; `flutter test` on a directory or the whole
   suite compiles every file on its own and is several times slower.
+- **One behaviour, one test.** A new test never repeats one that exists: it
+  extends the test that already has the same inputs, and same-flow cases are a
+  table with one reported test per case. Copied setup moves into the
+  narrowest helper. A cleanup deletes a test only when a kept test with the
+  same inputs makes every one of its assertions, and it keeps the deleted
+  test's ids in that file (`flutter-testing`, "One behaviour, one test").
 - **Auth on a real stack:** a PR that changes `lib/core/auth/`,
   `lib/features/account/` or `supabase/migrations/` also runs
   `bash tools/supabase/run_auth_it.sh` (Docker); it is outside the gate's
