@@ -66,28 +66,8 @@ class _TrashRestoreSheetWidgetState
     final trash = ref.read(trashControllerProvider.notifier);
     await runHeld(
       () async {
-        final String? refusal;
-        if (_isCards) {
-          final outcome = await trash.restoreCards(
-            batchIds: _batchIds.ids,
-            deckId: target.id!,
-          );
-          if (!mounted) return;
-          refusal = switch (outcome) {
-            Ok() => null,
-            Rejected(:final reason) => context.l10n.trashCardRejection(reason),
-          };
-        } else {
-          final outcome = await trash.restoreDecks(
-            batchIds: _batchIds.ids,
-            parentId: target.id,
-          );
-          if (!mounted) return;
-          refusal = switch (outcome) {
-            Ok() => null,
-            Rejected(:final reason) => context.l10n.trashDeckRejection(reason),
-          };
-        }
+        final refusal = await _refusalOf(trash, target);
+        if (!mounted) return;
         final l10n = context.l10n;
         showMxSnackbar(
           context,
@@ -112,6 +92,30 @@ class _TrashRestoreSheetWidgetState
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+  }
+
+  /// Restores the entries into [target]; the refusal's copy, or null once
+  /// they are back.
+  Future<String?> _refusalOf(TrashController trash, _Target target) async {
+    final l10n = context.l10n;
+    if (_isCards) {
+      final outcome = await trash.restoreCards(
+        batchIds: _batchIds.ids,
+        deckId: target.id!,
+      );
+      return switch (outcome) {
+        Ok() => null,
+        Rejected(:final reason) => l10n.trashCardRejection(reason),
+      };
+    }
+    final outcome = await trash.restoreDecks(
+      batchIds: _batchIds.ids,
+      parentId: target.id,
+    );
+    return switch (outcome) {
+      Ok() => null,
+      Rejected(:final reason) => l10n.trashDeckRejection(reason),
+    };
   }
 
   @override

@@ -7878,9 +7878,9 @@
   "@monitoringNoMore": {
     "description": "Screen 28: the end of the list."
   },
-  "monitoringRefresh": "Refresh",
-  "@monitoringRefresh": {
-    "description": "Screen 28: the app bar action that reads the Server tab's first page again, for a screen reader or a keyboard (audit 2026-10-17)."
+  "commonRefresh": "Refresh",
+  "@commonRefresh": {
+    "description": "The app bar action that reads a pull-to-refresh list's first page again, for a screen reader or a keyboard: screen 28's Server tab (audit 2026-10-17) and screen 33 (closing acceptance 2026-10-18)."
   },
   "monitoringRefreshFailed": "Couldn't refresh. What is shown is still correct.",
   "@monitoringRefreshFailed": {

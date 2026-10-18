@@ -18,7 +18,10 @@ D5; UI-base register row 144 (`2026-09-23-flutter-ui-base-design.md` §9).
   TOPIK I nor TOPIK II builds it directly (`lib/app/router/topik_routes.dart:87`). An unknown
   TOPIK *test* is not this page: it is screen 36's `testMissing`. An unknown deck is not
   this page either: it is screen 01's `deckNotFound`.
-- It lies on the root navigator, so it covers the tab shell: no bottom bar, no rail.
+- From `errorBuilder` it lies on the root navigator, so it covers the tab shell: no bottom
+  bar, no rail. From an unknown TOPIK level it is built inside the Study branch's route
+  (no `parentNavigatorKey`), so the tab shell stays under it (`topik_routes.dart:87`;
+  `topik_routes_test.dart::deep links: an unknown level is not found; an unknown test is missing, and Back to tests opens TOPIK`).
 
 ## Layout
 

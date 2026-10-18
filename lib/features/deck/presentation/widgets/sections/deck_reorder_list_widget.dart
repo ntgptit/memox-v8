@@ -66,6 +66,9 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
         ..insert(newIndex, moving);
     });
     _savingDrops++;
+    // The write alone runs held; the count and the screen follow it once, so
+    // a bug after the write can never count a drop off twice.
+    String? problem;
     await runHeld(
       () async {
         final outcome = await ref
@@ -75,20 +78,21 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
               anchorId: anchor.anchorId,
               placement: anchor.placement,
             );
-        _savingDrops--;
         if (!mounted) return;
         if (outcome case Rejected(:final reason)) {
-          setState(() => _order = widget.tiles);
-          showMxSnackbar(context, message: context.l10n.deckRejection(reason));
+          problem = context.l10n.deckRejection(reason);
         }
       },
       onFailed: (failure) {
-        _savingDrops--;
         if (!mounted) return;
-        setState(() => _order = widget.tiles);
-        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+        problem = context.l10n.heldFailure(failure);
       },
     );
+    _savingDrops--;
+    final message = problem;
+    if (!mounted || message == null) return;
+    setState(() => _order = widget.tiles);
+    showMxSnackbar(context, message: message);
   }
 
   @override

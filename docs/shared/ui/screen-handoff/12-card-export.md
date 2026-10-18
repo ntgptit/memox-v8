@@ -59,6 +59,7 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 | preparing | the share sheet is dismissed | shareClosed (the sheet as it was) | VERIFIED `card_export_sheet_test.dart::closing the share sheet keeps the export sheet as it was (A3, ruling E1)` |
 | preparing | the file cannot be built | failed | VERIFIED `card_export_controller_test.dart::a read that fails says so and Try again builds again (E3)` |
 | preparing | the share fails | failed (share copy) | VERIFIED `card_export_sheet_test.dart::a share error offers Try again; no share target offers Close only (E1, E2)` |
+| preparing | a bug (not a Failure) while the file is built or shared | failed (prepare or share copy); reported; Export comes back | VERIFIED `card_export_held_bug_test.dart::a bug while the file is built says it could not be prepared`, `::a bug from the share sheet says the share failed` (closing review 2026-10-18) |
 | failed | Try again | preparing again | VERIFIED `card_export_controller_test.dart::a read that fails says so and Try again builds again (E3)` |
 | preparing | no share target | noShareTarget; Close only | VERIFIED `card_export_sheet_test.dart::a share error offers Try again; no share target offers Close only (E1, E2)` |
 | selection / preparing | a selected card was moved or trashed | staleSelection; formats locked, Close only | VERIFIED `card_export_controller_test.dart::a selection with a card gone meanwhile exports nothing (E6)`, `card_export_sheet_test.dart::a selection with a card gone meanwhile exports nothing (E6)` |

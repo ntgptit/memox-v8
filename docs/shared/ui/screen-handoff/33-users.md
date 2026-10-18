@@ -17,7 +17,7 @@ auth spec O9; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content) + back | "Users". |
+| App bar | `MxAppBar` (content) + back, and a Refresh `MxIconButton` while the list can be read | "Users". "Refresh" reads the first page again, as the pull down does, for TalkBack and a keyboard; it is off while that read runs (closing review 2026-10-18, as screen 28). |
 | Search | `MxSearchField` | "Search by email"; asks 400 ms after the last keystroke, and not at all when only spaces changed (P4 minor M5); hidden on the not-admin state. |
 | Overline | `MxListSectionHeader` | "ACCOUNTS" (no count: `role_list` has no total). |
 | Rows | `MxListRow` | Person tile (tinted, the same for all), the email, "Joined {date}" (locale medium date), `MxBadge` "Admin" (primary) or "User" (neutral); no chevron. The admin's own row reads "Joined {date} · You" and does not tap (U1); not dimmed. |
@@ -73,7 +73,8 @@ The images are the goldens.
 | loading more | the page fails | load more failed (rows kept) | VERIFIED same test |
 | load more failed | Retry | loading more | VERIFIED same test |
 | loading more | the answer is "not an admin" | not an admin: the whole screen, not a failed page | final review I1. VERIFIED `users_controller_test.dart::no longer an admin while paging: the screen says so, not a failed page (final review I1)` |
-| loaded | pull down | the first page again, the rows kept until it lands | `UNVERIFIED (code read)`: `UsersController.refresh`, `_Refreshable`; no test pulls |
+| loaded | pull down | the first page again, the rows kept until it lands | `UNVERIFIED (code read)`: `UsersController.refresh`, `MxPullRefresh`; no test pulls |
+| loaded | tap Refresh in the app bar | Refresh is off (dimmed, read as disabled) until the first page lands; the rows stay, then the fresh page shows | VERIFIED `users_refresh_test.dart::Refresh reads the first page again and is off while it runs` |
 | loaded | tap an account's row | the role sheet | VERIFIED `users_screen_test.dart::the sheet saves only a different role (Review Focus 3), and the row changes` |
 | loaded | tap the admin's own row | nothing (no tap target) | U1. VERIFIED `users_screen_test.dart::the admin's own row says You and opens nothing (Review Focus 2)` |
 | role sheet | choose another role | Save enabled | VERIFIED the Review Focus 3 test above |
