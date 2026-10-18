@@ -6,6 +6,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
+import 'package:memox/features/account/presentation/providers/is_account_starting_provider.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';

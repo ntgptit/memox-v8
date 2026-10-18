@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
+import 'package:memox/features/account/presentation/providers/is_account_starting_provider.dart';
 import 'package:memox/features/account/presentation/providers/device_account_provider.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
