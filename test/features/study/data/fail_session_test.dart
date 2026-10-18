@@ -34,6 +34,9 @@ void main() {
     await db.close();
   });
 
+  Future<void> answer(String sessionId, StudyAnswer answer) =>
+      acceptAnswer(db, sessions, sessionId, answer);
+
   /// A learning session on one new card [cardId] of a fresh sm2 tree [name].
   Future<String> learningOn(String name, String cardId) async {
     final root = await decks.root(name, SchedulerType.sm2);
@@ -42,15 +45,6 @@ void main() {
     final opened = await entries.openLearningSession(deckId: leaf.id);
     return (opened as Ok<String, StudyRejection>).value;
   }
-
-  Future<void> answer(String sessionId, StudyAnswer answer) async => expect(
-    await sessions.answerTurn(
-      sessionId: sessionId,
-      cardId: (await servedCard(db, sessionId))!,
-      answer: answer,
-    ),
-    isA<Ok<void, StudyRejection>>(),
-  );
 
   test('failSession closes an open session as failed/persistence_error and '
       'keeps its turns (BR-STUDY-018, BR-STUDY-019)', () async {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -34,6 +36,11 @@ void main() {
       const StudyCtaRowWidget(
         children: [MxButton(label: 'Next', isBlock: true, onPressed: null)],
       ),
+    ),
+    (
+      'the footer hint',
+      SessionFooterHintWidget,
+      const SessionFooterHintWidget(icon: AppIcons.check, text: 'Tap'),
     ),
     (
       'the recall clock',

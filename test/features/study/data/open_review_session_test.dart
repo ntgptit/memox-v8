@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -18,18 +17,6 @@ import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 step 4 and UC-STUDY-003: opening a review session.
-
-Matcher _refusedWith(StudyRejection reason) =>
-    isA<Rejected<String, StudyRejection>>().having(
-      (rejected) => rejected.reason,
-      'reason',
-      reason,
-    );
-
-String _opened(Outcome<String, StudyRejection> result) => switch (result) {
-  Ok(:final value) => value,
-  Rejected(:final reason) => fail('opening refused: $reason'),
-};
 
 void main() {
   late AppDatabase db;
@@ -105,7 +92,7 @@ void main() {
       ),
     );
 
-    final id = _opened(
+    final id = openedSessionId(
       await entries.openReviewSession(deckId: root.id, mode: StudyMode.recall),
     );
 
@@ -134,10 +121,10 @@ void main() {
 
     expect(
       await entries.openReviewSession(deckId: root.id, mode: StudyMode.guess),
-      _refusedWith(StudyRejection.modeUnavailable),
+      refusedWith<String>(StudyRejection.modeUnavailable),
     );
     expect(await totalChanges(db), before);
-    final id = _opened(
+    final id = openedSessionId(
       await entries.openReviewSession(deckId: root.id, mode: StudyMode.fill),
     );
     expect(await queueOf(db, id, 'fill'), ['b']);
@@ -149,7 +136,7 @@ void main() {
 
     expect(
       await entries.openReviewSession(deckId: root.id, mode: StudyMode.match),
-      _refusedWith(StudyRejection.modeUnavailable),
+      refusedWith<String>(StudyRejection.modeUnavailable),
     );
   });
 
@@ -167,7 +154,7 @@ void main() {
     ]) {
       expect(
         await entries.openReviewSession(deckId: deckId, mode: mode),
-        _refusedWith(StudyRejection.modeNotOffered),
+        refusedWith<String>(StudyRejection.modeNotOffered),
       );
     }
   });
@@ -181,7 +168,7 @@ void main() {
 
     expect(
       await entries.openReviewSession(deckId: root.id, mode: StudyMode.recall),
-      _refusedWith(StudyRejection.nothingDue),
+      refusedWith<String>(StudyRejection.nothingDue),
     );
     expect(await totalChanges(db), before);
   });
@@ -197,7 +184,7 @@ void main() {
         deckId: root.id,
         mode: StudyMode.selfAssess,
       ),
-      _refusedWith(StudyRejection.directionRequired),
+      refusedWith<String>(StudyRejection.directionRequired),
     );
     expect(await totalChanges(db), before);
   });
@@ -214,7 +201,7 @@ void main() {
         mode: StudyMode.recall,
         direction: DirectionChoice.koreanToMeaning,
       ),
-      _refusedWith(StudyRejection.directionNotAllowed),
+      refusedWith<String>(StudyRejection.directionNotAllowed),
     );
     expect(await totalChanges(db), before);
   });
@@ -226,7 +213,7 @@ void main() {
       await learned(root.id, leaf.id, id, DateTime(2026, 9, day));
     }
 
-    final id = _opened(
+    final id = openedSessionId(
       await entries.openReviewSession(
         deckId: root.id,
         mode: StudyMode.selfAssess,
@@ -248,7 +235,7 @@ void main() {
       await learned(root.id, leaf.id, id, DateTime(2026, 9, day));
     }
 
-    final id = _opened(
+    final id = openedSessionId(
       await entries.openReviewSession(
         deckId: root.id,
         mode: StudyMode.selfAssess,
@@ -271,11 +258,11 @@ void main() {
     final (root, leaf) = await tree();
     await learned(root.id, leaf.id, 'a', DateTime(2026, 9, 20));
     await insertCard(db, id: 'new', deckId: leaf.id);
-    final learning = _opened(
+    final learning = openedSessionId(
       await entries.openLearningSession(deckId: leaf.id),
     );
 
-    final review = _opened(
+    final review = openedSessionId(
       await entries.openReviewSession(deckId: leaf.id, mode: StudyMode.recall),
     );
 

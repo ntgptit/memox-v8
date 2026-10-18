@@ -63,36 +63,26 @@ void main() {
     );
   });
 
-  test('resetLearning bumps generation and recreates card_schedule', () async {
-    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
-    await repo.completeLearning(cardId: cardId, generation: 1);
+  for (final scheduler in ['eight_box', 'sm2']) {
+    test('resetLearning of an $scheduler tree bumps generation and writes '
+        '$scheduler start values', () async {
+      final (rootId, cardId, _) = await insertStudyTree(
+        db,
+        'r',
+        scheduler: scheduler,
+      );
+      await repo.completeLearning(cardId: cardId, generation: 1);
 
-    await repo.resetLearning(rootDeckId: rootId);
+      await repo.resetLearning(rootDeckId: rootId);
 
-    expect((await deckRowOf(db, rootId)).read<int>('generation'), 2);
-    expectStartValues(
-      await scheduleRowOf(db, cardId),
-      scheduler: 'eight_box',
-      generation: 2,
-    );
-  });
-
-  test('resetLearning of an sm2 tree writes sm2 start values', () async {
-    final (rootId, cardId, _) = await insertStudyTree(
-      db,
-      'r',
-      scheduler: 'sm2',
-    );
-    await repo.completeLearning(cardId: cardId, generation: 1);
-
-    await repo.resetLearning(rootDeckId: rootId);
-
-    expectStartValues(
-      await scheduleRowOf(db, cardId),
-      scheduler: 'sm2',
-      generation: 2,
-    );
-  });
+      expect((await deckRowOf(db, rootId)).read<int>('generation'), 2);
+      expectStartValues(
+        await scheduleRowOf(db, cardId),
+        scheduler: scheduler,
+        generation: 2,
+      );
+    });
+  }
 
   test('resetLearning unlocks the scheduler and closes the open sessions (BR-SRS-024, BR-STUDY-015)', () async {
     final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
@@ -175,31 +165,34 @@ void main() {
     },
   );
 
-  test('a reset closes an open session of another tree that holds a card '
-      'moved into this one (BR-STUDY-015, BR-SRS-006)', () async {
-    await insertStudyTree(db, 'r');
-    await insertStudyTree(db, 'other');
-    await moveLeafWithQueuedCard(db, 'r', 'other');
+  for (final (operation, run, endReason, ids) in [
+    (
+      'a reset',
+      (ScheduleRepositoryImpl repo) => repo.resetLearning(rootDeckId: 'other'),
+      'scheduler_reset',
+      'BR-STUDY-015, BR-SRS-006',
+    ),
+    (
+      'a scheduler change',
+      (ScheduleRepositoryImpl repo) =>
+          repo.changeScheduler(rootDeckId: 'other', newType: SchedulerType.sm2),
+      'scheduler_changed',
+      'BR-STUDY-016, BR-SRS-006',
+    ),
+  ]) {
+    test('$operation closes an open session of another tree that holds a '
+        'card moved into this one ($ids)', () async {
+      await insertStudyTree(db, 'r');
+      await insertStudyTree(db, 'other');
+      await moveLeafWithQueuedCard(db, 'r', 'other');
 
-    await repo.resetLearning(rootDeckId: 'other');
+      await run(repo);
 
-    final session = await sessionRowOf(db, 'r-session');
-    expect(session.read<String>('status'), 'invalidated');
-    expect(session.read<String>('end_reason'), 'scheduler_reset');
-  });
-
-  test('a scheduler change closes an open session of another tree that holds '
-      'a card moved into this one (BR-STUDY-016, BR-SRS-006)', () async {
-    await insertStudyTree(db, 'r');
-    await insertStudyTree(db, 'other');
-    await moveLeafWithQueuedCard(db, 'r', 'other');
-
-    await repo.changeScheduler(rootDeckId: 'other', newType: SchedulerType.sm2);
-
-    final session = await sessionRowOf(db, 'r-session');
-    expect(session.read<String>('status'), 'invalidated');
-    expect(session.read<String>('end_reason'), 'scheduler_changed');
-  });
+      final session = await sessionRowOf(db, 'r-session');
+      expect(session.read<String>('status'), 'invalidated');
+      expect(session.read<String>('end_reason'), endReason);
+    });
+  }
 
   test('changeScheduler leaves other trees alone', () async {
     final (rootId, _, _) = await insertStudyTree(db, 'r');
@@ -218,32 +211,28 @@ void main() {
     );
   });
 
-  test('changeScheduler to the scheduler the root runs writes nothing (UC-DECK-002 A4)', () async {
-    final (rootId, _, _) = await insertStudyTree(db, 'r');
-    final before = await totalChanges(db);
+  for (final (isLocked, name) in [
+    (false, 'changeScheduler to the scheduler the root runs writes nothing'),
+    (
+      true,
+      'the scheduler the root runs is a no-op on a locked tree too, not a '
+          'rejection',
+    ),
+  ]) {
+    test('$name (UC-DECK-002 A4)', () async {
+      final (rootId, cardId, _) = await insertStudyTree(db, 'r');
+      if (isLocked) await repo.completeLearning(cardId: cardId, generation: 1);
+      final before = await totalChanges(db);
 
-    final result = await repo.changeScheduler(
-      rootDeckId: rootId,
-      newType: SchedulerType.eightBox,
-    );
+      final result = await repo.changeScheduler(
+        rootDeckId: rootId,
+        newType: SchedulerType.eightBox,
+      );
 
-    expect(result, isA<Ok<void, SrsRejection>>());
-    expect(await totalChanges(db), before);
-  });
-
-  test('the scheduler the root runs is a no-op on a locked tree too, not a rejection', () async {
-    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
-    await repo.completeLearning(cardId: cardId, generation: 1);
-    final before = await totalChanges(db);
-
-    final result = await repo.changeScheduler(
-      rootDeckId: rootId,
-      newType: SchedulerType.eightBox,
-    );
-
-    expect(result, isA<Ok<void, SrsRejection>>());
-    expect(await totalChanges(db), before);
-  });
+      expect(result, isA<Ok<void, SrsRejection>>());
+      expect(await totalChanges(db), before);
+    });
+  }
 
   test('changeScheduler once a card finished learning is rejected (locked, '
       'BR-SRS-003)', () async {

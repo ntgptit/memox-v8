@@ -307,21 +307,6 @@ void main() {
     );
   });
 
-  libraryTest('a review under its card_limit keeps the plain body', (
-    tester,
-    env,
-  ) async {
-    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
-
-    expect(
-      find.text(
-        _en.summaryReviewAtLimitBody(_en.summaryCards(20)),
-        findRichText: true,
-      ),
-      findsNothing,
-    );
-  });
-
   libraryTest('the footer is one MxActionPair: Study this deck 5, Done 6', (
     tester,
     env,

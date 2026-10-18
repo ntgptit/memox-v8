@@ -57,11 +57,13 @@ void main() {
     );
   });
 
-  libraryTest('with only new cards the footer is "Learn 2 new cards" with '
-      'the nothing-due caption (kit onlyNew)', (tester, env) async {
+  libraryTest('with only new cards Learn is offered once, in the footer: '
+      '"Learn 2 new cards" with the nothing-due caption (kit onlyNew; '
+      'critique 2026-09-30 part 3d-1, D2)', (tester, env) async {
     final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
     await pumpLibraryScreen(tester, env, _screen(leaf));
 
+    expect(_button(_en.studyEntryLearn), findsNothing);
     expect(_button(_en.studyEntryLearnCta(2)), findsOneWidget);
     expect(find.text(_en.studyEntryNothingDueCaption), findsOneWidget);
   });
@@ -360,15 +362,6 @@ void main() {
     );
     gate.complete();
     await tester.pumpAndSettle();
-  });
-
-  libraryTest('with only new cards Learn is offered once, in the footer '
-      '(critique 2026-09-30 part 3d-1, D2)', (tester, env) async {
-    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
-    await pumpLibraryScreen(tester, env, _screen(leaf));
-
-    expect(_button(_en.studyEntryLearn), findsNothing);
-    expect(_button(_en.studyEntryLearnCta(2)), findsOneWidget);
   });
 
   libraryTest('with a review in the footer the Learn row keeps its button '

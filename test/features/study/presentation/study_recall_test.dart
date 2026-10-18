@@ -2,24 +2,18 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_linear_progress.dart';
-import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
-import '../../../support/forui_expect.dart' show byControlLabel, textColor;
+import '../../../support/forui_expect.dart' show byControlLabel;
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
+import 'support/study_screen_helpers.dart';
 
 // Screen 19, Recall (UC-STUDY-007): BR-STUDY-031 to BR-STUDY-036, BR-STUDY-063,
 // BR-STUDY-065, BR-STUDY-066; spec D5, D12; FE-A6 P4 rulings R1–R3, V2–V5.
@@ -27,13 +21,6 @@ import '../../../support/study_entry_fixtures.dart';
 // out.
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
 
 /// ST-01 ("term 1", meaning "apple") is served first.
 Future<String> _recall(LibraryEnv env) =>
@@ -61,12 +48,6 @@ Future<(String, String?)> _logOf(AppDatabase db) async {
   return (row.read<String>('action'), row.read<String?>('outcome_reason'));
 }
 
-Future<void> _settle(WidgetTester tester) async {
-  await tester.pump();
-  await tester.pump();
-  await tester.pump();
-}
-
 Future<void> _lifecycle(
   WidgetTester tester,
   List<AppLifecycleState> states,
@@ -74,19 +55,14 @@ Future<void> _lifecycle(
   for (final state in states) {
     tester.binding.handleAppLifecycleStateChanged(state);
   }
-  await _settle(tester);
+  await pumpThreeFrames(tester);
 }
-
-/// The footer hint's glyph (critique 2026-10-02, F7).
-IconData _hintIcon(WidgetTester tester) => tester
-    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
-    .icon;
 
 void main() {
   libraryTest('the term shows, the meaning is hidden, and the clock counts '
       'down from 20 (19 countingDown)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text('apple'), findsNothing);
@@ -104,11 +80,11 @@ void main() {
     env,
   ) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.pump(const Duration(seconds: 5));
 
     await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     expect(find.text('apple'), findsOneWidget);
     expect(find.text(_en.studyRecallCaptionRevealed), findsOneWidget);
     expect(find.textContaining(_en.studyRecallHintRevealed), findsOneWidget);
@@ -119,7 +95,7 @@ void main() {
     expect(find.text('15s / 20s'), findsOneWidget);
 
     await tester.tap(find.text(_en.studyRecallRemembered));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('remembered', null));
     await tester.pump(const Duration(milliseconds: 200));
@@ -129,10 +105,10 @@ void main() {
       'is read (TalkBack)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
 
     expect(
       tester.takeAnnouncements().map((a) => a.message),
@@ -145,7 +121,7 @@ void main() {
   libraryTest('the clock stops while the exit dialog asks, and Keep going '
       'takes it up where it stopped (BR-STUDY-036)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.pump(const Duration(seconds: 5));
 
     await tester.tap(byControlLabel(_en.studySessionClose));
@@ -169,14 +145,14 @@ void main() {
     env,
   ) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
-    expect(_hintIcon(tester), AppIcons.info);
+    await pumpThreeFrames(tester);
+    expect(footerHintIcon(tester), AppIcons.info);
 
     await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyRecallForgot));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
 
     expect(find.text('term 2'), findsOneWidget);
     expect(await _logOf(env.db), ('forgotten', null));
@@ -187,18 +163,18 @@ void main() {
       'Continue (R2, BR-STUDY-033, BR-STUDY-066)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-    expect(_hintIcon(tester), AppIcons.info);
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
+    expect(footerHintIcon(tester), AppIcons.info);
 
     await tester.pump(const Duration(seconds: 20));
     // The clock ends on the first frame past its 20 s.
     await tester.pump(const Duration(milliseconds: 16));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
     expect(find.text(_en.studyRecallTagTimedOut.toUpperCase()), findsOneWidget);
     expect(find.text('apple'), findsOneWidget);
     expect(find.textContaining(_en.studyRecallHintTimedOut), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.repeat);
+    expect(footerHintIcon(tester), AppIcons.repeat);
     expect(await _logOf(env.db), ('forgotten', 'timeout'));
     expect(
       tester.takeAnnouncements().map((a) => a.message),
@@ -209,7 +185,7 @@ void main() {
     await tester.pump(const Duration(seconds: 10));
     expect(find.text('term 1'), findsOneWidget);
     await tester.tap(find.text(_en.studyContinue));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     expect(find.text('term 2'), findsOneWidget);
     handle.dispose();
     await tester.pump(const Duration(milliseconds: 200));
@@ -218,7 +194,7 @@ void main() {
   libraryTest('the clock stops in the background and saves its time; it '
       'resumes where it stopped (D12, BR-STUDY-036)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.pump(const Duration(seconds: 4));
 
     await _lifecycle(tester, const [
@@ -247,7 +223,7 @@ void main() {
       "UPDATE study_queue_items SET remaining_ms = 7000 "
       "WHERE card_id = 'ST-01'",
     );
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.text('7s / 20s'), findsOneWidget);
   });
@@ -262,7 +238,7 @@ void main() {
       "UPDATE study_queue_items SET remaining_ms = 9000, is_revealed = 1 "
       "WHERE card_id = 'ST-01'",
     );
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.pump(const Duration(seconds: 30));
 
     expect(find.text('9s / 20s'), findsOneWidget);
@@ -284,7 +260,7 @@ void main() {
     env,
   ) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.pump(const Duration(seconds: 3));
 
     await tester.pumpWidget(const SizedBox());
@@ -296,38 +272,17 @@ void main() {
   libraryTest('the top bar is Indigo, as in every mode (critique 2026-09-30 '
       'part 3c-2, R8)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-    final bar = find.byType(MxStudyTopBar);
-    // ForUI paints the track, then the fill, as decorated boxes.
-    final fill =
-        tester
-                .widgetList<DecoratedBox>(
-                  find.descendant(
-                    of: find.descendant(
-                      of: bar,
-                      matching: find.byType(MxLinearProgress),
-                    ),
-                    matching: find.byType(DecoratedBox),
-                  ),
-                )
-                .last
-                .decoration
-            as ShapeDecoration;
-    final chip = find.descendant(
-      of: bar,
-      matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
-    );
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
-    expect(fill.color, appLightColors.primary);
-    expect(textColor(tester, chip), tester.element(chip).colors.primary);
+    expectIndigoTopBar(tester, StudyMode.recall);
   });
 
   libraryTest('the self-check labels show whole at normal size (Impeccable '
       'after P4)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
 
     for (final label in [_en.studyRecallForgot, _en.studyRecallRemembered]) {
       final paragraph = tester.renderObject<RenderParagraph>(find.text(label));
@@ -347,12 +302,12 @@ void main() {
     env,
   ) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     await tester.tap(find.text(_en.studyRecallRemembered), warnIfMissed: false);
-    await _settle(tester);
+    await pumpThreeFrames(tester);
 
     expect(
       await env.db.customSelect('SELECT id FROM review_log').get(),
@@ -362,7 +317,7 @@ void main() {
 
     await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyRecallRemembered));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     expect(find.text('term 2'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 200));
   });
@@ -370,12 +325,12 @@ void main() {
   libraryTest('a tap in the instant the clock runs out does not skip the '
       'timed-out turn (Review Focus 2)', (tester, env) async {
     final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.pump(const Duration(seconds: 21));
-    await _settle(tester);
+    await pumpThreeFrames(tester);
     await tester.tap(find.text(_en.studyContinue), warnIfMissed: false);
-    await _settle(tester);
+    await pumpThreeFrames(tester);
 
     expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
     expect(find.text('term 1'), findsOneWidget);

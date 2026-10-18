@@ -5,9 +5,7 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
-import 'package:memox/features/study/data/repositories/study_session_view_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -25,7 +23,6 @@ void main() {
   late DeckRepositoryImpl decks;
   late StudyEntryRepositoryImpl entries;
   late StudySessionRepositoryImpl sessions;
-  late StudySessionViewRepositoryImpl views;
   final now = DateTime(2026, 9, 24, 9);
 
   void open(AppDatabase database) {
@@ -33,7 +30,6 @@ void main() {
     decks = DeckRepositoryImpl(db, now: () => now);
     entries = studyEntryRepository(db, () => now);
     sessions = studySessionRepository(db, () => now);
-    views = StudySessionViewRepositoryImpl(db);
   }
 
   setUp(() => open(openTestDatabase()));
@@ -41,9 +37,6 @@ void main() {
     await expectStudyInvariants(db);
     await db.close();
   });
-
-  Future<StudySessionView> viewOf(String sessionId) async =>
-      (await views.watchSession(sessionId).first)!;
 
   Future<(DeckEntity, DeckEntity)> tree([String name = 'Korean']) async {
     final root = await decks.root(name);
@@ -68,12 +61,6 @@ void main() {
     );
     await lockScheduler(db, root.id);
   }
-
-  Future<String> review(String deckId, StudyMode mode) async =>
-      ((await entries.openReviewSession(
-        deckId: deckId,
-        mode: mode,
-      )) as Ok<String, StudyRejection>).value;
 
   /// Five due cards of five meanings under a fresh tree.
   Future<DeckEntity> fiveDue() async {
@@ -108,8 +95,8 @@ void main() {
     final (other, otherLeaf) = await tree('B');
     await learned(other, otherLeaf.id, 'other', back: 'other-root-secret');
 
-    final id = await review(leaf.id, StudyMode.guess);
-    final question = (await viewOf(id)).currentItem!.guess!;
+    final id = await openReview(entries, leaf.id, StudyMode.guess);
+    final question = (await watchSessionOnce(db, id)).currentItem!.guess!;
 
     expect(question.isBlocked, isFalse);
     final meanings = [
@@ -132,7 +119,7 @@ void main() {
       'a new round has its own order and its own questions (BR-STUDY-043, '
       'BR-STUDY-061; IT-MODE-007)', () async {
     final leaf = await fiveDue();
-    final id = await review(leaf.id, StudyMode.guess);
+    final id = await openReview(entries, leaf.id, StudyMode.guess);
     final order = await queueOf(db, id, 'guess');
     final questions = {
       for (final card in order) card: await optionsOf(db, id, card),
@@ -202,7 +189,7 @@ void main() {
         due: true,
       );
     }
-    final id = await review(leaf.id, StudyMode.match);
+    final id = await openReview(entries, leaf.id, StudyMode.match);
     final order = await queueOf(db, id, 'match');
     final slots = await meaningSlotsOf(db, id);
 
@@ -211,7 +198,7 @@ void main() {
     expect(first, isNot([0, 1, 2, 3, 4]));
     expect([for (final card in order.skip(5)) slots[card]], [1, 0]);
 
-    final board = (await viewOf(id)).board!;
+    final board = (await watchSessionOnce(db, id)).board!;
     expect([for (final tile in board.terms) tile.cardId], order.take(5));
     expect(
       [for (final tile in board.meanings) slots[tile.cardId]],
@@ -232,13 +219,13 @@ void main() {
         due: true,
       );
     }
-    final id = await review(leaf.id, StudyMode.match);
-    final before = (await viewOf(id)).board!;
+    final id = await openReview(entries, leaf.id, StudyMode.match);
+    final before = (await watchSessionOnce(db, id)).board!;
     final matched = before.terms.first.cardId;
 
     await answerServed(db, sessions, id, right: true, cardId: matched);
 
-    final after = (await viewOf(id)).board!;
+    final after = (await watchSessionOnce(db, id)).board!;
     expect(
       [for (final tile in after.terms) tile.cardId],
       [for (final tile in before.terms) tile.cardId],
@@ -260,16 +247,19 @@ void main() {
       'has: the questions of guess and the slots of match (spec §6.5, '
       '§8.2)', () async {
     final leaf = await fiveDue();
-    final guessId = await review(leaf.id, StudyMode.guess);
+    final guessId = await openReview(entries, leaf.id, StudyMode.guess);
     await db.customStatement('DELETE FROM study_guess_options');
-    expect((await viewOf(guessId)).currentItem!.guess!.isBlocked, isTrue);
+    expect(
+      (await watchSessionOnce(db, guessId)).currentItem!.guess!.isBlocked,
+      isTrue,
+    );
 
     await sessions.resumeSession(sessionId: guessId);
     for (final card in await queueOf(db, guessId, 'guess')) {
       expect(await optionsOf(db, guessId, card), hasLength(5), reason: card);
     }
 
-    final matchId = await review(leaf.id, StudyMode.match);
+    final matchId = await openReview(entries, leaf.id, StudyMode.match);
     await db.customStatement(
       'UPDATE study_queue_items SET meaning_slot = NULL',
     );
@@ -291,7 +281,7 @@ void main() {
     ].indexed) {
       await learned(root, leaf.id, 'd$index', back: meaning);
     }
-    final id = await review(leaf.id, StudyMode.guess);
+    final id = await openReview(entries, leaf.id, StudyMode.guess);
     final gone = (await optionsOf(
       db,
       id,
@@ -300,7 +290,7 @@ void main() {
     await db.customStatement("DELETE FROM card WHERE id = '$gone'");
 
     expect(await optionsOf(db, id, 'asked'), hasLength(4));
-    final blocked = (await viewOf(id)).currentItem!.guess!;
+    final blocked = (await watchSessionOnce(db, id)).currentItem!.guess!;
     expect(blocked.isBlocked, isTrue);
     expect(blocked.options, isEmpty);
 
@@ -323,7 +313,7 @@ void main() {
     ].indexed) {
       await learned(root, leaf.id, 'd$index', back: meaning);
     }
-    final id = await review(leaf.id, StudyMode.guess);
+    final id = await openReview(entries, leaf.id, StudyMode.guess);
     final trashed = (await optionsOf(
       db,
       id,
@@ -331,21 +321,8 @@ void main() {
     )).firstWhere((card) => card != 'asked');
     await trashCardRow(db, trashed);
 
-    final question = (await viewOf(id)).currentItem!.guess!;
+    final question = (await watchSessionOnce(db, id)).currentItem!.guess!;
     expect(question.isBlocked, isTrue);
     expect(question.options, isEmpty);
-  });
-
-  test('a question its meaning source cannot fill stores no option, and the '
-      'view shows it blocked (BR-STUDY-040)', () async {
-    await db.close();
-    open(openTestDatabase(interceptor: ThinMeaningSource(4)));
-    final leaf = await fiveDue();
-    final id = await review(leaf.id, StudyMode.guess);
-
-    final served = await servedCard(db, id);
-    expect(await optionsOf(db, id, served!), isEmpty);
-    final question = (await viewOf(id)).currentItem!.guess!;
-    expect(question.isBlocked, isTrue);
   });
 }

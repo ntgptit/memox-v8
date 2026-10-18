@@ -237,11 +237,36 @@ void main() {
     expect(await totalChanges(db), before);
   });
 
-  test(
-    'a card deleted mid-session is notFound and nothing is written',
-    () async {
+  // The study flow never writes a card that is gone, in the Trash, or whose
+  // deck is in the Trash (BE-C3).
+  for (final (name, makeUnreachable)
+      in <(String, Future<void> Function(String cardId))>[
+        (
+          'a card deleted mid-session',
+          (cardId) =>
+              db.customStatement('DELETE FROM card WHERE id = ?', [cardId]),
+        ),
+        ('a card in the Trash (BE-C3)', (cardId) => trashCardRow(db, cardId)),
+        (
+          'a card whose deck is in the Trash (BE-C3)',
+          (cardId) async {
+            // The card is left active on purpose, a state invariant 33 forbids:
+            // the deck alone keeps it out of the study flow.
+            await insertDeleteBatch(
+              db,
+              'b',
+              itemType: 'deck',
+              rootItemId: 'r-leaf',
+            );
+            await db.customStatement(
+              "UPDATE deck SET delete_batch_id = 'b' WHERE id = 'r-leaf'",
+            );
+          },
+        ),
+      ]) {
+    test('$name is notFound and nothing is written', () async {
       final (_, cardId, _) = await insertStudyTree(db, 'r');
-      await db.customStatement('DELETE FROM card WHERE id = ?', [cardId]);
+      await makeUnreachable(cardId);
       final before = await totalChanges(db);
 
       expect(
@@ -253,40 +278,8 @@ void main() {
         _refusedWith(SrsRejection.notFound),
       );
       expect(await totalChanges(db), before);
-    },
-  );
-
-  test('a card in the Trash is notFound: the study flow never writes it '
-      '(BE-C3)', () async {
-    final (_, cardId, _) = await insertStudyTree(db, 'r');
-    await trashCardRow(db, cardId);
-    final before = await totalChanges(db);
-
-    expect(
-      await repo.recordTurn(turn(cardId)),
-      _refusedWith(SrsRejection.notFound),
-    );
-    expect(
-      await repo.completeLearning(cardId: cardId, generation: 1),
-      _refusedWith(SrsRejection.notFound),
-    );
-    expect(await totalChanges(db), before);
-  });
-
-  test('a card whose deck is in the Trash is notFound (BE-C3)', () async {
-    final (_, cardId, _) = await insertStudyTree(db, 'r');
-    // The card is left active on purpose, a state invariant 33 forbids: the
-    // deck alone keeps it out of the study flow.
-    await insertDeleteBatch(db, 'b', itemType: 'deck', rootItemId: 'r-leaf');
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = 'r-leaf'",
-    );
-
-    expect(
-      await repo.recordTurn(turn(cardId)),
-      _refusedWith(SrsRejection.notFound),
-    );
-  });
+    });
+  }
 
   test('completing learning starts the schedule at box 1, due at the next '
       'local midnight, with no review_log row (BR-STUDY-053)', () async {

@@ -141,12 +141,6 @@ void main() {
     return id;
   }
 
-  Future<int> logCount() async =>
-      (await db
-              .customSelect('SELECT COUNT(*) AS n FROM review_log')
-              .getSingle())
-          .read<int>('n');
-
   test(
     'a busy database writes nothing and keeps the session open; the retry '
     'records the turn once (IT-CONT-011, UC-STUDY-001 E2, BR-STUDY-004)',
@@ -162,7 +156,7 @@ void main() {
       final session = await sessionOf(db, id);
       expect(session.read<String>('status'), 'in_progress');
       expect(session.read<int>('cursor'), 1);
-      expect(await logCount(), 0);
+      expect(await reviewLogCount(db), 0);
       expect((await scheduleRowOf(db, 'c1')).data['learned_at'], isNull);
 
       await answer(id, _good);
@@ -193,7 +187,7 @@ void main() {
       turn(id, timedOut),
       throwsA(isA<DatabaseLockedFailure>()),
     );
-    expect(await logCount(), 0);
+    expect(await reviewLogCount(db), 0);
 
     expect(
       await turn(id, timedOut),
@@ -229,7 +223,7 @@ void main() {
     final session = await sessionOf(db, id);
     expect(session.read<String>('status'), 'failed');
     expect(session.read<String>('end_reason'), 'persistence_error');
-    expect(await logCount(), 2);
+    expect(await reviewLogCount(db), 2);
     expect(await turnKindsOf(db, third), isEmpty);
     expect((await scheduleRowOf(db, third)).data['learned_at'], isNull);
   });

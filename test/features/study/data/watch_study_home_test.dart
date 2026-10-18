@@ -5,6 +5,7 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
@@ -185,25 +186,36 @@ void main() {
     );
   });
 
-  test('of two open sessions, the newest; of two started at once, the '
-      'higher id (BR-STUDY-075, spec D6)', () async {
-    final root = await decks.root('Korean');
-    final a = await decks.sub(root.id, 'A');
-    final b = await decks.sub(root.id, 'B');
-    await insertCard(db, id: 'a1', deckId: a.id, back: 'one');
-    await insertCard(db, id: 'b1', deckId: b.id, back: 'two');
+  /// A session on [first] opened earlier, then one on [second]; both open
+  /// again, as opening the second closed the first (package 2a D2). Each deck
+  /// holds one card, `a1` and `b1`.
+  Future<(String, String)> twoOpenSessions(
+    DeckEntity first,
+    DeckEntity second,
+  ) async {
+    await insertCard(db, id: 'a1', deckId: first.id, back: 'one');
+    await insertCard(db, id: 'b1', deckId: second.id, back: 'two');
     final older = opened(
       await studyEntryRepository(
         db,
         () => DateTime(2026, 9, 25, 8),
-      ).openLearningSession(deckId: a.id),
+      ).openLearningSession(deckId: first.id),
     );
-    final newer = opened(await entries.openLearningSession(deckId: b.id));
-    // Opening the second closed the first (package 2a D2): open it again.
+    final newer = opened(await entries.openLearningSession(deckId: second.id));
     await db.customStatement(
       "UPDATE study_session SET status = 'in_progress', end_reason = NULL, "
       'ended_at = NULL WHERE id = ?',
       [older],
+    );
+    return (older, newer);
+  }
+
+  test('of two open sessions, the newest; of two started at once, the '
+      'higher id (BR-STUDY-075, spec D6)', () async {
+    final root = await decks.root('Korean');
+    final (older, newer) = await twoOpenSessions(
+      await decks.sub(root.id, 'A'),
+      await decks.sub(root.id, 'B'),
     );
 
     expect((await homeAt()).resumable?.sessionId, newer);
@@ -228,21 +240,9 @@ void main() {
     () async {
       final korean = await decks.root('Korean');
       final english = await decks.root('English');
-      final a = await decks.sub(korean.id, 'A');
-      final b = await decks.sub(english.id, 'B');
-      await insertCard(db, id: 'a1', deckId: a.id, back: 'one');
-      await insertCard(db, id: 'b1', deckId: b.id, back: 'two');
-      final older = opened(
-        await studyEntryRepository(
-          db,
-          () => DateTime(2026, 9, 25, 8),
-        ).openLearningSession(deckId: a.id),
-      );
-      await entries.openLearningSession(deckId: b.id);
-      await db.customStatement(
-        "UPDATE study_session SET status = 'in_progress', end_reason = NULL, "
-        'ended_at = NULL WHERE id = ?',
-        [older],
+      final (older, _) = await twoOpenSessions(
+        await decks.sub(korean.id, 'A'),
+        await decks.sub(english.id, 'B'),
       );
       await db.customStatement('UPDATE deck SET generation = 2 WHERE id = ?', [
         english.id,

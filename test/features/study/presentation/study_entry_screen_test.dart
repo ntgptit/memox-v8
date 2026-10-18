@@ -184,49 +184,52 @@ void main() {
     expect(find.byType(MxFooterBar), findsOneWidget);
   });
 
-  libraryTest('SM-2 lists no review modes on the entry; Learn is offered '
-      'now that Browse and Self-assess are built (FE-A6 P2)', (
-    tester,
-    env,
-  ) async {
-    final root = await env.decks.root('Korean', SchedulerType.sm2);
-    await insertCard(env.db, id: 'n1', deckId: root.id);
-    await pumpLibraryScreen(tester, env, _screen(root.id));
+  // Only new cards: no review mode is listed, only the Learn row (kit
+  // onlyNew), on SM-2 as on Eight boxes.
+  for (final (name, type) in [
+    (
+      'SM-2 lists no review modes on the entry; Learn is offered now that '
+          'Browse and Self-assess are built (FE-A6 P2)',
+      SchedulerType.sm2,
+    ),
+    (
+      'with nothing due, no review mode is listed: only the Learn row (kit '
+          'onlyNew), on Eight boxes as on SM-2',
+      SchedulerType.eightBox,
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final root = await env.decks.root('Korean', type);
+      await insertCard(env.db, id: 'n1', deckId: root.id);
+      await pumpLibraryScreen(tester, env, _screen(root.id));
 
-    expect(find.byType(MxOptionRow), findsNothing);
-    expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
-    expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
-    // The stages are a phrase; the count's terms stay whole (Wrap Rule).
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(
-        metaDots(
-          _en.studyEntryLearnLine(
-            _en.studyEntryLearnStagesSm2,
-            metaLine(_en.studyEntryLearnCount(1, 1)),
+      expect(find.byType(MxOptionRow), findsNothing);
+      expect(find.text(_en.studyEntryReviewHeader), findsNothing);
+      expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
+      // What follows is SM-2's own: its stages line and its footer.
+      if (type == SchedulerType.eightBox) return;
+      expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
+      // The stages are a phrase; the count's terms stay whole (Wrap Rule).
+      expectBreaksOnlyBetweenWords(
+        tester,
+        find.text(
+          metaDots(
+            _en.studyEntryLearnLine(
+              _en.studyEntryLearnStagesSm2,
+              metaLine(_en.studyEntryLearnCount(1, 1)),
+            ),
           ),
         ),
-      ),
-    );
-    // Only new cards: the footer offers Learn, the row does not (critique
-    // 2026-09-30 part 3d-1, D2).
-    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsNothing);
-    expect(
-      find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
-      findsOneWidget,
-    );
-  });
-
-  libraryTest('with nothing due, no review mode is listed: only the Learn '
-      'row (kit onlyNew), on Eight boxes as on SM-2', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    await insertCard(env.db, id: 'n1', deckId: root.id);
-    await pumpLibraryScreen(tester, env, _screen(root.id));
-
-    expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
-    expect(find.byType(MxOptionRow), findsNothing);
-    expect(find.text(_en.studyEntryReviewHeader), findsNothing);
-  });
+      );
+      // Only new cards: the footer offers Learn, the row does not (critique
+      // 2026-09-30 part 3d-1, D2).
+      expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsNothing);
+      expect(
+        find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
+        findsOneWidget,
+      );
+    });
+  }
 
   libraryTest('nothing new and nothing due is the calm empty state '
       '(BR-STUDY-008)', (tester, env) async {

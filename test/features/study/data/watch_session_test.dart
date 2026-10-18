@@ -52,6 +52,9 @@ void main() {
     await db.close();
   });
 
+  Future<void> answer(String sessionId, StudyAnswer answer) =>
+      acceptAnswer(db, sessions, sessionId, answer);
+
   Future<StudySessionView> viewOf(String sessionId) async =>
       (await views.watchSession(sessionId).first)!;
 
@@ -66,15 +69,6 @@ void main() {
       ((await entries.openLearningSession(
         deckId: leaf.id,
       )) as Ok<String, StudyRejection>).value;
-
-  Future<void> answer(String sessionId, StudyAnswer answer) async => expect(
-    await sessions.answerTurn(
-      sessionId: sessionId,
-      cardId: (await servedCard(db, sessionId))!,
-      answer: answer,
-    ),
-    isA<Ok<void, StudyRejection>>(),
-  );
 
   /// Spec D12 settles the sessions a build before the Trash left open.
   Future<void> deleteCards(Set<String> cardIds) => hardDeleteCards(db, cardIds);

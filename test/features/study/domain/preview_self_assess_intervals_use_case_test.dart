@@ -55,43 +55,39 @@ void main() {
     });
   });
 
-  test('a relearning turn previews nothing: the schedule does not move '
-      '(BR-SRS-016, BR-SRS-017)', () async {
-    expect(
-      await useCase(
-        kind: SessionKind.reviewing,
-        cardId: 'c1',
-        round: 1,
-        answersInSession: 1,
-      ),
-      isNull,
-    );
-  });
-
-  test(
-    'a learning turn previews nothing: the card is not scheduled yet',
-    () async {
+  // Nothing is previewed where the schedule does not move or the card is not
+  // there.
+  for (final (name, kind, cardId, answersInSession) in [
+    (
+      'a relearning turn previews nothing: the schedule does not move '
+          '(BR-SRS-016, BR-SRS-017)',
+      SessionKind.reviewing,
+      'c1',
+      1,
+    ),
+    (
+      'a learning turn previews nothing: the card is not scheduled yet',
+      SessionKind.learning,
+      'n1',
+      0,
+    ),
+    (
+      'a card gone meanwhile previews nothing',
+      SessionKind.reviewing,
+      'gone',
+      0,
+    ),
+  ]) {
+    test(name, () async {
       expect(
         await useCase(
-          kind: SessionKind.learning,
-          cardId: 'n1',
+          kind: kind,
+          cardId: cardId,
           round: 1,
-          answersInSession: 0,
+          answersInSession: answersInSession,
         ),
         isNull,
       );
-    },
-  );
-
-  test('a card gone meanwhile previews nothing', () async {
-    expect(
-      await useCase(
-        kind: SessionKind.reviewing,
-        cardId: 'gone',
-        round: 1,
-        answersInSession: 0,
-      ),
-      isNull,
-    );
-  });
+    });
+  }
 }
