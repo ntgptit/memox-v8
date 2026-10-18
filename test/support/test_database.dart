@@ -54,7 +54,7 @@ final class SelectCounter extends QueryInterceptor {
 }
 
 /// Fails every SELECT while [isArmed], the way a disk that cannot be read
-/// does (UC-SEARCH-001 E1).
+/// does (a search, progress or study read that fails).
 final class FailingSelects extends QueryInterceptor {
   bool isArmed = false;
 
