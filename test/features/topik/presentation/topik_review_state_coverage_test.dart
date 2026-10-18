@@ -128,6 +128,12 @@ void main() {
     final first = test.questions.first;
     final wrong = first.answerIdx % 4 + 1;
     await _pump(tester, env, test, answers: {first.no: wrong});
+    // A tall window builds every option: a picture the image cache already
+    // holds lays out at its full size at once, so at the phone's height the
+    // last option would be past the list's built range, and the count would
+    // depend on which test ran before.
+    tester.view.physicalSize = const Size(360, 3200);
+    await tester.pumpAndSettle();
 
     // The group's passage and the four options.
     expect(_pictures(), findsNWidgets(5));

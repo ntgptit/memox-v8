@@ -125,6 +125,12 @@ void main() {
     final test = _pictureTest();
     final attempt = await topikSeedAttempt(env, test);
     await pumpTopikAttempt(tester, env, attempt.id, catalog: [test]);
+    // A tall window builds every option: a picture the image cache already
+    // holds lays out at its full size at once, so at the phone's height the
+    // last option would be past the list's built range, and the count would
+    // depend on which test ran before.
+    tester.view.physicalSize = const Size(360, 3200);
+    await tester.pumpAndSettle();
 
     final pictures = find.byWidgetPredicate(
       (widget) =>
