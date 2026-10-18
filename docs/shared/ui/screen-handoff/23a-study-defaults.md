@@ -83,6 +83,7 @@ Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loa
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **Settings hub spec D3, D9:** two sections with their own notes, so each names its own timing (the limit and order apply from the next session, speech at once); the page says the study rows' toasts, the hub the reset's.
 - **FE-A3 D1, D6 (owner):** save on change, no Save button; the stepper takes −/+, a hold that repeats, and a typed number.
 - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the label and the stepper, and the sub-line stays.

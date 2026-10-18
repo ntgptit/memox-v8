@@ -53,6 +53,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **D7 (owner):** the screen is titled "Theme" with no overline; the choices are "System", "Always light", "Always dark".
 - **Build audit 2026-09-26, UI-base row 127:** the three cards go one per line when a word of a name or hint would not fit its third (large text, Vietnamese).
 

@@ -87,6 +87,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,a
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **Settings hub spec 2026-10-07, D1–D11:** the tab is a hub of navigation rows; the study rows are on 23a and the admin rows on 23b; the account feature supplies a row and a banner, not a section; leaf paths do not move; the pattern is in `DESIGN.md`, Components, "Settings pattern".
 - **D2 (owner), UI-base row 124:** Theme is a row naming the choice and opens screen 25.
 - **UI-base row 125, UC E3:** loading is section-shaped skeleton cards (part 3d-2); a read error is `MxErrorState` with Retry.

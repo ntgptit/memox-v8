@@ -79,6 +79,7 @@ The images are the goldens.
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **ADR-015, SB-U1 owner rulings R1, R3, R5–R7:** sync has its own screen, and its problems reach other screens as a floating notice (register row 143); on this screen they sit inline under the status, by Sync now (critique 2026-09-30).
 - **Critique 2026-09-30 part 1 (spec `2026-09-30-critique-fixes-part1-design.md`), R4:** with refused rows Try again is the one primary, the waiting row never says "Nothing waiting", the banner says why and what Keep costs, and Keep asks first.
 - **Spec R6, FE-B5 D9:** times are 24-hour `HH:mm` in every language; dates read "Sep 26" style in English.

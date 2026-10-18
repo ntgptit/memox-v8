@@ -51,6 +51,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_language_{english
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **D8, BR-SETTINGS-006:** the system row says "Phone is set to {language}"; the fallback line shows only for a language the app lacks.
 - The choices are `MxOptionRow` radios, the app's single-choice list; the note is the `MxSection` note (M3 review 2026-09-28 D4).
 - **Critique 2026-09-26:** a row has no sub-line when it would repeat the title.
