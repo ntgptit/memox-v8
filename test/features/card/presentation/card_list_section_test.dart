@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -35,17 +34,10 @@ import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/paint_clip.dart';
 import '../../../support/widget_harness.dart';
+import 'support/card_list_search.dart';
+import 'support/card_list_section_host.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
 
 /// Korean › Words: annyeong (new), gamsa (due today), sarang (due
 /// tomorrow) and mul (new, flagged).
@@ -88,14 +80,6 @@ Future<String> _seed(LibraryEnv env) async {
   return words.id;
 }
 
-/// The app bar's search action (screen 07): here, straight on the state.
-Future<void> _openSearch(WidgetTester tester, String deckId) async {
-  ProviderScope.containerOf(tester.element(find.byType(CardListSectionWidget)))
-      .read(cardSearchOpenProvider(deckId).notifier)
-      .open();
-  await tester.pumpAndSettle();
-}
-
 int? _chipCount(WidgetTester tester, String label) =>
     tester.widget<MxFilterChip>(find.widgetWithText(MxFilterChip, label)).count;
 
@@ -108,7 +92,7 @@ void main() {
   libraryTest('rows show front, back, a status label, no dot, and the flag '
       '(critique 2026-09-30 part 3b, R3)', (tester, env) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
 
     expect(find.text('annyeong'), findsOneWidget);
     expect(find.text('hello'), findsOneWidget);
@@ -128,7 +112,7 @@ void main() {
     env,
   ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
 
     expect(
       [
@@ -150,8 +134,8 @@ void main() {
 
   libraryTest('search matches the front or the back', (tester, env) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await _openSearch(tester, deckId);
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
+    await openCardSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'thank');
     await tester.pumpAndSettle();
 
@@ -164,7 +148,7 @@ void main() {
     env,
   ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     await tester.tap(find.widgetWithText(MxChipTrigger, _en.cardSortNewest));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.cardSortDueFirst));
@@ -180,7 +164,7 @@ void main() {
     env,
   ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     env.clock.startDay(DateTime(2026, 9, 25));
     await tester.pump();
     await tester.pump();
@@ -195,7 +179,7 @@ void main() {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await insertCard(env.db, id: 'new1', deckId: words.id, front: 'annyeong');
-    await pumpLibraryScreen(tester, env, _section(words.id));
+    await pumpLibraryScreen(tester, env, cardListSection(words.id));
     await _tapChip(tester, _en.cardFilterFlagged);
 
     expect(
@@ -221,7 +205,7 @@ void main() {
         front: 'card $i',
       );
     }
-    await pumpLibraryScreen(tester, env, _section(words.id));
+    await pumpLibraryScreen(tester, env, cardListSection(words.id));
     // E-L5: rows build only in view.
     expect(
       find.byType(CardRowWidget, skipOffstage: false).evaluate().length,
@@ -244,9 +228,9 @@ void main() {
   libraryTest('search hides the deck summary and keeps the filters '
       '(critique 2026-09-30: results clear the keyboard)', (tester, env) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     expect(find.byType(CardDeckSummaryWidget), findsOneWidget);
-    await _openSearch(tester, deckId);
+    await openCardSearch(tester, deckId);
     expect(find.byType(CardDeckSummaryWidget), findsNothing);
     expect(find.byType(CardListToolbarWidget), findsOneWidget);
   });
@@ -254,7 +238,7 @@ void main() {
   libraryTest('the first filter chip keeps its focus ring inside the scroll '
       'row', (tester, env) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
     final chip = find
@@ -274,8 +258,8 @@ void main() {
 
   libraryTest('a search with no hit names the term', (tester, env) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await _openSearch(tester, deckId);
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
+    await openCardSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'zzz');
     await tester.pumpAndSettle();
     expect(find.text(_en.cardSearchEmptyTitle('zzz')), findsOneWidget);
@@ -287,10 +271,10 @@ void main() {
     env,
   ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     await tester.pumpAndSettle();
     await _tapChip(tester, _en.cardFilterFlagged);
-    await _openSearch(tester, deckId);
+    await openCardSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'zzz');
     await tester.pumpAndSettle();
 
@@ -308,7 +292,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _section(deckId),
+      cardListSection(deckId),
       overrides: [
         cardListProvider(
           deckId: deckId,
@@ -339,7 +323,7 @@ void main() {
       back: List.filled(20, 'nghĩa tiếng Việt').join(' '),
       isFlagged: true,
     );
-    await pumpLibraryScreen(tester, env, _section(words.id));
+    await pumpLibraryScreen(tester, env, cardListSection(words.id));
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
@@ -355,7 +339,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _section(deckId),
+      cardListSection(deckId),
       overrides: [
         cardListProvider(
           deckId: deckId,
@@ -460,7 +444,7 @@ void main() {
     env,
   ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSection(deckId));
     await tester.pumpAndSettle();
     MxScrollClearance clearance() =>
         tester.widget<MxScreenScroll>(find.byType(MxScreenScroll)).clearance;

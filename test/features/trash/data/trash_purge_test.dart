@@ -4,17 +4,15 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/domain/models/purge_report_model.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
@@ -34,13 +32,7 @@ void main() {
     clock = DateTime(2026, 9, 25, 9);
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: () => clock);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: () => clock),
-      TagRepositoryImpl(db, now: () => clock),
-      DeckTreeDataSource(db),
-      now: () => clock,
-    );
+    cards = cardRepository(db, now: () => clock);
     trash = TrashRepositoryImpl(db);
   });
   tearDown(() async {

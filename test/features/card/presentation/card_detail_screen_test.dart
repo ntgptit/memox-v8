@@ -14,9 +14,9 @@ import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import 'support/words_deck.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -30,11 +30,6 @@ CardDetailScreen _screen(String cardId, {ValueChanged<String>? onEdit}) =>
 
 Finder _barTitle(String title) =>
     find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
-
-Future<String> _words(LibraryEnv env) async {
-  final korean = await env.decks.root('Korean');
-  return (await env.decks.sub(korean.id, 'Words')).id;
-}
 
 /// A read that fails the first way a real database can.
 final class _BrokenCards implements CardRepository {
@@ -52,7 +47,7 @@ void main() {
     env,
   ) async {
     final card = await env.cards.card(
-      await _words(env),
+      await seedWordsDeck(env),
       const CardDraft(front: 'bap', back: 'rice'),
     );
     final edits = <String>[];
@@ -79,7 +74,7 @@ void main() {
     tester,
     env,
   ) async {
-    final card = await env.cards.card(await _words(env));
+    final card = await env.cards.card(await seedWordsDeck(env));
     await pumpLibraryScreen(tester, env, _screen(card.id));
     await tester.pumpAndSettle();
     await env.cards.deleteCards(cardIds: {card.id});
@@ -127,7 +122,7 @@ void main() {
     env,
   ) async {
     final card = await env.cards.card(
-      await _words(env),
+      await seedWordsDeck(env),
       const CardDraft(
         front: 'Tiếng Việt có dấu, một thuật ngữ khá dài',
         back: 'nghĩa',

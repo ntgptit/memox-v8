@@ -3,12 +3,10 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -23,13 +21,7 @@ void main() {
     db = openTestDatabase();
     DateTime now() => DateTime(2026, 9, 25, 9);
     decks = DeckRepositoryImpl(db, now: now);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: now),
-      TagRepositoryImpl(db, now: now),
-      DeckTreeDataSource(db),
-      now: now,
-    );
+    cards = cardRepository(db, now: now);
   });
   tearDown(() => db.close());
 

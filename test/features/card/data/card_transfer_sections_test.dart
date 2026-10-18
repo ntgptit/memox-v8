@@ -3,20 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_import_section_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -76,13 +73,7 @@ void main() {
     decks = DeckRepositoryImpl(db, now: _now);
     cards = CardTransferRepositoryImpl(
       db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        DeckTreeDataSource(db),
-        now: _now,
-      ),
+      cardRepository(db, now: _now),
       decks,
     );
     root = await decks.root('Korean');
@@ -243,15 +234,7 @@ void main() {
       '(BR-TRANSFER-004)', () async {
     final failing = CardTransferRepositoryImpl(
       db,
-      _SecondInsertFails(
-        CardRepositoryImpl(
-          db,
-          ScheduleRepositoryImpl(db, now: _now),
-          TagRepositoryImpl(db, now: _now),
-          DeckTreeDataSource(db),
-          now: _now,
-        ),
-      ),
+      _SecondInsertFails(cardRepository(db, now: _now)),
       decks,
     );
 

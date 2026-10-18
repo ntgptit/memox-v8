@@ -5,16 +5,15 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 import '../../../support/trash_fixtures.dart';
@@ -33,13 +32,7 @@ void main() {
     DateTime now() => DateTime(2026, 9, 23);
     decks = DeckRepositoryImpl(db, now: now);
     tags = TagRepositoryImpl(db, now: now);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: now),
-      tags,
-      DeckTreeDataSource(db),
-      now: now,
-    );
+    cards = cardRepository(db, now: now, tags: tags);
     root = await decks.root('Korean');
     leaf = await decks.sub(root.id, 'Nouns');
   });

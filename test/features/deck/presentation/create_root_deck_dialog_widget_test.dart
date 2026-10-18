@@ -114,62 +114,71 @@ void main() {
     );
   });
 
-  libraryTest('a blank name is refused under the field; nothing is written', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host());
-    await open(tester);
-    await chooseEightBox(tester);
-    await tester.tap(find.text(_en.deckCreateConfirm));
-    await tester.pumpAndSettle();
+  for (final c in [
+    (
+      name: 'a blank name is refused under the field; nothing is written',
+      typed: '',
+      refusal: _en.deckRejectionBlankName,
+    ),
+    (
+      name: 'a name longer than 200 characters is refused; nothing is written',
+      typed: 'a' * 201,
+      refusal: _en.deckRejectionNameTooLong,
+    ),
+  ]) {
+    libraryTest(c.name, (tester, env) async {
+      await pumpLibraryScreen(tester, env, _host());
+      await open(tester);
+      await tester.enterText(find.byType(EditableText), c.typed);
+      await chooseEightBox(tester);
+      await tester.tap(find.text(_en.deckCreateConfirm));
+      await tester.pumpAndSettle();
 
-    expect(find.text(_en.deckRejectionBlankName), findsOneWidget);
-    expect(find.byType(MxDialog), findsOneWidget);
-    expect(await _decks(env), isEmpty);
-  });
+      expect(find.text(c.refusal), findsOneWidget);
+      expect(find.byType(MxDialog), findsOneWidget);
+      expect(await _decks(env), isEmpty);
+    });
+  }
 
-  libraryTest('a name longer than 200 characters is refused', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host());
-    await open(tester);
-    await tester.enterText(find.byType(EditableText), 'a' * 201);
-    await chooseEightBox(tester);
-    await tester.tap(find.text(_en.deckCreateConfirm));
-    await tester.pumpAndSettle();
+  for (final c
+      in <
+        ({
+          String name,
+          String typed,
+          String scheduler,
+          Future<void> Function(WidgetTester) submit,
+          (String, String) stored,
+        })
+      >[
+        (
+          name: 'a name and SM-2 create a root deck and close the dialog',
+          typed: '  Korean  ',
+          scheduler: _en.deckSchedulerSm2,
+          submit: (tester) => tester.tap(find.text(_en.deckCreateConfirm)),
+          stored: ('Korean', 'sm2'),
+        ),
+        (
+          name: 'the keyboard Done action creates the deck',
+          typed: 'Korean',
+          scheduler: _en.deckSchedulerEightBox,
+          submit: (tester) =>
+              tester.testTextInput.receiveAction(TextInputAction.done),
+          stored: ('Korean', 'eight_box'),
+        ),
+      ]) {
+    libraryTest(c.name, (tester, env) async {
+      await pumpLibraryScreen(tester, env, _host());
+      await open(tester);
+      await tester.enterText(find.byType(EditableText), c.typed);
+      await tester.tap(find.text(c.scheduler));
+      await tester.pump();
+      await c.submit(tester);
+      await tester.pumpAndSettle();
 
-    expect(find.text(_en.deckRejectionNameTooLong), findsOneWidget);
-  });
-
-  libraryTest('a name and SM-2 create a root deck and close the dialog', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host());
-    await open(tester);
-    await tester.enterText(find.byType(EditableText), '  Korean  ');
-    await tester.tap(find.text(_en.deckSchedulerSm2));
-    await tester.pump();
-    await tester.tap(find.text(_en.deckCreateConfirm));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MxDialog), findsNothing);
-    expect(await _decks(env), [('Korean', 'sm2')]);
-  });
-
-  libraryTest('the keyboard Done action creates the deck', (tester, env) async {
-    await pumpLibraryScreen(tester, env, _host());
-    await open(tester);
-    await tester.enterText(find.byType(EditableText), 'Korean');
-    await chooseEightBox(tester);
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MxDialog), findsNothing);
-    expect(await _decks(env), [('Korean', 'eight_box')]);
-  });
+      expect(find.byType(MxDialog), findsNothing);
+      expect(await _decks(env), [c.stored]);
+    });
+  }
 
   libraryTest('a double tap on Create makes one deck (RF3)', (
     tester,

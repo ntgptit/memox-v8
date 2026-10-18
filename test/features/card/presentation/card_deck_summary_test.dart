@@ -45,17 +45,17 @@ CardListView _workload(CardWorkload workload) => CardListView(
 
 void main() {
   libraryTest('the summary names progress and the workload, and states mastery '
-      'once: no four-state legend (critique 2026-09-30, R2)', (
-    tester,
-    env,
-  ) async {
+      'once: no four-state legend (critique 2026-09-30, R2); the progress '
+      'label is the eyebrow at the meta size, which keeps 12 (owner '
+      '2026-09-26, register 119)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _host());
 
     expect(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
       findsOneWidget,
     );
-    // An eyebrow (critique 2026-09-30 part 2, P2).
+    // An eyebrow (critique 2026-09-30 part 2, P2): the meta role's size and
+    // weight, so the label keeps 12 (register 119).
     expect(
       tester
           .widget<Text>(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
@@ -177,24 +177,6 @@ void main() {
       ),
     );
     expect(segments, findsNothing);
-  });
-
-  libraryTest('the progress label keeps 12, one line on a phone, now as the '
-      'eyebrow (owner 2026-09-26, register 119; critique 2026-09-30 part 2)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host());
-
-    final label = tester.widget<Text>(
-      find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
-    );
-    final role = tester
-        .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
-        .texts
-        .meta;
-    expect(label.style!.fontSize, role.fontSize);
-    expect(label.style!.fontWeight, role.fontWeight);
   });
 
   // SW-REV-011: a hero statement wraps between whole terms, never "…",

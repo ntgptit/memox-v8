@@ -33,11 +33,16 @@ void main() {
           .having((s) => s.isSelecting, 'isSelecting', isTrue)
           .having((s) => s.ids, 'ids', {'c1'}),
     );
+    notifier().toggle('c2');
+    expect(state().ids, {'c1', 'c2'});
     notifier().toggle('c1');
+    expect(state().ids, {'c2'});
+    notifier().toggle('c2');
     expect(state().isSelecting, isTrue);
     expect(state().ids, isEmpty);
     notifier().clear();
     expect(state().isSelecting, isFalse);
+    expect(state().ids, isEmpty);
   });
 
   test('retain drops the picks that are gone and keeps the mode (audit '
