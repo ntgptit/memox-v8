@@ -12,17 +12,6 @@ import '../../support/widget_harness.dart';
 // The app bar title for screen readers: a header that names the route as
 // the SDK AppBar does (M3F-08), with its subtitle in the same node (Q-P6-2).
 void main() {
-  testWidgets('the title is a header for screen readers', (tester) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(tester, const MxAppBar(title: 'Library'));
-
-    expect(
-      tester.getSemantics(find.text('Library')),
-      isSemantics(label: 'Library', isHeader: true),
-    );
-    handle.dispose();
-  });
-
   // M3F-08: the SDK AppBar wraps its title in `namesRoute` on every platform
   // but iOS and macOS, so TalkBack announces the new screen on each push.
   for (final (platform, announces) in [

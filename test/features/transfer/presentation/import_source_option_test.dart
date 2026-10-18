@@ -20,12 +20,30 @@ Widget _option({required bool isSelected, VoidCallback? onSelected}) =>
       ),
     );
 
+/// How many semantics nodes of the option carry a selected state.
+int _nodesWithSelectedState(WidgetTester tester) {
+  final root = tester.getSemantics(find.byType(ImportSourceOptionWidget));
+  var count = 0;
+  void visit(SemanticsNode node) {
+    if (node.getSemanticsData().flagsCollection.isSelected != Tristate.none) {
+      count++;
+    }
+    node.visitChildren((child) {
+      visit(child);
+      return true;
+    });
+  }
+
+  visit(root);
+  return count;
+}
+
 void main() {
   // M3F-10: the chosen source is one node with its label, tap and selected
   // state; before, the selected flag sat on an outer node without a label.
   for (final isSelected in [true, false]) {
     testWidgets('M3F-10: isSelected $isSelected: one node with label, tap and '
-        'selected', (tester) async {
+        'selected, and no other node carries a selected state', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpMx(tester, _option(isSelected: isSelected, onSelected: () {}));
 
@@ -40,32 +58,10 @@ void main() {
           isFocusable: true,
         ),
       );
+      expect(_nodesWithSelectedState(tester), 1);
       handle.dispose();
     });
   }
-
-  testWidgets('M3F-10: no other node in the option carries a selected state', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(tester, _option(isSelected: true, onSelected: () {}));
-
-    final root = tester.getSemantics(find.byType(ImportSourceOptionWidget));
-    var withSelectedState = 0;
-    void visit(SemanticsNode node) {
-      if (node.getSemanticsData().flagsCollection.isSelected != Tristate.none) {
-        withSelectedState++;
-      }
-      node.visitChildren((child) {
-        visit(child);
-        return true;
-      });
-    }
-
-    visit(root);
-    expect(withSelectedState, 1);
-    handle.dispose();
-  });
 
   // While a file is read the options take no tap: they are announced as
   // disabled, the chosen one keeps its selected state, and nothing is dimmed.
@@ -86,19 +82,7 @@ void main() {
           hasTapAction: false,
         ),
       );
-      final root = tester.getSemantics(find.byType(ImportSourceOptionWidget));
-      var withSelectedState = 0;
-      void visit(SemanticsNode node) {
-        final flags = node.getSemanticsData().flagsCollection;
-        if (flags.isSelected != Tristate.none) withSelectedState++;
-        node.visitChildren((child) {
-          visit(child);
-          return true;
-        });
-      }
-
-      visit(root);
-      expect(withSelectedState, 1);
+      expect(_nodesWithSelectedState(tester), 1);
       expect(
         find.descendant(
           of: find.byType(ImportSourceOptionWidget),

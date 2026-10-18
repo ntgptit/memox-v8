@@ -1,25 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
-import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 
 import '../../../support/tag_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/tag_outcomes.dart';
 
 // UC-TAG-001 step 5: deleting a tag removes its links and its row, and no
 // card (BR-TAG-008, BR-TAG-009; tag management spec §7).
-
-final _ok = isA<Ok<void, TagRejection>>();
-
-Matcher _refused(TagRejection reason) => isA<Rejected<void, TagRejection>>()
-    .having((rejected) => rejected.reason, 'reason', reason);
-
-List<(String, int)> _rows(List<TagCount> counts) => [
-  for (final count in counts) (count.name, count.cardCount),
-];
 
 void main() {
   late AppDatabase db;
@@ -47,7 +37,7 @@ void main() {
     await insertTag(db, 't2', 'verb', cardIds: ['c1']);
     await setCardBatch(db, 'c3', 'b3');
 
-    expect(await tags.deleteTag(tagId: 't1'), _ok);
+    expect(await tags.deleteTag(tagId: 't1'), isTagOk);
 
     expect(await tagRowsOf(db), [('t2', 'verb', 'verb')]);
     expect(await linksOf(db), ['c1:t2']);
@@ -60,9 +50,9 @@ void main() {
     () async {
       await insertTag(db, 't1', 'old', cardIds: ['c3']);
       await setCardBatch(db, 'c3', 'b3');
-      expect(_rows(await tags.watchTagCounts().first), [('old', 0)]);
+      expect(tagRows(await tags.watchTagCounts().first), [('old', 0)]);
 
-      expect(await tags.deleteTag(tagId: 't1'), _ok);
+      expect(await tags.deleteTag(tagId: 't1'), isTagOk);
       await setCardBatch(db, 'c3', null);
 
       expect(await linksOf(db), isEmpty);
@@ -78,9 +68,12 @@ void main() {
 
     expect(
       await tags.deleteTag(tagId: 'missing'),
-      _refused(TagRejection.notFound),
+      isTagRefused<void>(TagRejection.notFound),
     );
-    expect(await tags.deleteTag(tagId: 'x1'), _refused(TagRejection.notFound));
+    expect(
+      await tags.deleteTag(tagId: 'x1'),
+      isTagRefused<void>(TagRejection.notFound),
+    );
     expect(await totalChanges(db), before);
   });
 
@@ -110,7 +103,7 @@ void main() {
       await insertTag(db, 't1', 'noun', cardIds: ['s-card', 'c1', 'c2']);
       final before = await rowsOutsideTags(db);
 
-      expect(await tags.deleteTag(tagId: 't1'), _ok);
+      expect(await tags.deleteTag(tagId: 't1'), isTagOk);
 
       expect(await rowsOutsideTags(db), before);
     },
@@ -124,10 +117,10 @@ void main() {
       final catalog = <List<(String, int)>>[];
       final inDeck = <List<(String, int)>>[];
       final subscriptions = [
-        tags.watchTagCounts().listen((counts) => catalog.add(_rows(counts))),
+        tags.watchTagCounts().listen((counts) => catalog.add(tagRows(counts))),
         tags
             .watchTagCounts(deckId: 'leaf')
-            .listen((counts) => inDeck.add(_rows(counts))),
+            .listen((counts) => inDeck.add(tagRows(counts))),
       ];
       await pumpEventQueue();
       expect(catalog.last, [('noun', 1), ('verb', 2)]);

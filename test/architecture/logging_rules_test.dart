@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+
+import 'lib_sources.dart';
 
 /// ADR-018: every log goes through AppLogger; outside `lib/core/logging/`, no
 /// file imports `dart:developer`.
@@ -24,12 +24,6 @@ void main() {
   });
 
   test('lib/ logs only through AppLogger', () {
-    final sources = {
-      for (final entity in Directory('lib').listSync(recursive: true))
-        if (entity is File && entity.path.endsWith('.dart'))
-          entity.path.replaceAll(r'\', '/'): entity.readAsStringSync(),
-    };
-
-    expect(developerImports(sources), isEmpty);
+    expect(developerImports(readLibSources(includeGenerated: true)), isEmpty);
   });
 }

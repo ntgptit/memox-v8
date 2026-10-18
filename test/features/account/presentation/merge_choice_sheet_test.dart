@@ -47,6 +47,23 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+/// A phone with a deck, and the switch started: the sheet is up.
+Future<void> _openSheet(
+  WidgetTester tester,
+  LibraryEnv env,
+  AuthWorld world,
+) async {
+  await env.decks.root('Korean');
+  await pumpLibraryScreen(
+    tester,
+    env,
+    _host(),
+    overrides: accountOverrides(world),
+  );
+  await tester.tap(find.text('go'));
+  await _settle(tester);
+}
+
 void main() {
   accountTest('a phone with decks asks, and merge is the default', (
     tester,
@@ -89,15 +106,7 @@ void main() {
 
   accountTest('discarding is its own choice, confirmed in the destructive '
       'tone', (tester, env, world) async {
-    await env.decks.root('Korean');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _host(),
-      overrides: accountOverrides(world),
-    );
-    await tester.tap(find.text('go'));
-    await _settle(tester);
+    await _openSheet(tester, env, world);
 
     await tester.tap(find.text(_en.accountDiscard));
     await tester.pump();
@@ -146,15 +155,7 @@ void main() {
   });
 
   accountTest('Cancel starts nothing', (tester, env, world) async {
-    await env.decks.root('Korean');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _host(),
-      overrides: accountOverrides(world),
-    );
-    await tester.tap(find.text('go'));
-    await _settle(tester);
+    await _openSheet(tester, env, world);
 
     await tester.tap(find.text(_en.commonCancel));
     await _settle(tester);
@@ -205,15 +206,7 @@ void main() {
 
   accountTest('the sheet pairs Cancel and Continue evenly and keeps one left '
       'edge (2026-10-05 L2, L4)', (tester, env, world) async {
-    await env.decks.root('Korean');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _host(),
-      overrides: accountOverrides(world),
-    );
-    await tester.tap(find.text('go'));
-    await _settle(tester);
+    await _openSheet(tester, env, world);
 
     double widthOf(String label) =>
         tester.getSize(find.widgetWithText(MxButton, label)).width;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 
+import '../../../support/clipboard_capture.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 
@@ -34,22 +34,7 @@ void main() {
     env,
   ) async {
     const trace = '#0      a (a.dart:1)\n<asynchronous suspension>\n#1      b';
-    String? copied;
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'Clipboard.setData') {
-          copied = (call.arguments as Map)['text'] as String;
-        }
-        return null;
-      },
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
+    final copied = captureClipboard(tester);
     await _pump(tester, env, trace);
 
     final region = tester.state<SelectableRegionState>(
@@ -63,7 +48,7 @@ void main() {
     region.copySelection(SelectionChangedCause.toolbar);
     await tester.pump();
 
-    expect(copied, trace);
+    expect(copied.last, trace);
   });
 
   libraryTest('a three-digit frame number keeps clear of the frame text', (

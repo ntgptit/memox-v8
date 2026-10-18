@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -16,6 +17,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 
 import '../../../support/account_harness.dart';
+import '../../../support/auth_fakes.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 
@@ -40,6 +42,19 @@ void main() {
 
   final shown = welcomeDueProvider.overrideWithBuild((ref, _) => true);
 
+  // The welcome step as a first launch shows it, plus [extra] overrides.
+  Future<void> pumpWelcome(
+    WidgetTester tester,
+    LibraryEnv env,
+    AuthWorld world, [
+    List<Override> extra = const [],
+  ]) => pumpLibraryScreen(
+    tester,
+    env,
+    screen(),
+    overrides: [...accountOverrides(world), shown, ...extra],
+  );
+
   bool isDue(WidgetTester tester) =>
       ProviderScope.containerOf(tester.element(find.byType(WelcomeScreen)))
           .read(welcomeDueProvider);
@@ -50,12 +65,7 @@ void main() {
     world,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     final node = tester.getSemantics(find.text(_en.appTitle));
     expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
@@ -65,12 +75,7 @@ void main() {
 
   accountTest('Continue without an account answers Welcome for good and '
       'goes on', (tester, env, world) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueWithout));
     await _settle(tester);
@@ -85,12 +90,7 @@ void main() {
     env,
     world,
   ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await _settle(tester);
@@ -102,12 +102,7 @@ void main() {
 
   accountTest('while Google signs in, Welcome keeps its ways and never '
       'looks offline (final review F2)', (tester, env, world) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
     final held = world.api.holdMe = Completer<void>();
 
     await tester.tap(find.text(_en.accountContinueGoogle));
@@ -133,12 +128,7 @@ void main() {
     env,
     world,
   ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueEmail));
     await _settle(tester);
@@ -149,16 +139,7 @@ void main() {
 
   accountTest('first launch offline: sign-in waits and says why, and '
       'without still leaves (Review Focus 1)', (tester, env, world) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [
-        ...accountOverrides(world),
-        shown,
-        authStateOf(const LocalOnly()),
-      ],
-    );
+    await pumpWelcome(tester, env, world, [authStateOf(const LocalOnly())]);
 
     expect(find.text(_en.accountContinueGoogle), findsNothing);
     expect(find.text(_en.accountContinueEmail), findsNothing);
@@ -183,12 +164,7 @@ void main() {
     accountTest('while the account starts (${starting.runtimeType}), Welcome '
         'keeps its three ways, disabled, and never looks offline (audit '
         '2026-10-17 ACC-2)', (tester, env, world) async {
-      await pumpLibraryScreen(
-        tester,
-        env,
-        screen(),
-        overrides: [...accountOverrides(world), shown, authStateOf(starting)],
-      );
+      await pumpWelcome(tester, env, world, [authStateOf(starting)]);
 
       MxButton button(String label) =>
           tester.widget<MxButton>(find.widgetWithText(MxButton, label));
@@ -206,28 +182,16 @@ void main() {
     env,
     world,
   ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [
-        ...accountOverrides(world),
-        shown,
-        authStateOf(const Validating(null)),
-      ],
-    );
+    await pumpWelcome(tester, env, world, [
+      authStateOf(const Validating(null)),
+    ]);
 
     expect(find.text(_en.accountOfflineNote), findsOneWidget);
   });
 
   accountTest('the lead says MemoX works without an account, and two '
       'benefits follow', (tester, env, world) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     expect(find.text(_en.welcomeLead), findsOneWidget);
     expect(find.text(_en.welcomeBenefitReinstall), findsOneWidget);
@@ -247,16 +211,7 @@ void main() {
       '(Review Focus 4)', (tester, env, world) async {
     final auth = ValueNotifier<AuthState>(const LocalOnly());
     addTearDown(auth.dispose);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [
-        ...accountOverrides(world),
-        shown,
-        authStateOfListenable(auth),
-      ],
-    );
+    await pumpWelcome(tester, env, world, [authStateOfListenable(auth)]);
     expect(find.text(_en.accountContinueGoogle), findsNothing);
 
     auth.value = world.state;
@@ -271,12 +226,7 @@ void main() {
       'and the choice leaves Welcome', (tester, env, world) async {
     world.server.addUser(email: 'g@example.com');
     await env.decks.root('Korean');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await _settle(tester);
@@ -297,12 +247,7 @@ void main() {
       'the next press shows the picker again', (tester, env, world) async {
     world.server.addUser(email: 'g@example.com');
     await env.decks.root('Korean');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await _settle(tester);
@@ -330,12 +275,7 @@ void main() {
     world,
   ) async {
     world.server.addUser(email: 'g@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await _settle(tester);
@@ -353,12 +293,7 @@ void main() {
   ) async {
     world.server.addUser(email: 'g@example.com');
     final held = world.gateway.holdGoogleSignIn = Completer<void>();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: [...accountOverrides(world), shown],
-    );
+    await pumpWelcome(tester, env, world);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await _settle(tester);

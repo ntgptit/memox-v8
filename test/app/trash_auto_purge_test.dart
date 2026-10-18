@@ -33,20 +33,6 @@ Future<int> _batches(LibraryEnv env) async =>
             .getSingle())
         .read<int>('n');
 
-/// The app goes to the background and comes back, through every state.
-void _cycleLifecycle(WidgetTester tester) {
-  for (final state in const [
-    AppLifecycleState.inactive,
-    AppLifecycleState.hidden,
-    AppLifecycleState.paused,
-    AppLifecycleState.hidden,
-    AppLifecycleState.inactive,
-    AppLifecycleState.resumed,
-  ]) {
-    tester.binding.handleAppLifecycleStateChanged(state);
-  }
-}
-
 void main() {
   libraryTest('the app purges what expired when it starts (FE-B1 D5)', (
     tester,
@@ -68,7 +54,7 @@ void main() {
     expect(find.text('bap · rice'), findsOneWidget);
 
     env.clock.current = libraryToday.add(const Duration(hours: 2));
-    _cycleLifecycle(tester);
+    cycleLifecycle(tester);
     await tester.pumpAndSettle();
 
     expect(find.text('bap · rice'), findsNothing);

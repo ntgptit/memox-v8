@@ -66,8 +66,6 @@ void main() {
     );
     expect(await queued(db), ['account_settings:upsert']);
 
-    final integrity = await db.customSelect('PRAGMA integrity_check').get();
-    expect(integrity.single.data.values.single, 'ok');
-    expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    await expectIntegrity(db);
   });
 }

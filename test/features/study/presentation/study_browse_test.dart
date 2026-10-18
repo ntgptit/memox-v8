@@ -19,6 +19,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
+import 'support/study_screen_helpers.dart';
 
 // Screen 16: UC-STUDY-004; IT-MODE-002; BR-STUDY-048; FE-A6 D20.
 
@@ -78,11 +79,6 @@ Future<void> _swipe(WidgetTester tester, double dx) async {
   await tester.pumpAndSettle();
 }
 
-String _front(WidgetTester tester) => tester
-    .widgetList<Text>(find.textContaining(RegExp(r'^front ')))
-    .single
-    .data!;
-
 void main() {
   libraryTest('both faces show at once, labelled, with no grading control '
       '(IT-MODE-002 steps 1–3)', (tester, env) async {
@@ -111,15 +107,15 @@ void main() {
     final id = await _session(env, ['a', 'b', 'c']);
     await pumpLibraryScreen(tester, env, _Host(id));
     await tester.pumpAndSettle();
-    final first = _front(tester);
+    final first = shownFront(tester);
 
     await _swipe(tester, -300);
-    final second = _front(tester);
+    final second = shownFront(tester);
     expect(second, isNot(first));
     expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
 
     await _swipe(tester, 300);
-    expect(_front(tester), first);
+    expect(shownFront(tester), first);
     expect(
       find.widgetWithText(MxBadge, _en.studyBrowseLookingBack),
       findsOneWidget,
@@ -127,7 +123,7 @@ void main() {
     expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
 
     await _swipe(tester, -300);
-    expect(_front(tester), second);
+    expect(shownFront(tester), second);
     expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
 
     await _swipe(tester, -300);
@@ -139,11 +135,11 @@ void main() {
     final id = await _session(env, ['a', 'b']);
     await pumpLibraryScreen(tester, env, _Host(id));
     await tester.pumpAndSettle();
-    final first = _front(tester);
+    final first = shownFront(tester);
 
     await _swipe(tester, 300);
 
-    expect(_front(tester), first);
+    expect(shownFront(tester), first);
     expect(find.byType(MxBadge), findsNothing);
   });
 
@@ -181,12 +177,12 @@ void main() {
     final id = await _session(env, ['a', 'b', 'c']);
     await pumpLibraryScreen(tester, env, _Host(id));
     await tester.pumpAndSettle();
-    final first = _front(tester);
+    final first = shownFront(tester);
 
     await tester.tap(find.widgetWithText(MxButton, _en.studyBrowseNext));
     await tester.pumpAndSettle();
 
-    expect(_front(tester), isNot(first));
+    expect(shownFront(tester), isNot(first));
     expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
   });
 }

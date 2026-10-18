@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -17,6 +15,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import 'support/study_screen_helpers.dart';
 
 // Screen 17, Match (UC-STUDY-005): BR-STUDY-049, BR-STUDY-060, BR-STUDY-062,
 // BR-STUDY-063, BR-STUDY-070; FE-A6 P3 rulings M1, M2, C1, C3, C4, C7, C8.
@@ -25,13 +24,6 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 const _terms = ['term 1', 'term 2', 'term 3', 'term 4', 'term 5'];
 const _meanings = ['apple', 'banana', 'cherry', 'date', 'elder'];
-
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
 
 /// One board of five pairs: term N goes with the Nth meaning.
 Future<String> _match(LibraryEnv env) =>
@@ -67,16 +59,13 @@ Future<void> _pair(WidgetTester tester, String term, String meaning) async {
   await tester.pump();
 }
 
-/// The footer hint's glyph (critique 2026-10-02, F7).
-IconData _hintIcon(WidgetTester tester) => tester
-    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
-    .icon;
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
 
 void main() {
   libraryTest('terms on the left, meanings on the right, with the hint '
       '(BR-STUDY-049)', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     for (final text in [..._terms, ..._meanings]) {
       expect(find.text(text), findsOneWidget);
@@ -86,14 +75,14 @@ void main() {
       lessThan(tester.getCenter(find.text('apple')).dx),
     );
     expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
   });
 
   libraryTest('a term, then its meaning: both are matched, in the success '
       'tone, and the match is announced (M1, C1, C3)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await _pair(tester, 'term 1', 'apple');
     await tester.pumpAndSettle();
@@ -120,7 +109,7 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await _pair(tester, 'term 1', 'banana');
 
@@ -138,7 +127,7 @@ void main() {
     expect(_tile(tester, 'term 2').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHintWrong), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.repeat);
+    expect(footerHintIcon(tester), AppIcons.repeat);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
       contains(_en.studyMatchHintWrong),
@@ -150,7 +139,7 @@ void main() {
     expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, MxChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
     expect(await turnKindsOf(env.db, 'ST-01'), hasLength(1));
     handle.dispose();
   });
@@ -159,7 +148,7 @@ void main() {
       'answered on the term (BR-STUDY-062; critique 2026-09-30 part 3c-2, '
       'R3)', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text('apple'));
     await tester.pump();
@@ -176,40 +165,29 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  libraryTest('a second meaning moves the selection (R3)', (tester, env) async {
-    final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+  for (final (name, first, second, ids) in [
+    ('meaning', 'apple', 'banana', 'R3'),
+    ('term', 'term 1', 'term 2', 'M1, R3'),
+  ]) {
+    libraryTest('a second $name moves the selection ($ids)', (
+      tester,
+      env,
+    ) async {
+      final id = await _match(env);
+      await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
-    await tester.tap(find.text('apple'));
-    await tester.pump();
-    await tester.tap(find.text('banana'));
-    await tester.pump();
+      await tester.tap(find.text(first));
+      await tester.pump();
+      await tester.tap(find.text(second));
+      await tester.pump();
 
-    expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
-    expect(_tile(tester, 'banana').tone, MxChoiceTone.selected);
-    expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
-    // ForUI's press layer settles on a short timer.
-    await tester.pumpAndSettle();
-  });
-
-  libraryTest('a second term moves the selection (M1, R3)', (
-    tester,
-    env,
-  ) async {
-    final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-
-    await tester.tap(find.text('term 1'));
-    await tester.pump();
-    await tester.tap(find.text('term 2'));
-    await tester.pump();
-
-    expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
-    expect(_tile(tester, 'term 2').tone, MxChoiceTone.selected);
-    expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
-    // ForUI's press layer settles on a short timer.
-    await tester.pumpAndSettle();
-  });
+      expect(_tile(tester, first).tone, MxChoiceTone.idle);
+      expect(_tile(tester, second).tone, MxChoiceTone.selected);
+      expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+      // ForUI's press layer settles on a short timer.
+      await tester.pumpAndSettle();
+    });
+  }
 
   libraryTest('a meaning, then the wrong term: both flash wrong, the turn is '
       "the term's, and nothing stays selected (Review Focus 3)", (
@@ -217,7 +195,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text('apple'));
     await tester.pump();
@@ -241,7 +219,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final colors = tester.element(find.text('apple')).colors;
 
     expect(_groundOf(tester, 'apple'), colors.muted);
@@ -253,7 +231,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await _pair(tester, 'term 1', 'banana');
     await _pair(tester, 'term 2', 'banana');
@@ -266,7 +244,7 @@ void main() {
   libraryTest('five right pairs finish the board, and the review ends with '
       'nothing selected', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     for (var i = 0; i < 5; i++) {
       await _pair(tester, _terms[i], _meanings[i]);
@@ -279,7 +257,7 @@ void main() {
   libraryTest('nothing overflows and each tile is at '
       'least 48 tall (C4)', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(tester.takeException(), isNull);
     expect(
@@ -293,7 +271,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     double keyOf(String text) =>
         (_tile(tester, text).sortKey! as OrdinalSortKey).order;
@@ -308,7 +286,7 @@ void main() {
       'shows the pairs left (critique 2026-09-30)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final line = _en.studyContextRound(
       _en.studyContextReview('Lesson', _en.studyKindReview),
       1,
@@ -354,7 +332,7 @@ void main() {
     env,
   ) async {
     final id = await sevenDue(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     for (var i = 0; i < 5; i++) {
       await _pair(tester, _terms[i], _meanings[i]);
@@ -374,7 +352,7 @@ void main() {
   libraryTest('a wrong pair carried into round 2 is asked there, and the '
       'round answers (BR-STUDY-060, BR-STUDY-062)', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await _pair(tester, 'term 1', 'banana');
     await tester.pump(const Duration(milliseconds: 600));
@@ -397,7 +375,7 @@ void main() {
       '(C3; Impeccable after P3)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await _pair(tester, 'term 1', 'banana');
 
@@ -414,7 +392,7 @@ void main() {
 
   libraryTest('at normal size no fade is drawn', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
@@ -424,7 +402,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     final box = tester.widget<TweenAnimationBuilder<Decoration>>(
       find.descendant(
@@ -444,7 +422,7 @@ void main() {
     env,
   ) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final before = tester.getRect(find.text('term 1'));
     Color foregroundOf() =>
         tester.widget<Text>(find.text('term 1')).style!.color!;

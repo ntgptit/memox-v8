@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/features/monitoring/presentation/states/monitoring_tab_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -51,12 +50,7 @@ void main() {
         '${width.toInt()} wide', (tester, env) async {
       final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
       await pumpMonitoring(tester, env, repository);
-      repository.watches.single.feed.add(
-        PendingLogs(items: [summary('p1', status: null)], total: 1),
-      );
-      await settleMonitoring(tester);
-      await tester.tap(find.text('Not sent (1)'));
-      await tester.pumpAndSettle();
+      await openNotSentTabWithOne(tester, repository);
       await _widen(tester, width);
 
       expect(tester.getTopLeft(find.byType(MxNote)).dx, margin);
@@ -72,12 +66,7 @@ void main() {
         repository,
         pendingHeader: const Text('header'),
       );
-      repository.watches.single.feed.add(
-        PendingLogs(items: [summary('p1', status: null)], total: 1),
-      );
-      await settleMonitoring(tester);
-      await tester.tap(find.text('Not sent (1)'));
-      await tester.pumpAndSettle();
+      await openNotSentTabWithOne(tester, repository);
       await _widen(tester, width);
 
       final card = tester.getRect(find.byType(MxSection));

@@ -13,30 +13,14 @@ void main() {
   const xEmail = 'x@example.com';
   const code = FakeAuthGateway.code;
   late AuthWorld world;
-  final t0 = DateTime.utc(2026, 9, 30);
 
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
 
   /// The device on account X, with [pending] unsent changes.
-  Future<String> readyAccount({
-    AccountRole role = AccountRole.user,
-    int pending = 2,
-  }) async {
-    final x = world.server.addUser(email: xEmail, role: role).id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 5
-      ..pending = pending;
-    return x;
-  }
-
   /// X's session refused: REAUTH_REQUIRED.
   Future<String> reauthRequired({int pending = 2}) async {
-    final x = await readyAccount(pending: pending);
+    final x = await readyAccount(world, email: xEmail, pending: pending);
     world.gateway.dropSession();
     await pumpEventQueue();
     expect(world.state, isA<ReauthRequired>());
@@ -160,7 +144,7 @@ void main() {
   test(
     '#13 an account the server deleted clears the device (no re-auth)',
     () async {
-      final x = await readyAccount();
+      final x = await readyAccount(world, email: xEmail);
       world.server.users.remove(x);
 
       world.boot();
@@ -173,7 +157,7 @@ void main() {
   );
 
   test('#39 #40 #41 sign-out sends X first, ships the logs, clears, starts anonymous', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail);
 
     await world.coordinator.signOut();
 
@@ -188,7 +172,7 @@ void main() {
   test(
     '#39 offline, loss not accepted: nothing changes and it waits',
     () async {
-      final x = await readyAccount();
+      final x = await readyAccount(world, email: xEmail);
       world.network.goOffline();
 
       await world.coordinator.signOut();
@@ -214,7 +198,7 @@ void main() {
   );
 
   test('#39 offline with the loss accepted signs out; the new user waits for the network', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail);
     world.network.goOffline();
 
     await world.coordinator.signOut(discardUnsent: true);
@@ -234,7 +218,7 @@ void main() {
   test(
     '#42 #43 deletion removes the account, then clears like a sign-out',
     () async {
-      final x = await readyAccount();
+      final x = await readyAccount(world, email: xEmail);
 
       await world.coordinator.deleteAccount();
 
@@ -245,19 +229,9 @@ void main() {
   );
 
   test('#43 a retried deletion the server already did goes on', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail);
     world.server.users.remove(x);
-    await world.store.saveTransition(
-      AccountTransition(
-        opId: 'op-x',
-        kind: TransitionKind.delete,
-        sourceUserId: x,
-        sourceIsAnonymous: false,
-        stage: TransitionStage.started,
-        createdAt: t0,
-        updatedAt: t0,
-      ),
-    );
+    await savePending(world, TransitionKind.delete, source: x);
 
     world.boot();
     await world.coordinator.start();
@@ -269,7 +243,11 @@ void main() {
   test(
     '#44 the last admin is not deleted; nothing changes; the user is told',
     () async {
-      final x = await readyAccount(role: AccountRole.admin);
+      final x = await readyAccount(
+        world,
+        email: xEmail,
+        role: AccountRole.admin,
+      );
 
       await world.coordinator.deleteAccount();
 
@@ -288,7 +266,7 @@ void main() {
   );
 
   test('#44 deletion offline is refused before anything changes', () async {
-    await readyAccount();
+    await readyAccount(world, email: xEmail);
     world.network.goOffline();
 
     await expectLater(
@@ -303,18 +281,13 @@ void main() {
   test(
     '#45 a sign-out found signed out at launch finishes the clearing',
     () async {
-      final x = await readyAccount();
+      final x = await readyAccount(world, email: xEmail);
       world.gateway.forgetSession();
-      await world.store.saveTransition(
-        AccountTransition(
-          opId: 'op-x',
-          kind: TransitionKind.signOut,
-          sourceUserId: x,
-          sourceIsAnonymous: false,
-          stage: TransitionStage.signedOut,
-          createdAt: t0,
-          updatedAt: t0,
-        ),
+      await savePending(
+        world,
+        TransitionKind.signOut,
+        source: x,
+        stage: TransitionStage.signedOut,
       );
 
       world.boot();

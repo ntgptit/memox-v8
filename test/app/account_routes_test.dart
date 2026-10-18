@@ -26,7 +26,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../support/account_harness.dart';
-import '../support/fake_auth_server.dart';
+import '../support/auth_fakes.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/users_fakes.dart';
@@ -45,6 +45,46 @@ Future<void> _settle(WidgetTester tester) async {
 GoRouter _router(WidgetTester tester) =>
     GoRouter.of(tester.element(find.byType(Navigator).first));
 
+/// The app with Welcome due over the launch.
+Future<void> _pumpWelcomeDue(
+  WidgetTester tester,
+  LibraryEnv env,
+  AuthWorld world,
+) => pumpMemoxApp(
+  tester,
+  env,
+  overrides: [
+    ...accountOverrides(world),
+    welcomeDueProvider.overrideWithBuild((ref, _) => true),
+  ],
+);
+
+/// Settings with the sign-in page open over it.
+Future<void> _openSignIn(
+  WidgetTester tester,
+  LibraryEnv env,
+  AuthWorld world,
+) async {
+  await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+  _router(tester).go(AppRoutes.settings);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(_en.accountSignIn));
+  await _settle(tester);
+}
+
+/// Sign out from the account page, and confirm in the dialog.
+Future<void> _confirmSignOut(WidgetTester tester) async {
+  await tester.tap(find.text(_en.accountSignOut));
+  await tester.pumpAndSettle();
+  await tester.tap(
+    find.descendant(
+      of: find.byType(MxDialog),
+      matching: find.widgetWithText(MxButton, _en.accountSignOut),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   accountTest('Welcome takes the launch while it is due, and Continue '
       'without an account lands where it was headed', (
@@ -52,14 +92,7 @@ void main() {
     env,
     world,
   ) async {
-    await pumpMemoxApp(
-      tester,
-      env,
-      overrides: [
-        ...accountOverrides(world),
-        welcomeDueProvider.overrideWithBuild((ref, _) => true),
-      ],
-    );
+    await _pumpWelcomeDue(tester, env, world);
 
     expect(find.byType(WelcomeScreen), findsOneWidget);
     await tester.tap(find.text(_en.accountContinueWithout));
@@ -72,14 +105,7 @@ void main() {
 
   accountTest('a deep link while Welcome is due returns there after it '
       '(Review Focus 5)', (tester, env, world) async {
-    await pumpMemoxApp(
-      tester,
-      env,
-      overrides: [
-        ...accountOverrides(world),
-        welcomeDueProvider.overrideWithBuild((ref, _) => true),
-      ],
-    );
+    await _pumpWelcomeDue(tester, env, world);
 
     _router(tester).go(AppRoutes.progress);
     await tester.pumpAndSettle();
@@ -201,14 +227,7 @@ void main() {
 
   accountTest('Welcome goes on to its fallback when `from` leaves the app '
       '(P3b minor M1)', (tester, env, world) async {
-    await pumpMemoxApp(
-      tester,
-      env,
-      overrides: [
-        ...accountOverrides(world),
-        welcomeDueProvider.overrideWithBuild((ref, _) => true),
-      ],
-    );
+    await _pumpWelcomeDue(tester, env, world);
 
     _router(tester).go(AppRoutes.welcomeFrom('https://evil.example/study'));
     await tester.pumpAndSettle();
@@ -252,15 +271,7 @@ void main() {
     _router(tester).go(AppRoutes.settingsAccount);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(_en.accountSignOut));
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.descendant(
-        of: find.byType(MxDialog),
-        matching: find.widgetWithText(MxButton, _en.accountSignOut),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await _confirmSignOut(tester);
 
     expect(find.byType(AccountScreen), findsNothing);
     expect(find.byType(SettingsScreen), findsOneWidget);
@@ -277,15 +288,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AccountScreen), findsOneWidget);
 
-    await tester.tap(find.text(_en.accountSignOut));
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.descendant(
-        of: find.byType(MxDialog),
-        matching: find.widgetWithText(MxButton, _en.accountSignOut),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await _confirmSignOut(tester);
 
     expect(world.state, isA<Ready>());
     expect(find.byType(AccountScreen), findsNothing);
@@ -299,11 +302,7 @@ void main() {
     world,
   ) async {
     world.server.addUser(email: world.gateway.google.email);
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
-    _router(tester).go(AppRoutes.settings);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.accountSignIn));
-    await _settle(tester);
+    await _openSignIn(tester, env, world);
     expect(find.byType(SignInScreen), findsOneWidget);
 
     await tester.tap(find.text(_en.accountContinueGoogle));
@@ -329,11 +328,7 @@ void main() {
     world,
   ) async {
     world.server.addUser(email: world.gateway.google.email);
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
-    _router(tester).go(AppRoutes.settings);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.accountSignIn));
-    await _settle(tester);
+    await _openSignIn(tester, env, world);
 
     final held = world.api.holdMe = Completer<void>();
     await tester.tap(find.text(_en.accountContinueGoogle));
@@ -355,11 +350,7 @@ void main() {
     world,
   ) async {
     world.server.addUser(email: world.gateway.google.email);
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
-    _router(tester).go(AppRoutes.settings);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.accountSignIn));
-    await _settle(tester);
+    await _openSignIn(tester, env, world);
 
     final held = world.gateway.holdGoogleSignIn = Completer<void>();
     await tester.tap(find.text(_en.accountContinueGoogle));
@@ -385,11 +376,7 @@ void main() {
     world,
   ) async {
     world.server.addUser(email: 'b@example.com');
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
-    _router(tester).go(AppRoutes.settings);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.accountSignIn));
-    await _settle(tester);
+    await _openSignIn(tester, env, world);
 
     await tester.enterText(find.byType(FTextField), 'b@example.com');
     await tester.tap(find.text(_en.accountSendCode));
@@ -460,18 +447,6 @@ void main() {
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
 
-  accountTest('a non-admin\'s deep link to Admin meets the gate, titled '
-      'Admin', (tester, env, world) async {
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
-
-    _router(tester).go(AppRoutes.settingsAdmin);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(AdminScreen), findsNothing);
-    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
-    expect(find.text(_en.settingsAdmin), findsOneWidget);
-  });
-
   accountTest('an admin\'s deep link to Monitoring returns to the hub, not '
       'to 23b (settings hub spec D5)', (tester, env, world) async {
     await pumpMemoxApp(
@@ -492,15 +467,31 @@ void main() {
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
 
-  accountTest('a non-admin\'s deep link to Users meets the gate, titled '
-      'Users', (tester, env, world) async {
-    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+  // The gate answers a non-admin who reaches an admin page by its link; the
+  // page itself is never built.
+  for (final (name, route, screen, title) in [
+    (
+      'a non-admin\'s deep link to Admin meets the gate, titled Admin',
+      AppRoutes.settingsAdmin,
+      find.byType(AdminScreen),
+      _en.settingsAdmin,
+    ),
+    (
+      'a non-admin\'s deep link to Users meets the gate, titled Users',
+      AppRoutes.settingsUsers,
+      find.byType(UsersScreen),
+      _en.usersTitle,
+    ),
+  ]) {
+    accountTest(name, (tester, env, world) async {
+      await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
 
-    _router(tester).go(AppRoutes.settingsUsers);
-    await tester.pumpAndSettle();
+      _router(tester).go(route);
+      await tester.pumpAndSettle();
 
-    expect(find.byType(UsersScreen), findsNothing);
-    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
-    expect(find.text(_en.usersTitle), findsOneWidget);
-  });
+      expect(screen, findsNothing);
+      expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
+      expect(find.text(title), findsOneWidget);
+    });
+  }
 }

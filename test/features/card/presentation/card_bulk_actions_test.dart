@@ -21,17 +21,9 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import 'support/card_list_section_host.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
 
 /// Korean › Words: annyeong (new1), gamsa (due1), mul (flag1, flagged);
 /// Korean › Verbs: gada (verb1).
@@ -127,7 +119,7 @@ void main() {
 
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
     await _bulk(tester, _en.cardFlag);
     await _bulk(tester, _en.cardFlagSet);
@@ -145,7 +137,7 @@ void main() {
     env,
   ) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['mul', 'annyeong']);
     await _bulk(tester, _en.cardFlag);
     await _bulk(tester, _en.cardFlagClear);
@@ -158,7 +150,7 @@ void main() {
 
   libraryTest('Tag adds one tag to every selected card', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
     await _bulk(tester, _en.cardTag);
     await tester.enterText(find.byType(EditableText).last, 'greetings');
@@ -177,7 +169,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _section(ids.words),
+      cardListSection(ids.words),
       overrides: [
         cardActionsControllerProvider.overrideWith(() => _SlowActions(gate)),
       ],
@@ -207,7 +199,7 @@ void main() {
     env,
   ) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardTag);
     await tester.tap(_inDialog(_en.cardTagConfirm));
@@ -225,7 +217,7 @@ void main() {
       for (var i = 0; i < 10; i++) {
         await tags.attachByName(cardIds: {'new1'}, name: 'tag $i');
       }
-      await pumpLibraryScreen(tester, env, _section(ids.words));
+      await pumpLibraryScreen(tester, env, cardListSection(ids.words));
       await _select(tester, ['annyeong', 'gamsa']);
       await _bulk(tester, _en.cardTag);
       await tester.enterText(find.byType(EditableText).last, 'extra');
@@ -248,7 +240,7 @@ void main() {
     env,
   ) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
     await _bulk(tester, _en.cardMove);
     await tester.tap(find.text('Korean › Verbs'));
@@ -266,7 +258,7 @@ void main() {
   libraryTest('Trash asks with the count; Cancel keeps the selection; '
       'several cards get no Undo (FE-B1 D4)', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
     await _bulk(tester, _en.cardDelete);
 
@@ -292,7 +284,7 @@ void main() {
   libraryTest('one card shows its text; Undo puts it back (UC-TRASH-001 '
       'A1)', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
 
@@ -314,7 +306,7 @@ void main() {
   libraryTest('a refused Undo says why; the card stays in the Trash '
       '(UC-TRASH-001 E3)', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.trashMoveConfirm));
@@ -343,7 +335,7 @@ void main() {
     env,
   ) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.trashMoveConfirm));
@@ -360,7 +352,7 @@ void main() {
     env,
   ) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.trashMoveConfirm));
@@ -385,7 +377,7 @@ void main() {
 
   libraryTest('the bulk bar meets the target guidelines', (tester, env) async {
     final ids = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
     await _select(tester, ['annyeong']);
 
     await expectAccessibleTargets(tester);
@@ -401,7 +393,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _section(ids.words),
+      cardListSection(ids.words),
       overrides: [
         cardActionsControllerProvider.overrideWith(_BrokenActions.new),
       ],
@@ -425,7 +417,7 @@ void main() {
     '(DEV-307)',
     (tester, env) async {
       final ids = await _seed(env);
-      await pumpLibraryScreen(tester, env, _section(ids.words));
+      await pumpLibraryScreen(tester, env, cardListSection(ids.words));
       await _select(tester, ['annyeong']);
       // Untick the last card: the mode stays, with nothing to act on.
       await tester.tap(find.text('annyeong'));

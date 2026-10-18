@@ -67,12 +67,27 @@ void main() {
   });
   tearDown(() => db.close());
 
-  for (final (from, to) in <(String, SchedulerType)>[
-    ('sm2', SchedulerType.eightBox),
-    ('eight_box', SchedulerType.sm2),
+  for (final (from, to, outcome) in <(String, SchedulerType, String)>[
+    (
+      'sm2',
+      SchedulerType.eightBox,
+      'switches a locked sm2 tree to eight_box at its start values '
+          '(UC-SRS-001 steps 3 and 5)',
+    ),
+    (
+      'eight_box',
+      SchedulerType.sm2,
+      'switches a locked eight_box tree to sm2 at its start values '
+          '(UC-SRS-001 steps 3 and 5)',
+    ),
+    (
+      'sm2',
+      SchedulerType.sm2,
+      'that names the scheduler the root runs keeps it, at its start values '
+          '(UC-SRS-001 A1)',
+    ),
   ]) {
-    test('a reset switches a locked $from tree to ${to.code} at its start '
-        'values (UC-SRS-001 steps 3 and 5)', () async {
+    test('a reset $outcome', () async {
       final (rootId, cardId, _) = await insertStudyTree(
         db,
         'r',
@@ -103,32 +118,6 @@ void main() {
       );
     });
   }
-
-  test('a reset that names the scheduler the root runs keeps it '
-      '(UC-SRS-001 A1)', () async {
-    final (rootId, cardId, _) = await insertStudyTree(
-      db,
-      'r',
-      scheduler: 'sm2',
-    );
-    await repo.completeLearning(cardId: cardId, generation: 1);
-
-    final result = await repo.resetLearning(
-      rootDeckId: rootId,
-      schedulerType: SchedulerType.sm2,
-    );
-
-    expect(result, isA<Ok<void, SrsRejection>>());
-    final root = await deckRowOf(db, rootId);
-    expect(root.read<String>('scheduler_type'), 'sm2');
-    expect(root.read<int>('scheduler_version'), 1);
-    expect(root.read<int>('generation'), 2);
-    expectStartValues(
-      await scheduleRowOf(db, cardId),
-      scheduler: 'sm2',
-      generation: 2,
-    );
-  });
 
   test('a reset while a session is open closes it, refuses its next answer '
       'and keeps the answers given before (IT-CONT-009, host half)', () async {

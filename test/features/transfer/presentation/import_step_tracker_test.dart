@@ -6,6 +6,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_step_tracker_widget.dart';
 
+import '../../../support/contrast.dart';
 import '../../../support/library_harness.dart';
 
 // A done step's check sits on the mastery fill, so it inks in onSuccessFill,
@@ -68,10 +69,10 @@ void main() {
 
   test('onSuccessFill reads 3:1 on the mastery fill in both themes', () {
     for (final mx in [MxStatusColors.light, MxStatusColors.dark]) {
-      final ink = mx.onSuccessFill.computeLuminance();
-      final fill = mx.successFill.computeLuminance();
-      final (hi, lo) = ink > fill ? (ink, fill) : (fill, ink);
-      expect((hi + 0.05) / (lo + 0.05), greaterThanOrEqualTo(3));
+      expect(
+        contrastRatio(mx.onSuccessFill, mx.successFill),
+        greaterThanOrEqualTo(3),
+      );
     }
   });
 }

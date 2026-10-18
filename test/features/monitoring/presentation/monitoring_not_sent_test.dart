@@ -21,12 +21,7 @@ void main() {
       repository,
       pendingHeader: const Text('header', key: ValueKey('header')),
     );
-    repository.watches.single.feed.add(
-      PendingLogs(items: [summary('p1', status: null)], total: 1),
-    );
-    await settleMonitoring(tester);
-    await tester.tap(find.text('Not sent (1)'));
-    await tester.pumpAndSettle();
+    await openNotSentTabWithOne(tester, repository);
 
     final header = tester.getTopLeft(find.byKey(const ValueKey('header')));
     final note = tester.getTopLeft(find.byType(MxNote));
@@ -92,13 +87,7 @@ void main() {
     final repository = FakeMonitoringRepository();
     await pumpMonitoring(tester, env, repository);
     repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
-    repository.watches.single.feed.add(
-      PendingLogs(items: [summary('p1', status: null)], total: 1),
-    );
-    await settleMonitoring(tester);
-
-    await tester.tap(find.text('Not sent (1)'));
-    await tester.pumpAndSettle();
+    await openNotSentTabWithOne(tester, repository);
 
     expect(find.text('sync.push_failed'), findsOneWidget);
   });

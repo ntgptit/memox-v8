@@ -277,8 +277,10 @@ void main() {
   });
 
   // M3F-10: a row that is a choice says so on its own node, so a consumer
-  // needs no Semantics of its own around the row.
-  for (final isSelected in [true, false]) {
+  // needs no Semantics of its own around the row. ForUI's tappable reports a
+  // selected state on every button: no isSelected (null) means never
+  // selected, as false does.
+  for (final isSelected in <bool?>[true, false, null]) {
     testWidgets('M3F-10: isSelected $isSelected is on the row node with its '
         'label and tap', (tester) async {
       final handle = tester.ensureSemantics();
@@ -296,7 +298,7 @@ void main() {
         isSemantics(
           label: 'Row',
           isButton: true,
-          isSelected: isSelected,
+          isSelected: isSelected ?? false,
           hasSelectedState: true,
           hasTapAction: true,
         ),
@@ -349,23 +351,12 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('M3F-10: no isSelected means never selected', (tester) async {
+  testWidgets('M3F-10: a static row without isSelected has no selected state', (
+    tester,
+  ) async {
     final handle = tester.ensureSemantics();
-    await pumpMx(tester, MxRowInk(onTap: () {}, child: const Text('Row')));
-
-    // ForUI's tappable reports a selected state on every button: never
-    // selected here.
-    expect(
-      tester.getSemantics(find.text('Row')),
-      isSemantics(
-        label: 'Row',
-        isButton: true,
-        isSelected: false,
-        hasSelectedState: true,
-        hasTapAction: true,
-      ),
-    );
     await pumpMx(tester, const MxRowInk(onTap: null, child: Text('Static')));
+
     expect(
       tester.getSemantics(find.text('Static')),
       isSemantics(label: 'Static', hasSelectedState: false),

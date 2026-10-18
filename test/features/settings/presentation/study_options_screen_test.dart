@@ -207,38 +207,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('a failed save names what the deck still uses; Retry save '
-      'writes it (E4)', (tester, env) async {
-    final ids = await _seed(env);
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..isFailing = true;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(ids.subId),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byType(MxToggle));
-    await tester.pump();
-    await tester.tap(byControlLabel(_en.settingsMoreCards));
-    await tester.pump();
-    await tester.tap(find.text(_en.cardSave));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text(
-        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
-      ),
-      findsOneWidget,
-    );
-    expect(find.textContaining('memox.sqlite'), findsNothing);
-
-    store.isFailing = false;
-    await tester.tap(find.text(_en.cardRetrySave));
-    await tester.pumpAndSettle();
-    expect(find.text(_en.studyOptionsSaved), findsOneWidget);
-  });
-
   libraryTest('an override that cannot be read is named, and Save replaces '
       'it', (tester, env) async {
     final ids = await _seed(env, rootConfig: '{not json');
@@ -316,8 +284,41 @@ void main() {
     expect(find.text(_en.cardSave), findsNothing);
   });
 
-  libraryTest('a failed save shows a danger banner at the top; the caption '
-      'stays the local-only line (critique 2026-09-30 part 3d-1)', (
+  libraryTest('a failed save names what the deck still uses; Retry save '
+      'writes it (E4)', (tester, env) async {
+    final ids = await _seed(env);
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..isFailing = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(ids.subId),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardSave));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('memox.sqlite'), findsNothing);
+
+    store.isFailing = false;
+    await tester.tap(find.text(_en.cardRetrySave));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyOptionsSaved), findsOneWidget);
+  });
+
+  libraryTest('a failed save shows a danger banner at the top, names what the '
+      'deck still uses and Retry save writes it; the caption stays the '
+      'local-only line (critique 2026-09-30 part 3d-1, E4)', (
     tester,
     env,
   ) async {
@@ -352,6 +353,13 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(
+      find.text(
+        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('memox.sqlite'), findsNothing);
     expect(find.text(_en.studyOptionsLocalOnly), findsOneWidget);
     // One 16 gap below it, as below the note, not the banner's own 16 plus
     // a spacer (audit 2026-10-17).
@@ -376,6 +384,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(banner, findsNothing);
     expect(find.text(_en.cardRetrySave), findsNothing);
+    expect(find.text(_en.studyOptionsSaved), findsOneWidget);
   });
 
   // Study speech spec §6; BR-SETTINGS-009.

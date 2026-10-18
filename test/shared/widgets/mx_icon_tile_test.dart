@@ -7,6 +7,7 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
+import '../../support/contrast.dart';
 import '../../support/widget_harness.dart';
 
 const _childKey = ValueKey('tile-child');
@@ -101,38 +102,31 @@ void main() {
     );
   });
 
-  testWidgets(
-    'a solid primary tile fills with primary under an onPrimary glyph',
-    (tester) async {
-      await pumpMx(
-        tester,
-        const MxIconTile(icon: AppIcons.lockOpen, tone: MxIconTileTone.primary),
-      );
-      final colors = appLightColors;
+  // A solid tile fills with the tone's fill under that fill's own glyph.
+  final solids = [
+    (
+      name: 'a solid primary tile fills with primary under an onPrimary glyph',
+      icon: AppIcons.lockOpen,
+      tone: MxIconTileTone.primary,
+      fill: appLightColors.primary,
+      glyph: appLightColors.primaryForeground,
+    ),
+    (
+      name: 'a solid warning tile fills with warning under an onWarning glyph',
+      icon: AppIcons.lock,
+      tone: MxIconTileTone.warning,
+      fill: MxStatusColors.light.warningFill,
+      glyph: MxStatusColors.light.onWarningFill,
+    ),
+  ];
+  for (final c in solids) {
+    testWidgets(c.name, (tester) async {
+      await pumpMx(tester, MxIconTile(icon: c.icon, tone: c.tone));
 
-      expect(_tile(tester).color, colors.primary);
-      expect(
-        tester.widget<Icon>(find.byIcon(AppIcons.lockOpen)).color,
-        colors.primaryForeground,
-      );
-    },
-  );
-
-  testWidgets(
-    'a solid warning tile fills with warning under an onWarning glyph',
-    (tester) async {
-      await pumpMx(
-        tester,
-        const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
-      );
-
-      expect(_tile(tester).color, MxStatusColors.light.warningFill);
-      expect(
-        tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        MxStatusColors.light.onWarningFill,
-      );
-    },
-  );
+      expect(_tile(tester).color, c.fill);
+      expect(tester.widget<Icon>(find.byIcon(c.icon)).color, c.glyph);
+    });
+  }
 
   test('a seed only tints', () {
     expect(
@@ -165,19 +159,12 @@ void main() {
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 
         expect(
-          _ratio(fill, colors.background),
+          contrastRatio(fill, colors.background),
           lessThan(1.5),
           reason: 'a soft tint, not a solid fill',
         );
-        expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));
+        expect(contrastRatio(glyph, fill), greaterThanOrEqualTo(3));
       });
     }
   }
-}
-
-double _ratio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-  return (hi + 0.05) / (lo + 0.05);
 }

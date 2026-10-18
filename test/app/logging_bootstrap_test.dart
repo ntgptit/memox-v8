@@ -82,19 +82,30 @@ void main() {
   });
 
   group('the console sink', () {
-    test('is installed when console is true', () async {
-      await installAppLogger(container(_enabled), console: true);
+    // The console choice with a Supabase project (a buffer to ship) and
+    // without one (nothing to ship, so no buffer).
+    for (final (name, config, console, consoleSinks, bufferSinks) in const [
+      ('is installed when console is true', _enabled, true, 1, 1),
+      ('is left out when console is false', _enabled, false, 0, 1),
+      (
+        'keeps only the console choice without a Supabase project',
+        _disabled,
+        false,
+        0,
+        0,
+      ),
+    ]) {
+      test(name, () async {
+        await installAppLogger(container(config), console: console);
 
-      expect(appLogger.sinks.whereType<ConsoleSink>(), hasLength(1));
-      expect(appLogger.sinks.whereType<BufferSink>(), hasLength(1));
-    });
-
-    test('is left out when console is false', () async {
-      await installAppLogger(container(_enabled), console: false);
-
-      expect(appLogger.sinks.whereType<ConsoleSink>(), isEmpty);
-      expect(appLogger.sinks.whereType<BufferSink>(), hasLength(1));
-    });
+        expect(
+          appLogger.sinks.whereType<ConsoleSink>(),
+          hasLength(consoleSinks),
+        );
+        expect(appLogger.sinks.whereType<BufferSink>(), hasLength(bufferSinks));
+        expect(appLogger.sinks, hasLength(consoleSinks + bufferSinks));
+      });
+    }
 
     test('follows the build mode by default', () async {
       await installAppLogger(container(_enabled));
@@ -104,13 +115,6 @@ void main() {
   });
 
   group('a build without a Supabase project', () {
-    test('installs no buffer: its logs could never be shipped', () async {
-      await installAppLogger(container(_disabled), console: true);
-
-      expect(appLogger.sinks.whereType<BufferSink>(), isEmpty);
-      expect(appLogger.sinks.whereType<ConsoleSink>(), hasLength(1));
-    });
-
     test('does not even open the log database', () async {
       final container = ProviderContainer(
         overrides: [
@@ -128,12 +132,6 @@ void main() {
       expect(identical(appLogger, previous), isFalse);
       expect(appLogger.sinks.whereType<ConsoleSink>(), hasLength(1));
       expect(appLogger.sinks.whereType<BufferSink>(), isEmpty);
-    });
-
-    test('keeps only the console choice', () async {
-      await installAppLogger(container(_disabled), console: false);
-
-      expect(appLogger.sinks, isEmpty);
     });
   });
 }

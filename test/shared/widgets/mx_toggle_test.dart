@@ -78,38 +78,32 @@ void main() {
     );
   });
 
-  testWidgets('off: the track and thumb of the switch style', (tester) async {
-    await pumpMx(tester, toggle());
-    final style = _style(tester);
+  for (final (name, isOn, variants) in <(String, bool, Set<FVariant>)>[
+    ('off: the track and thumb of the switch style', false, <FVariant>{}),
+    (
+      'on: the selected track and thumb of the switch style',
+      true,
+      <FVariant>{FSwitchVariant.selected},
+    ),
+  ]) {
+    testWidgets(name, (tester) async {
+      await pumpMx(tester, toggle(isOn: isOn));
+      final style = _style(tester);
 
-    expect(
-      _painted(tester),
-      _paintsSwitch(
-        track: style.trackColor.resolve(<FVariant>{}),
-        thumb: style.thumbColor.resolve(<FVariant>{}),
-      ),
-    );
-  });
-
-  testWidgets('on: the selected track and thumb of the switch style', (
-    tester,
-  ) async {
-    await pumpMx(tester, toggle(isOn: true));
-    final style = _style(tester);
-    final on = <FVariant>{FSwitchVariant.selected};
-
-    expect(
-      _painted(tester),
-      _paintsSwitch(
-        track: style.trackColor.resolve(on),
-        thumb: style.thumbColor.resolve(on),
-      ),
-    );
-    expect(
-      style.trackColor.resolve(on),
-      isNot(style.trackColor.resolve(<FVariant>{})),
-    );
-  });
+      expect(
+        _painted(tester),
+        _paintsSwitch(
+          track: style.trackColor.resolve(variants),
+          thumb: style.thumbColor.resolve(variants),
+        ),
+      );
+      if (!isOn) return;
+      expect(
+        style.trackColor.resolve(variants),
+        isNot(style.trackColor.resolve(<FVariant>{})),
+      );
+    });
+  }
 
   testWidgets('a tap on the switch reports the flipped value once', (
     tester,

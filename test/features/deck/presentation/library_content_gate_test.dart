@@ -98,18 +98,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('the FAB waits for a first deck; the empty state offers it', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, deckScreen());
-    expect(find.byType(MxFab), findsNothing);
-
-    await env.decks.root('Korean');
-    await tester.pumpAndSettle();
-    expect(find.byType(MxFab), findsOneWidget);
-  });
-
   libraryTest('scenario A: a first run shows Starter decks and the Trash, '
       'no Tags, no search, no FAB (The Content Gate)', (tester, env) async {
     await pumpLibraryScreen(tester, env, deckScreen());
@@ -135,6 +123,7 @@ void main() {
       'the FAB in the same frame as its row', (tester, env) async {
     await pumpLibraryScreen(tester, env, deckScreen());
     expect(byControlLabel(_en.libraryTags), findsNothing);
+    expect(find.byType(MxFab), findsNothing);
 
     await env.decks.root('Korean');
     await tester.pumpAndSettle();
@@ -145,8 +134,8 @@ void main() {
     expect(find.byType(MxFab), findsOneWidget);
   });
 
-  libraryTest('reorder keeps its chrome: Done replaces the actions, no search '
-      'field, no FAB (critique 2026-09-30 part 3d-2)', (tester, env) async {
+  libraryTest('reorder keeps its chrome: Done replaces the actions (critique '
+      '2026-09-30 part 3d-2)', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
     await tester.tap(byControlLabel(_en.deckMoreActions('Korean')));
@@ -156,8 +145,6 @@ void main() {
 
     expect(find.byType(DeckReorderDoneWidget), findsOneWidget);
     expect(byControlLabel(_en.libraryTags), findsNothing);
-    expect(find.text(_en.searchFieldHint), findsNothing);
-    expect(find.byType(MxFab), findsNothing);
   });
 
   libraryTest('reorder: the Done pill ends on the screen margin, like any text '

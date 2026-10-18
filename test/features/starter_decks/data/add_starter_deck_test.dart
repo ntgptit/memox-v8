@@ -114,9 +114,6 @@ void main() {
       row.data,
   ];
 
-  Future<int> count(String table) async =>
-      (await rows('SELECT COUNT(*) AS n FROM $table')).single['n']! as int;
-
   test('a copy is an ordinary deck tree of its own: the root, the sub-decks '
       'in template order, the cards, and one fresh schedule row per card '
       'under the chosen scheduler (BR-STARTER-003, BR-STARTER-004)', () async {
@@ -201,12 +198,9 @@ void main() {
           },
       ],
     );
-    expect(await count('card_schedule'), 3);
-    expect(await count('review_log'), 0);
-    for (final MapEntry(key: number, value: query)
-        in invariantQueries.entries) {
-      expect(await rows(query), isEmpty, reason: 'invariant $number');
-    }
+    expect(await rowCount(db, 'card_schedule'), 3);
+    expect(await rowCount(db, 'review_log'), 0);
+    await expectNoInvariantViolations(db);
   });
 
   test('the cards of a copy keep the template order under one created_at '
@@ -259,7 +253,7 @@ void main() {
         {'depth': 10, 'decks': 10},
       ],
     );
-    expect(await count('card'), 1);
+    expect(await rowCount(db, 'card'), 1);
   });
 
   test('a copy under eight boxes writes eight-box schedule rows', () async {
@@ -316,8 +310,8 @@ void main() {
       {'name': 'Everyday'},
       {'name': 'Everyday'},
     ]);
-    expect(await count('card'), 6);
-    expect(await count('card_schedule'), 6);
+    expect(await rowCount(db, 'card'), 6);
+    expect(await rowCount(db, 'card_schedule'), 6);
   });
 
   test('a copy in the Trash is not in the library, and a restored one is '
@@ -397,9 +391,9 @@ void main() {
     );
 
     await expectLater(add(library([broken])), throwsA(isA<Failure>()));
-    expect(await count('deck'), 0);
-    expect(await count('card'), 0);
-    expect(await count('card_schedule'), 0);
+    expect(await rowCount(db, 'deck'), 0);
+    expect(await rowCount(db, 'card'), 0);
+    expect(await rowCount(db, 'card_schedule'), 0);
   });
 
   test('a template the library does not have is refused and nothing is '

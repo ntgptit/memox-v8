@@ -4,13 +4,12 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -33,13 +32,7 @@ void main() {
     DateTime clock() => DateTime(2026, 9, 1);
     final decks = DeckRepositoryImpl(db, now: clock);
     tags = TagRepositoryImpl(db, now: clock);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: clock),
-      tags,
-      DeckTreeDataSource(db),
-      now: clock,
-    );
+    cards = cardRepository(db, now: clock, tags: tags);
     final root = await decks.root('Due library');
     mixed = await decks.sub(root.id, 'Mixed due');
     await insertCard(

@@ -71,23 +71,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('a failure shows its sentence and no code', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const SyncScreen(),
-      overrides: syncOverrides(
-        SyncStatus(
-          lastFailure: LastSyncFailure(
-            SyncFailureKind.network,
-            env.clock.now(),
-          ),
-        ),
-      ),
-    );
-    expect(find.textContaining('No connection.'), findsOneWidget);
-  });
-
   libraryTest('while a Retry reloads, the error stays and its Retry spins', (
     tester,
     env,
@@ -163,42 +146,38 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('Sync now steps back when nothing waits (critique 2026-09-30)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
+  // Sync now steps back when nothing waits and leads while changes wait
+  // (critique 2026-09-30).
+  final syncNowTones = [
+    (
+      name: 'steps back when nothing waits',
+      status: const SyncStatus(),
+      tone: MxButtonTone.outline,
+    ),
+    (
+      name: 'leads while changes wait',
+      status: const SyncStatus(pendingCount: 3),
+      tone: MxButtonTone.primary,
+    ),
+  ];
+  for (final c in syncNowTones) {
+    libraryTest('Sync now ${c.name} (critique 2026-09-30)', (
       tester,
       env,
-      const SyncScreen(),
-      overrides: syncOverrides(const SyncStatus(), FakeSyncCommands()),
-    );
-    await _settle(tester);
-    expect(
-      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
-      MxButtonTone.outline,
-    );
-  });
-
-  libraryTest('Sync now leads while changes wait (critique 2026-09-30)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const SyncScreen(),
-      overrides: syncOverrides(
-        const SyncStatus(pendingCount: 3),
-        FakeSyncCommands(),
-      ),
-    );
-    await _settle(tester);
-    expect(
-      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
-      MxButtonTone.primary,
-    );
-  });
+    ) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        const SyncScreen(),
+        overrides: syncOverrides(c.status, FakeSyncCommands()),
+      );
+      await _settle(tester);
+      expect(
+        tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
+        c.tone,
+      );
+    });
+  }
 
   libraryTest('a problem sits under the status, above Sync now, not in a '
       'floating notice (critique 2026-09-30)', (tester, env) async {

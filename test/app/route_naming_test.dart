@@ -34,37 +34,36 @@ void main() {
     handle.dispose();
   });
 
-  libraryTest('screen 04, the library search, names its route with its '
-      'field, as the SDK AppBar names any title', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      LibrarySearchScreen(onOpenDeck: (_) {}, onOpenCard: (_) {}),
-    );
-    await tester.pumpAndSettle();
+  // Opened plain, and with a term as Find cards opens it.
+  for (final (name, initialQuery) in const [
+    (
+      'screen 04, the library search, names its route with its field, as the '
+          'SDK AppBar names any title',
+      '',
+    ),
+    (
+      'screen 04 opened with a term, as Find cards opens it, still names its '
+          'route with its field',
+      'verbs',
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final handle = tester.ensureSemantics();
+      await pumpLibraryScreen(
+        tester,
+        env,
+        LibrarySearchScreen(
+          onOpenDeck: (_) {},
+          onOpenCard: (_) {},
+          initialQuery: initialQuery,
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(routeNames(tester), ['Search decks, cards, tags']);
-    handle.dispose();
-  });
-
-  libraryTest('screen 04 opened with a term, as Find cards opens it, still '
-      'names its route with its field', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      LibrarySearchScreen(
-        onOpenDeck: (_) {},
-        onOpenCard: (_) {},
-        initialQuery: 'verbs',
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(routeNames(tester), ['Search decks, cards, tags']);
-    handle.dispose();
-  });
+      expect(routeNames(tester), ['Search decks, cards, tags']);
+      handle.dispose();
+    });
+  }
 
   libraryTest('a study session names its route with its mode', (
     tester,

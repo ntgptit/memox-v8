@@ -98,30 +98,24 @@ Future<void> _restingRoot(LibraryEnv env, DateTime dueAt) async {
 }
 
 void main() {
-  libraryTest('an expired sign-in takes the notice slot over sync (P3b B5)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWith(const Text('reauth')),
-      overrides: [authStateOf(const ReauthRequired(_account))],
-    );
-    await _settle(tester);
+  for (final (name, isExpired) in [
+    ('an expired sign-in takes the notice slot over sync (P3b B5)', true),
+    ('without an expired sign-in, the slot stays empty', false),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screenWith(const Text('reauth')),
+        overrides: isExpired
+            ? [authStateOf(const ReauthRequired(_account))]
+            : const [],
+      );
+      await _settle(tester);
 
-    expect(find.text('reauth'), findsOneWidget);
-  });
-
-  libraryTest('without an expired sign-in, the slot stays empty', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _screenWith(const Text('reauth')));
-    await _settle(tester);
-
-    expect(find.text('reauth'), findsNothing);
-  });
+      expect(find.text('reauth'), isExpired ? findsOneWidget : findsNothing);
+    });
+  }
 
   libraryTest('loaded: the Resume card, the workload hero with its four '
       'terms, and the decks in BR-STUDY-076 order (13 loaded)', (
@@ -328,44 +322,40 @@ void main() {
     expect(taps.sessions, [id]);
   });
 
-  libraryTest('a refused Resume says so and opens nothing (H3, S8)', (
-    tester,
-    env,
-  ) async {
-    final taps = _Taps();
-    final id = await openFiveDueReview(
-      env.db,
-      env.decks,
-      libraryToday,
-      StudyMode.recall,
-    );
-    await pumpLibraryScreen(tester, env, _screen(taps));
-    await _settle(tester);
-    // The session ends meanwhile, out of this screen's sight.
-    await env.sessions.abandonSession(sessionId: id);
+  for (final (name, message, breakResume) in [
+    (
+      'a refused Resume says so and opens nothing (H3, S8)',
+      (AppLocalizations l10n) => l10n.studyHomeResumeRefused,
+      // The session ends meanwhile, out of this screen's sight.
+      (LibraryEnv env, String id) => env.sessions.abandonSession(sessionId: id),
+    ),
+    (
+      'a Resume that cannot be written says so, local-first, and opens '
+          'nothing (audit 2026-10-17)',
+      (AppLocalizations l10n) => l10n.studyHomeResumeFailed,
+      (LibraryEnv env, String id) async => env.sessions.isResumeLocked = true,
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final taps = _Taps();
+      final id = await openFiveDueReview(
+        env.db,
+        env.decks,
+        libraryToday,
+        StudyMode.recall,
+      );
+      await pumpLibraryScreen(tester, env, _screen(taps));
+      await _settle(tester);
+      await breakResume(env, id);
 
-    await tester.tap(find.text(_en.studyHomeResume));
-    await _settle(tester);
+      await tester.tap(find.text(_en.studyHomeResume));
+      await _settle(tester);
 
-    expect(taps.sessions, isEmpty);
-    expect(find.text(_en.studyHomeResumeRefused), findsOneWidget);
-  });
-
-  libraryTest('a Resume that cannot be written says so, local-first, and '
-      'opens nothing (audit 2026-10-17)', (tester, env) async {
-    final taps = _Taps();
-    await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
-    await pumpLibraryScreen(tester, env, _screen(taps));
-    await _settle(tester);
-    env.sessions.isResumeLocked = true;
-
-    await tester.tap(find.text(_en.studyHomeResume));
-    await _settle(tester);
-
-    expect(taps.sessions, isEmpty);
-    expect(find.text(_en.studyHomeResumeFailed), findsOneWidget);
-    await tester.pump(const Duration(seconds: 5));
-  });
+      expect(taps.sessions, isEmpty);
+      expect(find.text(message(_en)), findsOneWidget);
+      await tester.pump(const Duration(seconds: 5));
+    });
+  }
 
   libraryTest('nothing overflows, each row is at '
       'least 48 tall, and no row cuts a count (BR-STUDY-076)', (

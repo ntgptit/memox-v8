@@ -29,6 +29,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 steps 6–13 and E5: the read model of the session screen.
@@ -52,6 +53,9 @@ void main() {
     await db.close();
   });
 
+  Future<void> answer(String sessionId, StudyAnswer answer) =>
+      acceptAnswer(db, sessions, sessionId, answer);
+
   Future<StudySessionView> viewOf(String sessionId) async =>
       (await views.watchSession(sessionId).first)!;
 
@@ -66,15 +70,6 @@ void main() {
       ((await entries.openLearningSession(
         deckId: leaf.id,
       )) as Ok<String, StudyRejection>).value;
-
-  Future<void> answer(String sessionId, StudyAnswer answer) async => expect(
-    await sessions.answerTurn(
-      sessionId: sessionId,
-      cardId: (await servedCard(db, sessionId))!,
-      answer: answer,
-    ),
-    isA<Ok<void, StudyRejection>>(),
-  );
 
   /// Spec D12 settles the sessions a build before the Trash left open.
   Future<void> deleteCards(Set<String> cardIds) => hardDeleteCards(db, cardIds);

@@ -36,10 +36,6 @@ Future<void> _seed(AppDatabase db) async {
   );
 }
 
-Future<int> _count(AppDatabase db, String table) async =>
-    (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle())
-        .read<int>('n');
-
 void main() {
   late AppDatabase db;
   late TagRepositoryImpl tags;
@@ -56,7 +52,7 @@ void main() {
       await tags.attachByName(cardIds: _ids, name: 'Noun'),
       isA<Ok<void, TagRejection>>(),
     );
-    expect(await _count(db, 'card_tags'), _many);
+    expect(await rowCount(db, 'card_tags'), _many);
 
     final tagId = (await db.customSelect('SELECT id FROM tags').getSingle())
         .read<String>('id');
@@ -64,7 +60,7 @@ void main() {
       await tags.detach(cardIds: _ids, tagId: tagId),
       isA<Ok<void, TagRejection>>(),
     );
-    expect(await _count(db, 'card_tags'), 0);
+    expect(await rowCount(db, 'card_tags'), 0);
   });
 
   test(

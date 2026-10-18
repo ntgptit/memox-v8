@@ -23,6 +23,7 @@ import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
+import '../../../support/contrast.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/progress_fixtures.dart';
@@ -236,81 +237,50 @@ void main() {
     expect(find.text(_en.progressStreakDays(0)), findsOneWidget);
   });
 
-  // A glyph picked from the wrong scheme vanished on its tile (whole-branch
-  // review, DEV-370).
-  for (final brightness in Brightness.values) {
-    libraryTest('a lost streak keeps a legible flame, ${brightness.name}', (
-      tester,
-      env,
-    ) async {
-      await progressLibrary(env, lastDaysAgo: 2);
-      await pumpLibraryScreen(
-        tester,
-        env,
-        _screen(_Taps()),
-        brightness: brightness,
-      );
-      await _settle(tester);
+  // The flame is a glyph on its own tile, legible in both schemes:
+  // - lost: a glyph picked from the wrong scheme vanished on its tile
+  //   (whole-branch review, DEV-370);
+  // - live: a glyph on its own tint takes the warning text colour, never the
+  //   amber fill, which reads under 3:1 on that tint in light (SW-REV-001's
+  //   mechanism, DEV-372 check similar).
+  for (final (streak, lastDaysAgo) in const [('lost', 2), ('live', 0)]) {
+    for (final brightness in Brightness.values) {
+      libraryTest(
+        'a $streak streak keeps a legible flame, ${brightness.name}',
+        (tester, env) async {
+          await progressLibrary(env, lastDaysAgo: lastDaysAgo);
+          await pumpLibraryScreen(
+            tester,
+            env,
+            _screen(_Taps()),
+            brightness: brightness,
+          );
+          await _settle(tester);
 
-      final tile = find.ancestor(
-        of: find.byIcon(AppIcons.streak),
-        matching: find.byType(MxIconTile),
-      );
-      final ground =
-          (tester
-                      .widget<DecoratedBox>(
-                        find
-                            .descendant(
-                              of: tile,
-                              matching: find.byType(DecoratedBox),
-                            )
-                            .first,
-                      )
-                      .decoration
-                  as BoxDecoration)
+          final tile = find.ancestor(
+            of: find.byIcon(AppIcons.streak),
+            matching: find.byType(MxIconTile),
+          );
+          final ground =
+              (tester
+                          .widget<DecoratedBox>(
+                            find
+                                .descendant(
+                                  of: tile,
+                                  matching: find.byType(DecoratedBox),
+                                )
+                                .first,
+                          )
+                          .decoration
+                      as BoxDecoration)
+                  .color!;
+          final glyph = tester
+              .widget<Icon>(find.byIcon(AppIcons.streak))
               .color!;
-      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.streak)).color!;
-      expect(_ratio(glyph, ground), greaterThanOrEqualTo(3));
-    });
-  }
-
-  // A live flame is a glyph on its own tint: it takes the warning text
-  // colour, never the amber fill, which reads under 3:1 on that tint in
-  // light (SW-REV-001's mechanism, DEV-372 check similar).
-  for (final brightness in Brightness.values) {
-    libraryTest('a live streak keeps a legible flame, ${brightness.name}', (
-      tester,
-      env,
-    ) async {
-      await progressLibrary(env);
-      await pumpLibraryScreen(
-        tester,
-        env,
-        _screen(_Taps()),
-        brightness: brightness,
+          expect(contrastRatio(glyph, ground), greaterThanOrEqualTo(3));
+        },
       );
-      await _settle(tester);
-
-      final tile = find.ancestor(
-        of: find.byIcon(AppIcons.streak),
-        matching: find.byType(MxIconTile),
-      );
-      final ground =
-          (tester
-                      .widget<DecoratedBox>(
-                        find
-                            .descendant(
-                              of: tile,
-                              matching: find.byType(DecoratedBox),
-                            )
-                            .first,
-                      )
-                      .decoration
-                  as BoxDecoration)
-              .color!;
-      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.streak)).color!;
-      expect(_ratio(glyph, ground), greaterThanOrEqualTo(3));
-    });
+    }
   }
 
   libraryTest('never studied: the places of the chart and the streak, no '
@@ -483,11 +453,4 @@ void main() {
       findsOneWidget,
     );
   });
-}
-
-double _ratio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-  return (hi + 0.05) / (lo + 0.05);
 }

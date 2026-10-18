@@ -7,14 +7,10 @@ import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
 
-/// The app bar's refresh, which a screen reader can reach where the drag
-/// down is out of reach (audit 2026-10-17 SET-11).
-final _refreshAction = find.byWidgetPredicate(
-  (widget) => widget is MxIconButton && widget.semanticLabel == 'Refresh',
-);
-
+// monitoringRefreshAction is the app bar's refresh, which a screen reader can
+// reach where the drag down is out of reach (audit 2026-10-17 SET-11).
 MxIconButton _refreshButton(WidgetTester tester) =>
-    tester.widget<MxIconButton>(_refreshAction);
+    tester.widget<MxIconButton>(monitoringRefreshAction);
 
 void main() {
   libraryTest('Refresh is off while its read runs, so the tap is seen and '
@@ -25,7 +21,7 @@ void main() {
     await settleMonitoring(tester);
     expect(_refreshButton(tester).onPressed, isNotNull);
 
-    await tester.tap(_refreshAction);
+    await tester.tap(monitoringRefreshAction);
     await tester.pump();
     expect(repository.queries, hasLength(2));
     expect(_refreshButton(tester).onPressed, isNull);
@@ -42,7 +38,7 @@ void main() {
     repository.lastQuery.answer(pageOf(2));
     await settleMonitoring(tester);
 
-    await tester.tap(_refreshAction);
+    await tester.tap(monitoringRefreshAction);
     await tester.pump();
     repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
     await tester.pump(const Duration(seconds: 1));

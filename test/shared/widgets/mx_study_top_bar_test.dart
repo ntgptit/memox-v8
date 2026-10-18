@@ -76,12 +76,6 @@ void main() {
     });
   }
 
-  testWidgets('the badge is the mode label upper-cased', (tester) async {
-    await pumpMx(tester, _bar());
-
-    expect(find.text('REVIEW'), findsOneWidget);
-  });
-
   testWidgets(
     'the fill is primary, in every mode (critique 2026-09-30 part 3c-2, R8)',
     (tester) async {

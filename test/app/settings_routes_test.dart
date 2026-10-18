@@ -6,7 +6,6 @@ import 'package:memox/features/settings/presentation/screens/study_options_scree
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 
@@ -20,61 +19,51 @@ import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _barTitle(String title) =>
-    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
-
-Finder _tab(String label) =>
-    find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.tap(finder);
-  await tester.pumpAndSettle();
-}
-
 /// The routes around Settings (FE-A3).
 void main() {
   libraryTest('the Settings tab is screen 23', (tester, env) async {
     await pumpMemoxApp(tester, env);
-    await _tap(tester, _tab(_en.navSettings));
+    await tapAndSettle(tester, bottomTab(_en.navSettings));
 
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
 
-  for (final (row, title) in [
-    (_en.settingsTheme, _en.settingsTheme),
-    (_en.settingsLanguage, _en.settingsLanguage),
+  // A row of the hub opens its page above the shell, titled with the row;
+  // Back returns. [screen] is the page's own widget, when the row has one.
+  for (final (name, row, screen) in [
+    (
+      '${_en.settingsTheme} opens its page above the shell; Back returns (D2)',
+      _en.settingsTheme,
+      null,
+    ),
+    (
+      '${_en.settingsLanguage} opens its page above the shell; Back returns '
+          '(D2)',
+      _en.settingsLanguage,
+      null,
+    ),
+    (
+      'the Study defaults row opens screen 23a above the shell; Back returns '
+          '(settings hub spec D1)',
+      _en.settingsStudyDefaults,
+      find.byType(StudyDefaultsScreen),
+    ),
   ]) {
-    libraryTest('$row opens its page above the shell; Back returns (D2)', (
-      tester,
-      env,
-    ) async {
+    libraryTest(name, (tester, env) async {
       await pumpMemoxApp(tester, env);
-      await _tap(tester, _tab(_en.navSettings));
+      await tapAndSettle(tester, bottomTab(_en.navSettings));
 
-      await _tap(tester, find.text(row));
-      expect(_barTitle(title), findsOneWidget);
+      await tapAndSettle(tester, find.text(row));
+      if (screen != null) expect(screen, findsOneWidget);
+      expect(barTitle(row), findsOneWidget);
       expect(find.byType(MxBottomNav), findsNothing);
 
-      await _tap(tester, byControlLabel(_en.commonBack));
-      expect(_barTitle(_en.navSettings), findsOneWidget);
+      await tapAndSettle(tester, byControlLabel(_en.commonBack));
+      if (screen != null) expect(screen, findsNothing);
+      expect(barTitle(_en.navSettings), findsOneWidget);
       expect(find.byType(MxBottomNav), findsOneWidget);
     });
   }
-
-  libraryTest('the Study defaults row opens screen 23a above the shell; '
-      'Back returns (settings hub spec D1)', (tester, env) async {
-    await pumpMemoxApp(tester, env);
-    await _tap(tester, _tab(_en.navSettings));
-
-    await _tap(tester, find.text(_en.settingsStudyDefaults));
-    expect(find.byType(StudyDefaultsScreen), findsOneWidget);
-    expect(_barTitle(_en.settingsStudyDefaults), findsOneWidget);
-    expect(find.byType(MxBottomNav), findsNothing);
-
-    await _tap(tester, byControlLabel(_en.commonBack));
-    expect(find.byType(StudyDefaultsScreen), findsNothing);
-    expect(_barTitle(_en.navSettings), findsOneWidget);
-  });
 
   libraryTest('a build without Supabase composes no account row: the hub '
       'has no Account & sync section (settings hub spec §5.1)', (
@@ -90,7 +79,7 @@ void main() {
         ),
       ],
     );
-    await _tap(tester, _tab(_en.navSettings));
+    await tapAndSettle(tester, bottomTab(_en.navSettings));
 
     expect(find.text(_en.settingsAccountSync.toUpperCase()), findsNothing);
     expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
@@ -100,9 +89,9 @@ void main() {
       'Back returns to the deck (FE-A3 D3)', (tester, env) async {
     await env.decks.root('Korean');
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, byControlLabel(_en.deckActions));
-    await _tap(
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, byControlLabel(_en.deckActions));
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(MxActionSheetCommandRow),
@@ -120,28 +109,28 @@ void main() {
       ),
       findsOneWidget,
     );
-    await _tap(tester, byControlLabel(_en.commonBack));
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyOptionsScreen), findsNothing);
-    expect(_barTitle('Korean'), findsOneWidget);
+    expect(barTitle('Korean'), findsOneWidget);
   });
 
   libraryTest('screen 14\'s icon opens screen 15; Back returns to the '
       'entry (FE-A3 D3)', (tester, env) async {
     await env.decks.root('Korean');
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, byControlLabel(_en.deckActions));
-    await _tap(
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, byControlLabel(_en.deckActions));
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(MxActionSheetCommandRow),
         matching: find.text(_en.studyThisDeck),
       ),
     );
-    await _tap(tester, byControlLabel(_en.deckStudyOptions));
+    await tapAndSettle(tester, byControlLabel(_en.deckStudyOptions));
 
     expect(find.byType(StudyOptionsScreen), findsOneWidget);
-    await _tap(tester, byControlLabel(_en.commonBack));
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
     expect(find.byType(StudyEntryScreen), findsOneWidget);
   });
 }

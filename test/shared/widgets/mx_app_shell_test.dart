@@ -88,51 +88,42 @@ void main() {
         .bottom;
     final rows = [const SizedBox(height: 40)];
 
-    testWidgets('a footer owns it; the scroll above adds only its 24', (
-      tester,
-    ) async {
-      await pumpMxPage(
-        tester,
-        MxAppShell(
+    // Whoever owns the inset, the scroll above adds only its own 24.
+    final shells = [
+      (
+        name: 'a footer owns it; the scroll above adds only its 24',
+        shell: MxAppShell(
           body: MxScreenScroll(children: rows),
           footer: const SizedBox(key: _footerKey, height: 72),
         ),
-        padding: const EdgeInsets.only(bottom: 20),
-      );
-
-      expect(scrollTail(tester), 24);
-    });
-
-    testWidgets('a bottom nav owns it; the scroll above adds only its 24', (
-      tester,
-    ) async {
-      await pumpMxPage(
-        tester,
-        MxAppShell(
+      ),
+      (
+        name: 'a bottom nav owns it; the scroll above adds only its 24',
+        shell: MxAppShell(
           body: MxScreenScroll(children: rows),
           bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
         ),
-        padding: const EdgeInsets.only(bottom: 20),
-      );
-
-      expect(scrollTail(tester), 24);
-    });
-
-    testWidgets('an app bar does not hand the nav-owned inset back', (
-      tester,
-    ) async {
-      await pumpMxPage(
-        tester,
-        MxAppShell(
+      ),
+      (
+        name: 'an app bar does not hand the nav-owned inset back',
+        shell: MxAppShell(
           appBar: const MxAppBar(title: 'Library'),
           body: MxScreenScroll(children: rows),
           bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
         ),
-        padding: const EdgeInsets.only(bottom: 20),
-      );
+      ),
+    ];
+    for (final c in shells) {
+      testWidgets(c.name, (tester) async {
+        await pumpMxPage(
+          tester,
+          c.shell,
+          padding: const EdgeInsets.only(bottom: 20),
+        );
 
-      expect(scrollTail(tester), 24);
-    });
+        expect(scrollTail(tester), 24);
+      });
+    }
   });
 
   test('a FAB over a footer has no anchor rule and is rejected', () {

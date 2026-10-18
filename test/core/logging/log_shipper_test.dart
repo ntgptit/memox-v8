@@ -90,14 +90,32 @@ void main() {
     expect((await db.oldest(10)).map((e) => e.id), ['id-0002']);
   });
 
-  test('a failed call keeps every row and rethrows, so the scheduler backs '
-      'off', () async {
-    await db.insertAll([_entry(1)]);
-    rpc.failWith = StateError('offline');
+  // Neither error is a refusal by the server, so each keeps every row and
+  // propagates after one call, and the scheduler backs off.
+  for (final (name, error, thrown, rows) in <(String, Object, Matcher, int)>[
+    (
+      'a failed call keeps every row and rethrows, so the scheduler backs off',
+      StateError('offline'),
+      throwsStateError,
+      1,
+    ),
+    (
+      'a network error keeps every row and propagates',
+      const SocketException('offline'),
+      throwsA(isA<SocketException>()),
+      2,
+    ),
+  ]) {
+    test(name, () async {
+      await db.insertAll([for (var n = 1; n <= rows; n++) _entry(n)]);
+      rpc.failWith = error;
 
-    await expectLater(shipper.runOnce(), throwsStateError);
-    expect(await db.count(), 1);
-  });
+      await expectLater(shipper.runOnce(), thrown);
+
+      expect(await db.count(), rows);
+      expect(rpc.calls, hasLength(1));
+    });
+  }
 
   test('a row the server refuses is found by halving the batch and dropped; '
       'the rest still go', () async {
@@ -113,16 +131,6 @@ void main() {
     };
     expect(sent, containsAll(['id-0001', 'id-0003', 'id-0006']));
     expect(rpc.calls.map((c) => c.length), [3, 2, 1, 1, 1, 1, 1, 1]);
-  });
-
-  test('a network error keeps every row and propagates', () async {
-    await db.insertAll([for (var n = 1; n <= 2; n++) _entry(n)]);
-    rpc.failWith = const SocketException('offline');
-
-    await expectLater(shipper.runOnce(), throwsA(isA<SocketException>()));
-
-    expect(await db.count(), 2);
-    expect(rpc.calls, hasLength(1));
   });
 
   test('when the server refuses every call, no row is dropped, however many '

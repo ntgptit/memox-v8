@@ -7,7 +7,6 @@ import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart'
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/progress/data/repositories/progress_repository_impl.dart';
-import 'package:memox/features/progress/domain/models/progress_days_model.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -19,6 +18,7 @@ import '../../../support/progress_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 import '../../../support/trash_fixtures.dart';
+import '../../../support/progress_days_fixture.dart';
 
 // UC-PROGRESS-002 steps 5 and 6, A1 and E2: `/progress/:deckId`, a deck's
 // level (Progress spec §5.2, §6.2).
@@ -28,11 +28,7 @@ void main() {
   late DeckRepositoryImpl decks;
   late ProgressRepositoryImpl progress;
   final now = DateTime(2026, 9, 25, 12);
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   setUp(() {
     db = openTestDatabase();

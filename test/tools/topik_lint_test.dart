@@ -70,26 +70,30 @@ void main() {
     expect(lint().issues.single.rule, TopikContentRule.assets);
   });
 
-  test('a listed file that is missing or not JSON fails with its path', () {
-    writePack('bad.json', '{ not json');
-    writePack('fine.json', topikTestJson());
-    writeManifest(['bad.json', 'gone.json', 'fine.json']);
-    final report = lint();
-    expect(report.testCount, 1);
-    expect(report.issues.map((issue) => issue.testId), [
-      'bad.json',
-      'gone.json',
-    ]);
-  });
-
-  test('a listed file that is not UTF-8 fails with its path', () {
-    File('${content.path}/bad.json').writeAsBytesSync([0xff, 0xfe, 0x7b, 0x80]);
-    writePack('fine.json', topikTestJson());
-    writeManifest(['bad.json', 'fine.json']);
-    final report = lint();
-    expect(report.testCount, 1);
-    expect(report.issues.single.testId, 'bad.json');
-  });
+  // The bad file's bytes, what the manifest lists, and the files that fail.
+  for (final (name, badBytes, listed, failing) in [
+    (
+      'a listed file that is missing or not JSON fails with its path',
+      utf8.encode('{ not json'),
+      ['bad.json', 'gone.json', 'fine.json'],
+      ['bad.json', 'gone.json'],
+    ),
+    (
+      'a listed file that is not UTF-8 fails with its path',
+      [0xff, 0xfe, 0x7b, 0x80],
+      ['bad.json', 'fine.json'],
+      ['bad.json'],
+    ),
+  ]) {
+    test(name, () {
+      File('${content.path}/bad.json').writeAsBytesSync(badBytes);
+      writePack('fine.json', topikTestJson());
+      writeManifest(listed);
+      final report = lint();
+      expect(report.testCount, 1);
+      expect(report.issues.map((issue) => issue.testId), failing);
+    });
+  }
 
   test('a pack without a test id is named by its file', () {
     writePack('nameless.json', topikTestJson()..remove('testId'));

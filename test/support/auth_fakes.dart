@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter_test/flutter_test.dart'
+    show expect, isA, isEmpty, isFalse;
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_store.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -281,4 +283,57 @@ Future<String> readyAnonymous(
     ..rows = rows
     ..pending = pending;
   return id;
+}
+
+/// A launched device on the signed-in account of [email], with [rows] local
+/// rows of which [pending] are not sent.
+Future<String> readyAccount(
+  AuthWorld world, {
+  required String email,
+  AccountRole role = AccountRole.user,
+  int rows = 5,
+  int pending = 2,
+}) async {
+  final id = world.server.addUser(email: email, role: role).id;
+  world.gateway.adopt(id);
+  world.boot();
+  await world.coordinator.start();
+  world.device
+    ..owner = id
+    ..rows = rows
+    ..pending = pending;
+  return id;
+}
+
+/// A [kind] transition saved at [stage], as a run killed there leaves it; the
+/// next [AuthWorld.boot] resumes it. [source] is the user it started on,
+/// signed-in unless [anonymous]; none leaves the source unrecorded.
+Future<void> savePending(
+  AuthWorld world,
+  TransitionKind kind, {
+  String? source,
+  bool anonymous = false,
+  TransitionStage stage = TransitionStage.started,
+}) {
+  final at = DateTime.utc(2026, 9, 30);
+  return world.store.saveTransition(
+    AccountTransition(
+      opId: 'op-x',
+      kind: kind,
+      sourceUserId: source,
+      sourceIsAnonymous: source == null ? null : anonymous,
+      stage: stage,
+      createdAt: at,
+      updatedAt: at,
+    ),
+  );
+}
+
+/// [world] is ready on [userId], with the gate open, no secrets kept and sync
+/// running.
+void expectSettledOn(AuthWorld world, String userId) {
+  expect(world.state, isA<Ready>().having((s) => s.user.id, 'user', userId));
+  expect(world.gate.isClosed, isFalse);
+  expect(world.secrets.values, isEmpty);
+  expect(world.sync.paused, isFalse);
 }

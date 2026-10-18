@@ -19,17 +19,11 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/srs_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 A3 and A3b: leaving a session, Continue, and the sessions of
 // earlier days.
-
-Matcher _refusedWith(StudyRejection reason) =>
-    isA<Rejected<void, StudyRejection>>().having(
-      (rejected) => rejected.reason,
-      'reason',
-      reason,
-    );
 
 void main() {
   late AppDatabase db;
@@ -49,6 +43,9 @@ void main() {
     await db.close();
   });
 
+  Future<void> answer(String sessionId, StudyAnswer answer) =>
+      acceptAnswer(db, sessions, sessionId, answer);
+
   /// A learning session on the new cards [cardIds] of a fresh [type] tree.
   Future<(DeckEntity, String)> learning(
     List<String> cardIds, [
@@ -62,15 +59,6 @@ void main() {
     final opened = await entries.openLearningSession(deckId: leaf.id);
     return (leaf, (opened as Ok<String, StudyRejection>).value);
   }
-
-  Future<void> answer(String sessionId, StudyAnswer answer) async => expect(
-    await sessions.answerTurn(
-      sessionId: sessionId,
-      cardId: (await servedCard(db, sessionId))!,
-      answer: answer,
-    ),
-    isA<Ok<void, StudyRejection>>(),
-  );
 
   Future<List<Map<String, Object?>>> queueRows(String sessionId) async => [
     for (final row
@@ -106,7 +94,7 @@ void main() {
     expect(await turnKindsOf(db, 'c1'), ['learning']);
     expect(
       await sessions.abandonSession(sessionId: id),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
   });
 
@@ -157,7 +145,7 @@ void main() {
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.sessionExpired),
+      refusedWith<void>(StudyRejection.sessionExpired),
     );
 
     final session = await sessionOf(db, id);
@@ -167,7 +155,7 @@ void main() {
     expect(await turnKindsOf(db, 'c1'), ['learning']);
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
   });
 
@@ -182,7 +170,7 @@ void main() {
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.staleGeneration),
+      refusedWith<void>(StudyRejection.staleGeneration),
     );
 
     final session = await sessionOf(db, id);
@@ -227,11 +215,11 @@ void main() {
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
     expect(
       await sessions.abandonSession(sessionId: id),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
   });
 
@@ -302,7 +290,7 @@ void main() {
         cardId: served,
         answer: const AdvanceAnswer(),
       ),
-      _refusedWith(StudyRejection.notCurrentCard),
+      refusedWith<void>(StudyRejection.notCurrentCard),
     );
 
     expect((await sessionOf(db, id)).read<int>('cursor'), 0);
@@ -352,7 +340,7 @@ void main() {
         cardId: 'a',
         answer: const AdvanceAnswer(),
       ),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
     final entry = await entries.watchEntry(deckId: leaf.id, now: clock).first;
     expect(entry!.resumable, isNull);

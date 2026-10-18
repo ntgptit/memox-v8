@@ -93,34 +93,6 @@ void main() {
     },
   );
 
-  test('a failing statement logs error db.query_failed and throws the '
-      'original error', () async {
-    final db = await open([1]);
-
-    await expectLater(
-      db.customSelect('SELECT * FROM missing').get(),
-      throwsA(isNot(isA<Error>())),
-    );
-
-    final entry = sink.entries.single;
-    expect((entry.level, entry.event), (LogLevel.error, 'db.query_failed'));
-    expect(entry.errorMessage, contains('missing'));
-  });
-
-  test('a transaction logs one debug db.transaction when it commits', () async {
-    final db = await open(const []);
-
-    await db.transaction(() => db.customSelect('SELECT 1').get());
-
-    final transactions = [
-      for (final e in sink.entries)
-        if (e.event == 'db.transaction') e,
-    ];
-    expect(transactions, hasLength(1));
-    expect(transactions.single.level, LogLevel.debug);
-    expect(transactions.single.context['outcome'], 'commit');
-  });
-
   test('a log written to the buffer adds no traced statement', () async {
     final logs = LogDatabase(NativeDatabase.memory());
     addTearDown(logs.close);
@@ -210,6 +182,7 @@ void main() {
     });
 
     final end = sink.entries.singleWhere((e) => e.event == 'db.transaction');
+    expect(end.level, LogLevel.debug);
     expect(end.context['outcome'], 'commit');
     expect(end.context['duration_ms'], 30);
     expect(end.context['commit_ms'], 0);
@@ -251,39 +224,23 @@ void main() {
     expect(end.context['duration_ms'], 40);
   });
 
-  test('a transaction that throws logs db.transaction with rollback', () async {
-    final db = await open(const []);
+  test('a failing statement logs error db.query_failed, throws the original '
+      'error and the log describes it', () async {
+    final db = await open([1]);
 
-    await expectLater(
-      db.transaction<void>(() async {
-        await db.customSelect('SELECT 1').get();
-        throw StateError('abort');
-      }),
-      throwsStateError,
-    );
+    final thrown = await db
+        .customSelect('SELECT * FROM missing')
+        .get()
+        .then<Object?>((_) => null, onError: (Object error) => error);
 
-    final ends = [
-      for (final e in sink.entries)
-        if (e.event == 'db.transaction') e.context['outcome'],
-    ];
-    expect(ends, ['rollback']);
+    expect(thrown, isA<SqliteException>());
+    expect(thrown, isNot(isA<Error>()));
+    final entry = sink.entries.single;
+    expect((entry.level, entry.event), (LogLevel.error, 'db.query_failed'));
+    expect(entry.errorType, thrown.runtimeType.toString());
+    expect(entry.errorMessage, thrown.toString());
+    expect(entry.errorMessage, contains('missing'));
   });
-
-  test(
-    'the thrown error is the original one, and the log describes it',
-    () async {
-      final db = await open(const []);
-
-      final thrown = await db
-          .customSelect('SELECT * FROM missing')
-          .get()
-          .then<Object?>((_) => null, onError: (Object error) => error);
-
-      expect(thrown, isA<SqliteException>());
-      expect(sink.entries.single.errorType, thrown.runtimeType.toString());
-      expect(sink.entries.single.errorMessage, thrown.toString());
-    },
-  );
 
   test('the default clock measures real time', () async {
     final db = AppDatabase(

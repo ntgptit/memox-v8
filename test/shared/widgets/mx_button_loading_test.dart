@@ -4,19 +4,13 @@ import 'package:forui/forui.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
+import '../../support/contrast.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
 // MxButton while its work runs, and what TalkBack reads of it.
 
 final _button = find.byType(FButton);
-
-double contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (light, dark) = la > lb ? (la, lb) : (lb, la);
-  return (light + 0.05) / (dark + 0.05);
-}
 
 // The glyph's ink is the icon theme ForUI's progress draws with.
 Color _ringColor(WidgetTester tester) =>
@@ -82,6 +76,7 @@ void main() {
     var taps = 0;
     await pumpMx(tester, MxButton(label: 'Save changes', onPressed: () {}));
     final restingWidth = tester.getSize(_button).width;
+    final restingFill = paintedDecoration(tester, _button).color;
 
     await pumpMx(
       tester,
@@ -91,6 +86,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     expect(tester.getSize(_button).width, restingWidth);
+    expect(paintedDecoration(tester, _button).color, restingFill);
     expect(find.byType(MxSpinner), findsOneWidget);
     expect(taps, 0);
     await tester.pumpWidget(const SizedBox());
@@ -120,7 +116,7 @@ void main() {
         );
         final ring = _ringColor(tester);
 
-        expect(contrast(ring, fill), greaterThanOrEqualTo(3));
+        expect(contrastRatio(ring, fill), greaterThanOrEqualTo(3));
         expect(ring, textColor(tester, find.text('Save')));
         await tester.pumpWidget(const SizedBox());
       });
@@ -139,52 +135,8 @@ void main() {
     handle.dispose();
   });
 
-  // SW-REV-005: a caller that needs TalkBack to read more than the painted
-  // label names it here, and the button keeps its tap and its state.
-  testWidgets('semanticLabel: one node with the label, the tap and the state', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      MxButton(
-        label: '20:00',
-        semanticLabel: 'Reminder time, 20:00',
-        size: MxButtonSize.small,
-        onPressed: () {},
-      ),
-    );
-    expect(
-      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
-      isSemantics(
-        isButton: true,
-        hasTapAction: true,
-        hasEnabledState: true,
-        isEnabled: true,
-        hasSelectedState: true,
-      ),
-    );
-
-    await pumpMx(
-      tester,
-      const MxButton(
-        label: '20:00',
-        semanticLabel: 'Reminder time, 20:00',
-        size: MxButtonSize.small,
-        onPressed: null,
-      ),
-    );
-    expect(
-      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
-      isSemantics(
-        isButton: true,
-        hasEnabledState: true,
-        isEnabled: false,
-        hasSelectedState: true,
-      ),
-    );
-    handle.dispose();
-  });
+  // SW-REV-005 (semanticLabel keeps the tap and the state) is pinned in
+  // mx_button_test.dart.
 
   group('a loading spinner sits on the centre of the whole button', () {
     // The padding beside a glyph is asymmetric (start 16, end 24 for filled

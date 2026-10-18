@@ -87,20 +87,6 @@ void main() {
     );
   });
 
-  testWidgets('every edged variant rests on the border', (tester) async {
-    for (final variant in [
-      MxTextFieldVariant.form,
-      MxTextFieldVariant.detail,
-      MxTextFieldVariant.term,
-    ]) {
-      await pumpMx(
-        tester,
-        SizedBox(width: 300, child: MxTextField(variant: variant)),
-      );
-      expect(_edge(_in(tester, {})), colors.border, reason: '$variant');
-    }
-  });
-
   testWidgets('an error colours the edge and pushes a message below', (
     tester,
   ) async {

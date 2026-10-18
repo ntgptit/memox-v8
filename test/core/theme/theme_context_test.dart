@@ -10,19 +10,7 @@ import '../../support/theme_harness.dart';
 
 void main() {
   testWidgets('the getters read the ForUI theme in scope', (tester) async {
-    late BuildContext captured;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: materialHostTheme(buildDarkTheme()),
-        builder: mxThemeBuilder(buildDarkTheme()),
-        home: Builder(
-          builder: (context) {
-            captured = context;
-            return const SizedBox();
-          },
-        ),
-      ),
-    );
+    final captured = await contextOf(tester, buildDarkTheme());
     final theme = buildDarkTheme();
     expect(captured.colors, theme.colors);
     expect(captured.texts.body.fontSize, theme.typography.body.xs.fontSize);

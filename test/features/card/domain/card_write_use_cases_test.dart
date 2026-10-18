@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -14,13 +13,12 @@ import 'package:memox/features/card/domain/usecases/move_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/remove_tag_from_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
 import 'package:memox/features/card/domain/usecases/undo_card_deletion_use_case.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -39,13 +37,7 @@ void main() {
       DateTime now() => DateTime(2026, 9, 23);
       final decks = DeckRepositoryImpl(db, now: now);
       final tags = TagRepositoryImpl(db, now: now);
-      final cards = CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: now),
-        tags,
-        DeckTreeDataSource(db),
-        now: now,
-      );
+      final cards = cardRepository(db, now: now, tags: tags);
       final root = await decks.root('Korean');
       final nouns = await decks.sub(root.id, 'Nouns');
       final verbs = await decks.sub(root.id, 'Verbs');
@@ -128,13 +120,7 @@ void main() {
     () async {
       DateTime now() => DateTime(2026, 9, 23);
       final decks = DeckRepositoryImpl(db, now: now);
-      final cards = CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: now),
-        TagRepositoryImpl(db, now: now),
-        DeckTreeDataSource(db),
-        now: now,
-      );
+      final cards = cardRepository(db, now: now);
       final lesson = await decks.sub((await decks.root('Korean')).id, 'Lesson');
       await insertCard(db, id: 'c1', deckId: lesson.id);
       final deleted = await DeleteCardsUseCase(cards)(cardIds: {'c1'});

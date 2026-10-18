@@ -54,45 +54,26 @@ void main() {
       });
     }
 
-    test('the periodic push runs while the app is in front', () {
-      withScheduler((periodic, _, _, runs, settle) {
-        periodic.add(null);
-        settle();
+    for (final (name, fromPeriodic) in [
+      ('the periodic push', true),
+      ('a reconnect', false),
+    ]) {
+      for (final inFront in [true, false]) {
+        final verdict = inFront
+            ? 'runs while the app is in front'
+            : 'is dropped while the app is not in front';
+        test('$name $verdict', () {
+          withScheduler((periodic, reconnects, setForeground, runs, settle) {
+            setForeground(inFront);
 
-        expect(runs(), 2);
-      });
-    });
+            (fromPeriodic ? periodic : reconnects).add(null);
+            settle();
 
-    test('the periodic push is dropped while the app is not in front', () {
-      withScheduler((periodic, _, setForeground, runs, settle) {
-        setForeground(false);
-
-        periodic.add(null);
-        settle();
-
-        expect(runs(), 1);
-      });
-    });
-
-    test('a reconnect runs while the app is in front', () {
-      withScheduler((_, reconnects, _, runs, settle) {
-        reconnects.add(null);
-        settle();
-
-        expect(runs(), 2);
-      });
-    });
-
-    test('a reconnect is dropped while the app is not in front', () {
-      withScheduler((_, reconnects, setForeground, runs, settle) {
-        setForeground(false);
-
-        reconnects.add(null);
-        settle();
-
-        expect(runs(), 1);
-      });
-    });
+            expect(runs(), inFront ? 2 : 1);
+          });
+        });
+      }
+    }
 
     test('a dropped push is not queued for the return to the front (the '
         'resume calls syncNow)', () {

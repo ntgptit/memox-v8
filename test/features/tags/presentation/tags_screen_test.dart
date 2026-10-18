@@ -62,6 +62,12 @@ Future<void> _openRename(WidgetTester tester, String tag) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _openDelete(WidgetTester tester, String tag) async {
+  await _actions(tester, tag);
+  await tester.tap(find.text(_en.tagsDelete));
+  await tester.pumpAndSettle();
+}
+
 /// Types [name] into the rename field and lets its plan settle.
 Future<void> _type(WidgetTester tester, String name) async {
   await tester.enterText(find.byType(FTextField).last, name);
@@ -264,9 +270,7 @@ void main() {
   libraryTest('del: the dialog says no card is deleted; the tag goes and '
       'every card stays (A3)', (tester, env) async {
     await _pump(tester, env);
-    await _actions(tester, 'động từ');
-    await tester.tap(find.text(_en.tagsDelete));
-    await tester.pumpAndSettle();
+    await _openDelete(tester, 'động từ');
 
     expect(find.text(_en.tagsDeleteBody('động từ', 46)), findsOneWidget);
     expect(find.text(_en.tagsDeleteSafe(46)), findsOneWidget);
@@ -303,9 +307,7 @@ void main() {
   ) async {
     final store = await _pump(tester, env);
     store.hold = Completer<void>();
-    await _actions(tester, 'tạm');
-    await tester.tap(find.text(_en.tagsDelete));
-    await tester.pumpAndSettle();
+    await _openDelete(tester, 'tạm');
     await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pump();
     await tester.pump();
@@ -323,9 +325,7 @@ void main() {
       'which deletes (E5)', (tester, env) async {
     final store = await _pump(tester, env);
     store.failsWrites = true;
-    await _actions(tester, 'tạm');
-    await tester.tap(find.text(_en.tagsDelete));
-    await tester.pumpAndSettle();
+    await _openDelete(tester, 'tạm');
     await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pumpAndSettle();
 
@@ -345,9 +345,7 @@ void main() {
   ) async {
     final store = await _pump(tester, env);
     store.failsWrites = true;
-    await _actions(tester, 'tạm');
-    await tester.tap(find.text(_en.tagsDelete));
-    await tester.pumpAndSettle();
+    await _openDelete(tester, 'tạm');
     await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -382,9 +380,7 @@ void main() {
   libraryTest('tagGone: a tag deleted elsewhere says so and writes nothing '
       '(E3)', (tester, env) async {
     await _pump(tester, env);
-    await _actions(tester, 'tạm');
-    await tester.tap(find.text(_en.tagsDelete));
-    await tester.pumpAndSettle();
+    await _openDelete(tester, 'tạm');
     await env.db.customStatement(
       "DELETE FROM card_tags WHERE tag_id = 't-tam'",
     );

@@ -5,39 +5,22 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import 'support/card_editor_host.dart';
+import 'support/words_deck.dart';
 
 // Screens 08/09's tag input: Add beside the field, and Save adds what is
 // typed there (critique 2026-09-30 part 3d-2, E8).
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _context(String deckId, String label) =>
-    DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
-
-CardEditorScreen _create(String deckId) =>
-    CardEditorScreen.create(deckId: deckId, deckContext: _context);
-
-CardEditorScreen _edit(String cardId) =>
-    CardEditorScreen.edit(cardId: cardId, deckContext: _context);
-
-/// Front, back, … ; the tag input, once opened, is the last field.
-Finder _field(int index) => find.byType(EditableText).at(index);
-
 Finder get _tagField => find.byType(EditableText).last;
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
-
-Future<String> _words(LibraryEnv env) async {
-  final korean = await env.decks.root('Korean');
-  return (await env.decks.sub(korean.id, 'Words')).id;
-}
 
 Future<List<String>> _tagsOf(LibraryEnv env, String front) async => [
   for (final row
@@ -73,8 +56,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
     await _openTag(tester, 'food');
     expect(
       tester.widget<MxButton>(_button(_en.cardTagConfirm)).onPressed,
@@ -97,12 +80,12 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice'),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
     await _openTag(tester, 'food');
 
@@ -116,12 +99,12 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice'),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
     await _openTag(tester, 'x' * 51);
 
@@ -138,12 +121,12 @@ void main() {
 
   libraryTest('a name already on the card, typed again, saves once '
       '(Review Focus 1)', (tester, env) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice', tagNames: ['food']),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
     await _openTag(tester, 'FOOD');
 
@@ -155,10 +138,10 @@ void main() {
 
   libraryTest('create: Save adds the pending tag, and the next card starts '
       'with none and an empty field (Review Focus 2)', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await _openTag(tester, 'food');
 
     await tester.tap(_button(_en.cardSaveCard));
@@ -177,10 +160,10 @@ void main() {
 
   libraryTest('create: a refused tag stops Save and takes the focus, so its '
       'error is in view (final review)', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await _openTag(tester, 'x' * 51);
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pump();

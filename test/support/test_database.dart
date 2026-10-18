@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 
 /// Rows changed since the database opened: a refused write leaves it as it
@@ -7,6 +8,23 @@ import 'package:memox/core/database/app_database.dart';
 Future<int> totalChanges(AppDatabase db) async =>
     (await db.customSelect('SELECT total_changes() AS n').getSingle())
         .read<int>('n');
+
+/// The rows of [table].
+Future<int> rowCount(AppDatabase db, String table) async =>
+    (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle())
+        .read<int>('n');
+
+/// The study sessions of the database, open or not: a flow that must leave
+/// none behind checks it at 0.
+Future<int> studySessionCount(AppDatabase db) => rowCount(db, 'study_session');
+
+/// SQLite finds the file sound and no foreign key dangles, which a migration
+/// or a bulk write must leave true.
+Future<void> expectIntegrity(AppDatabase db) async {
+  final integrity = await db.customSelect('PRAGMA integrity_check').get();
+  expect([for (final row in integrity) row.data.values.single], ['ok']);
+  expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+}
 
 AppDatabase openTestDatabase({QueryInterceptor? interceptor}) {
   final executor = NativeDatabase.memory();
@@ -31,6 +49,24 @@ final class SelectCounter extends QueryInterceptor {
   ) {
     selects++;
     statements.add(statement);
+    return super.runSelect(executor, statement, args);
+  }
+}
+
+/// Fails every SELECT while [isArmed], the way a disk that cannot be read
+/// does (a search, progress or study read that fails).
+final class FailingSelects extends QueryInterceptor {
+  bool isArmed = false;
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) {
+    if (isArmed) {
+      throw SqliteException(extendedResultCode: 10, message: 'disk I/O error');
+    }
     return super.runSelect(executor, statement, args);
   }
 }

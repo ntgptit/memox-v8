@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/providers/study_home_provider.dart';
@@ -31,47 +32,52 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 void main() {
-  libraryTest('the practice slot shows under the content in a state with '
-      'data, even with no deck (detail file 13)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWithPractice(const Text('practice-entry')),
-    );
-    await _settle(tester);
-
-    expect(find.text('practice-entry'), findsOneWidget);
-  });
-
-  libraryTest('the practice slot is absent on a read that fails (detail '
-      'file 13)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWithPractice(const Text('practice-entry')),
-      overrides: [
+  for (final (name, isShown, isErrorShown, readOverrides) in [
+    (
+      'the practice slot shows under the content in a state with data, even '
+          'with no deck (detail file 13)',
+      true,
+      false,
+      () => <Override>[],
+    ),
+    (
+      'the practice slot is absent on a read that fails (detail file 13)',
+      false,
+      true,
+      () => [
         studyHomeProvider.overrideWith(
           (ref) => Stream<StudyHome>.error(StateError('read failed')),
         ),
       ],
-    );
-    await _settle(tester);
+    ),
+    (
+      'the practice slot is absent while loading',
+      false,
+      false,
+      () {
+        final never = StreamController<StudyHome>();
+        addTearDown(never.close);
+        return [studyHomeProvider.overrideWith((ref) => never.stream)];
+      },
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screenWithPractice(const Text('practice-entry')),
+        overrides: readOverrides(),
+      );
+      await _settle(tester);
 
-    expect(find.text(_en.studyHomeErrorTitle), findsOneWidget);
-    expect(find.text('practice-entry'), findsNothing);
-  });
-
-  libraryTest('the practice slot is absent while loading', (tester, env) async {
-    final never = StreamController<StudyHome>();
-    addTearDown(never.close);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screenWithPractice(const Text('practice-entry')),
-      overrides: [studyHomeProvider.overrideWith((ref) => never.stream)],
-    );
-    await _settle(tester);
-
-    expect(find.text('practice-entry'), findsNothing);
-  });
+      expect(
+        find.text(_en.studyHomeErrorTitle),
+        isErrorShown ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.text('practice-entry'),
+        isShown ? findsOneWidget : findsNothing,
+      );
+    });
+  }
 }

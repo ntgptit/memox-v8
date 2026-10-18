@@ -3,13 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
@@ -22,18 +18,10 @@ import 'package:memox/features/transfer/domain/usecases/read_import_source_use_c
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
-import '../../../support/test_database.dart';
+import '../../../support/transfer_fixtures.dart';
 
 // The export use case runs over the real repositories, and its file is read
 // back through the import use cases (UC-TRANSFER-002).
-
-DateTime _now() => DateTime(2026, 9, 26);
-
-T _ok<T>(Outcome<T, TransferRejection> result) =>
-    (result as Ok<T, TransferRejection>).value;
-
-TransferRejection _reason(Outcome<Object?, TransferRejection> result) =>
-    (result as Rejected<Object?, TransferRejection>).reason;
 
 void main() {
   late AppDatabase db;
@@ -46,21 +34,7 @@ void main() {
   late PreviewImportUseCase preview;
   late BuildExportUseCase export;
   setUp(() async {
-    db = openTestDatabase();
-    decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardTransferRepositoryImpl(
-      db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        DeckTreeDataSource(db),
-        now: _now,
-      ),
-      decks,
-    );
-    root = await decks.root('r');
-    leaf = await decks.sub(root.id, 'Nhà hàng');
+    (:db, :decks, :cards, :root, :leaf) = await openTransferWorld();
     read = const ReadImportSourceUseCase(files);
     preview = PreviewImportUseCase(cards);
     export = BuildExportUseCase(cards, files);
@@ -88,17 +62,17 @@ void main() {
       );
       await TagRepositoryImpl(
         db,
-        now: _now,
-      ).replaceForCard(cardId: 'a', names: ['a;b', r'c\d'], now: _now());
+        now: transferNow,
+      ).replaceForCard(cardId: 'a', names: ['a;b', r'c\d'], now: transferNow());
       final target = await decks.sub(root.id, 'copy');
 
       for (final format in TransferFormat.values) {
-        final artifact = _ok(
-          await export(deckId: leaf.id, format: format, today: _now()),
+        final artifact = transferOk(
+          await export(deckId: leaf.id, format: format, today: transferNow()),
         );
         expect(artifact.fileName, 'Nhà-hàng-2026-09-26.${format.extension}');
 
-        final table = _ok(
+        final table = transferOk(
           await read(FileSource(bytes: artifact.bytes, format: format)),
         );
         expect(table.rows, [
@@ -106,7 +80,7 @@ void main() {
           ['=1+1', '001', 'e, "q"', '', '', r'a\;b;c\\d'],
           ['b', 'x\ny', '', '', '', ''],
         ]);
-        final rows = _ok(
+        final rows = transferOk(
           await preview(
             deckId: target.id,
             table: table,
@@ -122,11 +96,11 @@ void main() {
       'the same deck exports the same CSV bytes twice (BR-TRANSFER-010)',
       () async {
         await insertCard(db, id: 'a', deckId: leaf.id);
-        Future<Uint8List> bytes() async => _ok(
+        Future<Uint8List> bytes() async => transferOk(
           await export(
             deckId: leaf.id,
             format: TransferFormat.csv,
-            today: _now(),
+            today: transferNow(),
           ),
         ).bytes;
 
@@ -140,21 +114,21 @@ void main() {
 
     test('an empty deck, an empty selection and a stale selection are refused (E5, E6)', () async {
       expect(
-        _reason(
+        transferReason(
           await export(
             deckId: leaf.id,
             format: TransferFormat.csv,
-            today: _now(),
+            today: transferNow(),
           ),
         ),
         TransferRejection.emptyScope,
       );
       expect(
-        _reason(
+        transferReason(
           await export(
             deckId: leaf.id,
             format: TransferFormat.csv,
-            today: _now(),
+            today: transferNow(),
             cardIds: const {},
           ),
         ),
@@ -162,11 +136,11 @@ void main() {
       );
       await insertCard(db, id: 'a', deckId: leaf.id);
       expect(
-        _reason(
+        transferReason(
           await export(
             deckId: leaf.id,
             format: TransferFormat.csv,
-            today: _now(),
+            today: transferNow(),
             cardIds: const {'a', 'gone'},
           ),
         ),

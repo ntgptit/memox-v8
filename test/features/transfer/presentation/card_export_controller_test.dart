@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,13 +18,11 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
-import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/export_share_repository_provider.dart';
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/export_artifact_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
-import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_export_controller.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 
@@ -33,30 +30,11 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_day_clock.dart';
 import '../../../support/fake_export_share.dart';
+import '../../../support/held_transfer_files.dart';
 import '../../../support/test_database.dart';
 
 // The export sheet's states over the real card repository, the real
 // encoders run inline, and a fake share sheet (UC-TRANSFER-002).
-
-/// The encoders run inline, and each write waits for [hold] when it is set.
-final class _HeldFiles implements TransferFileRepository {
-  final _inner = TransferFileRepositoryImpl(
-    run: <Q, R>(callback, message) async => callback(message),
-  );
-  Completer<void>? hold;
-
-  @override
-  Future<Outcome<Uint8List, TransferRejection>> write(
-    List<List<String>> rows,
-    TransferFormat format,
-  ) async {
-    await hold?.future;
-    return _inner.write(rows, format);
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
 
 /// Throws on the read, the way a locked database does (E3), until
 /// [isBroken] turns false.
@@ -83,7 +61,7 @@ void main() {
   late AppDatabase db;
   late DeckEntity leaf;
   late FakeExportShare share;
-  late _HeldFiles files;
+  late HeldTransferFiles files;
   late CardExportScope wholeDeck;
 
   setUp(() async {
@@ -94,7 +72,7 @@ void main() {
     await insertCard(db, id: 'a', deckId: leaf.id, front: 'menu', back: 'x');
     await insertCard(db, id: 'b', deckId: leaf.id, front: 'bill', back: 'y');
     share = FakeExportShare();
-    files = _HeldFiles();
+    files = HeldTransferFiles();
     wholeDeck = CardExportScope.deck(
       deckId: leaf.id,
       deckName: 'Nhà hàng',

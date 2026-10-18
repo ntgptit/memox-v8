@@ -106,8 +106,11 @@ void main() {
     expect(find.text(_en.libraryTrash), findsOneWidget);
   });
 
-  libraryTest('Delete for good names the count, focuses Keep in Trash, and '
-      'deletes only on its own button (BR-TRASH-011)', (tester, env) async {
+  libraryTest('Delete for good names the count, focuses Keep in Trash in one '
+      'action pair, and deletes only on its own button (BR-TRASH-011)', (
+    tester,
+    env,
+  ) async {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
     await _selectCards(tester);
@@ -120,6 +123,15 @@ void main() {
       focused.findAncestorWidgetOfExactType<MxButton>()?.label,
       _en.trashPurgeKeep,
     );
+    // The footer is one MxActionPair with Keep first and autofocused.
+    final pair = tester.widget<MxActionPair>(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.byType(MxActionPair),
+      ),
+    );
+    expect(pair.leading!.label, _en.trashPurgeKeep);
+    expect(pair.leading!.isAutofocused, isTrue);
 
     await _tap(tester, _inDialog(_en.trashPurgeKeep));
     expect(find.text('meokda · eat'), findsOneWidget);
@@ -266,25 +278,6 @@ void main() {
     expect(pair.trailingFlex, 10);
     expect(pair.leading!.isSingleLine, isTrue);
     expect(pair.trailing.isSingleLine, isTrue);
-  });
-
-  libraryTest('the purge dialog footer is one MxActionPair, Keep autofocused', (
-    tester,
-    env,
-  ) async {
-    await seedTrash(env);
-    await pumpLibraryScreen(tester, env, const TrashScreen());
-    await _selectCards(tester);
-    await _tap(tester, _button(_en.trashPurgeSelected(2)));
-
-    final pair = tester.widget<MxActionPair>(
-      find.descendant(
-        of: find.byType(MxDialog),
-        matching: find.byType(MxActionPair),
-      ),
-    );
-    expect(pair.leading!.label, _en.trashPurgeKeep);
-    expect(pair.leading!.isAutofocused, isTrue);
   });
 
   libraryTest('while selecting, each checkbox is centred on its row', (

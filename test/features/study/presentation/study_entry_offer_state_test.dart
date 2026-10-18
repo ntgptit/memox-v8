@@ -86,7 +86,7 @@ void main() {
   });
 
   test('eight_box reviews first in the first available mode, and offers '
-      'Learn too (P4)', () {
+      'Learn too, now that every stage is built (P4, BR-MODE-004)', () {
     final offer = studyEntryOfferOf(
       _entry(reviews: [_mode(StudyMode.recall), _mode(StudyMode.match)]),
     );
@@ -161,8 +161,7 @@ void main() {
     expect(entryFooterActionOf(offer), EntryFooterAction.learn);
   });
 
-  test('eight_box offers Learn now that every stage is built (P4, '
-      'BR-MODE-004)', () {
+  test('eight_box with one review mode offers Learn too (P4, BR-MODE-004)', () {
     final offer = studyEntryOfferOf(_entry(reviews: [_mode(StudyMode.recall)]));
 
     expect(offer.canLearn, isTrue);

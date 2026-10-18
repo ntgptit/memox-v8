@@ -72,94 +72,96 @@ void main() {
       expect(tags, SpeechLanguage.values.map((l) => l.tag).toSet());
     });
 
-    test('deck.depth is capped at DeckEntity.maxDepth (BR-DECK-001)', () {
-      expect(
-        literalOf(tableSql['deck']!, r'depth BETWEEN 1 AND (\d+)'),
+    final literals = <(String, String, String, int)>[
+      (
+        'deck.depth is capped at DeckEntity.maxDepth (BR-DECK-001)',
+        'deck',
+        r'depth BETWEEN 1 AND (\d+)',
         DeckEntity.maxDepth,
-      );
-    });
-
-    test('a self_assess row answers at most selfAssessTurnCap times '
-        '(BR-STUDY-073, invariant 17)', () {
-      expect(
-        literalOf(
-          tableSql['study_queue_items']!,
-          r"mode <> 'self_assess' OR answers_in_session <= (\d+)",
-        ),
+      ),
+      (
+        'a self_assess row answers at most selfAssessTurnCap times '
+            '(BR-STUDY-073, invariant 17)',
+        'study_queue_items',
+        r"mode <> 'self_assess' OR answers_in_session <= (\d+)",
         selfAssessTurnCap,
-      );
-    });
-
-    test('a match board has matchBoardSize slots (BR-STUDY-049)', () {
-      expect(
-        literalOf(
-          tableSql['study_queue_items']!,
-          r'meaning_slot BETWEEN 0 AND (\d+)',
-        ),
+      ),
+      (
+        'a match board has matchBoardSize slots (BR-STUDY-049)',
+        'study_queue_items',
+        r'meaning_slot BETWEEN 0 AND (\d+)',
         matchBoardSize - 1,
-      );
-    });
-
-    test('a guess question has guessOptionCount options (BR-MODE-012)', () {
-      expect(
-        literalOf(
-          tableSql['study_guess_options']!,
-          r'slot BETWEEN 0 AND (\d+)',
-        ),
+      ),
+      (
+        'a guess question has guessOptionCount options (BR-MODE-012)',
+        'study_guess_options',
+        r'slot BETWEEN 0 AND (\d+)',
         guessOptionCount - 1,
-      );
-    });
-
-    test('a recall turn holds at most recallTurnMs (BR-STUDY-031)', () {
-      expect(
-        literalOf(
-          tableSql['study_queue_items']!,
-          r'remaining_ms BETWEEN 0 AND (\d+)',
-        ),
+      ),
+      (
+        'a recall turn holds at most recallTurnMs (BR-STUDY-031)',
+        'study_queue_items',
+        r'remaining_ms BETWEEN 0 AND (\d+)',
         recallTurnMs,
-      );
-    });
+      ),
+    ];
+    for (final (name, table, pattern, expected) in literals) {
+      test(name, () {
+        expect(literalOf(tableSql[table]!, pattern), expected);
+      });
+    }
 
-    test('study_session stores every SessionStatus, SessionEndReason and '
-        'StudyMode code and no other', () {
-      final sql = tableSql['study_session']!;
-      expect(
-        codesOf(sql, r'"status" TEXT NOT NULL CHECK \(status IN \(([^)]*)\)'),
+    final codes = <(String, String, String, Set<String>)>[
+      (
+        'study_session.status stores every SessionStatus code and no other',
+        'study_session',
+        r'"status" TEXT NOT NULL CHECK \(status IN \(([^)]*)\)',
         {for (final status in SessionStatus.values) status.code},
-      );
-      expect(
-        codesOf(sql, r'"end_reason" TEXT CHECK \(end_reason IN \(([^)]*)\)'),
+      ),
+      (
+        'study_session.end_reason stores every SessionEndReason code and no '
+            'other',
+        'study_session',
+        r'"end_reason" TEXT CHECK \(end_reason IN \(([^)]*)\)',
         {for (final reason in SessionEndReason.values) reason.code},
-      );
-      expect(
-        codesOf(
-          sql,
-          r'"current_mode" TEXT NOT NULL CHECK \(current_mode IN \(([^)]*)\)',
-        ),
+      ),
+      (
+        'study_session.current_mode stores every StudyMode code and no other',
+        'study_session',
+        r'"current_mode" TEXT NOT NULL CHECK \(current_mode IN \(([^)]*)\)',
         {for (final mode in StudyMode.values) mode.code},
-      );
-    });
-
-    test('topik_attempt stores every TopikLevel, TopikSection, '
-        'TopikAttemptMode and TopikAttemptStatus code and no other', () {
-      final sql = tableSql['topik_attempt']!;
-      expect(
-        codesOf(sql, r'"level" TEXT NOT NULL CHECK \(level IN \(([^)]*)\)'),
+      ),
+      (
+        'topik_attempt.level stores every TopikLevel code and no other',
+        'topik_attempt',
+        r'"level" TEXT NOT NULL CHECK \(level IN \(([^)]*)\)',
         {for (final level in TopikLevel.values) level.code},
-      );
-      expect(
-        codesOf(sql, r'"section" TEXT NOT NULL CHECK \(section IN \(([^)]*)\)'),
+      ),
+      (
+        'topik_attempt.section stores every TopikSection code and no other',
+        'topik_attempt',
+        r'"section" TEXT NOT NULL CHECK \(section IN \(([^)]*)\)',
         {for (final section in TopikSection.values) section.code},
-      );
-      expect(
-        codesOf(sql, r'"mode" TEXT NOT NULL CHECK \(mode IN \(([^)]*)\)'),
+      ),
+      (
+        'topik_attempt.mode stores every TopikAttemptMode code and no other',
+        'topik_attempt',
+        r'"mode" TEXT NOT NULL CHECK \(mode IN \(([^)]*)\)',
         {for (final mode in TopikAttemptMode.values) mode.code},
-      );
-      expect(
-        codesOf(sql, r'"status" TEXT NOT NULL CHECK \(status IN \(([^)]*)\)'),
+      ),
+      (
+        'topik_attempt.status stores every TopikAttemptStatus code and no '
+            'other',
+        'topik_attempt',
+        r'"status" TEXT NOT NULL CHECK \(status IN \(([^)]*)\)',
         {for (final status in TopikAttemptStatus.values) status.code},
-      );
-    });
+      ),
+    ];
+    for (final (name, table, pattern, expected) in codes) {
+      test(name, () {
+        expect(codesOf(tableSql[table]!, pattern), expected);
+      });
+    }
 
     test('topik_attempt_answer options are topikOptionIdxs (BR-TOPIK-003)', () {
       final sql = tableSql['topik_attempt_answer']!;

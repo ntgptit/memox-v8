@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+
+import 'lib_sources.dart';
 
 /// The SDKs that only their door files may import (auth spec §5, plan
 /// rulings 18–19). Paths are prefixes.
@@ -43,14 +43,6 @@ void main() {
   });
 
   test('lib/ reaches the SDKs only through their doors', () {
-    final sources = {
-      for (final file in Directory(
-        'lib',
-      ).listSync(recursive: true).whereType<File>())
-        if (file.path.endsWith('.dart') && !file.path.endsWith('.g.dart'))
-          file.path.replaceAll(r'\', '/'): file.readAsStringSync(),
-    };
-
-    expect(doorViolations(sources), isEmpty);
+    expect(doorViolations(readLibSources()), isEmpty);
   });
 }

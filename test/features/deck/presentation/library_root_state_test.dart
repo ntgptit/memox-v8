@@ -81,39 +81,45 @@ void main() {
     },
   );
 
-  test('a sort or filter change never blinks the chrome: no Loading between '
-      'two Decks (final review)', () async {
-    await env.decks.root('Korean');
-    final container = libraryContainer(env);
-    final seen = watch(container);
-    await pumpEventQueue();
-    final query = container.read(deckLevelQueryProvider(null).notifier);
+  for (final trigger
+      in <({String name, Future<void> Function(ProviderContainer) run})>[
+        (
+          name:
+              'a sort or filter change never blinks the chrome: no Loading '
+              'between two Decks (final review)',
+          run: (container) async {
+            final query = container.read(deckLevelQueryProvider(null).notifier);
+            query.show(DeckLevelFilter.due);
+            await pumpEventQueue();
+            query.sortBy(DeckLevelSort.name);
+            await pumpEventQueue();
+            query.show(DeckLevelFilter.all);
+            await pumpEventQueue();
+          },
+        ),
+        (
+          name:
+              'a refresh with data stays Decks: the chrome never blinks (Review '
+              'Focus 2)',
+          run: (container) async {
+            container.invalidate(root);
+            await pumpEventQueue();
+          },
+        ),
+      ]) {
+    test(trigger.name, () async {
+      await env.decks.root('Korean');
+      final container = libraryContainer(env);
+      final seen = watch(container);
+      await pumpEventQueue();
+      expect(seen.last, isA<LibraryRootDecks>());
 
-    query.show(DeckLevelFilter.due);
-    await pumpEventQueue();
-    query.sortBy(DeckLevelSort.name);
-    await pumpEventQueue();
-    query.show(DeckLevelFilter.all);
-    await pumpEventQueue();
+      await trigger.run(container);
 
-    expect(seen.last, isA<LibraryRootDecks>());
-    expect(seen.skip(1).whereType<LibraryRootLoading>(), isEmpty);
-  });
-
-  test('a refresh with data stays Decks: the chrome never blinks (Review '
-      'Focus 2)', () async {
-    await env.decks.root('Korean');
-    final container = libraryContainer(env);
-    final seen = watch(container);
-    await pumpEventQueue();
-    expect(seen.last, isA<LibraryRootDecks>());
-
-    container.invalidate(root);
-    await pumpEventQueue();
-
-    expect(seen.last, isA<LibraryRootDecks>());
-    expect(seen.skip(1).whereType<LibraryRootLoading>(), isEmpty);
-  });
+      expect(seen.last, isA<LibraryRootDecks>());
+      expect(seen.skip(1).whereType<LibraryRootLoading>(), isEmpty);
+    });
+  }
 
   test('a failure is Failed, even after data', () async {
     // The root stream delivers a deck, then dies: the chrome must not keep

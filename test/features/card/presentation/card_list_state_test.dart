@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
-import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 
 void main() {
   test('a request starts with every card, newest first, one window', () {
@@ -60,24 +59,5 @@ void main() {
     expect(container.read(provider).tags, const CardTagFilter({'t2', 't1'}));
     notifier.filterTags(const {});
     expect(container.read(provider).tags.isEmpty, isTrue);
-  });
-
-  test('a selection toggles, takes a whole set, and clears', () {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
-    final provider = cardSelectionProvider('d');
-    final keep = container.listen(provider, (_, _) {});
-    addTearDown(keep.close);
-    final notifier = container.read(provider.notifier);
-
-    notifier
-      ..toggle('a')
-      ..toggle('b')
-      ..toggle('a');
-    expect(container.read(provider).ids, {'b'});
-    notifier.selectAll({'a', 'b', 'c'});
-    expect(container.read(provider).ids, {'a', 'b', 'c'});
-    notifier.clear();
-    expect(container.read(provider).ids, isEmpty);
   });
 }

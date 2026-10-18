@@ -6,7 +6,6 @@ import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -19,6 +18,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/forui_expect.dart';
+import 'support/study_screen_helpers.dart';
 
 // BR-STUDY-078…082, BR-SETTINGS-009; study speech spec §5.
 
@@ -59,13 +59,6 @@ Future<String> _learning(
   return (opened as Ok<String, StudyRejection>).value;
 }
 
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
-
 Future<void> _pump(
   WidgetTester tester,
   LibraryEnv env,
@@ -75,7 +68,7 @@ Future<void> _pump(
   await pumpLibraryScreen(
     tester,
     env,
-    _screen(id),
+    studySessionScreen(id),
     overrides: [speechSynthesizerProvider.overrideWithValue(speech)],
   );
   await tester.pumpAndSettle();
@@ -83,11 +76,6 @@ Future<void> _pump(
 
 /// The term on screen: the session's order is the queue's, not the
 /// insertion order, so the tests read it rather than assume it.
-String _front(WidgetTester tester) => tester
-    .widgetList<Text>(find.textContaining(RegExp(r'^front ')))
-    .single
-    .data!;
-
 Future<void> _swipeLeft(WidgetTester tester) async {
   await tester.drag(find.byType(StudyBrowseWidget), const Offset(-300, 0));
   await tester.pumpAndSettle();
@@ -100,18 +88,18 @@ void main() {
     final id = await _learning(env, language: SpeechLanguage.koKr);
     await _pump(tester, env, id, speech);
 
-    expect(speech.spoken, [(_front(tester), SpeechLanguage.koKr)]);
+    expect(speech.spoken, [(shownFront(tester), SpeechLanguage.koKr)]);
   });
 
   libraryTest('each new card is read, and only once', (tester, env) async {
     final speech = FakeSpeechSynthesizer();
     final id = await _learning(env);
     await _pump(tester, env, id, speech);
-    final shown = [_front(tester)];
+    final shown = [shownFront(tester)];
     await _swipeLeft(tester);
-    shown.add(_front(tester));
+    shown.add(shownFront(tester));
     await _swipeLeft(tester);
-    shown.add(_front(tester));
+    shown.add(shownFront(tester));
 
     expect(shown.toSet(), hasLength(3));
     expect(speech.spoken.map((s) => s.$1).toList(), shown);
@@ -128,7 +116,7 @@ void main() {
     await tester.tap(find.byType(StudySpeakButtonWidget));
     await tester.pumpAndSettle();
 
-    expect(speech.spoken, [(_front(tester), SpeechLanguage.enUs)]);
+    expect(speech.spoken, [(shownFront(tester), SpeechLanguage.enUs)]);
     // The label names the language it reads in (critique 2026-10-07).
     expect(
       byControlLabel(_en.studySpeakTermIn(_en.speechLanguageName('enUs'))),

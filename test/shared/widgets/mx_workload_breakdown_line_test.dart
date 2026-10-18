@@ -13,21 +13,27 @@ MxWorkloadBreakdownLine _line({
   int overdue = 3,
   int today = 5,
   int fresh = 2,
+  int scheduledCount = 0,
+  bool hasScheduledLabel = false,
+  String fallback = 'Nothing due',
   String? suffix,
   bool shouldKeepZeroTerms = false,
   bool hasIcons = false,
+  bool? canWrap,
 }) => MxWorkloadBreakdownLine(
   overdueCount: overdue,
   todayCount: today,
   newCount: fresh,
+  scheduledCount: scheduledCount,
   overdueLabel: (n) => '$n overdue',
   todayLabel: (n) => '$n today',
   newLabel: (n) => '$n new',
-  fallback: 'Nothing due',
+  scheduledLabel: hasScheduledLabel ? (n) => '$n scheduled' : null,
+  fallback: fallback,
   suffix: suffix,
   shouldKeepZeroTerms: shouldKeepZeroTerms,
   hasIcons: hasIcons,
-  canWrap: hasIcons,
+  canWrap: canWrap ?? hasIcons,
 );
 
 TextSpan _root(WidgetTester tester) =>
@@ -130,61 +136,18 @@ void main() {
 
   testWidgets('a fourth, muted Scheduled term follows New when a label is '
       'given, and only then (BR-STUDY-068, FE-A8 S1)', (tester) async {
-    await pumpMx(
-      tester,
-      MxWorkloadBreakdownLine(
-        overdueCount: 3,
-        todayCount: 5,
-        newCount: 2,
-        scheduledCount: 4,
-        overdueLabel: (n) => '$n overdue',
-        todayLabel: (n) => '$n today',
-        newLabel: (n) => '$n new',
-        scheduledLabel: (n) => '$n scheduled',
-        fallback: 'Nothing due',
-      ),
-    );
+    await pumpMx(tester, _line(scheduledCount: 4, hasScheduledLabel: true));
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new · 4 scheduled');
     expect(_termStyle(tester, '4 scheduled')!.color, colors.mutedForeground);
 
-    await pumpMx(
-      tester,
-      MxWorkloadBreakdownLine(
-        overdueCount: 3,
-        todayCount: 5,
-        newCount: 2,
-        scheduledCount: 4,
-        overdueLabel: (n) => '$n overdue',
-        todayLabel: (n) => '$n today',
-        newLabel: (n) => '$n new',
-        fallback: 'Nothing due',
-      ),
-    );
+    await pumpMx(tester, _line(scheduledCount: 4));
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
   });
 
-  testWidgets('with only scheduled cards the line still says nothing is '
-      'due, then the scheduled term (critique 2026-09-30 part 3b review)', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxWorkloadBreakdownLine(
-        overdueCount: 0,
-        todayCount: 0,
-        newCount: 0,
-        scheduledCount: 3,
-        overdueLabel: (n) => '$n overdue',
-        todayLabel: (n) => '$n today',
-        newLabel: (n) => '$n new',
-        scheduledLabel: (n) => '$n scheduled',
-        fallback: '12 cards · nothing due',
-      ),
-    );
-    expect(_plain(tester), '12 cards · nothing due · 3 scheduled');
-  });
-
+  // With only scheduled cards the line still says nothing is due, then the
+  // scheduled term (critique 2026-09-30 part 3b review: the canWrap = false
+  // case).
   // The Wrap Rule (owner, Q-P6-4): a wrapping fallback is a line of terms
   // too, glued like the counts it stands in for; a one-line row keeps it.
   for (final canWrap in [true, false]) {
@@ -192,15 +155,12 @@ void main() {
         '${canWrap ? 'wraps' : 'keeps one line'}', (tester) async {
       await pumpMx(
         tester,
-        MxWorkloadBreakdownLine(
-          overdueCount: 0,
-          todayCount: 0,
-          newCount: 0,
+        _line(
+          overdue: 0,
+          today: 0,
+          fresh: 0,
           scheduledCount: 3,
-          overdueLabel: (n) => '$n overdue',
-          todayLabel: (n) => '$n today',
-          newLabel: (n) => '$n new',
-          scheduledLabel: (n) => '$n scheduled',
+          hasScheduledLabel: true,
           fallback: '12 cards · nothing due',
           canWrap: canWrap,
         ),
@@ -221,14 +181,10 @@ void main() {
       tester,
       SizedBox(
         width: 160,
-        child: MxWorkloadBreakdownLine(
-          overdueCount: 1100,
-          todayCount: 160,
-          newCount: 7400,
-          overdueLabel: (n) => '$n overdue',
-          todayLabel: (n) => '$n today',
-          newLabel: (n) => '$n new',
-          fallback: 'Nothing due',
+        child: _line(
+          overdue: 1100,
+          today: 160,
+          fresh: 7400,
           suffix: 'across 4 decks',
           canWrap: true,
         ),
@@ -354,22 +310,7 @@ void main() {
       'before its dot, at any width', (tester) async {
     // From the width where the widest term and its dot fit on one line.
     for (var width = 96.0; width <= 200; width += 2) {
-      await pumpMx(
-        tester,
-        SizedBox(
-          width: width,
-          child: MxWorkloadBreakdownLine(
-            overdueCount: 3,
-            todayCount: 5,
-            newCount: 2,
-            overdueLabel: (n) => '$n overdue',
-            todayLabel: (n) => '$n today',
-            newLabel: (n) => '$n new',
-            fallback: 'Nothing due',
-            canWrap: true,
-          ),
-        ),
-      );
+      await pumpMx(tester, SizedBox(width: width, child: _line(canWrap: true)));
 
       final paragraph = tester.renderObject<RenderParagraph>(
         find.descendant(

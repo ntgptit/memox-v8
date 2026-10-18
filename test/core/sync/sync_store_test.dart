@@ -3,14 +3,8 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
+import '../../support/sync_rows.dart';
 import '../../support/test_database.dart';
-
-Future<void> _root(AppDatabase db, String id) => db.customStatement(
-  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-  "scheduler_version, generation, sibling_position, created_at, updated_at) "
-  "VALUES (?, 'r', NULL, ?, 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-  [id, id],
-);
 
 void main() {
   late AppDatabase db;
@@ -46,7 +40,7 @@ void main() {
   test('a pending deck follows the deck it moved into, whatever was queued '
       'first; a delete goes before both (DEV-182)', () async {
     await store.applyingRemote(() async {
-      await _root(db, 'N');
+      await insertRootDeck(db, 'N');
       await db.customStatement(
         "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
         "sibling_position, created_at, updated_at) "
@@ -83,7 +77,7 @@ void main() {
   test(
     'an acknowledgement removes the entry only while its op id is current',
     () async {
-      await _root(db, 'R');
+      await insertRootDeck(db, 'R');
       final sent = (await store.pendingBatch(['deck'], 10)).single.opId;
       await db.customStatement(
         "UPDATE deck SET name = 'edited' WHERE id = 'R'",
@@ -96,7 +90,7 @@ void main() {
   );
 
   test('a pending entity and the since cursor', () async {
-    await _root(db, 'R');
+    await insertRootDeck(db, 'R');
     await store.setSince(42);
 
     expect(await store.isPendingEntity('deck', 'R'), isTrue);
@@ -125,8 +119,8 @@ void main() {
   });
 
   test('pending changes and their oldest time are counted', () async {
-    await _root(db, 'R');
-    await _root(db, 'S');
+    await insertRootDeck(db, 'R');
+    await insertRootDeck(db, 'S');
     final status = await store.watchStatus().first;
     expect(status.pendingCount, 2);
     expect(status.oldestPendingAt, isNotNull);
@@ -152,7 +146,7 @@ void main() {
   test(
     'enqueue adds an entry, or replaces the op id and keeps the time',
     () async {
-      await _root(db, 'R');
+      await insertRootDeck(db, 'R');
       final before = (await store.pendingBatch(['deck'], 10)).single;
 
       await store.enqueue('deck', 'R', 'delete', t0);

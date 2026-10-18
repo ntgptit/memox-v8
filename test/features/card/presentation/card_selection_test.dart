@@ -14,18 +14,7 @@ import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-import '../../../support/widget_harness.dart';
-
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-    // As the router wires it: the bulk bar holds its five commands.
-    onExport: (_) {},
-  ),
-);
+import 'support/card_list_section_host.dart';
 
 /// A deck of cards whose fronts are [fronts]; the first [flagged] are
 /// flagged.
@@ -57,7 +46,7 @@ final _checked = find.byWidgetPredicate(
 void main() {
   libraryTest('a long-press selects that card', (tester, env) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
@@ -75,7 +64,7 @@ void main() {
     env,
   ) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('gamsa'));
@@ -95,7 +84,7 @@ void main() {
 
   libraryTest('system Back leaves selection first (RF5)', (tester, env) async {
     final deckId = await _deck(env, ['annyeong']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
@@ -108,7 +97,7 @@ void main() {
   libraryTest('cards that left the deck leave the selection too, so a bulk '
       'action is not refused for them (audit CARD-14)', (tester, env) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa', 'sarang']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('gamsa'));
@@ -138,7 +127,7 @@ void main() {
       await pumpLibraryScreen(
         tester,
         env,
-        _section(deckId),
+        cardListSectionWithExport(deckId),
         overrides: [
           cardListProvider(
             deckId: deckId,
@@ -171,14 +160,4 @@ void main() {
       );
     });
   }
-
-  libraryTest('selection meets the target guidelines', (tester, env) async {
-    final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.longPress(find.text('annyeong'));
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    await expectAccessibleTargets(tester);
-  });
 }
