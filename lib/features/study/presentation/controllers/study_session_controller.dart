@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/providers/show_fill_hint_use_c
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_session_controller.g.dart';
@@ -58,28 +59,32 @@ class StudySessionController extends _$StudySessionController {
       shouldHoldFeedback: shouldHoldFeedback,
       cardId: cardId ?? item.cardId,
     );
-    try {
-      final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
-        sessionId: sessionId,
-        cardId: pending.cardId,
-        answer: answer,
-      );
-      if (!ref.mounted) return;
-      state = switch (outcome) {
-        Ok(:final value) when shouldHoldFeedback => StudyTurnState(
-          held: HeldTurn(item, value),
-        ),
-        // A refusal (the card moved on, the session closed) is the stream's
-        // to show; nothing is held.
-        _ => const StudyTurnState(),
-      };
-    } on DatabaseLockedFailure {
-      if (!ref.mounted) return;
-      state = StudyTurnState(unsaved: pending);
-    } on Failure {
-      if (!ref.mounted) return;
-      state = const StudyTurnState();
-    }
+    await runHeld(
+      () async {
+        final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
+          sessionId: sessionId,
+          cardId: pending.cardId,
+          answer: answer,
+        );
+        if (!ref.mounted) return;
+        state = switch (outcome) {
+          Ok(:final value) when shouldHoldFeedback => StudyTurnState(
+            held: HeldTurn(item, value),
+          ),
+          // A refusal (the card moved on, the session closed) is the
+          // stream's to show; nothing is held.
+          _ => const StudyTurnState(),
+        };
+      },
+      // A bug takes the way out of any other failure: the stream shows
+      // the session, nothing is held.
+      onFailed: (failure) {
+        if (!ref.mounted) return;
+        state = failure is DatabaseLockedFailure
+            ? StudyTurnState(unsaved: pending)
+            : const StudyTurnState();
+      },
+    );
   }
 
   /// The answer a busy database refused, once more (E2).
@@ -137,11 +142,11 @@ class StudySessionController extends _$StudySessionController {
   Future<void> _write(Future<Object?> Function() command) async {
     if (state.isBusy) return;
     state = const StudyTurnState(isBusy: true);
-    try {
-      await command();
-    } on Failure {
+    await runHeld(
+      command,
       // The turn stays as it was.
-    }
+      onFailed: (_) {},
+    );
     if (!ref.mounted) return;
     state = const StudyTurnState();
   }
@@ -174,11 +179,11 @@ class StudySessionController extends _$StudySessionController {
   Future<void> settle() async {
     if (state.isBusy || state.held != null) return;
     state = const StudyTurnState(isBusy: true);
-    try {
-      await ref.read(resumeStudySessionUseCaseProvider)(sessionId: sessionId);
-    } on Failure {
+    await runHeld(
+      () => ref.read(resumeStudySessionUseCaseProvider)(sessionId: sessionId),
       // The stream still shows the stalled session; the person can close it.
-    }
+      onFailed: (_) {},
+    );
     if (!ref.mounted) return;
     state = const StudyTurnState();
   }

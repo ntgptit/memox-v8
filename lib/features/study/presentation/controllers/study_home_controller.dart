@@ -1,7 +1,7 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/presentation/providers/resume_study_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/states/study_home_resume_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_home_controller.g.dart';
@@ -19,17 +19,19 @@ class StudyHomeController extends _$StudyHomeController {
   Future<StudyHomeResumeResult?> resume(String sessionId) async {
     if (state) return null;
     state = true;
-    StudyHomeResumeResult result;
-    try {
-      result = switch (await ref.read(resumeStudySessionUseCaseProvider)(
-        sessionId: sessionId,
-      )) {
-        Ok() => ResumeOpened(sessionId),
-        Rejected() => const ResumeRefused(),
-      };
-    } on Failure {
-      result = const ResumeFailed();
-    }
+    late StudyHomeResumeResult result;
+    await runHeld(
+      () async {
+        result = switch (await ref.read(resumeStudySessionUseCaseProvider)(
+          sessionId: sessionId,
+        )) {
+          Ok() => ResumeOpened(sessionId),
+          Rejected() => const ResumeRefused(),
+        };
+      },
+      // A bug ends as a Failure does: nothing changed.
+      onFailed: (_) => result = const ResumeFailed(),
+    );
     if (!ref.mounted) return result;
     state = false;
     return result;

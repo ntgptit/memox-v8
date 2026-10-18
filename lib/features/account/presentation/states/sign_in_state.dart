@@ -57,8 +57,9 @@ final class SignInState {
 }
 
 /// The problem a refused command shows (spec R3: a wrong and an expired
-/// code read alike; a rate limit carries no wait).
-SignInProblem signInProblemOf(Object error) => switch (error) {
+/// code read alike; a rate limit carries no wait). A bug, null, reads as
+/// any other failure.
+SignInProblem signInProblemOf(Object? error) => switch (error) {
   InvalidCodeFailure() => SignInProblem.wrongCode,
   RateLimitedFailure() => SignInProblem.rateLimited,
   OfflineFailure() => SignInProblem.offline,

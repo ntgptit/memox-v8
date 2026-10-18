@@ -46,6 +46,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_language_{english
 | any | tap the selected row | nothing written, no toast | `UNVERIFIED (code read)`: `_choose` returns on the stored choice; the controller side is VERIFIED `settings_controller_test.dart::theme and language are each one write; choosing the persisted value writes nothing` |
 | any | a second tap while a switch runs | ignored: neither the store nor the language the toast names changes | UC A4. VERIFIED `::a second tap while a switch runs changes neither the store nor the language the toast names (A4)` |
 | any | the write fails | the stored row stays selected, toast "Couldn't change the language." with Retry | UC E2. VERIFIED `::a failed save keeps the stored language and offers Retry (E2)` |
+| any | the write meets a bug (not a `Failure`) | as the write failing: the stored row stays selected, the same toast with Retry; the page is no longer busy; the bug is reported | VERIFIED for the shared `SettingsController._submit` through the reset kind, `settings_held_bug_test.dart::a submit that dies on a bug is no longer busy and says the save failed, with Retry (_submit)`; the other kinds differ only in the write they pass in, `UNVERIFIED (code read)` |
 | any | Retry on the toast | the write runs again, then the toast reads in that language | UC E2. VERIFIED same test |
 | any | Back | screen 23, whose Language row reads the new choice | `UNVERIFIED (code read)` |
 

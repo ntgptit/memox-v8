@@ -1,4 +1,3 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
@@ -9,6 +8,7 @@ import 'package:memox/features/settings/presentation/providers/save_root_study_o
 import 'package:memox/features/settings/presentation/providers/study_options_provider.dart';
 import 'package:memox/features/settings/presentation/providers/use_app_defaults_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_options_controller.g.dart';
@@ -85,28 +85,30 @@ class StudyOptionsController extends _$StudyOptionsController {
     if (stored == null || form == null || state.isSaving) return;
     if (!form.canSave) return;
     state = state.withSave(StudyOptionsSave.saving);
-    final Outcome<void, SettingsRejection> outcome;
-    try {
-      outcome = form.isUsingAppDefaults
-          ? await ref.read(useAppDefaultsUseCaseProvider)(
-              rootDeckId: stored.rootDeckId,
-            )
-          : await ref.read(saveRootStudyOptionsUseCaseProvider)(
-              rootDeckId: stored.rootDeckId,
-              options: form.options,
-            );
-    } on Failure {
-      if (ref.mounted) state = state.withSave(StudyOptionsSave.failed);
-      return;
-    }
-    if (!ref.mounted) return;
-    state = switch (outcome) {
-      Ok() => StudyOptionsState(timesSaved: state.timesSaved + 1),
-      // The deck went meanwhile: the stream shows it gone.
-      Rejected(reason: SettingsRejection.deckNotFound) => state.withSave(
-        StudyOptionsSave.idle,
-      ),
-      Rejected() => state.withSave(StudyOptionsSave.failed),
-    };
+    await runHeld(
+      () async {
+        final outcome = form.isUsingAppDefaults
+            ? await ref.read(useAppDefaultsUseCaseProvider)(
+                rootDeckId: stored.rootDeckId,
+              )
+            : await ref.read(saveRootStudyOptionsUseCaseProvider)(
+                rootDeckId: stored.rootDeckId,
+                options: form.options,
+              );
+        if (!ref.mounted) return;
+        state = switch (outcome) {
+          Ok() => StudyOptionsState(timesSaved: state.timesSaved + 1),
+          // The deck went meanwhile: the stream shows it gone.
+          Rejected(reason: SettingsRejection.deckNotFound) => state.withSave(
+            StudyOptionsSave.idle,
+          ),
+          Rejected() => state.withSave(StudyOptionsSave.failed),
+        };
+      },
+      // A bug takes the Failure's way out: the draft stays, with Retry save.
+      onFailed: (_) {
+        if (ref.mounted) state = state.withSave(StudyOptionsSave.failed);
+      },
+    );
   }
 }

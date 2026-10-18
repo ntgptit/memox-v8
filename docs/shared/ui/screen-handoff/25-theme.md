@@ -45,6 +45,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig
 | system / light / dark | tap the selected card | no change, nothing written | VERIFIED `settings_controller_test.dart::theme and language are each one write; choosing the persisted value writes nothing` |
 | any | a second tap while the write runs | ignored | UC A4. VERIFIED `settings_controller_test.dart::a second submit of a kind in flight is ignored (A4)` |
 | any | the write fails | the stored card stays selected, toast "Couldn't change the theme." with Retry | UC E2. VERIFIED `theme_screen_test.dart::a failed save keeps the stored theme and offers Retry, which saves it (E2)` |
+| any | the write meets a bug (not a `Failure`) | as the write failing: the stored card stays selected, the same toast with Retry; the page is no longer busy; the bug is reported | VERIFIED for the shared `SettingsController._submit` through the reset kind, `settings_held_bug_test.dart::a submit that dies on a bug is no longer busy and says the save failed, with Retry (_submit)`; the other kinds differ only in the write they pass in, `UNVERIFIED (code read)` |
 | any | Retry on the toast | the write runs again, then the card is selected | UC E2. VERIFIED same test |
 | any | the toast's Retry after leaving the page | the write runs; the page is gone, so no result shows | `UNVERIFIED (code read)`: the snackbar's action closes over the page's `ref` |
 | any | TalkBack activates a card | the same as a tap | VERIFIED `::TalkBack can choose a theme: the card keeps its tap` |

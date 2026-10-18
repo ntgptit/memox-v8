@@ -5,6 +5,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/states/code_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'code_controller.g.dart';
@@ -39,13 +40,17 @@ class CodeController extends _$CodeController {
       resendIn: state.resendIn,
     );
     SignInProblem? problem;
-    try {
-      await accounts.verifyCode(email, code);
-    } on Failure catch (error) {
-      problem = signInProblemOf(error);
-    } on StateError {
-      problem = SignInProblem.failed; // The account moved on meanwhile.
-    }
+    await runHeld(
+      () async {
+        try {
+          await accounts.verifyCode(email, code);
+        } on StateError {
+          problem = SignInProblem.failed; // The account moved on meanwhile.
+        }
+      },
+      // A bug fails the check, as any other failure does.
+      onFailed: (failure) => problem = signInProblemOf(failure),
+    );
     if (ref.mounted) {
       state = CodeState(
         isResending: state.isResending,
@@ -65,20 +70,33 @@ class CodeController extends _$CodeController {
     if (accounts == null || !state.canResend) return ResendOutcome.refused;
     state = const CodeState(isResending: true);
     SignInProblem? problem;
-    try {
-      await accounts.requestCode(email, confirmedLoss: confirmedLoss);
-    } on UnsentChangesFailure catch (error) {
+    int? unsent;
+    await runHeld(
+      () async {
+        try {
+          await accounts.requestCode(email, confirmedLoss: confirmedLoss);
+        } on StateError {
+          problem = SignInProblem.failed; // The account moved on meanwhile.
+        }
+      },
+      // A bug is refused, as any other failure is.
+      onFailed: (failure) {
+        if (failure case UnsentChangesFailure(:final count)) {
+          unsent = count;
+          return;
+        }
+        problem = signInProblemOf(failure);
+      },
+    );
+    final unsentCount = unsent;
+    if (unsentCount != null) {
       if (ref.mounted) {
         state = CodeState(
           isVerifying: state.isVerifying,
-          unsentCount: error.count,
+          unsentCount: unsentCount,
         );
       }
       return ResendOutcome.unsentChanges;
-    } on Failure catch (error) {
-      problem = signInProblemOf(error);
-    } on StateError {
-      problem = SignInProblem.failed; // The account moved on meanwhile.
     }
     final isSent = problem == null;
     final outcome = isSent ? ResendOutcome.sent : ResendOutcome.refused;

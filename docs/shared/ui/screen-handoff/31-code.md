@@ -59,6 +59,8 @@ The images are the goldens.
 | resend ready | tap Resend code | resending | VERIFIED `::a resend in flight spins on the button, not "New code in 0:00" (final review F1)` |
 | resending | the code goes out | waiting again; toast "A new code is on its way." | VERIFIED `::Resend waits a minute, then sends a new code and waits again` |
 | resending | the resend is refused | resend failed | `UNVERIFIED (code read)` |
+| verifying | the check meets a bug (not a `Failure`) | as another failure: the field clears, "failed" under it; nothing is verifying any more; the bug is reported | VERIFIED `account_held_bug_test.dart::a check that dies on a bug is no longer verifying and fails with the failed problem (verify)`; the account moved on (`StateError`) is the same answer, not reported, `::the account moving on is a failed check, not a bug` |
+| resending | the resend meets a bug (not a `Failure`) | the resend is refused: resend ready again with the "failed" problem; nothing is resending any more; the bug is reported | VERIFIED `account_held_bug_test.dart::a resend that dies on a bug is no longer resending and is refused with the failed problem (resend)` |
 | resend ready | tap Resend code (re-auth to another account, changes unsent) | resend loss dialog | P3b minor M7. VERIFIED `::a re-auth resend to another address names the unsent changes again (P3b minor M7)`; the same address asks nothing `::a re-auth resend to its own address asks nothing` |
 | resend loss dialog | Cancel | resend ready; nothing sent | `UNVERIFIED (code read)`: `_resend` returns when `confirmUnsentLoss` is false |
 | resend loss dialog | Lose | resending with the loss confirmed | VERIFIED the M7 test above |
