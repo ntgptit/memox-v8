@@ -35,6 +35,24 @@ final class SelectCounter extends QueryInterceptor {
   }
 }
 
+/// Fails every SELECT while [isArmed], the way a disk that cannot be read
+/// does (UC-SEARCH-001 E1).
+final class FailingSelects extends QueryInterceptor {
+  bool isArmed = false;
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) {
+    if (isArmed) {
+      throw SqliteException(extendedResultCode: 10, message: 'disk I/O error');
+    }
+    return super.runSelect(executor, statement, args);
+  }
+}
+
 /// Fails every UPDATE the way a full disk or a broken constraint does, for
 /// the error flows of a write.
 final class FailingUpdates extends QueryInterceptor {

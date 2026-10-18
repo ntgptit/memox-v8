@@ -162,29 +162,6 @@ void main() {
     expect(picked, 2);
   });
 
-  testWidgets('a tap reports the index; the selected item is marked', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
-    int? picked;
-    await pumpMx(tester, _nav(onSelected: (i) => picked = i));
-    await tester.tap(find.text('Progress'));
-    await tester.pumpAndSettle();
-
-    expect(picked, 2);
-    expect(
-      tester.getSemantics(find.text('Library')),
-      // The label ends with the destination's position, as ForUI reads it.
-      isSemantics(
-        label: 'Library\nTab 1 of 4',
-        isSelected: true,
-        hasSelectedState: true,
-        isButton: true,
-      ),
-    );
-    handle.dispose();
-  });
-
   // The tab shell resets a branch to its root on a re-tap of the current
   // tab; ForUI's bar reports that tap, with no equality guard.
   testWidgets('a re-tap of the selected destination still reports it', (
@@ -218,6 +195,19 @@ void main() {
         label: 'Settings\nTab 4 of 4',
         isButton: true,
         isSelected: false,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+
+    // The first destination, selected, is read the same way.
+    await pumpMx(tester, _nav());
+    expect(
+      tester.getSemantics(find.text('Library')),
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        isButton: true,
+        isSelected: true,
         hasSelectedState: true,
         hasTapAction: true,
       ),

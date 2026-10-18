@@ -51,18 +51,27 @@ void main() {
     },
   );
 
-  testWidgets('M3 list item heights: 56 for one line, 72 with a subtitle', (
-    tester,
-  ) async {
-    await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
-    expect(tester.getSize(find.byType(MxSettingsRow)).height, 56);
+  // A trailing toggle does not grow the row (Task 3 rule): it stands at the
+  // one-line 56.
+  for (final (name, row, height) in <(String, MxSettingsRow, double)>[
+    ('one line', const MxSettingsRow(label: 'Version'), 56),
+    (
+      'a subtitle',
+      const MxSettingsRow(label: 'Version', subtitle: '1.0.0'),
+      72,
+    ),
+    (
+      'a trailing toggle',
+      MxSettingsRow(label: 'Daily reminder', trailing: _toggle()),
+      56,
+    ),
+  ]) {
+    testWidgets('M3 list item heights: $name is $height', (tester) async {
+      await pumpMx(tester, _width(row));
 
-    await pumpMx(
-      tester,
-      _width(const MxSettingsRow(label: 'Version', subtitle: '1.0.0')),
-    );
-    expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
-  });
+      expect(tester.getSize(find.byType(MxSettingsRow)).height, height);
+    });
+  }
 
   testWidgets('the chevron shows only on a row that navigates', (tester) async {
     await pumpMx(
@@ -80,20 +89,6 @@ void main() {
     await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
     expect(find.byType(FTappable), findsNothing);
-  });
-
-  testWidgets('a trailing toggle does not grow the row (Task 3 rule)', (
-    tester,
-  ) async {
-    await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
-    final plain = tester.getSize(find.byType(MxSettingsRow)).height;
-    await pumpMx(
-      tester,
-      _width(MxSettingsRow(label: 'Daily reminder', trailing: _toggle())),
-    );
-
-    expect(plain, 56);
-    expect(tester.getSize(find.byType(MxSettingsRow)).height, plain);
   });
 
   testWidgets('a long label wraps; the trailing control keeps its size', (
@@ -163,29 +158,6 @@ void main() {
     );
   });
 
-  testWidgets('dimmed while unavailable', (tester) async {
-    var taps = 0;
-    await pumpMx(
-      tester,
-      _width(
-        MxSettingsRow(label: 'Language', isEnabled: false, onTap: () => taps++),
-      ),
-    );
-    await tester.tap(find.text('Language'), warnIfMissed: false);
-
-    expect(taps, 0);
-    expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.text('Language'),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      appLightColors.disabledOpacity,
-    );
-  });
   testWidgets('at normal text the trailing control stays beside the label', (
     tester,
   ) async {
@@ -207,19 +179,26 @@ void main() {
     );
   });
 
-  testWidgets('a disabled row keeps its subtitle at full strength (critique '
-      '2026-09-30, screen 24)', (tester) async {
+  testWidgets('a disabled row takes no tap, dims its title and keeps its '
+      'subtitle at full strength (critique 2026-09-30, screen 24)', (
+    tester,
+  ) async {
+    var taps = 0;
     await pumpMx(
       tester,
       _width(
-        const MxSettingsRow(
+        MxSettingsRow(
           label: 'Time',
           subtitle: 'Turn the reminder on to choose a time',
           icon: AppIcons.clock,
           isEnabled: false,
+          onTap: () => taps++,
         ),
       ),
     );
+    await tester.tap(find.text('Time'), warnIfMissed: false);
+
+    expect(taps, 0);
     expect(
       find.ancestor(
         of: find.text('Turn the reminder on to choose a time'),
@@ -250,77 +229,62 @@ void main() {
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
   });
 
-  testWidgets('a disabled row does not dim its control twice (critique '
-      '2026-09-30 part 3a)', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxSettingsRow(
-          label: 'Time',
-          subtitle: 'Turn the reminder on to choose a time',
-          icon: AppIcons.clock,
-          isEnabled: false,
-          trailing: MxButton(
+  // A disabled row dims a plain trailing once and leaves a control to dim
+  // itself (critique 2026-09-30 part 3a).
+  for (final (name, row, dimmed) in <(String, MxSettingsRow, Matcher)>[
+    (
+      'a disabled row does not dim its control twice',
+      const MxSettingsRow(
+        label: 'Time',
+        subtitle: 'Turn the reminder on to choose a time',
+        icon: AppIcons.clock,
+        isEnabled: false,
+        trailing: MxButton(
+          label: '20:00',
+          size: MxButtonSize.small,
+          onPressed: null,
+        ),
+      ),
+      findsNothing,
+    ),
+    (
+      "a disabled row's non-control trailing still dims",
+      const MxSettingsRow(
+        label: 'Time',
+        isEnabled: false,
+        trailing: Text('20:00'),
+      ),
+      findsOneWidget,
+    ),
+    (
+      'a control under a Semantics label is not dimmed twice either, as the '
+          "reminder's time button is",
+      MxSettingsRow(
+        label: 'Time',
+        isEnabled: false,
+        trailing: Semantics(
+          label: 'Reminder time, 20:00',
+          excludeSemantics: true,
+          button: true,
+          child: const MxButton(
             label: '20:00',
             size: MxButtonSize.small,
             onPressed: null,
           ),
         ),
       ),
-    );
-    expect(
-      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
       findsNothing,
-    );
-  });
+    ),
+  ]) {
+    testWidgets(name, (tester) async {
+      await pumpMx(tester, _width(row));
 
-  testWidgets("a disabled row's non-control trailing still dims", (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxSettingsRow(
-          label: 'Time',
-          isEnabled: false,
-          trailing: Text('20:00'),
-        ),
-      ),
-    );
-    expect(
-      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('a control under a Semantics label is not dimmed twice either, '
-      "as the reminder's time button is (critique 2026-09-30 part 3a)", (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxSettingsRow(
-          label: 'Time',
-          isEnabled: false,
-          trailing: Semantics(
-            label: 'Reminder time, 20:00',
-            excludeSemantics: true,
-            button: true,
-            child: const MxButton(
-              label: '20:00',
-              size: MxButtonSize.small,
-              onPressed: null,
-            ),
-          ),
-        ),
-      ),
-    );
-    expect(
-      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
-      findsNothing,
-    );
-  });
+      expect(
+        find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+        dimmed,
+      );
+    });
+  }
 
   testWidgets('iconTone reaches the lead tile, and a disabled row still dims '
       'it (critique 2026-09-30 tone pass, T4)', (tester) async {

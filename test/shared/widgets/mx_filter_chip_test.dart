@@ -7,6 +7,7 @@ import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
+import '../../support/contrast.dart';
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
@@ -22,13 +23,6 @@ ShapeDecoration _resolved(WidgetTester tester, Set<FTappableVariant> states) =>
 
 Color? _resolvedInk(WidgetTester tester, Set<FTappableVariant> states) =>
     _style(tester).contentStyle.textStyle.resolve(states).color;
-
-double _contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (light, dark) = la > lb ? (la, lb) : (lb, la);
-  return (light + 0.05) / (dark + 0.05);
-}
 
 void main() {
   final colors = appLightColors;
@@ -217,7 +211,7 @@ void main() {
 
       for (final ground in [context.colors.background, context.colors.card]) {
         final ink = Color.alphaBlend(painted, ground);
-        expect(_contrast(ink, ground), greaterThanOrEqualTo(4.5));
+        expect(contrastRatio(ink, ground), greaterThanOrEqualTo(4.5));
       }
     });
   }
@@ -364,7 +358,7 @@ void main() {
       final glyph = iconColor(tester, find.byIcon(AppIcons.filter))!;
 
       expect(glyph, _style(tester).contentStyle.iconStyle.resolve({}).color);
-      expect(_contrast(glyph, context.colors.card), greaterThan(3));
+      expect(contrastRatio(glyph, context.colors.card), greaterThan(3));
     });
   }
 }

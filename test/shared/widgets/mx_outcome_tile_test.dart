@@ -5,14 +5,8 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
+import '../../support/contrast.dart';
 import '../../support/widget_harness.dart';
-
-double _ratio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-  return (hi + 0.05) / (lo + 0.05);
-}
 
 void main() {
   for (final tone in MxOutcomeTone.values) {
@@ -51,7 +45,7 @@ void main() {
           );
 
           expect(
-            _ratio(label.style!.color!, ground),
+            contrastRatio(label.style!.color!, ground),
             greaterThanOrEqualTo(4.5),
           );
           expect(find.text('Body'), findsOneWidget);

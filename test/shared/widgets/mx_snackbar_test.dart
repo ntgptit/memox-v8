@@ -157,29 +157,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('a toast stays its duration, then goes (FE-B1 D3)', (
-    tester,
-  ) async {
-    await pumpMx(tester, trigger(duration: mxUndoWindow));
-    await show(tester);
+  for (final (name, duration, actionLabel, visibleSeconds)
+      in <(String, Duration?, String?, int)>[
+        (
+          'a toast stays its duration, then goes (FE-B1 D3)',
+          mxUndoWindow,
+          'Undo',
+          7,
+        ),
+        ('the default duration is the platform 4 seconds', null, null, 3),
+      ]) {
+    testWidgets(name, (tester) async {
+      await pumpMx(
+        tester,
+        trigger(duration: duration, actionLabel: actionLabel),
+      );
+      await show(tester);
 
-    await tester.pump(const Duration(seconds: 7));
-    expect(find.text('Moved to Trash'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-    expect(_toast, findsNothing);
-  });
-
-  testWidgets('the default duration is the platform 4 seconds', (tester) async {
-    await pumpMx(tester, trigger(actionLabel: null));
-    await show(tester);
-
-    await tester.pump(const Duration(seconds: 3));
-    expect(find.text('Moved to Trash'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-    expect(_toast, findsNothing);
-  });
+      await tester.pump(Duration(seconds: visibleSeconds));
+      expect(find.text('Moved to Trash'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+      expect(_toast, findsNothing);
+    });
+  }
 
   group("motion follows ForUI's toast motion and accessibility", () {
     // Where the toast is drawn, against where it rests once settled.
@@ -275,8 +276,6 @@ void main() {
         ),
       ),
     );
-
-    setUp(() {});
 
     testWidgets('under TalkBack a toast with an action stays (FE-B1 D14)', (
       tester,

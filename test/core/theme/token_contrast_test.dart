@@ -5,6 +5,8 @@ import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 
+import '../../support/contrast.dart';
+
 // WCAG 2 contrast of the palette's pairs (ADR-026): text keeps 4.5:1 and a
 // glyph or control edge 3:1, in both modes, on the grounds the widgets draw
 // them on. A pair below its floor is a palette change in
@@ -12,13 +14,6 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 
 const double _text = 4.5;
 const double _nonText = 3;
-
-double _contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (light, dark) = la > lb ? (la, lb) : (lb, la);
-  return (light + 0.05) / (dark + 0.05);
-}
 
 /// [ink] laid over [ground] when [ink] is translucent.
 Color _over(Color ink, Color ground) => Color.alphaBlend(ink, ground);
@@ -110,7 +105,7 @@ void main() {
       for (final (name, ink, ground, floor) in _pairs(colors)) {
         final minimum = mode == 'dark' ? _darkExceptions[name] ?? floor : floor;
         test(name, () {
-          final ratio = _contrast(_over(ink, ground), ground);
+          final ratio = contrastRatio(_over(ink, ground), ground);
           expect(
             ratio,
             greaterThanOrEqualTo(minimum),

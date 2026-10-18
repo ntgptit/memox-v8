@@ -1,28 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 import '../../support/theme_harness.dart';
-
-Future<BuildContext> contextOf(WidgetTester tester, FThemeData theme) async {
-  late BuildContext captured;
-  await tester.pumpWidget(
-    MaterialApp(
-      theme: materialHostTheme(theme),
-      builder: mxThemeBuilder(theme),
-      home: Builder(
-        builder: (context) {
-          captured = context;
-          return const SizedBox();
-        },
-      ),
-    ),
-  );
-  return captured;
-}
 
 void main() {
   testWidgets('screen margin follows the window width', (tester) async {

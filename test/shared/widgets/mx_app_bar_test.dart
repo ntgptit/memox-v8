@@ -27,10 +27,15 @@ void main() {
     );
   });
 
+  // Without a leading control the title starts on the gutter (critique
+  // 2026-09-30 part 3c-1): the bar starts at x 0, so the title's offset in the
+  // bar is its offset on the screen.
   testWidgets('screen-title role, screen margin', (tester) async {
     await pumpMx(tester, const MxAppBar(title: 'Library'));
     final context = tester.element(find.text('Library'));
 
+    expect(tester.getTopLeft(find.byType(MxAppBar)).dx, 0);
+    expect(tester.getTopLeft(find.text('Library')).dx, context.screenMargin);
     expect(
       tester.widget<Text>(find.text('Library')).style,
       context.texts.screenTitle,
@@ -235,15 +240,6 @@ void main() {
     },
   );
 
-  testWidgets('a content bar without a leading control starts its title on '
-      'the gutter (critique 2026-09-30 part 3c-1)', (tester) async {
-    await pumpMx(tester, const MxAppBar(title: 'Session summary'));
-    expect(
-      tester.getTopLeft(find.text('Session summary')).dx,
-      tester.element(find.byType(MxAppBar)).screenMargin,
-    );
-  });
-
   group('icon glyphs line up with the body margin', () {
     Widget bar() => MxAppBar(
       title: 'Words',
@@ -324,16 +320,6 @@ void main() {
       expect(
         style.resolve({FTappableVariant.disabled}).color,
         isNot(style.resolve({}).color),
-      );
-    });
-
-    testWidgets('a bar without a leading control still starts its title on '
-        'the margin', (tester) async {
-      await pumpMx(tester, const MxAppBar(title: 'Library'));
-
-      expect(
-        tester.getTopLeft(find.text('Library')).dx,
-        tester.element(find.byType(MxAppBar)).screenMargin,
       );
     });
   });

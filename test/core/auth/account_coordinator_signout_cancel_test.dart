@@ -14,14 +14,7 @@ void main() {
 
   /// Account X with two unsent changes, its sign-out stopped offline.
   Future<String> stoppedOffline() async {
-    final x = world.server.addUser(email: 'x@example.com').id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 5
-      ..pending = 2;
+    final x = await readyAccount(world, email: 'x@example.com');
     world.network.goOffline();
     await world.coordinator.signOut();
     expect(world.state, isA<Transitioning>());

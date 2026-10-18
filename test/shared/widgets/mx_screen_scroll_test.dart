@@ -14,43 +14,31 @@ void main() {
     for (var i = 0; i < 3; i++) SizedBox(height: 40, key: Key('$i')),
   ];
 
-  testWidgets('16 gutter; base tail 24 + inset', (tester) async {
-    await pumpMxPage(
-      tester,
-      Scaffold(body: MxScreenScroll(children: rows)),
-      padding: const EdgeInsets.only(bottom: 20),
-    );
-    final padding = _padding(tester);
-
-    expect(padding.left, 16);
-    expect(padding.right, 16);
-    expect(padding.bottom, 24 + 20);
-  });
-
-  testWidgets('FAB tail: 24 + 56 + 24 + inset', (tester) async {
-    await pumpMxPage(
-      tester,
-      Scaffold(
-        body: MxScreenScroll(clearance: MxScrollClearance.fab, children: rows),
-      ),
-      padding: const EdgeInsets.only(bottom: 20),
-    );
-
-    expect(_padding(tester).bottom, 24 + 56 + 24 + 20);
-  });
-
-  testWidgets('FAB above nav tail: 4 + 56 + 24 + inset', (tester) async {
-    await pumpMxPage(
-      tester,
-      Scaffold(
-        body: MxScreenScroll(
-          clearance: MxScrollClearance.fabAboveNav,
-          children: rows,
+  // A null clearance is the widget's default (the base tail).
+  for (final (name, clearance, tail) in <(String, MxScrollClearance?, double)>[
+    ('16 gutter; base tail 24 + inset', null, 24),
+    ('FAB tail: 24 + 56 + 24 + inset', MxScrollClearance.fab, 24 + 56 + 24),
+    (
+      'FAB above nav tail: 4 + 56 + 24 + inset',
+      MxScrollClearance.fabAboveNav,
+      4 + 56 + 24,
+    ),
+  ]) {
+    testWidgets(name, (tester) async {
+      await pumpMxPage(
+        tester,
+        Scaffold(
+          body: clearance == null
+              ? MxScreenScroll(children: rows)
+              : MxScreenScroll(clearance: clearance, children: rows),
         ),
-      ),
-      padding: const EdgeInsets.only(bottom: 20),
-    );
+        padding: const EdgeInsets.only(bottom: 20),
+      );
+      final padding = _padding(tester);
 
-    expect(_padding(tester).bottom, 4 + 56 + 24 + 20);
-  });
+      expect(padding.left, 16);
+      expect(padding.right, 16);
+      expect(padding.bottom, tail + 20);
+    });
+  }
 }

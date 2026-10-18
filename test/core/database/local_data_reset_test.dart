@@ -35,18 +35,26 @@ Future<void> _seed(AppDatabase db) async {
   }
 }
 
+/// A database holding [_seed]'s data, closed when the test ends.
+Future<AppDatabase> _seeded() async {
+  final db = openTestDatabase();
+  addTearDown(db.close);
+  await _seed(db);
+  return db;
+}
+
+LocalDataReset _resetOf(AppDatabase db) => LocalDataReset(
+  db,
+  resetSyncedSettings: () =>
+      SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+);
+
 void main() {
   test("clears the account's data and keeps the device's", () async {
-    final db = openTestDatabase();
-    addTearDown(db.close);
-    await _seed(db);
+    final db = await _seeded();
     db.mutationGate.close();
 
-    await LocalDataReset(
-      db,
-      resetSyncedSettings: () =>
-          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
-    ).run();
+    await _resetOf(db).run();
 
     for (final table in [
       'deck',
@@ -86,14 +94,8 @@ void main() {
   });
 
   test('a second run is a no-op', () async {
-    final db = openTestDatabase();
-    addTearDown(db.close);
-    await _seed(db);
-    final reset = LocalDataReset(
-      db,
-      resetSyncedSettings: () =>
-          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
-    );
+    final db = await _seeded();
+    final reset = _resetOf(db);
 
     await reset.run();
     await reset.run();
@@ -103,9 +105,7 @@ void main() {
   });
 
   test('C2: screens watching the data see it go', () async {
-    final db = openTestDatabase();
-    addTearDown(db.close);
-    await _seed(db);
+    final db = await _seeded();
     final decks = <int>[];
     final settings = <String>[];
     final deckWatch = db
@@ -120,11 +120,7 @@ void main() {
     addTearDown(settingsWatch.cancel);
     await pumpEventQueue();
 
-    await LocalDataReset(
-      db,
-      resetSyncedSettings: () =>
-          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
-    ).run();
+    await _resetOf(db).run();
     await pumpEventQueue();
 
     expect(decks.last, 0);
@@ -132,9 +128,7 @@ void main() {
   });
 
   test('BR-TOPIK-027: a watched attempt list sees the attempts go', () async {
-    final db = openTestDatabase();
-    addTearDown(db.close);
-    await _seed(db);
+    final db = await _seeded();
     final counts = <int>[];
     final watch = db
         .select(db.topikAttempt)
@@ -143,11 +137,7 @@ void main() {
     addTearDown(watch.cancel);
     await pumpEventQueue();
 
-    await LocalDataReset(
-      db,
-      resetSyncedSettings: () =>
-          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
-    ).run();
+    await _resetOf(db).run();
     await pumpEventQueue();
 
     expect(counts.first, 2);

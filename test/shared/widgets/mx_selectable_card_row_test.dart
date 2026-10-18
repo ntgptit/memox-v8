@@ -132,21 +132,6 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('disabled: dimmed, no tap, no long-press', (tester) async {
-    var taps = 0;
-    await pumpMx(
-      tester,
-      _row(onTap: () => taps++, isSelecting: true, isEnabled: false),
-    );
-    await tester.tap(find.text('Korean'), warnIfMissed: false);
-
-    expect(taps, 0);
-    expect(
-      tester.widget<Opacity>(find.byType(Opacity).first).opacity,
-      closeTo(appLightColors.disabledOpacity, 0.001),
-    );
-  });
-
   for (final label in <String?>[null, 'Korean deck']) {
     testWidgets('M3F-17: disabled blocks the trailing control and the node '
         'says disabled (label: $label)', (tester) async {
@@ -169,6 +154,10 @@ void main() {
       await tester.tap(find.byType(MxIconButton), warnIfMissed: false);
       await tester.tap(find.text('Korean'), warnIfMissed: false);
       expect((taps, menu), (0, 0));
+      expect(
+        tester.widget<Opacity>(find.byType(Opacity).first).opacity,
+        closeTo(appLightColors.disabledOpacity, 0.001),
+      );
       expect(
         tester.getSemantics(find.bySemanticsLabel('More')),
         isSemantics(label: 'More', hasTapAction: false),

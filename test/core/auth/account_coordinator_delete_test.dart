@@ -20,17 +20,6 @@ void main() {
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
 
-  Future<String> readyAccount() async {
-    final x = world.server.addUser(email: xEmail).id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 4;
-    return x;
-  }
-
   void expectNewAnonymous({required String not}) {
     final user = (world.state as Ready).user;
     expect(user.id, isNot(not));
@@ -40,7 +29,7 @@ void main() {
 
   test('a sync run refused for want of an account validates again: the '
       'profile gone clears the device to a new anonymous user (#13)', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail, rows: 4, pending: 0);
     world.server.users.remove(x);
 
     await world.coordinator.recheckSession();
@@ -52,7 +41,7 @@ void main() {
 
   test('a sync run refused while the account is still there only validates '
       'again', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail, rows: 4, pending: 0);
 
     await world.coordinator.recheckSession();
 
@@ -63,7 +52,7 @@ void main() {
 
   test('#42 the network lost after the request was sent keeps the record; '
       'the retry finds the account gone (#43) and finishes', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail, rows: 4, pending: 0);
     world.server.afterDeleteCommit = () =>
         throw const OfflineFailure(cause: 'the response was lost');
 
@@ -93,7 +82,7 @@ void main() {
 
   test('#42 the network lost before the server took it keeps the record too; '
       'the reconnect deletes', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail, rows: 4, pending: 0);
     world.network.claimsOnline = true;
     world.server.offline = true;
 

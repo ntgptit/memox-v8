@@ -3,15 +3,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/log_entry.dart';
 
-final class _RecordingSink implements LogSink {
-  final entries = <LogEntry>[];
-
-  @override
-  void write(LogEntry entry) => entries.add(entry);
-
-  @override
-  Future<void> flush() async {}
-}
+import '../../support/recording_log_sink.dart';
 
 final class _ThrowingSink implements LogSink {
   @override
@@ -34,8 +26,8 @@ void main() {
 
   test('an error hands every sink one entry with the error, its cause and '
       'the stack', () {
-    final a = _RecordingSink();
-    final b = _RecordingSink();
+    final a = RecordingLogSink();
+    final b = RecordingLogSink();
     final logger = AppLogger(sinks: [a, b], now: () => at, stamp: stamp);
     final stack = StackTrace.current;
 
@@ -65,7 +57,7 @@ void main() {
   });
 
   test('each entry gets its own id, in UTC', () {
-    final sink = _RecordingSink();
+    final sink = RecordingLogSink();
     final logger = AppLogger(
       sinks: [sink],
       now: () => DateTime(2026, 9, 29, 8),
@@ -82,7 +74,7 @@ void main() {
 
   test('a sink that throws never throws from the call, and the others still '
       'receive the entry', () {
-    final after = _RecordingSink();
+    final after = RecordingLogSink();
     final logger = AppLogger(sinks: [_ThrowingSink(), after], now: () => at);
 
     expect(() => logger.warning('sync.rejected'), returnsNormally);
@@ -94,7 +86,7 @@ void main() {
   });
 
   test('install replaces appLogger', () {
-    final sink = _RecordingSink();
+    final sink = RecordingLogSink();
     final previous = appLogger;
     addTearDown(() => AppLogger.install(previous));
     AppLogger.install(AppLogger(sinks: [sink], now: () => at));
@@ -104,30 +96,36 @@ void main() {
     expect(sink.entries.single.event, 'lifecycle.start');
   });
 
-  test('an entry round-trips through JSON, context included', () {
-    final sink = _RecordingSink();
-    AppLogger(sinks: [sink], now: () => at, stamp: stamp).warning(
-      'db.slow_query',
-      category: LogCategory.db,
-      message: 'slow',
-      context: {
-        'sql': 'SELECT 1',
-        'args': [1, 'a'],
-        'duration_ms': 200,
-      },
-    );
-    final entry = sink.entries.single;
+  for (final category in LogCategory.values) {
+    test('an entry round-trips through JSON, context included '
+        '(${category.name})', () {
+      final sink = RecordingLogSink();
+      AppLogger(sinks: [sink], now: () => at, stamp: stamp).warning(
+        'db.slow_query',
+        category: category,
+        message: 'slow',
+        context: {
+          'sql': 'SELECT 1',
+          'args': [1, 'a'],
+          'duration_ms': 200,
+        },
+      );
+      final entry = sink.entries.single;
 
-    final copy = LogEntry.fromJson(entry.toJson());
+      final json = entry.toJson();
+      final copy = LogEntry.fromJson(json);
 
-    expect(copy.toJson(), entry.toJson());
-    expect(copy.context['args'], [1, 'a']);
-  });
+      expect(json['category'], category.name);
+      expect(copy.category, category);
+      expect(copy.toJson(), json);
+      expect(copy.context['args'], [1, 'a']);
+    });
+  }
 
   test(
     'NUL and lone surrogates, which the server cannot store, are replaced',
     () {
-      final sink = _RecordingSink();
+      final sink = RecordingLogSink();
       final logger = AppLogger(sinks: [sink], now: () => at);
       final halfEmoji = '😀'.substring(0, 1);
 
@@ -148,7 +146,7 @@ void main() {
   );
 
   test('a context that holds itself still logs', () {
-    final sink = _RecordingSink();
+    final sink = RecordingLogSink();
     final logger = AppLogger(sinks: [sink], now: () => at);
     final cyclic = <String, Object?>{};
     cyclic['self'] = cyclic;
@@ -159,7 +157,7 @@ void main() {
   });
 
   test('an error whose toString throws still logs', () {
-    final sink = _RecordingSink();
+    final sink = RecordingLogSink();
     final logger = AppLogger(sinks: [sink], now: () => at);
 
     logger.error('state.provider_failed', error: _Unprintable());
@@ -168,12 +166,12 @@ void main() {
   });
 
   group('an error storm', () {
-    late _RecordingSink sink;
+    late RecordingLogSink sink;
     late DateTime clock;
     late AppLogger logger;
 
     setUp(() {
-      sink = _RecordingSink();
+      sink = RecordingLogSink();
       clock = at;
       logger = AppLogger(sinks: [sink], now: () => clock);
     });
@@ -351,19 +349,6 @@ void main() {
 
       expect(logger.dedupeKeysForTest, lessThanOrEqualTo(256));
     });
-  });
-
-  test('a network entry round-trips through JSON', () {
-    final sink = _RecordingSink();
-    AppLogger(
-      sinks: [sink],
-      now: () => at,
-    ).debug('net.request', category: LogCategory.network);
-
-    final json = sink.entries.single.toJson();
-
-    expect(json['category'], 'network');
-    expect(LogEntry.fromJson(json).category, LogCategory.network);
   });
 }
 

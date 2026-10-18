@@ -272,29 +272,21 @@ void main() {
       onConfirm: () {},
     );
 
-    testWidgets('a dialog with a field keeps its actions above the keyboard', (
-      tester,
-    ) async {
-      await openOver(
-        tester,
-        MxDialog(
+    // Whatever its content, the actions stay in view above the keyboard.
+    final dialogs = [
+      (
+        name: 'a dialog with a field keeps its actions above the keyboard',
+        dialog: MxDialog(
           title: 'New deck',
           content: const MxTextField(label: 'Name', hintText: 'Name'),
           actions: actions(),
         ),
-      );
-
-      expect(
-        tester.getRect(find.text('Create')).bottom,
-        lessThanOrEqualTo(screen.height - keyboard),
-      );
-    });
-
-    testWidgets('a dialog taller than the room left scrolls its text and '
-        'keeps its actions in view', (tester) async {
-      await openOver(
-        tester,
-        MxDialog(
+      ),
+      (
+        name:
+            'a dialog taller than the room left scrolls its text and keeps '
+            'its actions in view',
+        dialog: MxDialog(
           title: 'Reset learning?',
           body: List.filled(
             40,
@@ -302,14 +294,19 @@ void main() {
           ).join('\n'),
           actions: actions(),
         ),
-      );
+      ),
+    ];
+    for (final c in dialogs) {
+      testWidgets(c.name, (tester) async {
+        await openOver(tester, c.dialog);
 
-      expect(
-        tester.getRect(find.text('Create')).bottom,
-        lessThanOrEqualTo(screen.height - keyboard),
-      );
-      expect(tester.takeException(), isNull);
-    });
+        expect(
+          tester.getRect(find.text('Create')).bottom,
+          lessThanOrEqualTo(screen.height - keyboard),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 
   // SW-REV-004: a dialog whose work runs stays open, as MxBottomSheet's

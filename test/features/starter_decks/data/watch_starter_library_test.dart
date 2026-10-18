@@ -1,5 +1,4 @@
-import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor;
-import 'package:drift/native.dart' show SqliteException;
+import 'package:drift/drift.dart' show QueryInterceptor;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
@@ -18,24 +17,6 @@ import '../../../support/test_database.dart';
 
 // UC-STARTER-001 steps 4-5 and A4: what the Starter library lists, and how
 // it follows the copies (starter decks spec §6, D7, D12).
-
-/// Fails every SELECT while [isArmed], the way a disk that cannot be read
-/// does (the kit's `loadFailed`).
-final class _FailingSelects extends QueryInterceptor {
-  bool isArmed = false;
-
-  @override
-  Future<List<Map<String, Object?>>> runSelect(
-    QueryExecutor executor,
-    String statement,
-    List<Object?> args,
-  ) {
-    if (isArmed) {
-      throw SqliteException(extendedResultCode: 10, message: 'disk I/O error');
-    }
-    return super.runSelect(executor, statement, args);
-  }
-}
 
 DateTime _clock() => DateTime.utc(2026, 9, 26, 9);
 
@@ -218,7 +199,7 @@ void main() {
 
   test('a database error reaches the library as its Failure (the kit\'s '
       'loadFailed)', () async {
-    final failing = _FailingSelects();
+    final failing = FailingSelects();
     open(failing);
     final repo = library([_template('a')]);
     await add(repo, 'a');

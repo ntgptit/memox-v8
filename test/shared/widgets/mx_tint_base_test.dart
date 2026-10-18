@@ -50,21 +50,6 @@ void main() {
         );
       });
 
-      testWidgets('inside a card a tint is over the card', (tester) async {
-        await pumpMx(
-          tester,
-          const MxCard(child: MxBadge(label: '4 due')),
-          brightness: brightness,
-        );
-        final context = _context(tester);
-
-        expect(MxTintBase.of(context), context.colors.card);
-        expect(
-          _badgeFill(tester),
-          context.colors.primary.tintOver(context.colors.card),
-        );
-      });
-
       testWidgets('inside a tinted card a tint is over that tint', (
         tester,
       ) async {
@@ -82,6 +67,11 @@ void main() {
       });
 
       for (final (name, overlay, ground) in [
+        (
+          'card',
+          const MxCard(child: MxBadge(label: '4 due')),
+          (BuildContext c) => c.colors.card,
+        ),
         (
           'sheet',
           const MxBottomSheet(child: MxBadge(label: '4 due')),

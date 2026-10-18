@@ -9,6 +9,20 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
+/// The painted edge of slot [i].
+Border _edgeOf(WidgetTester tester, int i) =>
+    (tester
+                    .widget<DecoratedBox>(
+                      find.descendant(
+                        of: find.byKey(MxCodeField.slotKey(i)),
+                        matching: find.byType(DecoratedBox),
+                      ),
+                    )
+                    .decoration
+                as BoxDecoration)
+            .border!
+        as Border;
+
 void main() {
   final colors = appLightColors;
   const dimens = AppDimens();
@@ -54,44 +68,76 @@ void main() {
     );
   });
 
-  testWidgets('a pasted "123 456" fills six slots', (tester) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpMx(
-      tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
-    );
+  // The code variant keeps the digits, six at most. Each case enters [typed],
+  // then optionally a second editing value (a paste, or a digit typed after
+  // them) as the platform would send it.
+  final sanitising =
+      <({String name, String typed, (String, int)? then, String expected})>[
+        (
+          name: 'a pasted "123 456" fills six slots',
+          typed: '123 456',
+          then: null,
+          expected: '123456',
+        ),
+        (
+          name: 'the code variant keeps six digits and nothing else',
+          typed: '12a3456789',
+          then: null,
+          expected: '123456',
+        ),
+        (
+          name:
+              'pasting a code after typed digits replaces them, not mixes '
+              '(final review F3)',
+          typed: '123',
+          then: ('123987654', 9),
+          expected: '987654',
+        ),
+        (
+          name: 'typing digits one at a time still stops at six',
+          typed: '12345',
+          then: ('123459', 6),
+          expected: '123459',
+        ),
+      ];
+  for (final c in sanitising) {
+    testWidgets(c.name, (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      await pumpMx(
+        tester,
+        MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+      );
+      await tester.enterText(find.byType(EditableText), c.typed);
+      await tester.pump();
+      final then = c.then;
+      if (then != null) {
+        tester.testTextInput.updateEditingValue(
+          TextEditingValue(
+            text: then.$1,
+            selection: TextSelection.collapsed(offset: then.$2),
+          ),
+        );
+        await tester.pump();
+      }
 
-    await tester.enterText(find.byType(EditableText), '123 456');
-    await tester.pump();
-
-    expect(controller.text, '123456');
-    expect(
-      find.descendant(
-        of: find.byKey(MxCodeField.slotKey(5)),
-        matching: find.text('6'),
-      ),
-      findsOneWidget,
-    );
-  });
+      expect(controller.text, c.expected);
+      expect(MxTextField.codeLength, 6);
+      // The last slot paints the last digit.
+      expect(
+        find.descendant(
+          of: find.byKey(MxCodeField.slotKey(5)),
+          matching: find.text(c.expected[5]),
+        ),
+        findsOneWidget,
+      );
+    });
+  }
 
   testWidgets('the slot that takes the next digit carries the focus edge; '
       'the rest the outline edge; an error edges every slot', (tester) async {
     final controller = TextEditingController(text: '12');
     addTearDown(controller.dispose);
-    Border edgeOf(int i) =>
-        (tester
-                        .widget<DecoratedBox>(
-                          find.descendant(
-                            of: find.byKey(MxCodeField.slotKey(i)),
-                            matching: find.byType(DecoratedBox),
-                          ),
-                        )
-                        .decoration
-                    as BoxDecoration)
-                .border!
-            as Border;
-
     await pumpMx(
       tester,
       MxTextField(
@@ -104,10 +150,10 @@ void main() {
     final hairline = tester
         .element(find.byKey(MxCodeField.slotKey(2)))
         .hairline;
-    expect(edgeOf(2).top.color, colors.primary);
-    expect(edgeOf(2).top.width, 2 * hairline);
-    expect(edgeOf(3).top.color, colors.border);
-    expect(edgeOf(3).top.width, hairline);
+    expect(_edgeOf(tester, 2).top.color, colors.primary);
+    expect(_edgeOf(tester, 2).top.width, 2 * hairline);
+    expect(_edgeOf(tester, 3).top.color, colors.border);
+    expect(_edgeOf(tester, 3).top.width, hairline);
 
     await pumpMx(
       tester,
@@ -117,25 +163,12 @@ void main() {
         errorText: 'Wrong',
       ),
     );
-    expect(edgeOf(0).top.color, colors.error);
-    expect(edgeOf(5).top.color, colors.error);
+    expect(_edgeOf(tester, 0).top.color, colors.error);
+    expect(_edgeOf(tester, 5).top.color, colors.error);
   });
 
   testWidgets('a wrong code keeps the next-slot cue: every slot in error, '
       'the next one still 2 wide', (tester) async {
-    Border edgeOf(int i) =>
-        (tester
-                        .widget<DecoratedBox>(
-                          find.descendant(
-                            of: find.byKey(MxCodeField.slotKey(i)),
-                            matching: find.byType(DecoratedBox),
-                          ),
-                        )
-                        .decoration
-                    as BoxDecoration)
-                .border!
-            as Border;
-
     await pumpMx(
       tester,
       const MxTextField(
@@ -149,10 +182,10 @@ void main() {
     final hairline = tester
         .element(find.byKey(MxCodeField.slotKey(0)))
         .hairline;
-    expect(edgeOf(0).top.color, colors.error);
-    expect(edgeOf(0).top.width, 2 * hairline);
-    expect(edgeOf(1).top.color, colors.error);
-    expect(edgeOf(1).top.width, hairline);
+    expect(_edgeOf(tester, 0).top.color, colors.error);
+    expect(_edgeOf(tester, 0).top.width, 2 * hairline);
+    expect(_edgeOf(tester, 1).top.color, colors.error);
+    expect(_edgeOf(tester, 1).top.width, hairline);
   });
 
   testWidgets('a read-only code keeps its digits at full strength', (
@@ -324,65 +357,6 @@ void main() {
     await tester.pump();
 
     expect(controller.text, '12345');
-  });
-
-  testWidgets('the code variant keeps six digits and nothing else', (
-    tester,
-  ) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpMx(
-      tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
-    );
-
-    await tester.enterText(find.byType(EditableText), '12a3456789');
-
-    expect(controller.text, '123456');
-    expect(MxTextField.codeLength, 6);
-  });
-
-  testWidgets('pasting a code after typed digits replaces them, not mixes '
-      '(final review F3)', (tester) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpMx(
-      tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
-    );
-    await tester.enterText(find.byType(EditableText), '123');
-    await tester.pump();
-
-    tester.testTextInput.updateEditingValue(
-      const TextEditingValue(
-        text: '123987654',
-        selection: TextSelection.collapsed(offset: 9),
-      ),
-    );
-    await tester.pump();
-
-    expect(controller.text, '987654');
-  });
-
-  testWidgets('typing digits one at a time still stops at six', (tester) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpMx(
-      tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
-    );
-    await tester.enterText(find.byType(EditableText), '12345');
-    await tester.pump();
-
-    tester.testTextInput.updateEditingValue(
-      const TextEditingValue(
-        text: '123459',
-        selection: TextSelection.collapsed(offset: 6),
-      ),
-    );
-    await tester.pump();
-
-    expect(controller.text, '123459');
   });
 
   testWidgets('MxCodeField draws the code variant only (final review F4)', (

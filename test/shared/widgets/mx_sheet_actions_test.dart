@@ -30,6 +30,11 @@ void main() {
     // 340 − 24 − 24 − 8 = 284, split 1 : 1 (DEV-179).
     expect(tester.getSize(_button('Cancel')).width, closeTo(142, 0.01));
     expect(tester.getSize(_button('Move')).width, closeTo(142, 0.01));
+    // Both share one height too.
+    expect(
+      tester.getSize(_button('Cancel')).height,
+      tester.getSize(_button('Move')).height,
+    );
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -68,46 +73,42 @@ void main() {
     },
   );
 
-  testWidgets('a destructive confirm, without a glyph (DEV-179)', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: 'Delete',
-          onConfirm: () {},
-          isDestructive: true,
-        ),
-      ),
-    );
-    final confirm = tester.widget<MxButton>(_button('Delete'));
-
-    // A popup's buttons carry no icon; the tone tells the weight (DEV-179).
-    expect((confirm.tone, confirm.icon), (MxButtonTone.destructive, null));
-  });
-
-  testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: 'Merge tags',
-          onConfirm: () {},
-          isWarning: true,
-        ),
-      ),
-    );
-
-    expect(
-      tester.widget<MxButton>(_button('Merge tags')).tone,
+  // A popup's buttons carry no icon; the tone tells the weight (DEV-179).
+  for (final (name, label, isDestructive, isWarning, tone) in [
+    (
+      'a destructive confirm, without a glyph (DEV-179)',
+      'Delete',
+      true,
+      false,
+      MxButtonTone.destructive,
+    ),
+    (
+      'a warning confirm, for a merge, without a glyph (spec D15)',
+      'Merge tags',
+      false,
+      true,
       MxButtonTone.warning,
-    );
-  });
+    ),
+  ]) {
+    testWidgets(name, (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          MxSheetActions(
+            cancelLabel: 'Cancel',
+            onCancel: () {},
+            confirmLabel: label,
+            onConfirm: () {},
+            isDestructive: isDestructive,
+            isWarning: isWarning,
+          ),
+        ),
+      );
+      final confirm = tester.widget<MxButton>(_button(label));
+
+      expect((confirm.tone, confirm.icon), (tone, null));
+    });
+  }
 
   testWidgets('a null Cancel is disabled while the confirm runs', (
     tester,
@@ -218,72 +219,36 @@ void main() {
     expect(find.text('Cancel'), findsNothing);
   });
 
-  testWidgets('at a larger text scale labels too long for their shares '
-      'stack the pair', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxSheetActions(
-          cancelLabel: 'Giữ lại tất cả',
-          onCancel: () {},
-          confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
-          isDestructive: true,
-          onConfirm: () {},
-        ),
-      ),
-      textScale: 1.3,
-    );
-    final cancel = tester.getRect(_button('Giữ lại tất cả'));
-    final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
-
-    expect(confirm.top, greaterThan(cancel.bottom));
-    expect(cancel.width, confirm.width);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('Cancel and the confirm share one width and one height '
-      '(DEV-179)', (tester) async {
-    await pumpMx(
-      tester,
-      SizedBox(
-        width: 328,
-        child: MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: 'Continue',
-          onConfirm: () {},
-        ),
-      ),
-    );
-    final cancel = tester.getSize(_button('Cancel'));
-    final confirm = tester.getSize(_button('Continue'));
-    expect(cancel.width, confirm.width);
-    expect(cancel.height, confirm.height);
-  });
-
-  testWidgets('at a larger text scale the pair stacks a label too long '
-      'for its half, both full width (The Short Label Rule)', (tester) async {
-    const long = 'Discard and continue with everything';
-    await pumpMx(
-      tester,
-      MediaQuery(
-        data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
-        child: SizedBox(
-          width: 328,
+  // The Short Label Rule: a label too long for its share stacks the pair,
+  // both full width, whichever of the two is long.
+  for (final (cancelLabel, confirmLabel, isDestructive, width) in [
+    ('Giữ lại tất cả', 'Xoá vĩnh viễn 12 thẻ', true, 340.0),
+    ('Cancel', 'Discard and continue with everything', false, 328.0),
+  ]) {
+    testWidgets('at a larger text scale labels too long for their shares '
+        'stack the pair ($cancelLabel / $confirmLabel)', (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: width,
           child: MxSheetActions(
-            cancelLabel: 'Cancel',
+            cancelLabel: cancelLabel,
             onCancel: () {},
-            confirmLabel: long,
+            confirmLabel: confirmLabel,
+            isDestructive: isDestructive,
             onConfirm: () {},
           ),
         ),
-      ),
-    );
-    final cancel = tester.getRect(_button('Cancel'));
-    final confirm = tester.getRect(_button(long));
-    expect(cancel.width, confirm.width);
-    expect(cancel.top, lessThan(confirm.top));
-  });
+        textScale: 1.3,
+      );
+      final cancel = tester.getRect(_button(cancelLabel));
+      final confirm = tester.getRect(_button(confirmLabel));
+
+      expect(confirm.top, greaterThan(cancel.bottom));
+      expect(cancel.width, confirm.width);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   // SW-REV-008: one action (a lone Close, Done, OK) spans the row in the
   // footer's own padding, without each caller rebuilding the row.

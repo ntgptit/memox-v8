@@ -9,58 +9,48 @@ import 'package:memox/shared/widgets/mx_field_message.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  testWidgets('error: glyph and text in the error colour', (tester) async {
-    await pumpMx(tester, const MxFieldMessage(message: 'Name is required'));
-
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      appLightColors.error,
-    );
-    expect(
-      tester.widget<Text>(find.text('Name is required')).style!.color,
-      appLightColors.error,
-    );
-  });
-
-  testWidgets('warning in dark: the glyph and the text take the warning text '
-      'colour, never the amber fill (SW-REV-001)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxFieldMessage(
-        message: 'Ten tags at most',
-        tone: MxFieldMessageTone.warning,
-      ),
+  // Per tone and theme, the glyph and the text share one colour. A warning is
+  // foreground, never the amber fill, which is about 2:1 on the light page
+  // (tone pass T1, critique 2026-09-30).
+  final tones = [
+    (
+      name: 'error: glyph and text in the error colour',
+      tone: MxFieldMessageTone.error,
+      brightness: Brightness.light,
+      ink: appLightColors.error,
+    ),
+    (
+      name:
+          'warning in dark: the glyph and the text take the warning text '
+          'colour, never the amber fill (SW-REV-001)',
+      tone: MxFieldMessageTone.warning,
       brightness: Brightness.dark,
-    );
+      ink: MxStatusColors.dark.warning,
+    ),
+    (
+      name:
+          'warning in light: the glyph and the text take the warning text '
+          'colour, never the amber fill (T1, critique 2026-09-30)',
+      tone: MxFieldMessageTone.warning,
+      brightness: Brightness.light,
+      ink: MxStatusColors.light.warning,
+    ),
+  ];
+  for (final c in tones) {
+    testWidgets(c.name, (tester) async {
+      await pumpMx(
+        tester,
+        MxFieldMessage(message: 'Ten tags at most', tone: c.tone),
+        brightness: c.brightness,
+      );
 
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxStatusColors.dark.warning,
-    );
-    expect(
-      tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxStatusColors.dark.warning,
-    );
-  });
-
-  // The tone pass (T1, critique 2026-09-30): a warning glyph is foreground, never
-  // the amber fill, which is about 2:1 on the light page.
-  testWidgets('warning: the glyph in warning text on the light page', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      const MxFieldMessage(
-        message: 'Ten tags at most',
-        tone: MxFieldMessageTone.warning,
-      ),
-    );
-
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxStatusColors.light.warning,
-    );
-  });
+      expect(tester.widget<Icon>(find.byIcon(AppIcons.alert)).color, c.ink);
+      expect(
+        tester.widget<Text>(find.text('Ten tags at most')).style!.color,
+        c.ink,
+      );
+    });
+  }
 
   testWidgets('a long message wraps instead of truncating', (tester) async {
     await pumpMx(

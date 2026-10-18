@@ -31,83 +31,65 @@ void main() {
   final colors = appLightColors;
   const mx = MxStatusColors.light;
 
-  testWidgets(
-    'warning: amber ground, no border, small corner, warning text colour 16 '
-    'glyph (FE-C1)',
-    (tester) async {
+  // The ground tint, no border, the small corner and a 16 glyph in the tone
+  // colour, per tone.
+  final tones = [
+    (
+      name:
+          'warning: amber ground, no border, small corner, warning text '
+          'colour 16 glyph (FE-C1)',
+      tone: MxBannerTone.warning,
+      ink: mx.warning,
+    ),
+    (
+      name: 'danger: red ground, no border, small corner, error glyph',
+      tone: MxBannerTone.danger,
+      ink: colors.error,
+    ),
+  ];
+  for (final c in tones) {
+    testWidgets(c.name, (tester) async {
       await pumpMx(
         tester,
-        _width(
-          const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
-        ),
+        _width(MxInlineBanner(tone: c.tone, message: _message)),
       );
       final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-      expect(_ground(tester).color, mx.warning.tintOver(colors.background));
+      expect(_ground(tester).color, c.ink.tintOver(colors.background));
       expect(_ground(tester).border, isNull);
       expect(
         _ground(tester).borderRadius,
         tester.element(find.byType(MxInlineBanner)).radii.sm,
       );
-      expect((glyph.size, glyph.color), (16, mx.warning));
-    },
-  );
+      expect((glyph.size, glyph.color), (16, c.ink));
+    });
+  }
 
-  testWidgets('danger: red ground, no border, error glyph', (tester) async {
+  testWidgets('titled: a label-role title 2 above the detail', (tester) async {
     await pumpMx(
       tester,
       _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+        const MxInlineBanner(
+          tone: MxBannerTone.danger,
+          title: 'Export failed',
+          message: _message,
+        ),
       ),
     );
-
-    expect(_ground(tester).color, colors.error.tintOver(colors.background));
-    expect(_ground(tester).border, isNull);
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      colors.error,
+      tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
+      tester.element(find.text('Export failed')).texts.label.fontWeight,
+    );
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      colors.mutedForeground,
+    );
+    expect(
+      tester.getTopLeft(find.text(_message)).dy -
+          tester.getBottomLeft(find.text('Export failed')).dy,
+      2,
     );
   });
-
-  testWidgets(
-    'titled: a label-role title 2 above the detail; untitled: the lead',
-    (tester) async {
-      await pumpMx(
-        tester,
-        _width(
-          const MxInlineBanner(
-            tone: MxBannerTone.danger,
-            title: 'Export failed',
-            message: _message,
-          ),
-        ),
-      );
-      expect(
-        tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
-        tester.element(find.text('Export failed')).texts.label.fontWeight,
-      );
-      expect(
-        tester.widget<Text>(find.text(_message)).style!.color,
-        colors.mutedForeground,
-      );
-      expect(
-        tester.getTopLeft(find.text(_message)).dy -
-            tester.getBottomLeft(find.text('Export failed')).dy,
-        2,
-      );
-
-      await pumpMx(
-        tester,
-        _width(
-          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-        ),
-      );
-      expect(
-        tester.widget<Text>(find.text(_message)).style!.color,
-        colors.foreground,
-      );
-    },
-  );
 
   testWidgets('padding 12 16, 16 below; 8 12 and 0 in a bar', (tester) async {
     await pumpMx(
@@ -122,19 +104,21 @@ void main() {
       tester.getTopLeft(find.text(_message)) - banner,
       const Offset(40, 12),
     );
+    final painted = find
+        .descendant(
+          of: find.byType(MxInlineBanner),
+          matching: find.byType(DecoratedBox),
+        )
+        .first;
     expect(
       tester.getSize(find.byType(MxInlineBanner)).height -
-          tester
-              .getSize(
-                find
-                    .descendant(
-                      of: find.byType(MxInlineBanner),
-                      matching: find.byType(DecoratedBox),
-                    )
-                    .first,
-              )
-              .height,
+          tester.getSize(painted).height,
       16,
+    );
+    // The 16 is all below: the painted ground starts at the banner's top.
+    expect(
+      tester.getTopLeft(painted).dy,
+      tester.getTopLeft(find.byType(MxInlineBanner)).dy,
     );
 
     await pumpMx(
@@ -252,8 +236,10 @@ void main() {
     );
   });
 
-  testWidgets('without a bottom margin the banner ends at its painted edge; '
-      'by default it keeps 16 below (2026-10-05 L3)', (tester) async {
+  testWidgets('without a bottom margin the banner ends at its painted edge '
+      '(2026-10-05 L3; the default 16 below is pinned by the padding test)', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       _width(
@@ -269,24 +255,5 @@ void main() {
         .descendant(of: flush, matching: find.byType(DecoratedBox))
         .first;
     expect(tester.getBottomLeft(flush).dy, tester.getBottomLeft(painted).dy);
-
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-      ),
-    );
-    final spaced = find.byType(MxInlineBanner);
-    expect(
-      tester.getBottomLeft(spaced).dy -
-          tester
-              .getBottomLeft(
-                find
-                    .descendant(of: spaced, matching: find.byType(DecoratedBox))
-                    .first,
-              )
-              .dy,
-      16,
-    );
   });
 }

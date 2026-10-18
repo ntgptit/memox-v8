@@ -9,32 +9,31 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 // as bright as text in dark, where the indigo is too dark to read on the
 // navy page; text and fills keep primary.
 void main() {
-  test('light: an accent icon is the brand indigo', () {
-    expect(
-      appLightColors.extension<MxStatusColors>().accentMark,
+  final modes = <(String, FThemeData, FColors, Color, Color, String)>[
+    (
+      'light',
+      buildLightTheme(),
+      appLightColors,
       const Color(0xFF564BCB),
-    );
-    expect(
-      appLightColors.extension<MxStatusColors>().accentMark,
       appLightColors.primary,
-    );
-  });
-
-  test('dark: an accent icon is the text colour', () {
-    expect(
-      appDarkColors.extension<MxStatusColors>().accentMark,
+      'the brand indigo',
+    ),
+    (
+      'dark',
+      buildDarkTheme(),
+      appDarkColors,
       const Color(0xFFE6E6EA),
-    );
-    expect(
-      appDarkColors.extension<MxStatusColors>().accentMark,
       appDarkColors.foreground,
-    );
-  });
+      'the text colour',
+    ),
+  ];
 
-  for (final (mode, theme) in [
-    ('light', buildLightTheme()),
-    ('dark', buildDarkTheme()),
-  ]) {
+  for (final (mode, theme, colors, literal, role, what) in modes) {
+    test('$mode: an accent icon is $what', () {
+      expect(colors.extension<MxStatusColors>().accentMark, literal);
+      expect(colors.extension<MxStatusColors>().accentMark, role);
+    });
+
     test(
       '$mode: the selected tab icon is the accent icon, its label primary',
       () {
@@ -47,12 +46,7 @@ void main() {
         expect(item.textStyle.resolve(selected).color, theme.colors.primary);
       },
     );
-  }
 
-  for (final (mode, theme) in [
-    ('light', buildLightTheme()),
-    ('dark', buildDarkTheme()),
-  ]) {
     test('$mode: the selected radio dot is the accent mark, its ring '
         'unchanged', () {
       final radio = theme.radioStyle;

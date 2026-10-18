@@ -1,15 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
-import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
-import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
-import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
+import '../../support/sync_adapters.dart';
+import '../../support/sync_rows.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
 
@@ -18,38 +13,15 @@ import 'fake_sync_server.dart';
 class _Device {
   _Device(FakeSyncServer server) : db = openTestDatabase() {
     final store = SyncStore(db);
-    final cards = CardSyncDao(db);
     coordinator = SyncCoordinator(
       api: server,
       store: store,
-      adapters: [
-        DeleteBatchSyncDao(db),
-        DeckSyncDao(db),
-        TagSyncDao(db, store),
-        cards,
-        CardScheduleSyncDao(db, store),
-        ReviewLogSyncDao(db),
-        AccountSettingsSyncDao(db),
-      ],
+      adapters: deviceSyncAdapters(db),
     );
   }
   final AppDatabase db;
   late final SyncCoordinator coordinator;
 }
-
-Future<void> _root(AppDatabase db, String id) => db.customStatement(
-  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-  "scheduler_version, generation, sibling_position, created_at, updated_at) "
-  "VALUES (?, 'r', NULL, ?, 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-  [id, id],
-);
-
-Future<void> _card(AppDatabase db, String id, String deck) =>
-    db.customStatement(
-      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
-      "VALUES (?, ?, 'f', 'b', 0, 0)",
-      [id, deck],
-    );
 
 Future<void> _tag(AppDatabase db, String id, String name) => db.customStatement(
   'INSERT INTO tags (id, name, name_folded, created_at) VALUES (?, ?, lower(?), 0)',
@@ -81,8 +53,8 @@ void main() {
   });
 
   test('a link and an unlink reach the other device', () async {
-    await _root(a.db, 'R');
-    await _card(a.db, 'K', 'R');
+    await insertRootDeck(a.db, 'R');
+    await insertCard(a.db, 'K', 'R');
     await _tag(a.db, 'T', 'Verb');
     await _link(a.db, 'K', 'T');
     await a.coordinator.runOnce();
@@ -96,8 +68,8 @@ void main() {
   });
 
   test('a tag deleted on one device leaves the cards of the other', () async {
-    await _root(a.db, 'R');
-    await _card(a.db, 'K', 'R');
+    await insertRootDeck(a.db, 'R');
+    await insertCard(a.db, 'K', 'R');
     await _tag(a.db, 'T', 'Verb');
     await _link(a.db, 'K', 'T');
     await a.coordinator.runOnce();
@@ -111,14 +83,14 @@ void main() {
   });
 
   test('the same name made on two devices merges into the first', () async {
-    await _root(a.db, 'R');
-    await _card(a.db, 'KA', 'R');
+    await insertRootDeck(a.db, 'R');
+    await insertCard(a.db, 'KA', 'R');
     await _tag(a.db, 'TA', 'Verb');
     await _link(a.db, 'KA', 'TA');
     await a.coordinator.runOnce();
 
-    await _root(b.db, 'RB');
-    await _card(b.db, 'KB', 'RB');
+    await insertRootDeck(b.db, 'RB');
+    await insertCard(b.db, 'KB', 'RB');
     await _tag(b.db, 'TB', 'verb');
     await _link(b.db, 'KB', 'TB');
     server.rejectNext['tag/TB'] = 'TAG_NAME_TAKEN'; // the fake has no name rule

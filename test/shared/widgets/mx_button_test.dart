@@ -8,6 +8,7 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
+import '../../support/contrast.dart';
 import '../../support/forui_expect.dart';
 import '../../support/widget_harness.dart';
 
@@ -37,101 +38,101 @@ void main() {
     }
   });
 
-  testWidgets("tones paint ForUI's variants: fill, label and edge", (
-    tester,
-  ) async {
-    final expected = {
-      MxButtonTone.primary: (
-        colors.primary,
-        colors.primaryForeground,
-        BorderSide.none,
-      ),
-      MxButtonTone.secondary: (
-        colors.secondary,
-        colors.secondaryForeground,
-        BorderSide.none,
-      ),
-      MxButtonTone.outline: (
-        colors.card,
-        colors.secondaryForeground,
-        BorderSide(color: colors.border),
-      ),
-      // ForUI's destructive is its soft tint, in the destructive colour.
-      MxButtonTone.destructive: (
-        colors.destructive.withValues(alpha: 0.1),
-        colors.destructive,
-        BorderSide.none,
-      ),
-    };
-    for (final MapEntry(key: tone, value: (fill, ink, edge))
-        in expected.entries) {
-      await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
+  // One case per tone: the fill, the label ink and the edge ForUI paints.
+  final tones =
+      <
+        ({
+          MxButtonTone tone,
+          String label,
+          String note,
+          Object? fill,
+          Color ink,
+          Matcher edge,
+        })
+      >[
+        (
+          tone: MxButtonTone.primary,
+          label: 'Go',
+          note: '',
+          fill: colors.primary,
+          ink: colors.primaryForeground,
+          edge: equals(BorderSide.none),
+        ),
+        (
+          tone: MxButtonTone.secondary,
+          label: 'Go',
+          note: '',
+          fill: colors.secondary,
+          ink: colors.secondaryForeground,
+          edge: equals(BorderSide.none),
+        ),
+        (
+          tone: MxButtonTone.outline,
+          label: 'Go',
+          note: '',
+          fill: colors.card,
+          ink: colors.secondaryForeground,
+          edge: equals(BorderSide(color: colors.border)),
+        ),
+        // ForUI's destructive is its soft tint, in the destructive colour.
+        (
+          tone: MxButtonTone.destructive,
+          label: 'Go',
+          note: '',
+          fill: colors.destructive.withValues(alpha: 0.1),
+          ink: colors.destructive,
+          edge: equals(BorderSide.none),
+        ),
+        // The ghost: no fill and no edge.
+        (
+          tone: MxButtonTone.text,
+          label: 'Skip',
+          note: '',
+          fill: isNull,
+          ink: colors.secondaryForeground,
+          edge: equals(BorderSide.none),
+        ),
+        // The soft danger tint with the error label and edge.
+        (
+          tone: MxButtonTone.dangerTint,
+          label: 'Again',
+          note: ' (FE-A6 P2, screen 16a)',
+          fill: colors.error.tintOver(colors.background),
+          ink: colors.error,
+          edge: isA<BorderSide>().having((s) => s.color, 'color', colors.error),
+        ),
+        // The warning fill with its label (its contrast is pinned below).
+        (
+          tone: MxButtonTone.warning,
+          label: 'Merge',
+          note: ' (spec D15)',
+          fill: MxStatusColors.light.warningFill,
+          ink: MxStatusColors.light.onWarningFill,
+          edge: equals(BorderSide.none),
+        ),
+      ];
+  for (final c in tones) {
+    testWidgets("tones paint ForUI's variants: ${c.tone.name} fill, label and "
+        'edge${c.note}', (tester) async {
+      await pumpMx(
+        tester,
+        MxButton(label: c.label, tone: c.tone, onPressed: () {}),
+      );
 
-      expect(paintedDecoration(tester, _button).color, fill, reason: '$tone');
-      expect(textColor(tester, find.text('Go')), ink, reason: '$tone');
-      expect(paintedSide(tester, _button), edge, reason: '$tone');
+      expect(paintedDecoration(tester, _button).color, c.fill);
+      expect(textColor(tester, find.text(c.label)), c.ink);
+      expect(paintedSide(tester, _button), c.edge);
+    });
+  }
+
+  test('warning fill and label read above 4.5:1 in both themes (spec D15)', () {
+    for (final status in [MxStatusColors.light, MxStatusColors.dark]) {
+      expect(
+        contrastRatio(status.warningFill, status.onWarningFill),
+        greaterThanOrEqualTo(4.5),
+      );
     }
   });
-
-  testWidgets('text tone is the ghost: no fill and no edge', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Skip', tone: MxButtonTone.text, onPressed: () {}),
-    );
-
-    expect(paintedDecoration(tester, _button).color, isNull);
-    expect(paintedSide(tester, _button), BorderSide.none);
-    expect(textColor(tester, find.text('Skip')), colors.secondaryForeground);
-  });
-
-  testWidgets(
-    'dangerTint paints the soft danger tint with the error label and edge '
-    '(FE-A6 P2, screen 16a)',
-    (tester) async {
-      await pumpMx(
-        tester,
-        MxButton(
-          label: 'Again',
-          tone: MxButtonTone.dangerTint,
-          onPressed: () {},
-        ),
-      );
-
-      expect(
-        paintedDecoration(tester, _button).color,
-        colors.error.tintOver(colors.background),
-      );
-      expect(textColor(tester, find.text('Again')), colors.error);
-      expect(paintedSide(tester, _button).color, colors.error);
-    },
-  );
-
-  testWidgets(
-    'warning paints the warning fill with its label, above 4.5:1 in both '
-    'themes (spec D15)',
-    (tester) async {
-      await pumpMx(
-        tester,
-        MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
-      );
-
-      expect(
-        paintedDecoration(tester, _button).color,
-        MxStatusColors.light.warningFill,
-      );
-      expect(
-        textColor(tester, find.text('Merge')),
-        MxStatusColors.light.onWarningFill,
-      );
-      expect(paintedSide(tester, _button), BorderSide.none);
-      for (final status in [MxStatusColors.light, MxStatusColors.dark]) {
-        expect(
-          _ratio(status.warningFill, status.onWarningFill),
-          greaterThanOrEqualTo(4.5),
-        );
-      }
-    },
-  );
 
   testWidgets('a detail line sits under the label in the button foreground '
       '(FE-A6 P2, screen 16a)', (tester) async {
@@ -242,22 +243,6 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('a loading button keeps its resting paint and width, spins, '
-      'and takes no tap', (tester) async {
-    var taps = 0;
-    await pumpMx(
-      tester,
-      MxButton(label: 'Save', onPressed: () => taps++, isLoading: true),
-    );
-
-    expect(paintedDecoration(tester, _button).color, colors.primary);
-    await tester.tap(find.byType(MxButton), warnIfMissed: false);
-    await tester.pump(const Duration(seconds: 1));
-    expect(taps, 0);
-    // The spinner keeps turning; take it off before the test ends.
-    await tester.pumpWidget(const SizedBox());
-  });
-
   testWidgets('block fills the parent width', (tester) async {
     await pumpMx(
       tester,
@@ -358,11 +343,29 @@ void main() {
     expect(taps, 1);
     handle.dispose();
   });
-}
 
-double _ratio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-  return (hi + 0.05) / (lo + 0.05);
+  testWidgets('semanticLabel on a disabled button keeps the label and the '
+      'disabled state (SW-REV-005)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxButton(
+        label: '20:00',
+        semanticLabel: 'Reminder time, 20:00',
+        size: MxButtonSize.small,
+        onPressed: null,
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
+      isSemantics(
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
+        hasSelectedState: true,
+      ),
+    );
+    handle.dispose();
+  });
 }
