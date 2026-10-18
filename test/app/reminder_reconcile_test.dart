@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
 
@@ -25,16 +24,7 @@ void main() {
         .length;
     expect(atStart, 1);
 
-    for (final state in const [
-      AppLifecycleState.inactive,
-      AppLifecycleState.hidden,
-      AppLifecycleState.paused,
-      AppLifecycleState.hidden,
-      AppLifecycleState.inactive,
-      AppLifecycleState.resumed,
-    ]) {
-      tester.binding.handleAppLifecycleStateChanged(state);
-    }
+    cycleLifecycle(tester);
     await tester.pumpAndSettle();
 
     expect(platform.calls.where((c) => c == PlatformCall.cancel), hasLength(2));

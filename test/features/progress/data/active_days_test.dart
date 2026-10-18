@@ -2,11 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/progress/data/datasources/progress_dao.dart';
-import 'package:memox/features/progress/domain/models/progress_days_model.dart';
 
 import '../../../support/progress_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/progress_days_fixture.dart';
 
 // DEV-208, BR-PROGRESS-016: the streak needs the run of days that follow
 // each other back from its anchor (today, else yesterday), and the latest
@@ -17,11 +17,7 @@ import '../../../support/test_database.dart';
 void main() {
   late AppDatabase db;
   late ProgressDao dao;
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   setUp(() async {
     db = openTestDatabase();
@@ -34,33 +30,32 @@ void main() {
   });
   tearDown(() => db.close());
 
-  test('the run ending today, and nothing before its gap', () async {
-    for (final day in [15, 16, 17, 24, 25]) {
-      await answer(db, 'c1', hanoi(9, day, 9));
-    }
+  // September days answered, and the active days `activeDays` returns for
+  // them: offsets from today.
+  for (final (name, answered, expected) in const [
+    (
+      'the run ending today, and nothing before its gap',
+      [15, 16, 17, 24, 25],
+      [-1, 0],
+    ),
+    (
+      'the run ending yesterday when today has nothing yet',
+      [20, 23, 24],
+      [-2, -1],
+    ),
+    ('a lost streak: the latest active day alone', [10, 11, 20], [-5]),
+    ('nothing ever: no day', <int>[], <int>[]),
+  ]) {
+    test(name, () async {
+      for (final day in answered) {
+        await answer(db, 'c1', hanoi(9, day, 9));
+      }
 
-    expect(await dao.activeDays(days), [days.today - 1, days.today]);
-  });
-
-  test('the run ending yesterday when today has nothing yet', () async {
-    for (final day in [20, 23, 24]) {
-      await answer(db, 'c1', hanoi(9, day, 9));
-    }
-
-    expect(await dao.activeDays(days), [days.today - 2, days.today - 1]);
-  });
-
-  test('a lost streak: the latest active day alone', () async {
-    for (final day in [10, 11, 20]) {
-      await answer(db, 'c1', hanoi(9, day, 9));
-    }
-
-    expect(await dao.activeDays(days), [days.today - 5]);
-  });
-
-  test('nothing ever: no day', () async {
-    expect(await dao.activeDays(days), isEmpty);
-  });
+      expect(await dao.activeDays(days), [
+        for (final offset in expected) days.today + offset,
+      ]);
+    });
+  }
 
   test('a day after today, a browse row and a trashed card count for '
       'nothing (D7)', () async {

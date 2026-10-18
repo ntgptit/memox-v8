@@ -161,10 +161,7 @@ void main() {
     await read('học');
 
     expect(await totalChanges(db), before);
-    final sessions = await db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(await studySessionCount(db), 0);
   });
 
   test('renaming an ancestor or moving a deck gives the hits shown their '

@@ -4,17 +4,14 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
-import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 
 import '../../../support/tag_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/tag_outcomes.dart';
 
 // UC-TAG-001 step 4 and A1: a rename is planned, then written behind the
 // merge guard (BR-TAG-006, BR-TAG-007, BR-TAG-009; tag management spec §6).
-
-Matcher _refused<T>(TagRejection reason) => isA<Rejected<T, TagRejection>>()
-    .having((rejected) => rejected.reason, 'reason', reason);
 
 Matcher _plans(Matcher plan) => isA<Ok<TagRenamePlan, TagRejection>>().having(
   (ok) => ok.value,
@@ -41,12 +38,6 @@ Matcher _mergesInto(
       ),
 );
 
-final _ok = isA<Ok<void, TagRejection>>();
-
-List<(String, int)> _rows(List<TagCount> counts) => [
-  for (final count in counts) (count.name, count.cardCount),
-];
-
 void main() {
   late AppDatabase db;
   late TagRepositoryImpl tags;
@@ -70,7 +61,7 @@ void main() {
       await tags.planRename(tagId: 't1', name: '  noun '),
       _plans(isA<TagRenameUnchanged>()),
     );
-    expect(await tags.renameTag(tagId: 't1', name: '  noun '), _ok);
+    expect(await tags.renameTag(tagId: 't1', name: '  noun '), isTagOk);
     expect(await totalChanges(db), before);
   });
 
@@ -82,7 +73,7 @@ void main() {
       await tags.planRename(tagId: 't1', name: 'Noun'),
       _plans(isA<TagRenameRename>()),
     );
-    expect(await tags.renameTag(tagId: 't1', name: ' Noun '), _ok);
+    expect(await tags.renameTag(tagId: 't1', name: ' Noun '), isTagOk);
 
     expect(await tagRowsOf(db), [('t1', 'Noun', 'noun')]);
     expect(await linksOf(db), ['c1:t1', 'c2:t1']);
@@ -96,7 +87,7 @@ void main() {
       await tags.planRename(tagId: 't1', name: 'Học'),
       _plans(isA<TagRenameRename>()),
     );
-    expect(await tags.renameTag(tagId: 't1', name: 'Học'), _ok);
+    expect(await tags.renameTag(tagId: 't1', name: 'Học'), isTagOk);
 
     expect(await tagRowsOf(db), [('t1', 'Học', 'học')]);
     expect(await linksOf(db), ['c1:t1']);
@@ -129,11 +120,11 @@ void main() {
     ]) {
       expect(
         await tags.planRename(tagId: tagId, name: name),
-        _refused<TagRenamePlan>(reason),
+        isTagRefused<TagRenamePlan>(reason),
       );
       expect(
         await tags.renameTag(tagId: tagId, name: name),
-        _refused<void>(reason),
+        isTagRefused<void>(reason),
       );
     }
     expect(await totalChanges(db), before);
@@ -149,13 +140,13 @@ void main() {
 
     expect(
       await tags.renameTag(tagId: 't1', name: 'verb', mergeIntoTagId: 't2'),
-      _ok,
+      isTagOk,
     );
 
     expect(await tagRowsOf(db), [('t2', 'Verb', 'verb')]);
     expect(await linksOf(db), ['c1:t2', 'c2:t2', 'c3:t2', 'c4:t2']);
     await setCardBatch(db, 'c3', null);
-    expect(_rows(await tags.watchTagCounts().first), [('Verb', 4)]);
+    expect(tagRows(await tags.watchTagCounts().first), [('Verb', 4)]);
   });
 
   test('a merge never takes a card past 10 tags: one carrying both among 10 '
@@ -170,7 +161,7 @@ void main() {
 
     expect(
       await tags.renameTag(tagId: 't1', name: 'VERB', mergeIntoTagId: 't2'),
-      _ok,
+      isTagOk,
     );
 
     final links = await linksOf(db);
@@ -197,7 +188,7 @@ void main() {
 
     expect(
       await tags.renameTag(tagId: 't1', name: 'verb'),
-      _refused<void>(TagRejection.mergeNotConfirmed),
+      isTagRefused<void>(TagRejection.mergeNotConfirmed),
     );
     expect(await totalChanges(db), before);
   });
@@ -213,7 +204,7 @@ void main() {
 
       expect(
         await tags.renameTag(tagId: 't1', name: 'verb', mergeIntoTagId: 't3'),
-        _refused<void>(TagRejection.mergeNotConfirmed),
+        isTagRefused<void>(TagRejection.mergeNotConfirmed),
       );
       expect(await totalChanges(db), before);
     },
@@ -230,7 +221,7 @@ void main() {
 
     expect(
       await tags.renameTag(tagId: 't1', name: 'verb', mergeIntoTagId: 't2'),
-      _ok,
+      isTagOk,
     );
 
     expect(await tagRowsOf(db), [('t1', 'verb', 'verb')]);
@@ -270,11 +261,11 @@ void main() {
 
     expect(
       await tags.planRename(tagId: 'x1', name: 'mine'),
-      _refused<TagRenamePlan>(TagRejection.notFound),
+      isTagRefused<TagRenamePlan>(TagRejection.notFound),
     );
     expect(
       await tags.renameTag(tagId: 'x1', name: 'mine'),
-      _refused<void>(TagRejection.notFound),
+      isTagRefused<void>(TagRejection.notFound),
     );
     expect(await totalChanges(db), before);
     expect(
@@ -292,10 +283,10 @@ void main() {
     await insertTag(db, 't3', 'verbs', cardIds: ['s-card', 'c1', 'c2']);
     final before = await rowsOutsideTags(db);
 
-    expect(await tags.renameTag(tagId: 't1', name: 'Noun'), _ok);
+    expect(await tags.renameTag(tagId: 't1', name: 'Noun'), isTagOk);
     expect(
       await tags.renameTag(tagId: 't3', name: 'verb', mergeIntoTagId: 't2'),
-      _ok,
+      isTagOk,
     );
 
     expect(await rowsOutsideTags(db), before);
@@ -307,7 +298,7 @@ void main() {
     await insertTag(db, 't3', 'verbs', cardIds: ['c1', 'c2']);
     final seen = <List<(String, int)>>[];
     final subscription = tags.watchTagCounts().listen(
-      (counts) => seen.add(_rows(counts)),
+      (counts) => seen.add(tagRows(counts)),
     );
     await pumpEventQueue();
     expect(seen.last, [('noun', 1), ('Verb', 1), ('verbs', 2)]);

@@ -42,10 +42,6 @@ Future<void> _complete(AppDatabase db, String id) async {
   );
 }
 
-Future<int> _count(AppDatabase db, String table) async =>
-    (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle())
-        .read<int>('n');
-
 void main() {
   late AppDatabase db;
   setUp(() => db = openTestDatabase());
@@ -62,7 +58,7 @@ void main() {
       'UPDATE topik_attempt SET total_time_ms = 500, current_question_no = 2, '
       "updated_at = 11 WHERE id = 'A'",
     );
-    expect(await _count(db, 'topik_attempt_answer'), 2);
+    expect(await rowCount(db, 'topik_attempt_answer'), 2);
   });
 
   test('a completed attempt refuses a change to any column but '
@@ -116,7 +112,7 @@ void main() {
       "DELETE FROM topik_attempt WHERE id IN ('A', 'B')",
     );
 
-    expect(await _count(db, 'topik_attempt_answer'), 0);
+    expect(await rowCount(db, 'topik_attempt_answer'), 0);
   });
 
   test('a test has at most one attempt in progress (BR-TOPIK-011)', () async {
@@ -127,7 +123,7 @@ void main() {
     await _openAttempt(db, 'B');
     await _answers(db, 'B');
     await _complete(db, 'B');
-    expect(await _count(db, 'topik_attempt'), 2);
+    expect(await rowCount(db, 'topik_attempt'), 2);
   });
 
   group('CHECKs refuse', () {

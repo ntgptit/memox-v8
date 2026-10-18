@@ -1,11 +1,25 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show GeneratedDatabase;
+import 'package:flutter_test/flutter_test.dart';
+
 /// The invariant queries of `docs/shared/data/schema.md` ("Bất biến"), read
 /// from the document itself: the tests run exactly what the data model states,
 /// and there is no copy to keep in step. Each query must return no row.
 final Map<int, String> invariantQueries = parseInvariantQueries(
   File('docs/shared/data/schema.md').readAsStringSync(),
 );
+
+/// No invariant query of schema.md returns a row in [db].
+Future<void> expectNoInvariantViolations(GeneratedDatabase db) async {
+  for (final MapEntry(key: number, value: query) in invariantQueries.entries) {
+    expect(
+      await db.customSelect(query).get(),
+      isEmpty,
+      reason: 'invariant $number: ${invariantSummaries[number]}',
+    );
+  }
+}
 
 /// The queries of the "Bất biến" section of [markdown]: in its ```sql blocks,
 /// each `-- N. <title>` line starts query N, and the `--` lines under it are

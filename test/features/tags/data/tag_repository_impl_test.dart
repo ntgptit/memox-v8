@@ -6,6 +6,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 
 import '../../../support/test_database.dart';
+import '../../../support/tag_outcomes.dart';
 
 // Raw inserts: `tags` imports no feature (ADR-011 import map `tags → ∅`), so
 // its tests do not either.
@@ -45,6 +46,12 @@ Future<void> _tagged(AppDatabase db, String cardId, int count) async {
   }
 }
 
+/// The id of the only tag.
+Future<String> _onlyTagId(AppDatabase db) async =>
+    (await db.customSelect('SELECT id FROM tags').getSingle()).read<String>(
+      'id',
+    );
+
 Future<List<String>> _tagNamesOf(AppDatabase db, String cardId) async {
   final rows = await db
       .customSelect(
@@ -55,15 +62,6 @@ Future<List<String>> _tagNamesOf(AppDatabase db, String cardId) async {
       .get();
   return [for (final row in rows) row.read<String>('name')];
 }
-
-Future<int> _count(AppDatabase db, String table) async =>
-    (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle())
-        .read<int>('n');
-
-TagRejection? _reasonOf(Outcome<void, TagRejection> result) => switch (result) {
-  Ok() => null,
-  Rejected(:final reason) => reason,
-};
 
 void main() {
   late AppDatabase db;
@@ -85,7 +83,7 @@ void main() {
 
       await tags.attachByName(cardIds: {'c2'}, name: 'c\u00F4ng vi\u1EC7c');
 
-      expect(await _count(db, 'tags'), 1);
+      expect(await rowCount(db, 'tags'), 1);
       expect(await _tagNamesOf(db, 'c1'), ['C\u00F4ng vi\u1EC7c']);
       expect(await _tagNamesOf(db, 'c2'), ['C\u00F4ng vi\u1EC7c']);
     });
@@ -98,10 +96,10 @@ void main() {
         name: '  Noun ',
       );
 
-      expect(_reasonOf(result), isNull);
+      expect(tagReasonOf(result), isNull);
       expect(await _tagNamesOf(db, 'c1'), ['Noun']);
       expect(await _tagNamesOf(db, 'c2'), ['Noun']);
-      expect(await _count(db, 'tags'), 1);
+      expect(await rowCount(db, 'tags'), 1);
     });
 
     test(
@@ -112,7 +110,7 @@ void main() {
 
         await tags.attachByName(cardIds: {'c2'}, name: 'động từ');
 
-        expect(await _count(db, 'tags'), 1);
+        expect(await rowCount(db, 'tags'), 1);
         expect(await _tagNamesOf(db, 'c2'), ['Động Từ']);
       },
     );
@@ -125,8 +123,8 @@ void main() {
 
         final result = await tags.attachByName(cardIds: {'c1'}, name: 'noun');
 
-        expect(_reasonOf(result), isNull);
-        expect(await _count(db, 'card_tags'), 1);
+        expect(tagReasonOf(result), isNull);
+        expect(await rowCount(db, 'card_tags'), 1);
       },
     );
 
@@ -136,7 +134,7 @@ void main() {
 
       final result = await tags.attachByName(cardIds: {'c1'}, name: '   ');
 
-      expect(_reasonOf(result), TagRejection.blankName);
+      expect(tagReasonOf(result), TagRejection.blankName);
       expect(await totalChanges(db), before);
     });
 
@@ -150,7 +148,7 @@ void main() {
         name: 'Noun',
       );
 
-      expect(_reasonOf(result), TagRejection.tooManyTags);
+      expect(tagReasonOf(result), TagRejection.tooManyTags);
       expect(await totalChanges(db), before);
       expect(await _tagNamesOf(db, 'free'), isEmpty);
     });
@@ -162,7 +160,7 @@ void main() {
 
       final result = await tags.attachByName(cardIds: {'full'}, name: 'NOUN');
 
-      expect(_reasonOf(result), isNull);
+      expect(tagReasonOf(result), isNull);
     });
 
     test('a missing card refuses the batch with notFound', () async {
@@ -174,7 +172,7 @@ void main() {
         name: 'Noun',
       );
 
-      expect(_reasonOf(result), TagRejection.notFound);
+      expect(tagReasonOf(result), TagRejection.notFound);
       expect(await totalChanges(db), before);
     });
   });
@@ -185,41 +183,38 @@ void main() {
       () async {
         await _cards(db, ['c1', 'c2']);
         await tags.attachByName(cardIds: {'c1', 'c2'}, name: 'Noun');
-        final tagId = (await db.customSelect('SELECT id FROM tags').getSingle())
-            .read<String>('id');
+        final tagId = await _onlyTagId(db);
 
         final result = await tags.detach(cardIds: {'c1', 'c2'}, tagId: tagId);
 
-        expect(_reasonOf(result), isNull);
-        expect(await _count(db, 'card_tags'), 0);
-        expect(await _count(db, 'tags'), 1);
+        expect(tagReasonOf(result), isNull);
+        expect(await rowCount(db, 'card_tags'), 0);
+        expect(await rowCount(db, 'tags'), 1);
       },
     );
 
     test('a card without the tag is not an error', () async {
       await _cards(db, ['c1', 'c2']);
       await tags.attachByName(cardIds: {'c1'}, name: 'Noun');
-      final tagId = (await db.customSelect('SELECT id FROM tags').getSingle())
-          .read<String>('id');
+      final tagId = await _onlyTagId(db);
 
       final result = await tags.detach(cardIds: {'c1', 'c2'}, tagId: tagId);
 
-      expect(_reasonOf(result), isNull);
+      expect(tagReasonOf(result), isNull);
     });
 
     test('a missing card or tag answers notFound, writing nothing', () async {
       await _cards(db, ['c1']);
       await tags.attachByName(cardIds: {'c1'}, name: 'Noun');
-      final tagId = (await db.customSelect('SELECT id FROM tags').getSingle())
-          .read<String>('id');
+      final tagId = await _onlyTagId(db);
       final before = await totalChanges(db);
 
       expect(
-        _reasonOf(await tags.detach(cardIds: {'c1', 'gone'}, tagId: tagId)),
+        tagReasonOf(await tags.detach(cardIds: {'c1', 'gone'}, tagId: tagId)),
         TagRejection.notFound,
       );
       expect(
-        _reasonOf(await tags.detach(cardIds: {'c1'}, tagId: 'gone')),
+        tagReasonOf(await tags.detach(cardIds: {'c1'}, tagId: 'gone')),
         TagRejection.notFound,
       );
       expect(await totalChanges(db), before);
@@ -236,10 +231,10 @@ void main() {
         names: ['food', 'Verb'],
       );
 
-      expect(_reasonOf(result), isNull);
+      expect(tagReasonOf(result), isNull);
       expect(await _tagNamesOf(db, 'c1'), ['Food', 'Verb']);
       expect(
-        await _count(db, 'tags'),
+        await rowCount(db, 'tags'),
         3,
         reason: 'Noun stays in the catalog (BR-TAG-003)',
       );
@@ -256,14 +251,14 @@ void main() {
           names: [for (var n = 0; n < 11; n++) 'tag $n'],
         );
 
-        expect(_reasonOf(result), TagRejection.tooManyTags);
+        expect(tagReasonOf(result), TagRejection.tooManyTags);
         expect(await totalChanges(db), before);
       },
     );
 
     test('a missing card answers notFound', () async {
       final result = await tags.replaceForCard(cardId: 'gone', names: ['Noun']);
-      expect(_reasonOf(result), TagRejection.notFound);
+      expect(tagReasonOf(result), TagRejection.notFound);
     });
   });
 

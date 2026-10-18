@@ -19,19 +19,11 @@ import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _tab(String label) =>
-    find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.tap(finder);
-  await tester.pumpAndSettle();
-}
-
 Future<void> _openRow(WidgetTester tester, String name) async {
   final row = find.widgetWithText(MxListRow, name);
   await tester.ensureVisible(row);
   await tester.pumpAndSettle();
-  await _tap(tester, row);
+  await tapAndSettle(tester, row);
 }
 
 /// Korean › Grammar › Particles, each studied today.
@@ -50,9 +42,9 @@ void main() {
       'Back climbs one level (D4, D5)', (tester, env) async {
     await _tree(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, _tab(_en.navProgress));
+    await tapAndSettle(tester, bottomTab(_en.navProgress));
     await tester.scrollUntilVisible(find.text(_en.progressRangeMonth), 200);
-    await _tap(tester, find.text(_en.progressRangeMonth));
+    await tapAndSettle(tester, find.text(_en.progressRangeMonth));
 
     await _openRow(tester, 'Korean');
 
@@ -69,12 +61,12 @@ void main() {
       findsOneWidget,
     );
 
-    await _tap(tester, byControlLabel(_en.commonBack));
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
     expect(
       find.descendant(of: find.byType(MxAppBar), matching: find.text('Korean')),
       findsOneWidget,
     );
-    await _tap(tester, byControlLabel(_en.commonBack));
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
     expect(find.byType(ProgressScreen), findsOneWidget);
     expect(find.byType(DeckProgressScreen), findsNothing);
   });
@@ -85,11 +77,11 @@ void main() {
   ) async {
     await _tree(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, _tab(_en.navProgress));
+    await tapAndSettle(tester, bottomTab(_en.navProgress));
     await _openRow(tester, 'Korean');
     await _openRow(tester, 'Grammar');
 
-    await _tap(
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(MxBreadcrumb),
@@ -104,9 +96,9 @@ void main() {
   libraryTest('Start studying opens the Study tab (D1)', (tester, env) async {
     await studiedDeck(env, 'Korean');
     await pumpMemoxApp(tester, env);
-    await _tap(tester, _tab(_en.navProgress));
+    await tapAndSettle(tester, bottomTab(_en.navProgress));
 
-    await _tap(tester, find.text(_en.progressStartStudying));
+    await tapAndSettle(tester, find.text(_en.progressStartStudying));
 
     expect(find.byType(StudyHomeScreen), findsOneWidget);
   });

@@ -1,16 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/progress/domain/models/progress_days_model.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
+
+import '../../../support/progress_days_fixture.dart';
 
 // UC-PROGRESS-001: Today, the last seven days and the current streak
 // (BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016; Progress spec §5.3).
 
 void main() {
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   /// A day [ago] days before today with [cards] reviewing card-days.
   ActiveDay active(int ago, {int learning = 0, int cards = 1}) =>

@@ -3,7 +3,6 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
-import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 import 'package:memox/features/tags/domain/usecases/delete_tag_use_case.dart';
 import 'package:memox/features/tags/domain/usecases/plan_tag_rename_use_case.dart';
@@ -13,13 +12,10 @@ import 'package:memox/features/tags/domain/usecases/watch_tag_catalog_use_case.d
 
 import '../../../support/tag_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/tag_outcomes.dart';
 
 // UC-TAG-001: the use cases of Tag Management hand their arguments to the
 // repository unchanged (tag management spec §9).
-
-List<(String, int)> _rows(List<TagCount> counts) => [
-  for (final count in counts) (count.name, count.cardCount),
-];
 
 void main() {
   late AppDatabase db;
@@ -39,15 +35,15 @@ void main() {
       '(UC-TAG-001 steps 1-3)', () async {
     final watch = WatchTagCatalogUseCase(tags);
 
-    expect(_rows(await watch().first), [('noun', 1), ('verb', 0)]);
-    expect(_rows(await watch(searchTerm: 'NO').first), [('noun', 1)]);
+    expect(tagRows(await watch().first), [('noun', 1), ('verb', 0)]);
+    expect(tagRows(await watch(searchTerm: 'NO').first), [('noun', 1)]);
   });
 
   test('WatchDeckTagCountsUseCase reads every tag in one deck '
       '(UC-TAG-001 step 6)', () async {
     final watch = WatchDeckTagCountsUseCase(tags);
 
-    expect(_rows(await watch(deckId: 'other').first), [
+    expect(tagRows(await watch(deckId: 'other').first), [
       ('noun', 0),
       ('verb', 0),
     ]);
@@ -95,13 +91,13 @@ void main() {
       await rename(tagId: 't1', name: 'verb', mergeIntoTagId: 't2'),
       isA<Ok<void, TagRejection>>(),
     );
-    expect(_rows(await tags.watchTagCounts().first), [('verb', 1)]);
+    expect(tagRows(await tags.watchTagCounts().first), [('verb', 1)]);
   });
 
   test('DeleteTagUseCase deletes the tag (UC-TAG-001 step 5)', () async {
     final delete = DeleteTagUseCase(tags);
 
     expect(await delete(tagId: 't1'), isA<Ok<void, TagRejection>>());
-    expect(_rows(await tags.watchTagCounts().first), [('verb', 0)]);
+    expect(tagRows(await tags.watchTagCounts().first), [('verb', 0)]);
   });
 }

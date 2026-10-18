@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -16,14 +15,6 @@ import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _barTitle(String title) =>
-    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.tap(finder);
-  await tester.pumpAndSettle();
-}
-
 /// Korean › Words with the cards bap and gim.
 Future<String> _seed(LibraryEnv env) async {
   final words = await env.decks.sub(
@@ -36,8 +27,8 @@ Future<String> _seed(LibraryEnv env) async {
 }
 
 Future<void> _openWords(WidgetTester tester) async {
-  await _tap(tester, find.text('Korean'));
-  await _tap(tester, find.text('Words'));
+  await tapAndSettle(tester, find.text('Korean'));
+  await tapAndSettle(tester, find.text('Words'));
 }
 
 Finder _inDialog(String text) =>
@@ -45,7 +36,7 @@ Finder _inDialog(String text) =>
 
 /// The Trash is on screen, above the shell (FE-B1 D2).
 void _expectTrash() {
-  expect(_barTitle(_en.libraryTrash), findsOneWidget);
+  expect(barTitle(_en.libraryTrash), findsOneWidget);
   expect(find.byType(MxBottomNav), findsNothing);
 }
 
@@ -56,12 +47,12 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
 
-    await _tap(tester, byControlLabel(_en.libraryTrash));
+    await tapAndSettle(tester, byControlLabel(_en.libraryTrash));
     _expectTrash();
     expect(find.text(_en.trashEmptyTitle), findsOneWidget);
 
-    await _tap(tester, byControlLabel(_en.commonBack));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
+    expect(barTitle(_en.navLibrary), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
   });
 
@@ -74,12 +65,12 @@ void main() {
     await _openWords(tester);
     await tester.longPress(find.text('bap'));
     await tester.pumpAndSettle();
-    await _tap(tester, find.text('gim'));
-    await _tap(tester, find.text(_en.cardDelete));
-    await _tap(tester, _inDialog(_en.trashMoveConfirm));
+    await tapAndSettle(tester, find.text('gim'));
+    await tapAndSettle(tester, find.text(_en.cardDelete));
+    await tapAndSettle(tester, _inDialog(_en.trashMoveConfirm));
 
     expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
-    await _tap(tester, find.text(_en.commonOpenTrash));
+    await tapAndSettle(tester, find.text(_en.commonOpenTrash));
     _expectTrash();
     expect(find.text(_en.trashEntriesHeader(2).toUpperCase()), findsOneWidget);
   });
@@ -93,19 +84,19 @@ void main() {
     await _openWords(tester);
     await tester.longPress(find.text('bap'));
     await tester.pumpAndSettle();
-    await _tap(tester, find.text(_en.cardDelete));
-    await _tap(tester, _inDialog(_en.trashMoveConfirm));
+    await tapAndSettle(tester, find.text(_en.cardDelete));
+    await tapAndSettle(tester, _inDialog(_en.trashMoveConfirm));
     // Meanwhile its deck goes to the Trash as well.
     await env.decks.deleteDeck(deckId: words);
     await tester.pumpAndSettle();
 
-    await _tap(tester, find.text(_en.commonUndo));
+    await tapAndSettle(tester, find.text(_en.commonUndo));
     expect(
       find.text(_en.cardUndoRefused(_en.cardRejectionTargetInTrash)),
       findsOneWidget,
     );
     // The toast's, not the gone deck's behind it.
-    await _tap(
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(FToast),
@@ -120,12 +111,12 @@ void main() {
     await _seed(env);
     await pumpMemoxApp(tester, env);
     await _openWords(tester);
-    await _tap(tester, find.text('bap'));
+    await tapAndSettle(tester, find.text('bap'));
     await env.cards.deleteCards(cardIds: {'c0'});
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardDetailGoneBody), findsOneWidget);
-    await _tap(tester, find.text(_en.commonOpenTrash));
+    await tapAndSettle(tester, find.text(_en.commonOpenTrash));
     _expectTrash();
   });
 
@@ -140,7 +131,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneBody), findsOneWidget);
-    await _tap(tester, find.text(_en.commonOpenTrash));
+    await tapAndSettle(tester, find.text(_en.commonOpenTrash));
     _expectTrash();
   });
 
@@ -158,10 +149,13 @@ void main() {
       back: 'rice',
     );
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.text('Words'));
-    await _tap(tester, find.text('bap'));
-    await _tap(tester, find.widgetWithText(MxButton, _en.cardEditAction));
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, find.text('Words'));
+    await tapAndSettle(tester, find.text('bap'));
+    await tapAndSettle(
+      tester,
+      find.widgetWithText(MxButton, _en.cardEditAction),
+    );
     // An unsaved edit goes with the card: no discard prompt (P6).
     await tester.enterText(find.byType(EditableText).at(1), 'cooked rice');
     await tester.pump();
@@ -173,9 +167,12 @@ void main() {
       await tester.dragFrom(const Offset(4, 400), const Offset(0, -2000));
       await tester.pumpAndSettle();
     }
-    await _tap(tester, find.widgetWithText(MxButton, _en.cardMoveToTrash));
+    await tapAndSettle(
+      tester,
+      find.widgetWithText(MxButton, _en.cardMoveToTrash),
+    );
     expect(find.text(_en.cardDeleteTitle(1)), findsOneWidget);
-    await _tap(
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(MxDialog),
@@ -184,9 +181,9 @@ void main() {
     );
 
     expect(find.text(_en.cardDiscardTitle), findsNothing);
-    expect(_barTitle('Words'), findsOneWidget);
+    expect(barTitle('Words'), findsOneWidget);
     expect(find.text(_en.cardTrashedToast('bap')), findsOneWidget);
-    await _tap(tester, find.text(_en.commonUndo));
+    await tapAndSettle(tester, find.text(_en.commonUndo));
     expect(find.text('bap'), findsOneWidget);
   });
 }

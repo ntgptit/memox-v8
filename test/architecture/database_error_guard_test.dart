@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+
+import 'lib_sources.dart';
 
 /// Spec 2026-09-29-database-error-guard-design.md D5: outside `lib/core/`,
 /// no file calls `mapDatabaseError(` itself; repositories go through
@@ -25,14 +25,6 @@ void main() {
   });
 
   test('lib/ maps database errors only through core', () {
-    final sources = {
-      for (final entity in Directory('lib').listSync(recursive: true))
-        if (entity is File &&
-            entity.path.endsWith('.dart') &&
-            !entity.path.endsWith('.g.dart'))
-          entity.path.replaceAll(r'\', '/'): entity.readAsStringSync(),
-    };
-
-    expect(directMappings(sources), isEmpty);
+    expect(directMappings(readLibSources()), isEmpty);
   });
 }

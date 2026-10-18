@@ -82,6 +82,19 @@ final class _FailingSearch implements SearchRepository {
   }
 }
 
+/// 51 cards "học 00" to "học 50" in Korean: one more than a page of hits.
+Future<void> _insertPastFirstPage(LibraryEnv env) async {
+  final korean = await env.decks.root('Korean');
+  for (var i = 0; i < 51; i++) {
+    await insertCard(
+      env.db,
+      id: 'c${i.toString().padLeft(2, '0')}',
+      deckId: korean.id,
+      front: 'học ${i.toString().padLeft(2, '0')}',
+    );
+  }
+}
+
 void main() {
   libraryTest('the field sits in the app bar and takes focus', (
     tester,
@@ -308,15 +321,7 @@ void main() {
     tester,
     env,
   ) async {
-    final korean = await env.decks.root('Korean');
-    for (var i = 0; i < 51; i++) {
-      await insertCard(
-        env.db,
-        id: 'c${i.toString().padLeft(2, '0')}',
-        deckId: korean.id,
-        front: 'học ${i.toString().padLeft(2, '0')}',
-      );
-    }
+    await _insertPastFirstPage(env);
     await pumpLibraryScreen(tester, env, _screen());
     await _search(tester, 'học');
 
@@ -364,15 +369,7 @@ void main() {
     tester,
     env,
   ) async {
-    final korean = await env.decks.root('Korean');
-    for (var i = 0; i < 51; i++) {
-      await insertCard(
-        env.db,
-        id: 'c${i.toString().padLeft(2, '0')}',
-        deckId: korean.id,
-        front: 'học ${i.toString().padLeft(2, '0')}',
-      );
-    }
+    await _insertPastFirstPage(env);
     await pumpLibraryScreen(
       tester,
       env,

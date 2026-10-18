@@ -2,6 +2,7 @@ import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 
+import '../support/test_database.dart';
 import 'generated/schema.dart';
 
 // DEV-228: an upgrade keeps the sync state of a device whole: what it has not
@@ -132,8 +133,6 @@ void main() {
   });
 
   test('passes the integrity and foreign key checks', () async {
-    final integrity = await db.customSelect('PRAGMA integrity_check').get();
-    expect([for (final row in integrity) row.data.values.single], ['ok']);
-    expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    await expectIntegrity(db);
   });
 }

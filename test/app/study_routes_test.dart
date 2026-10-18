@@ -24,7 +24,6 @@ import 'package:memox/features/study/presentation/widgets/sections/study_entry_r
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/card_fixtures.dart';
@@ -32,19 +31,12 @@ import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 import '../support/app_harness.dart';
 import '../support/forui_expect.dart';
+import '../support/test_database.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _barTitle(String title) =>
-    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.tap(finder);
-  await tester.pumpAndSettle();
-}
-
 Future<void> _back(WidgetTester tester) =>
-    _tap(tester, byControlLabel(_en.commonBack));
+    tapAndSettle(tester, byControlLabel(_en.commonBack));
 
 /// Korean › Words › Verbs, with Grammar beside Words.
 Future<void> _seed(LibraryEnv env) async {
@@ -62,10 +54,10 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, byControlLabel(_en.deckActions));
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, byControlLabel(_en.deckActions));
     // The sheet's row, not the bottom nav's Study tab.
-    await _tap(
+    await tapAndSettle(
       tester,
       find.descendant(
         of: find.byType(MxActionSheetCommandRow),
@@ -74,14 +66,11 @@ void main() {
     );
 
     expect(find.byType(StudyEntryScreen), findsOneWidget);
-    expect(_barTitle('Korean'), findsOneWidget);
+    expect(barTitle('Korean'), findsOneWidget);
     await _back(tester);
     expect(find.byType(StudyEntryScreen), findsNothing);
-    expect(_barTitle('Korean'), findsOneWidget);
-    final sessions = await env.db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(barTitle('Korean'), findsOneWidget);
+    expect(await studySessionCount(env.db), 0);
   });
 
   libraryTest('Back from the Study Entry and its review pick makes no '
@@ -89,12 +78,12 @@ void main() {
       'Continue (IT-NAV-009, BR-STUDY-020, FE-A6 P3 E1)', (tester, env) async {
     await insertFiveDue(env.db, env.decks);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.text('Lesson'));
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, find.text('Lesson'));
 
     Future<void> openEntry() async {
-      await _tap(tester, byControlLabel(_en.deckActions));
-      await _tap(
+      await tapAndSettle(tester, byControlLabel(_en.deckActions));
+      await tapAndSettle(
         tester,
         find.descendant(
           of: find.byType(MxActionSheetCommandRow),
@@ -112,11 +101,8 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.byType(StudyEntryScreen), findsNothing);
-    expect(_barTitle('Lesson'), findsOneWidget);
-    final sessions = await env.db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(barTitle('Lesson'), findsOneWidget);
+    expect(await studySessionCount(env.db), 0);
 
     await openEntry();
     expect(find.byType(StudyEntryResumeWidget), findsNothing);
@@ -145,12 +131,12 @@ void main() {
     expect(find.byType(StudySessionScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
 
-    await _tap(tester, byControlLabel(_en.studySessionClose));
-    await _tap(tester, find.text(_en.studyExitStop));
-    await _tap(tester, find.text(_en.summaryDone));
+    await tapAndSettle(tester, byControlLabel(_en.studySessionClose));
+    await tapAndSettle(tester, find.text(_en.studyExitStop));
+    await tapAndSettle(tester, find.text(_en.summaryDone));
 
     expect(find.byType(StudySessionScreen), findsNothing);
-    expect(_barTitle('Lesson'), findsOneWidget);
+    expect(barTitle('Lesson'), findsOneWidget);
   });
 
   Finder navTab(String label) =>
@@ -160,23 +146,20 @@ void main() {
       'Study Entry and makes no session (FE-A8 H3)', (tester, env) async {
     await insertFiveDue(env.db, env.decks);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, navTab(_en.navStudy));
+    await tapAndSettle(tester, navTab(_en.navStudy));
 
     expect(find.byType(StudyHomeScreen), findsOneWidget);
-    await _tap(tester, find.text('Korean'));
+    await tapAndSettle(tester, find.text('Korean'));
 
     expect(find.byType(StudyEntryScreen), findsOneWidget);
-    final sessions = await env.db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(await studySessionCount(env.db), 0);
   });
 
   libraryTest("Resume on the Study tab opens today's session; Library opens "
       'the Library (FE-A8 H3)', (tester, env) async {
     await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, navTab(_en.navStudy));
+    await tapAndSettle(tester, navTab(_en.navStudy));
 
     await tester.tap(find.text(_en.studyHomeResume));
     await tester.pump();
@@ -192,9 +175,12 @@ void main() {
     await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
-    await _tap(tester, find.text(_en.summaryDone));
-    await _tap(tester, navTab(_en.navStudy));
-    await _tap(tester, find.widgetWithText(MxButton, _en.studyHomeLibrary));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, find.text(_en.summaryDone));
+    await tapAndSettle(tester, navTab(_en.navStudy));
+    await tapAndSettle(
+      tester,
+      find.widgetWithText(MxButton, _en.studyHomeLibrary),
+    );
+    expect(barTitle(_en.navLibrary), findsOneWidget);
   });
 }
