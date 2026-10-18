@@ -58,6 +58,8 @@ Future<void> _lifecycle(
   await pumpThreeFrames(tester);
 }
 
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
+
 void main() {
   libraryTest('the term shows, the meaning is hidden, and the clock counts '
       'down from 20 (19 countingDown)', (tester, env) async {

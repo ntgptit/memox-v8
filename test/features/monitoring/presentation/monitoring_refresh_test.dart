@@ -7,6 +7,8 @@ import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
 
+// monitoringRefreshAction is the app bar's refresh, which a screen reader can
+// reach where the drag down is out of reach (audit 2026-10-17 SET-11).
 MxIconButton _refreshButton(WidgetTester tester) =>
     tester.widget<MxIconButton>(monitoringRefreshAction);
 

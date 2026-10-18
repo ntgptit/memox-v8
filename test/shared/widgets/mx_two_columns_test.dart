@@ -40,7 +40,10 @@ void main() {
   testWidgets('from minWidth the end blocks sit beside the start', (
     tester,
   ) async {
-    await pumpMxWide(tester, _at(MxTwoColumns.minWidth));
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpMxAt(tester, _at(MxTwoColumns.minWidth));
 
     expect(
       tester.getTopLeft(find.byKey(_b)).dy,
@@ -57,7 +60,10 @@ void main() {
   testWidgets('with no end blocks the start keeps the full width', (
     tester,
   ) async {
-    await pumpMxWide(tester, _at(MxTwoColumns.minWidth + 100, end: const []));
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpMxAt(tester, _at(MxTwoColumns.minWidth + 100, end: const []));
 
     expect(tester.getSize(find.byKey(_a)).width, MxTwoColumns.minWidth + 100);
   });

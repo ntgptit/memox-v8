@@ -114,10 +114,11 @@ void main() {
     );
   });
 
-  for (final c in [
+  // A null name leaves the field untouched.
+  for (final c in <({String name, String? typed, String refusal})>[
     (
       name: 'a blank name is refused under the field; nothing is written',
-      typed: '',
+      typed: null,
       refusal: _en.deckRejectionBlankName,
     ),
     (
@@ -129,7 +130,10 @@ void main() {
     libraryTest(c.name, (tester, env) async {
       await pumpLibraryScreen(tester, env, _host());
       await open(tester);
-      await tester.enterText(find.byType(EditableText), c.typed);
+      final typed = c.typed;
+      if (typed != null) {
+        await tester.enterText(find.byType(EditableText), typed);
+      }
       await chooseEightBox(tester);
       await tester.tap(find.text(_en.deckCreateConfirm));
       await tester.pumpAndSettle();

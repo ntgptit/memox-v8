@@ -57,6 +57,8 @@ Future<void> _withBlockedGuess(
   }
 }
 
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
+
 void main() {
   libraryTest('the term is asked under "What is this?" with five lettered '
       'options (BR-STUDY-037)', (tester, env) async {

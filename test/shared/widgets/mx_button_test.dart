@@ -344,9 +344,29 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('semanticLabel on a disabled button keeps the label and the '
-      'disabled state (SW-REV-005)', (tester) async {
+  testWidgets('semanticLabel on a small button: one node with the label, the '
+      'tap and the state, enabled or disabled (SW-REV-005)', (tester) async {
     final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxButton(
+        label: '20:00',
+        semanticLabel: 'Reminder time, 20:00',
+        size: MxButtonSize.small,
+        onPressed: () {},
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
+      isSemantics(
+        isButton: true,
+        hasTapAction: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasSelectedState: true,
+      ),
+    );
+
     await pumpMx(
       tester,
       const MxButton(
@@ -356,7 +376,6 @@ void main() {
         onPressed: null,
       ),
     );
-
     expect(
       tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
       isSemantics(

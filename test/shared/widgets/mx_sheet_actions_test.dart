@@ -219,6 +219,26 @@ void main() {
     expect(find.text('Cancel'), findsNothing);
   });
 
+  testWidgets('Cancel and the confirm share one width and one height '
+      '(DEV-179)', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Continue',
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final cancel = tester.getSize(_button('Cancel'));
+    final confirm = tester.getSize(_button('Continue'));
+    expect(cancel.width, confirm.width);
+    expect(cancel.height, confirm.height);
+  });
+
   // The Short Label Rule: a label too long for its share stacks the pair,
   // both full width, whichever of the two is long.
   for (final (cancelLabel, confirmLabel, isDestructive, width) in [

@@ -71,6 +71,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    // Under its card_limit the review keeps the plain body.
+    expect(
+      find.text(
+        _en.summaryReviewAtLimitBody(_en.summaryCards(20)),
+        findRichText: true,
+      ),
+      findsNothing,
+    );
     expect(
       [
         for (final tile in tester.widgetList<MxStatTile>(

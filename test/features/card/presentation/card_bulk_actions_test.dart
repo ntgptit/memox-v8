@@ -148,6 +148,20 @@ void main() {
     );
   });
 
+  libraryTest('Tag adds one tag to every selected card', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, cardListSection(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await _bulk(tester, _en.cardTag);
+    await tester.enterText(find.byType(EditableText).last, 'greetings');
+    await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pumpAndSettle();
+
+    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 2);
+    expect(find.text(_en.cardTaggedToast(2, 'greetings')), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
   libraryTest('Tag holds its dialog while it writes: Cancel in the same '
       'instant does nothing, and the write still says so', (tester, env) async {
     final ids = await _seed(env);

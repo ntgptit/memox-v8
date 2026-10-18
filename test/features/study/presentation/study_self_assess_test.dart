@@ -22,6 +22,8 @@ Future<void> _reveal(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
+
 void main() {
   libraryTest('the prompt shows first, the answer waits for Show answer, and '
       'revealing writes nothing (IT-MODE-012, BR-MODE-006)', (
@@ -58,14 +60,16 @@ void main() {
 
   // The reveal is announced: the answer is read, whichever face asked
   // (TalkBack).
-  for (final (name, direction, announced) in [
+  for (final (name, cards, direction, announced) in [
     (
       'a term-first reveal announces the meaning',
+      2,
       DirectionChoice.koreanToMeaning,
       'meaning 1',
     ),
     (
       'a meaning-first reveal announces the term',
+      1,
       DirectionChoice.meaningToKorean,
       'term 1',
     ),
@@ -76,6 +80,7 @@ void main() {
         env.db,
         env.decks,
         libraryToday,
+        cards: cards,
         direction: direction,
       );
       await pumpLibraryScreen(tester, env, studySessionScreen(id));

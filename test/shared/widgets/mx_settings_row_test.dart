@@ -179,26 +179,43 @@ void main() {
     );
   });
 
-  testWidgets('a disabled row takes no tap, dims its title and keeps its '
-      'subtitle at full strength (critique 2026-09-30, screen 24)', (
-    tester,
-  ) async {
+  testWidgets('dimmed while unavailable', (tester) async {
     var taps = 0;
     await pumpMx(
       tester,
       _width(
-        MxSettingsRow(
+        MxSettingsRow(label: 'Language', isEnabled: false, onTap: () => taps++),
+      ),
+    );
+    await tester.tap(find.text('Language'), warnIfMissed: false);
+
+    expect(taps, 0);
+    expect(
+      tester
+          .widget<Opacity>(
+            find.ancestor(
+              of: find.text('Language'),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .opacity,
+      appLightColors.disabledOpacity,
+    );
+  });
+
+  testWidgets('a disabled row keeps its subtitle at full strength (critique '
+      '2026-09-30, screen 24)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
           label: 'Time',
           subtitle: 'Turn the reminder on to choose a time',
           icon: AppIcons.clock,
           isEnabled: false,
-          onTap: () => taps++,
         ),
       ),
     );
-    await tester.tap(find.text('Time'), warnIfMissed: false);
-
-    expect(taps, 0);
     expect(
       find.ancestor(
         of: find.text('Turn the reminder on to choose a time'),

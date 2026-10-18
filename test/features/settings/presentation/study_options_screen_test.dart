@@ -284,6 +284,38 @@ void main() {
     expect(find.text(_en.cardSave), findsNothing);
   });
 
+  libraryTest('a failed save names what the deck still uses; Retry save '
+      'writes it (E4)', (tester, env) async {
+    final ids = await _seed(env);
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..isFailing = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(ids.subId),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    await tester.tap(byControlLabel(_en.settingsMoreCards));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardSave));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('memox.sqlite'), findsNothing);
+
+    store.isFailing = false;
+    await tester.tap(find.text(_en.cardRetrySave));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyOptionsSaved), findsOneWidget);
+  });
+
   libraryTest('a failed save shows a danger banner at the top, names what the '
       'deck still uses and Retry save writes it; the caption stays the '
       'local-only line (critique 2026-09-30 part 3d-1, E4)', (

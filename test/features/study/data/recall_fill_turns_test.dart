@@ -77,13 +77,19 @@ void main() {
     },
   );
 
-  // The time left kept for Continue is turn_state_writes_test.dart's
-  // (BR-STUDY-036).
-  test('a timeout records wrong with its reason, and nothing after it or '
-      'after a reveal takes a second outcome (BR-STUDY-032 to BR-STUDY-036; '
-      'IT-MODE-009F)', () async {
+  test('the time left survives Continue; a timeout records wrong with its '
+      'reason, and nothing after it or after a reveal takes a second '
+      'outcome (BR-STUDY-032 to BR-STUDY-036; IT-MODE-009F)', () async {
     final leaf = await insertFiveDue(db, decks);
     final id = await openReview(entries, leaf.id, StudyMode.recall);
+    await sessions.saveRecallTime(
+      sessionId: id,
+      cardId: 'ST-01',
+      remainingMs: 12400,
+    );
+    await sessions.resumeSession(sessionId: id);
+    final resumed = (await watchSessionOnce(db, id)).currentItem!;
+    expect((resumed.remainingMs, resumed.isRevealed), (12400, false));
 
     expect(
       await turn(id, 'ST-01', const RecallAnswer(RecallOutcome.timedOut)),

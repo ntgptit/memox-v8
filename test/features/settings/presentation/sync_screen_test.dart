@@ -39,6 +39,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
+  libraryTest('a failed Sync now says nothing was lost', (tester, env) async {
+    final commands = FakeSyncCommands()..result = false;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await _settle(tester);
+    expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
+  });
+
   libraryTest('refused rows offer Try again and Keep on device', (
     tester,
     env,

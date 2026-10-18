@@ -59,6 +59,8 @@ Future<void> _pair(WidgetTester tester, String term, String meaning) async {
   await tester.pump();
 }
 
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
+
 void main() {
   libraryTest('terms on the left, meanings on the right, with the hint '
       '(BR-STUDY-049)', (tester, env) async {
