@@ -155,7 +155,7 @@ Transitions added by the audit of 2026-10-17:
 |---|---|---|---|
 | reorder mode (root or open deck) | system Back | the list in browse mode, still on the screen (`PopScope` in `DeckLevelBodyWidget`, LIB-7) | `deck_reorder_test.dart` |
 | a row's or the open deck's `⋮` | the deck's view fails to read | the failure's sentence as a toast, no sheet (LIB-9) | `deck_level_screen_test.dart` |
-| rootLoaded / deckLoaded | TalkBack reaches the sort pill | named "Sort decks, {order}" (e.g. "Sort decks, Manual order") | VERIFIED `open_deck_screen_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
+| rootLoaded / deckLoaded | TalkBack reaches the sort pill | named "Sort decks, {order}" (e.g. "Sort decks, Manual order") | VERIFIED `deck_sort_trigger_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
 | rootCreate | Create is tapped, and the write runs | the dialog is held: Cancel is off, Back and the scrim wait, Create spins; it closes when the write answers | VERIFIED `create_root_deck_dialog_widget_test.dart::while Create writes, the dialog is held, Cancel is off and Create spins (M3 B2: every async confirm)` |
 | rootRename / subDeckCreate | the confirm is tapped, and the write runs | the same hold: Cancel off, the confirm spins | rename VERIFIED `deck_name_dialog_widget_test.dart::while the name saves, the dialog is held, Cancel is off and the confirm spins (M3 B2: every async confirm)`; the new sub-deck dialog is the same `DeckNameDialogWidget` with another submit: `UNVERIFIED (code read)` for its own run |
 
