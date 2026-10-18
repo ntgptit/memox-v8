@@ -130,8 +130,9 @@ final class FakeJustAudioPlatform {
         _emit();
       case 'seek':
         _position = Duration(microseconds: (args['position'] as int?) ?? 0);
-        if (_state == JustAudioWireState.completed)
+        if (_state == JustAudioWireState.completed) {
           _state = JustAudioWireState.ready;
+        }
         _emit();
       case 'dispose':
         _state = JustAudioWireState.idle;
