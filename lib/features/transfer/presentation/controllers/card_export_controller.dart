@@ -50,16 +50,12 @@ class CardExportController extends _$CardExportController {
     Outcome<ExportShareResult, TransferRejection>? answer;
     await runHeld(
       () async => answer = await ref.read(shareExportUseCaseProvider)(artifact),
-      onFailed: (_) {
-        if (!ref.mounted) return;
-        state = CardExportState(
-          format: format,
-          problem: CardExportProblem.shareFailed,
-        );
-      },
+      // A bug from the share sheet reads as a failed share.
+      onFailed: (_) => answer = const Rejected(TransferRejection.shareFailed),
     );
+    if (!ref.mounted) return;
     final shared = answer;
-    if (shared == null || !ref.mounted) return;
+    if (shared == null) return;
     state = switch (shared) {
       Ok(value: ExportShareResult.shared) => CardExportState(
         format: format,
