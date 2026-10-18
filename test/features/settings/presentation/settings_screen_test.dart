@@ -28,6 +28,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/stored_settings.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/sync_fakes.dart';
 import '../../../support/wrap_rule.dart';
@@ -54,10 +55,6 @@ SettingsScreen _screen({
   onOpenAdmin: onOpenAdmin ?? () {},
   accountRow: accountRow,
 );
-
-Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
-  env.db,
-).watchAppSettings().first).studyDefaults.cardLimit;
 
 void main() {
   libraryTest('the hub names every group and value: Study summary, Theme, '
@@ -191,28 +188,47 @@ void main() {
     expect(find.text(_en.settingsResetDone), findsOneWidget);
   });
 
-  libraryTest('before the first read the screen shows skeleton rows and no '
-      'value (loading)', (tester, env) async {
-    final never = StreamController<AppSettingsEntity>();
-    addTearDown(never.close);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
-    );
+  // Before the first read the skeleton is shaped as its sections (critique
+  // 2026-09-30 part 3d-2, E12): without an account slot, no Account & sync
+  // card; with one, that card too (audit 2026-10-07, P2-4).
+  final skeletons = [
+    (
+      name:
+          'before the first read the screen shows skeleton rows and no '
+          'value, without an Account & sync card when the build has no '
+          'account (loading)',
+      accountRow: null,
+      cards: 3,
+    ),
+    (
+      name:
+          "the hub's skeleton draws the Account & sync card when the build "
+          'has an account',
+      accountRow: const SizedBox.shrink(),
+      cards: 4,
+    ),
+  ];
+  for (final c in skeletons) {
+    libraryTest(c.name, (tester, env) async {
+      final never = StreamController<AppSettingsEntity>();
+      addTearDown(never.close);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(accountRow: c.accountRow),
+        overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
+      );
 
-    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12): without
-    // an account slot, no Account & sync card (audit 2026-10-07, P2-4).
-    expect(find.byType(SettingsSkeletonWidget), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(SettingsSkeletonWidget),
-        matching: find.byType(MxCard),
-      ),
-      findsNWidgets(3),
-    );
-  });
+      expect(find.byType(SettingsSkeletonWidget), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(SettingsSkeletonWidget),
+          matching: find.byType(MxCard),
+        ),
+        findsNWidgets(c.cards),
+      );
+    });
+  }
 
   libraryTest('the Theme row names a fixed choice by its name (§5.2)', (
     tester,
@@ -252,7 +268,7 @@ void main() {
     await tester.tap(find.text(_en.commonCancel));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsNothing);
-    expect(await tester.runAsync(() => _storedLimit(env)), 50);
+    expect(await tester.runAsync(() => storedCardLimit(env)), 50);
 
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
@@ -262,7 +278,7 @@ void main() {
     expect(find.byType(MxDialog), findsNothing);
     expect(find.text(_en.settingsResetDone), findsOneWidget);
     expect(
-      await tester.runAsync(() => _storedLimit(env)),
+      await tester.runAsync(() => storedCardLimit(env)),
       StudyOptions.defaultCardLimit,
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
@@ -399,26 +415,6 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.text(_en.settingsAdminTools), findsNothing);
-  });
-
-  libraryTest('the hub\'s skeleton draws the Account & sync card when the '
-      'build has an account (audit 2026-10-07, P2-4)', (tester, env) async {
-    final never = StreamController<AppSettingsEntity>();
-    addTearDown(never.close);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(accountRow: const SizedBox.shrink()),
-      overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
-    );
-
-    expect(
-      find.descendant(
-        of: find.byType(SettingsSkeletonWidget),
-        matching: find.byType(MxCard),
-      ),
-      findsNWidgets(4),
-    );
   });
 
   libraryTest('a card limit of one reads "1 card" (review 2026-10-07)', (

@@ -40,6 +40,8 @@ void main() {
       ),
       findsOneWidget,
     );
+    // The sentence shows once on the whole screen, with no code.
+    expect(find.textContaining('No connection.'), findsOneWidget);
     expect(
       tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
       MxButtonTone.outline,

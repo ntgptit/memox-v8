@@ -60,19 +60,33 @@ void main() {
     },
   );
 
-  test('offline says offline', () async {
-    world.network.goOffline();
+  // A request that fails says why: [arrange] makes the world fail, then
+  // [problem] is what the form shows.
+  final failures =
+      <({String name, void Function() arrange, SignInProblem problem})>[
+        (
+          name: 'offline says offline',
+          arrange: () => world.network.goOffline(),
+          problem: SignInProblem.offline,
+        ),
+        (
+          name: 'a rate limit says so',
+          arrange: () =>
+              world.gateway.failNextRequest = const RateLimitedFailure(),
+          problem: SignInProblem.rateLimited,
+        ),
+      ];
+  for (final c in failures) {
+    test(c.name, () async {
+      c.arrange();
 
-    expect(await controller().sendCode('a@example.com'), SignInOutcome.failed);
-    expect(state().problem, SignInProblem.offline);
-  });
-
-  test('a rate limit says so', () async {
-    world.gateway.failNextRequest = const RateLimitedFailure();
-
-    expect(await controller().sendCode('a@example.com'), SignInOutcome.failed);
-    expect(state().problem, SignInProblem.rateLimited);
-  });
+      expect(
+        await controller().sendCode('a@example.com'),
+        SignInOutcome.failed,
+      );
+      expect(state().problem, c.problem);
+    });
+  }
 
   test(
     'a second press while one runs sends nothing (Review Focus 3)',

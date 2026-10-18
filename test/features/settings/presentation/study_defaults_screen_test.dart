@@ -23,6 +23,7 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/stored_settings.dart';
 import '../../../support/forui_expect.dart';
 
 import 'package:forui/forui.dart';
@@ -37,9 +38,11 @@ const _valueKey = ValueKey('mx-stepper-value');
 
 Widget _screen() => const StudyDefaultsScreen();
 
-Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
-  env.db,
-).watchAppSettings().first).studyDefaults.cardLimit;
+// The read-aloud row's switch.
+Finder _autoPlayToggle() => find.descendant(
+  of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
+  matching: find.byType(MxToggle),
+);
 
 void main() {
   libraryTest('the two sections carry their own notes (settings hub spec '
@@ -176,7 +179,7 @@ void main() {
     store.isFailing = false;
     await tester.tap(find.text(_en.commonRetry));
     await tester.pumpAndSettle();
-    expect(await tester.runAsync(() => _storedLimit(env)), 21);
+    expect(await tester.runAsync(() => storedCardLimit(env)), 21);
   });
 
   libraryTest('Study defaults show the read-aloud switch and the default '
@@ -229,10 +232,9 @@ void main() {
       ),
       findsOneWidget,
     );
-    // The store answers on the real event loop (as `_storedLimit` is read).
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
+    // The pick says "Saved", as the other rows do.
+    expect(find.text(_en.settingsSaved), findsOneWidget);
+    final stored = await storedSettings(tester, env);
     expect(stored!.studyDefaults.speechLanguage, SpeechLanguage.viVn);
   });
 
@@ -242,18 +244,10 @@ void main() {
   ) async {
     await pumpLibraryScreen(tester, env, _screen());
 
-    await tester.tap(
-      find.descendant(
-        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
-        matching: find.byType(MxToggle),
-      ),
-    );
+    await tester.tap(_autoPlayToggle());
     await tester.pumpAndSettle();
 
-    // The store answers on the real event loop (as `_storedLimit` is read).
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
+    final stored = await storedSettings(tester, env);
     expect(stored!.isSpeechAutoPlay, isFalse);
   });
 
@@ -267,12 +261,7 @@ void main() {
       _screen(),
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
-    await tester.tap(
-      find.descendant(
-        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
-        matching: find.byType(MxToggle),
-      ),
-    );
+    await tester.tap(_autoPlayToggle());
     await tester.pumpAndSettle();
     expect(find.text(_en.settingsSpeechAutoPlaySaveFailed), findsOneWidget);
 
@@ -280,23 +269,8 @@ void main() {
     await tester.tap(find.text(_en.commonRetry));
     await tester.pumpAndSettle();
 
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
+    final stored = await storedSettings(tester, env);
     expect(stored!.isSpeechAutoPlay, isFalse);
-  });
-
-  libraryTest('a saved speech language says "Saved", as the other rows do', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _screen());
-    await tester.tap(find.text(_en.settingsSpeechLanguage));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.speechLanguageName('jaJp')));
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.settingsSaved), findsOneWidget);
   });
 
   test('the page is named Study options (owner 2026-10-07)', () {
@@ -363,9 +337,7 @@ void main() {
 
     expect(find.byType(MxBottomSheet), findsNothing);
     expect(find.text(_en.settingsOrderRandom), findsOneWidget);
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
+    final stored = await storedSettings(tester, env);
     expect(stored!.studyDefaults.newCardOrder, NewCardOrder.random);
   });
 

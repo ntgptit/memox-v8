@@ -81,18 +81,6 @@ void main() {
     matching: find.byType(MxIconTile),
   );
 
-  libraryTest('the Sync tile is success once sync is settled (critique '
-      '2026-09-30 tone pass, T4)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: syncOverrides(SyncStatus(lastSuccessAt: env.clock.now())),
-    );
-    await tester.scrollUntilVisible(syncTile(), 200);
-    expect(tester.widget<MxIconTile>(syncTile()).tone, MxIconTileTone.success);
-  });
-
   Future<MxIconTileTone> toneFor(
     WidgetTester tester,
     LibraryEnv env,
@@ -108,32 +96,36 @@ void main() {
     return tester.widget<MxIconTile>(syncTile()).tone;
   }
 
-  libraryTest('the Sync tile is warning while changes were refused '
-      '(critique 2026-09-30 part 3d-1, D5)', (tester, env) async {
-    expect(
-      await toneFor(tester, env, const SyncStatus(rejectedCount: 1)),
-      MxIconTileTone.warning,
-    );
-  });
-
-  libraryTest('the Sync tile is warning after a failed run (D5)', (
-    tester,
-    env,
-  ) async {
-    final failure = LastSyncFailure(SyncFailureKind.network, env.clock.now());
-    expect(
-      await toneFor(tester, env, SyncStatus(lastFailure: failure)),
-      MxIconTileTone.warning,
-    );
-  });
-
-  libraryTest('the Sync tile stays tinted while changes only wait (D5)', (
-    tester,
-    env,
-  ) async {
-    expect(
-      await toneFor(tester, env, const SyncStatus(pendingCount: 2)),
-      MxIconTileTone.tinted,
-    );
-  });
+  // The Sync tile's tone for each status; [status] reads the test's clock.
+  final tones = [
+    (
+      name: 'success once sync is settled (critique 2026-09-30 tone pass, T4)',
+      status: (DateTime now) => SyncStatus(lastSuccessAt: now),
+      tone: MxIconTileTone.success,
+    ),
+    (
+      name:
+          'warning while changes were refused '
+          '(critique 2026-09-30 part 3d-1, D5)',
+      status: (DateTime now) => const SyncStatus(rejectedCount: 1),
+      tone: MxIconTileTone.warning,
+    ),
+    (
+      name: 'warning after a failed run (D5)',
+      status: (DateTime now) => SyncStatus(
+        lastFailure: LastSyncFailure(SyncFailureKind.network, now),
+      ),
+      tone: MxIconTileTone.warning,
+    ),
+    (
+      name: 'tinted while changes only wait (D5)',
+      status: (DateTime now) => const SyncStatus(pendingCount: 2),
+      tone: MxIconTileTone.tinted,
+    ),
+  ];
+  for (final c in tones) {
+    libraryTest('the Sync tile is ${c.name}', (tester, env) async {
+      expect(await toneFor(tester, env, c.status(env.clock.now())), c.tone);
+    });
+  }
 }

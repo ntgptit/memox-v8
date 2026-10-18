@@ -127,6 +127,8 @@ void main() {
     );
   });
 
+  // SW-REV-005: the card's one TalkBack node keeps the tap its excluded
+  // child offered.
   libraryTest('the cards are one radio group for TalkBack, as Language is '
       '(audit 2026-10-17 SET-8)', (tester, env) async {
     final handle = tester.ensureSemantics();
@@ -154,21 +156,6 @@ void main() {
         hasSelectedState: true,
         hasTapAction: true,
       ),
-    );
-    handle.dispose();
-  });
-
-  // SW-REV-005: the card's one TalkBack node keeps the tap its excluded
-  // child offered.
-  libraryTest('TalkBack can choose a theme: the card keeps its tap', (
-    tester,
-    env,
-  ) async {
-    final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(tester, env, const ThemeScreen());
-    expect(
-      tester.getSemantics(find.bySemanticsLabel(_dark)),
-      isSemantics(hasTapAction: true),
     );
     handle.dispose();
   });

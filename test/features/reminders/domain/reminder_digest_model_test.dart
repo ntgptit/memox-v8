@@ -54,48 +54,52 @@ void main() {
     expect(digest.otherDeckCount, 0);
   });
 
-  test('more overdue cards come first (BR-REMINDER-006)', () {
-    expect(
-      _ordered([
+  // The order of the roots: [roots] as read come out as [order].
+  final orderings = [
+    (
+      name: 'more overdue cards come first (BR-REMINDER-006)',
+      roots: [
         _root('a', overdue: 2, days: 9, dueToday: 9),
         _root('b', overdue: 3),
-      ]),
-      ['b', 'a'],
-    );
-  });
-
-  test('with as many overdue cards, the older backlog comes first '
-      '(BR-REMINDER-006, BR-STUDY-067)', () {
-    expect(
-      _ordered([
+      ],
+      order: ['b', 'a'],
+    ),
+    (
+      name:
+          'with as many overdue cards, the older backlog comes first '
+          '(BR-REMINDER-006, BR-STUDY-067)',
+      roots: [
         _root('a', overdue: 2, days: 1, dueToday: 9),
         _root('b', overdue: 2, days: 4),
-      ]),
-      ['b', 'a'],
-    );
-  });
-
-  test('with the same overdue cards and age, more cards due today come '
-      'first (BR-REMINDER-006)', () {
-    expect(
-      _ordered([
+      ],
+      order: ['b', 'a'],
+    ),
+    (
+      name:
+          'with the same overdue cards and age, more cards due today come '
+          'first (BR-REMINDER-006)',
+      roots: [
         _root('a', overdue: 2, days: 1, dueToday: 2),
         _root('b', overdue: 2, days: 1, dueToday: 5),
-      ]),
-      ['b', 'a'],
-    );
-  });
-
-  test('then the folded name, not the code units: "alpha" before "Beta" '
-      '(BR-REMINDER-006, spec D10)', () {
-    expect(
-      _ordered([
+      ],
+      order: ['b', 'a'],
+    ),
+    (
+      name:
+          'then the folded name, not the code units: "alpha" before "Beta" '
+          '(BR-REMINDER-006, spec D10)',
+      roots: [
         _root('b', name: 'Beta', dueToday: 1),
         _root('a', name: 'alpha', dueToday: 1),
-      ]),
-      ['a', 'b'],
-    );
-  });
+      ],
+      order: ['a', 'b'],
+    ),
+  ];
+  for (final c in orderings) {
+    test(c.name, () {
+      expect(_ordered(c.roots), c.order);
+    });
+  }
 
   test('two roots equal in every count and in the folded name are ordered '
       'by id, never by the order they were read in (BR-REMINDER-006)', () {

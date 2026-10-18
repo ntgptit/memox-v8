@@ -16,12 +16,13 @@ import '../../../support/theme_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-/// Opens the sheet over a page; the returned future completes with the pick
-/// once a row is tapped.
+/// Opens the sheet over a page ([asks] times from the one tap); the returned
+/// future completes with the last pick once a row is tapped.
 Future<Future<SpeechLanguage?>> _open(
   WidgetTester tester, {
   required Set<String>? available,
   SpeechLanguage selected = SpeechLanguage.enUs,
+  int asks = 1,
 }) async {
   late Future<SpeechLanguage?> picked;
   final speech = FakeSpeechSynthesizer(available: available);
@@ -35,11 +36,15 @@ Future<Future<SpeechLanguage?>> _open(
         home: Scaffold(
           body: Builder(
             builder: (context) => TextButton(
-              onPressed: () => picked = showSpeechLanguageSheet(
-                context,
-                selected: selected,
-                speech: speech,
-              ),
+              onPressed: () {
+                for (var i = 0; i < asks; i++) {
+                  picked = showSpeechLanguageSheet(
+                    context,
+                    selected: selected,
+                    speech: speech,
+                  );
+                }
+              },
               child: const Text('open'),
             ),
           ),
@@ -89,35 +94,7 @@ void main() {
 
   testWidgets('a second tap while the engine is still asked opens nothing '
       '(audit 2026-10-07)', (tester) async {
-    final speech = FakeSpeechSynthesizer(available: const {'en-US'});
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: materialHostTheme(buildLightTheme()),
-          builder: mxThemeBuilder(buildLightTheme()),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => TextButton(
-                onPressed: () {
-                  for (var i = 0; i < 2; i++) {
-                    showSpeechLanguageSheet(
-                      context,
-                      selected: SpeechLanguage.enUs,
-                      speech: speech,
-                    );
-                  }
-                },
-                child: const Text('open'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
+    await _open(tester, available: const {'en-US'}, asks: 2);
 
     expect(find.byType(MxBottomSheet), findsOneWidget);
   });

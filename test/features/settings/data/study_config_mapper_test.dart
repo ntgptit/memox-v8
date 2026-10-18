@@ -39,15 +39,6 @@ void main() {
     );
   });
 
-  test('a tts_language that is a number cannot be read (spec D6)', () {
-    expect(
-      studyOptionsOf(
-        '{"card_limit":20,"new_card_order":"created","tts_language":7}',
-      ),
-      isNull,
-    );
-  });
-
   test('a tts_language this build does not know, from a later one, reads in '
       'the fallback and keeps the rest (spec D6, review 2026-10-07)', () {
     final read = studyOptionsOf(
@@ -105,6 +96,10 @@ void main() {
     (
       'a new_card_order that is a number',
       '{"card_limit":20,"new_card_order":1}',
+    ),
+    (
+      'a tts_language that is a number (spec D6)',
+      '{"card_limit":20,"new_card_order":"created","tts_language":7}',
     ),
   ]) {
     test('an override with $shape cannot be read (D5)', () {
