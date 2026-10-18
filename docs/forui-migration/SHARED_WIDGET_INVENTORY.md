@@ -33,16 +33,16 @@ the file does. It does not guess why ForUI was not used.
 |---|---:|---:|---:|---:|
 | DIRECT_FORUI | 3 | 0 | 0 | 3 |
 | FORUI_ADAPTER | 24 | 0 | 0 | 24 |
-| FORUI_COMPOSITION | 18 | 0 | 0 | 18 |
-| CUSTOM_FLUTTER | 19 | 0 | 0 | 19 |
+| FORUI_COMPOSITION | 19 | 0 | 0 | 19 |
+| CUSTOM_FLUTTER | 20 | 0 | 0 | 20 |
 | INFRASTRUCTURE | 5 | 10 | 1 | 16 |
 | REVIEW_REQUIRED | 0 | 0 | 0 | 0 |
-| **Total** | **69** | **10** | **1** | **80** |
+| **Total** | **71** | **10** | **1** | **82** |
 
 Counts were computed from the Class column of the three tables below, after
 the corrections of the ForUI research
 ([FORUI_RESEARCH_LEDGER.md](FORUI_RESEARCH_LEDGER.md)). The
-total (80) equals the number of Dart files listed: 69 from
+total (82) equals the number of Dart files listed: 71 from
 `rg --files lib/shared/widgets`, 10 in `lib/core/theme/`, plus
 `lib/app/app_theme_host.dart`.
 
@@ -69,7 +69,9 @@ total (80) equals the number of Dart files listed: 69 from
 | `lib/shared/widgets/mx_dashed_note.dart` | `MxDashedNote` | CUSTOM_FLUTTER | none | none | Muted box with a dashed hairline drawn by a `CustomPainter`. A fact, never an error or an action. |
 | `lib/shared/widgets/mx_deck_picker_sheet.dart` | `MxPickerCandidate`, `MxDeckPickerSheet`, `MxDeckPickerLoadingSheet`, `MxDeckPickerErrorSheet` | FORUI_COMPOSITION | via `MxBottomSheet`, `MxListRow`, `MxSheetActions`, `MxButton`, `MxDividedColumn` | none | Eligibility is the caller's. An ineligible candidate stays visible, dimmed, with its reason. `isHeld` disables dismiss and every row, so no second target can be picked while the first one's write runs. |
 | `lib/shared/widgets/mx_dialog.dart` | `showMxDialog`, `showMxConfirm`, `MxDialog`, `MxDialogWidth` | FORUI_ADAPTER | `FDialog`, `FDialogRoute`, `FTheme.capture` | `MaterialLocalizations` (barrier strings) | The route is a subclass that mixes in `MxHeldRoute`, pushed on the root navigator so the scrim covers the bottom bar. `MxDialog` animates with the route's animation. `showMxConfirm` returns true only on confirm; Cancel, Back and scrim are no. `isHeld` refuses Back and scrim. Width cap 300 / 320 / 340, minimum 280. |
-| `lib/shared/widgets/mx_divided_column.dart` | `MxDividedColumn` (static `divided`) | FORUI_ADAPTER | `FDivider`, `FDividerStyleDelta` | none | Single owner of list dividers: inset 16 dp at each end, palette `border` colour instead of ForUI's fainter default, none after the last row. |
+| `lib/shared/widgets/mx_divided_column.dart` | `MxDividedColumn` (static `divided`) | FORUI_COMPOSITION | `MxDivider` | none | Single owner of list dividers: an `MxDivider` (inset 16 dp) between rows, none after the last row. |
+| `lib/shared/widgets/mx_divider.dart` | `MxDivider` | FORUI_ADAPTER | `FDivider`, `FDividerStyleDelta` | none | The hairline between two parts: palette `border` colour instead of ForUI's fainter default, inset at each end (16 dp by default), no vertical space. Added 2026-10-18 (closing acceptance AV-3) for Browse's term/meaning line, which drew its own. |
+| `lib/shared/widgets/mx_pull_refresh.dart` | `MxPullRefresh` | CUSTOM_FLUTTER | Material `RefreshIndicator`, `AlwaysScrollableScrollPhysics` | none | ForUI has no pull to refresh. Keeps the drag working on a list shorter than the screen. Added 2026-10-18 (closing acceptance AV-1): Users and Monitoring each held the same private wrapper, a Material component inside a feature. A screen that offers it also offers a Refresh action, as the drag has no TalkBack equivalent. |
 | `lib/shared/widgets/mx_dot_overline.dart` | `MxDotOverline` | CUSTOM_FLUTTER | none | none | Eyebrow with a decorative primary dot (excluded from semantics); label read as typed. |
 | `lib/shared/widgets/mx_empty_state.dart` | `MxEmptyState`, `MxEmptyStateTone` | FORUI_COMPOSITION | via `MxCard` (`FCard`), `MxButton`, `MxNote` | none | Tinted tile, title, body, up to three actions and a footnote. The title and the body are one live region (a merged node), as `MxErrorState`'s are. Asserts each action label comes with its callback. |
 | `lib/shared/widgets/mx_error_state.dart` | `MxErrorState` | FORUI_COMPOSITION | via `MxCard` (`FCard`), `MxButton` | none | Inline load failure. The title and the body are one live region (a merged node), so "nothing was lost" is announced with the title. Retry shows a spinner while `isRetrying`; `retryLabel` and `onRetry` come together. |
@@ -279,6 +281,6 @@ reviewer can overrule them:
 - `mx_bottom_nav.dart` is DIRECT_FORUI for `MxBottomNav`; `MxNavItem` in the same file reshapes `FBottomNavigationBarData` for use outside a bar.
 - `mx_chip_style.dart` and `mx_tap_target.dart` hold style helpers with no widget. They are FORUI_ADAPTER (they reshape `FButtonStyle`, including the 48 dp target), not INFRASTRUCTURE.
 - `mx_selection_checkbox.dart` is FORUI_ADAPTER, not DIRECT_FORUI, because it removes input and semantics from `FCheckbox`.
-- `mx_divided_column.dart` is FORUI_ADAPTER because it overrides `FDivider`'s colour and padding.
+- `mx_divider.dart` is FORUI_ADAPTER because it overrides `FDivider`'s colour and padding; `mx_divided_column.dart` composes it.
 - `mx_app_bar.dart` and `mx_footer_bar.dart` are CUSTOM_FLUTTER because the file itself draws no ForUI component; their callers fill them with `MxIconButton` / `MxButton`.
 - `mx_note.dart` is FORUI_COMPOSITION only because of its optional dismiss `MxIconButton`; the rest is custom drawing.

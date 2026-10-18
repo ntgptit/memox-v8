@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show RefreshIndicator;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -19,6 +18,7 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_pull_refresh.dart';
 
 /// Screen 33's list: one widget per state of users spec §3, in screen 28's
 /// form (spec §6).
@@ -77,7 +77,7 @@ class UsersListWidget extends ConsumerWidget {
           },
         ],
       ),
-      UsersLoaded(:final users) when users.isEmpty => _Refreshable(
+      UsersLoaded(:final users) when users.isEmpty => MxPullRefresh(
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
@@ -133,7 +133,7 @@ class _Rows extends ConsumerWidget {
         }
         return false;
       },
-      child: _Refreshable(
+      child: MxPullRefresh(
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
@@ -192,30 +192,5 @@ class _End extends StatelessWidget {
       ),
       _ => const SizedBox.shrink(),
     };
-  }
-}
-
-/// Pull to refresh over a list that may be shorter than the screen, as
-/// screen 28's.
-class _Refreshable extends StatelessWidget {
-  const _Refreshable({required this.onRefresh, required this.child});
-
-  final Future<void> Function() onRefresh;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final behavior = ScrollConfiguration.of(context);
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: ScrollConfiguration(
-        behavior: behavior.copyWith(
-          physics: AlwaysScrollableScrollPhysics(
-            parent: behavior.getScrollPhysics(context),
-          ),
-        ),
-        child: child,
-      ),
-    );
   }
 }

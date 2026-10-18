@@ -13,6 +13,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divider.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 16, Browse (handoff 16): both faces of the card at once, nothing
@@ -222,15 +223,7 @@ class _Card extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.dimens.space24,
-                ),
-                child: SizedBox(
-                  height: context.hairline,
-                  child: ColoredBox(color: context.colors.border),
-                ),
-              ),
+              MxDivider(inset: context.dimens.space24),
               Expanded(
                 child: _Half(
                   label: l10n.studyBrowseMeaning,
