@@ -11,6 +11,7 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 import '../../../support/trash_fixtures.dart';
 

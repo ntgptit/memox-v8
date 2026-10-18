@@ -16,6 +16,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/srs_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 steps 6–13 on sm2 decks: browse, self_assess and the errors

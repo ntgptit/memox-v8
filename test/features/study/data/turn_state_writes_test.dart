@@ -13,6 +13,7 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // Graded modes spec §8.3: the recall reveal and time and the fill hint are

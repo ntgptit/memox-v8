@@ -12,6 +12,7 @@ import 'package:memox/features/study_mode/domain/models/study_answer_model.dart'
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 E3 in the repository: the write the use case makes once a
