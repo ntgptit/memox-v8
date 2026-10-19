@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// One day of an MxStackedDayBars: the [top] series stacked over the [base]
 /// series, a short label under the bar, and the whole day in words for
@@ -48,10 +49,11 @@ final class MxDayBar {
 ///   a tooltip above it (it floats over what sits above the chart); a tap on
 ///   another day moves it, a second tap on the same day or a tap outside the
 ///   chart hides it;
-/// - the two series are parted by a hairline of the card, and a day with any
-///   cards keeps each of its parts visible however full the fullest day is;
+/// - the two series are parted by a hairline of the ground under the chart,
+///   and a day with any cards keeps each of its parts visible however full
+///   the fullest day is, without ever outgrowing a fuller day;
 /// - a day with nothing is a thin baseline;
-/// - a change of data eases in, unless the platform removes animations.
+/// - new numbers ease in, unless the platform removes animations.
 ///
 /// Every day draws at full strength; the current day is told by its label in
 /// the full ink (critique 2026-10-02, F5). Each bar is one TalkBack node; the
@@ -79,19 +81,40 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
   /// The day whose tooltip shows, or null.
   int? _selected;
 
-  /// True from a tap until the next data: fl_chart eases its whole data,
-  /// the shown tooltip too, and a tip must answer the tap at once.
-  bool _isTapAnswer = false;
+  /// Whether the next build eases the bars: only when the days' numbers
+  /// changed. fl_chart eases every value it is given, so a tap (the tip shows
+  /// a frame late) or a theme change (the colours trail ForUI's motion)
+  /// draws at once.
+  bool _eases = false;
 
   static const double _emptyHeight = 2;
 
   @override
   void didUpdateWidget(MxStackedDayBars oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _isTapAnswer = false;
-    final selected = _selected;
-    if (selected == null || selected < widget.days.length) return;
+    final old = oldWidget.days;
+    final days = widget.days;
+    _eases = !_sameCounts(old, days);
+    // A tip names its day: a new day (the week slid at midnight) or a shorter
+    // week clears it.
+    if (_sameLabels(old, days)) return;
     _selected = null;
+  }
+
+  static bool _sameCounts(List<MxDayBar> a, List<MxDayBar> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].base != b[i].base || a[i].top != b[i].top) return false;
+    }
+    return true;
+  }
+
+  static bool _sameLabels(List<MxDayBar> a, List<MxDayBar> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].label != b[i].label) return false;
+    }
+    return true;
   }
 
   @override
@@ -115,27 +138,18 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
                   child: ExcludeSemantics(
                     child: LayoutBuilder(
                       builder: (context, constraints) => BarChart(
-                        // A new chart per brightness: fl_chart eases every
-                        // value it is given over its own duration, colours
-                        // too, so it would trail ForUI's theme motion.
-                        key: ValueKey(context.colors.brightness),
                         _chartData(
                           context,
                           bars,
                           chartWidth: constraints.maxWidth,
-                          maxY:
-                              math.max(
-                                MxStackedDayBars.barsHeight,
-                                bars.tallest,
-                              ) +
-                              guideRoom,
+                          // One unit is one logical pixel.
+                          maxY: MxStackedDayBars.barsHeight + guideRoom,
                           columnHeight: constraints.maxHeight,
                         ),
                         duration:
-                            _isTapAnswer ||
-                                MediaQuery.disableAnimationsOf(context)
-                            ? Duration.zero
-                            : Durations.medium2,
+                            _eases && !MediaQuery.disableAnimationsOf(context)
+                            ? Durations.medium2
+                            : Duration.zero,
                         curve: Easing.standardDecelerate,
                       ),
                     ),
@@ -202,39 +216,47 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
     if (_selected == null) return;
     setState(() {
       _selected = null;
-      _isTapAnswer = true;
+      _eases = false;
     });
   }
 
   /// The room above the fullest day for the guide's number: one line of the
-  /// `meta` role at the platform's text scale.
+  /// `meta` role, unscaled, as fl_chart draws it.
   double _guideRoom(BuildContext context) {
     final meta = context.texts.meta;
-    final fontSize = MediaQuery.textScalerOf(context).scale(meta.fontSize!);
-    return fontSize * (meta.height ?? 1);
+    return meta.fontSize! * (meta.height ?? 1);
   }
 
-  /// Each day's parts in logical pixels: the fullest day fills
-  /// [MxStackedDayBars.barsHeight], a part with any cards is at least
-  /// `sizeTrack` tall, and the hairline between two parts is extra.
+  /// Each day's parts in logical pixels. A day's height is its share of the
+  /// fullest day, which fills [MxStackedDayBars.barsHeight], so the order of
+  /// the days always holds; a day with any cards is at least tall enough for
+  /// each of its parts to show `sizeTrack` with the hairline between them,
+  /// and that floor comes out of the larger part, never on top of the day.
   _Bars _layout(BuildContext context) {
     final most = widget.days.map((day) => day.total).fold(0, math.max);
     final gap = context.hairline;
     final minPart = context.dimens.sizeTrack;
-    final unit = (MxStackedDayBars.barsHeight - gap) / math.max(most, 1);
-    double part(int count) => count == 0 ? 0 : math.max(count * unit, minPart);
+    final unit = MxStackedDayBars.barsHeight / math.max(most, 1);
+    final floor = 2 * minPart + gap;
     final days = [
-      for (final day in widget.days)
-        (
-          base: part(day.base),
-          gap: day.base > 0 && day.top > 0 ? gap : 0.0,
-          top: part(day.top),
-        ),
+      for (final day in widget.days) _parts(day, unit, gap, minPart, floor),
     ];
-    final tallest = days
-        .map((day) => day.base + day.gap + day.top)
-        .fold(0.0, math.max);
-    return _Bars(days: days, most: most, tallest: tallest);
+    return _Bars(days: days, most: most);
+  }
+
+  static ({double base, double gap, double top}) _parts(
+    MxDayBar day,
+    double unit,
+    double gap,
+    double minPart,
+    double floor,
+  ) {
+    if (day.total == 0) return (base: 0, gap: 0, top: 0);
+    final height = math.max(day.total * unit, floor);
+    if (day.top == 0) return (base: height, gap: 0, top: 0);
+    if (day.base == 0) return (base: 0, gap: 0, top: height);
+    final top = (day.top * unit).clamp(minPart, height - gap - minPart);
+    return (base: height - gap - top, gap: gap, top: top);
   }
 
   BarChartData _chartData(
@@ -280,9 +302,10 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
                 BarChartRodData(
                   toY: day.base + day.gap + day.top,
                   width: rodWidth,
-                  // The rod shows only between the parts: the card's
-                  // hairline. Its corners round the stack as a whole.
-                  color: colors.card,
+                  // The rod shows only between the parts: a hairline of the
+                  // ground the chart sits on. Its corners round the stack as
+                  // a whole.
+                  color: MxTintBase.of(context),
                   borderRadius: BorderRadius.all(round),
                   rodStackItems: [
                     if (day.base > 0)
@@ -307,7 +330,7 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
     ).format(bars.most);
     return HorizontalLine(
       // A hairline above the fullest day's top, so no dash lies on it.
-      y: bars.tallest + context.hairline,
+      y: MxStackedDayBars.barsHeight + context.hairline,
       color: context.colors.border,
       strokeWidth: context.hairline,
       dashArray: [context.dimens.space4.toInt(), context.dimens.space4.toInt()],
@@ -344,13 +367,14 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
         final touched = response?.spot?.touchedBarGroupIndex;
         setState(() {
           _selected = touched == _selected ? null : touched;
-          _isTapAnswer = true;
+          _eases = false;
         });
       },
       touchTooltipData: BarTouchTooltipData(
-        // ForUI's tooltip: the foreground as ground, the page as ink.
+        // ForUI's tooltip (`FTooltipStyle.inherit`): the foreground as
+        // ground, the `sm` radius, its padding and type.
         getTooltipColor: (_) => context.colors.foreground,
-        tooltipBorderRadius: context.radii.md,
+        tooltipBorderRadius: context.radii.sm,
         tooltipPadding: tooltip.padding,
         tooltipMargin: context.dimens.space4,
         // Above the day it names, never over it, and as wide as the chart:
@@ -370,11 +394,8 @@ class _MxStackedDayBarsState extends State<MxStackedDayBars> {
 
 /// The parts of every day, in logical pixels, and the count of the fullest.
 final class _Bars {
-  const _Bars({required this.days, required this.most, required this.tallest});
+  const _Bars({required this.days, required this.most});
 
   final List<({double base, double gap, double top})> days;
   final int most;
-
-  /// The drawn height of the tallest day, where the guide sits.
-  final double tallest;
 }

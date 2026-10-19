@@ -361,7 +361,7 @@ else
   FAILED+=("design tooling tests unavailable: $DESIGN_TESTS")
 fi
 
-# ForUI boundary rules (UIL00..UIL06), resolved against package:flutter,
+# ForUI boundary rules (UIL00..UIL07), resolved against package:flutter,
 # material_ui and forui, so an alias or a local function of the same name
 # changes nothing. Fixtures and the allowlist live in tools/ui_lint; the rule
 # table is in docs/forui-migration/FORUI_ARCHITECTURE.md.

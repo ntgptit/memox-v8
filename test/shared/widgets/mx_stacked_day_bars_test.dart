@@ -54,37 +54,55 @@ Future<void> _tapColumn(WidgetTester tester, int day, int of) async {
 
 void main() {
   testWidgets('the fullest day fills the chart; the rest scale to it; the '
-      'parts stack with a card hairline between them', (tester) async {
+      'parts stack with a hairline of the ground between them', (tester) async {
     await pumpMx(
       tester,
       _chart([_day('M', 10, 0), _day('Today', 12, 8, now: true)]),
     );
 
-    // Today: 8 learning over 12 reviewing, and the hairline, fill the 78.
-    const unit = (MxStackedDayBars.barsHeight - _hairline) / 20;
+    // Today: 8 learning over 12 reviewing fill the 78; the hairline comes
+    // out of the reviewing part.
+    const unit = MxStackedDayBars.barsHeight / 20;
+    const reviewingTop = MxStackedDayBars.barsHeight - _hairline - 8 * unit;
     expect(_parts(tester, 1), [
-      (0, 12 * unit),
-      (12 * unit + _hairline, MxStackedDayBars.barsHeight),
+      (0, reviewingTop),
+      (reviewingTop + _hairline, MxStackedDayBars.barsHeight),
     ]);
     expect(_rod(tester, 1).rodStackItems.map((item) => item.color), [
       _reviewing.color,
       _learning.color,
     ]);
-    // The rod itself shows only in the gap: the card.
-    expect(_rod(tester, 1).color, appLightColors.card);
+    // The rod itself shows only in the gap: the ground under the chart, the
+    // page here.
+    expect(_rod(tester, 1).color, appLightColors.background);
     // Monday is drawn as strongly as Today, half its 20 (critique
     // 2026-10-02, F5), with no gap over a single part.
     expect(_parts(tester, 0), [(0, 10 * unit)]);
     expect(_rod(tester, 0).toY, 10 * unit);
+    // One unit is one logical pixel: the chart is as tall as its maxY.
+    expect(tester.getSize(find.byType(BarChart)).height, _data(tester).maxY);
   });
 
-  testWidgets('a part with any cards stays visible beside a far fuller day', (
-    tester,
-  ) async {
-    await pumpMx(tester, _chart([_day('M', 80, 0), _day('T', 0, 1)]));
+  testWidgets('a part with any cards stays visible beside a far fuller day, '
+      'and a fuller day is never drawn shorter', (tester) async {
+    await pumpMx(
+      tester,
+      _chart([_day('M', 80, 0), _day('T', 0, 1), _day('W', 62, 0)]),
+    );
 
-    // One card in a week of 80 would be under 1 dp; it keeps `sizeTrack`.
-    expect(_parts(tester, 1), [(0, _sizeTrack)]);
+    // One card in a week of 80 would be under 1 dp; it keeps the floor of
+    // two `sizeTrack` parts and the hairline.
+    expect(_parts(tester, 1), [(0, 2 * _sizeTrack + _hairline)]);
+
+    // 62 reviewing beside 60 reviewing and 1 learning: the learning part
+    // keeps `sizeTrack` out of the reviewing one, so the 61-card day stays
+    // shorter than the 62-card day.
+    await pumpMx(tester, _chart([_day('M', 62, 0), _day('T', 60, 1)]));
+
+    expect(_rod(tester, 1).toY, lessThan(_rod(tester, 0).toY));
+    expect(_rod(tester, 0).toY, MxStackedDayBars.barsHeight);
+    final (from, to) = _parts(tester, 1).last;
+    expect(to - from, _sizeTrack);
   });
 
   testWidgets('a day with nothing is one 2-high baseline: the progress track, '
@@ -101,13 +119,6 @@ void main() {
       // The host theme eases from the previous brightness.
       await tester.pump(const Duration(milliseconds: 400));
       final baseline = _rod(tester, 0);
-      // The chart starts over in the new brightness, so it paints the new
-      // colours at once rather than easing from the old ones.
-      expect(
-        tester.widget<BarChart>(find.byType(BarChart)).key,
-        ValueKey(brightness),
-        reason: '$brightness',
-      );
 
       expect(baseline.toY, 2, reason: '$brightness');
       expect(baseline.rodStackItems, isEmpty, reason: '$brightness');
@@ -167,30 +178,60 @@ void main() {
     await tester.tap(find.text('Learning'));
     await tester.pump();
     expect(shown(), isEmpty);
+
+    // New numbers keep the tip on its day; a new day (the week slid at
+    // midnight) clears it.
+    await _tapColumn(tester, 2, days.length);
+    await pumpMx(tester, _chart([...days.take(2), _day('Today', 5, 0)]));
+    expect(shown(), [2]);
+    await pumpMx(
+      tester,
+      _chart([_day('T', 0, 0), _day('W', 2, 0), _day('Today', 0, 0)]),
+    );
+    expect(shown(), isEmpty);
   });
 
-  testWidgets('a change of data eases in, and is instant when the platform '
-      'removes animations', (tester) async {
-    for (final (disabled, duration) in [
-      (false, Durations.medium2),
-      (true, Duration.zero),
-    ]) {
+  testWidgets('new numbers ease in; a theme change, a tap, or the platform '
+      'removing animations draw at once', (tester) async {
+    Future<Duration> pumpWeek(
+      int reviewing, {
+      bool disabled = false,
+      Brightness brightness = Brightness.light,
+    }) async {
       await pumpMx(
         tester,
         Builder(
           builder: (context) => MediaQuery(
             data: MediaQuery.of(context).copyWith(disableAnimations: disabled),
-            child: _chart([_day('M', 1, 0)]),
+            child: _chart([_day('M', reviewing, 0), _day('T', 2, 1)]),
           ),
         ),
+        brightness: brightness,
       );
-
-      expect(
-        tester.widget<BarChart>(find.byType(BarChart)).duration,
-        duration,
-        reason: 'disableAnimations: $disabled',
-      );
+      return tester.widget<BarChart>(find.byType(BarChart)).duration;
     }
+
+    expect(await pumpWeek(1), Duration.zero, reason: 'first frame');
+    expect(await pumpWeek(4), Durations.medium2, reason: 'new numbers');
+    // The colours follow ForUI's theme motion frame by frame; easing them
+    // again would trail it.
+    expect(
+      await pumpWeek(4, brightness: Brightness.dark),
+      Duration.zero,
+      reason: 'theme change',
+    );
+    expect(
+      await pumpWeek(6, disabled: true, brightness: Brightness.dark),
+      Duration.zero,
+      reason: 'Remove animations',
+    );
+    await pumpWeek(8, brightness: Brightness.dark);
+    await _tapColumn(tester, 0, 2);
+    expect(
+      tester.widget<BarChart>(find.byType(BarChart)).duration,
+      Duration.zero,
+      reason: 'a tap',
+    );
   });
 
   testWidgets('each bar is one TalkBack node; labels, guide and legend say '
