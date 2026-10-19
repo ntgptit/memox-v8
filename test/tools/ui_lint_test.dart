@@ -52,15 +52,6 @@ void main() {
     }
   }, timeout: const Timeout(Duration(minutes: 3)));
 
-  test(
-    'aliased Cupertino import and Switch.adaptive are both caught',
-    () async {
-      final violations = await _negativeHits;
-      expect(_count(violations, 'uil02_aliased_import.dart', 'UIL02'), 2);
-    },
-    timeout: const Timeout(Duration(minutes: 3)),
-  );
-
   test('positive fixtures are clean', () async {
     expect(await _positiveHits, isEmpty);
   }, timeout: const Timeout(Duration(minutes: 3)));
@@ -72,6 +63,8 @@ void main() {
       'uil01_forui_overlay.dart': 4,
       'uil01_overlay_route_subclass.dart': 3,
       'uil02_cupertino_adaptive.dart': 17,
+      // An aliased Cupertino import and Switch.adaptive are both caught.
+      'uil02_aliased_import.dart': 2,
       // A whole import, a prefix, ElevatedButton in a show list, an src/
       // import, and Scaffold outside the shell.
       'uil03_material_import.dart': 5,

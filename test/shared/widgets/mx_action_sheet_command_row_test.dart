@@ -159,9 +159,8 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('a disabled command is dimmed, announced disabled, and inert', (
-    tester,
-  ) async {
+  testWidgets('M3F-17: a disabled command is dimmed, announced disabled with '
+      'no tap action, and inert', (tester) async {
     final semantics = tester.ensureSemantics();
     var taps = 0;
     await pumpMx(
@@ -178,23 +177,6 @@ void main() {
 
     expect(taps, 0);
     expect(find.byType(Opacity), findsWidgets);
-    expect(
-      tester.getSemantics(find.text('Study this deck')),
-      isSemantics(isButton: true, isEnabled: false),
-    );
-    semantics.dispose();
-  });
-  testWidgets('M3F-17: a disabled command has no tap action', (tester) async {
-    final semantics = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      MxActionSheetCommandRow(
-        icon: AppIcons.play,
-        label: 'Study this deck',
-        onTap: () {},
-        isEnabled: false,
-      ),
-    );
     expect(
       tester.getSemantics(find.text('Study this deck')),
       isSemantics(

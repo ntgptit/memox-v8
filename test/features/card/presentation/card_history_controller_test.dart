@@ -5,53 +5,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
-import 'package:memox/core/error/failure.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/load_card_history_page_use_case.dart';
 import 'package:memox/features/card/presentation/controllers/card_history_controller.dart';
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_day_clock.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/test_database.dart';
-
-/// Fails the first request for an older page, then answers as [_cards]
-/// does; records every cursor it was asked from.
-final class _FlakyHistory implements CardRepository {
-  _FlakyHistory(this._cards);
-
-  final CardRepository _cards;
-  final afters = <ReviewHistoryCursor?>[];
-  var _hasFailed = false;
-
-  @override
-  Future<ReviewHistoryPage?> historyPage({
-    required String cardId,
-    ReviewHistoryCursor? after,
-  }) async {
-    afters.add(after);
-    if (after != null && !_hasFailed) {
-      _hasFailed = true;
-      throw const UnknownDatabaseFailure(cause: '/data/memox.sqlite');
-    }
-    return _cards.historyPage(cardId: cardId, after: after);
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
+import 'support/flaky_card_history.dart';
 
 void main() {
   late AppDatabase db;
@@ -120,14 +90,7 @@ void main() {
     'a failed older page keeps the rows; Retry resumes at the cursor (E4)',
     () async {
       await seed(ReviewHistoryPage.size + 1);
-      final flaky = _FlakyHistory(
-        CardRepositoryImpl(
-          db,
-          ScheduleRepositoryImpl(db),
-          TagRepositoryImpl(db),
-          DeckTreeDataSource(db),
-        ),
-      );
+      final flaky = FlakyCardHistory(cardRepository(db));
       final c = container([
         loadCardHistoryPageUseCaseProvider.overrideWithValue(
           LoadCardHistoryPageUseCase(flaky),
@@ -147,23 +110,24 @@ void main() {
     },
   );
 
-  test('a card never studied has an empty history (BR-CARD-018)', () async {
-    await seed(0);
-    final view = await open(container());
-
-    expect(view.entries, isEmpty);
-    expect(view.next, isNull);
-  });
-
-  test(
-    'a card that is gone has an empty history; its detail says why',
-    () async {
+  for (final scenario in [
+    (
+      name: 'a card never studied has an empty history (BR-CARD-018)',
+      seed: true,
+    ),
+    (
+      name: 'a card that is gone has an empty history; its detail says why',
+      seed: false,
+    ),
+  ]) {
+    test(scenario.name, () async {
+      if (scenario.seed) await seed(0);
       final view = await open(container());
 
       expect(view.entries, isEmpty);
       expect(view.next, isNull);
-    },
-  );
+    });
+  }
 
   test(
     'the labels name each kind, action and mode; an unknown mode as stored',

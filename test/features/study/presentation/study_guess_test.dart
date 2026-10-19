@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
-import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
@@ -16,18 +14,12 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import 'support/study_screen_helpers.dart';
 
 // Screen 18, Guess (UC-STUDY-006): BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
 // BR-STUDY-042, BR-STUDY-063; FE-A6 P3 rulings G1–G3, C1–C4, C6.
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
 
 /// ST-01 is served first; its meaning is "apple".
 Future<String> _guess(LibraryEnv env) =>
@@ -46,20 +38,36 @@ String _letterOf(WidgetTester tester, String meaning) {
   return label.substring('Option '.length, 'Option '.length + 1);
 }
 
-/// The footer hint's glyph (critique 2026-10-02, F7).
-IconData _hintIcon(WidgetTester tester) => tester
-    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
-    .icon;
+/// [body] over a guess session whose meaning source is one short of filling
+/// the options, so its first question is blocked (BR-STUDY-040).
+Future<void> _withBlockedGuess(
+  WidgetTester tester,
+  Future<void> Function(LibraryEnv env, String id) body,
+) async {
+  final env = LibraryEnv(
+    openTestDatabase(interceptor: ThinMeaningSource(4)),
+    FakeDayClock(libraryToday),
+  );
+  try {
+    await body(env, await _guess(env));
+  } finally {
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(Duration.zero);
+    await env.db.close();
+  }
+}
+
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
 
 void main() {
   libraryTest('the term is asked under "What is this?" with five lettered '
       'options (BR-STUDY-037)', (tester, env) async {
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.text(_en.studyGuessPrompt.toUpperCase()), findsOneWidget);
     expect(find.text('term 1'), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
     for (final letter in ['A', 'B', 'C', 'D', 'E']) {
       expect(find.text(letter), findsOneWidget);
     }
@@ -72,7 +80,7 @@ void main() {
       'question follows after 1.2 s (G1, G2, C3)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final letter = _letterOf(tester, 'apple');
 
     await tester.tap(find.text('apple'));
@@ -101,14 +109,14 @@ void main() {
       'the rest, and a tap continues early (G1, C1, C3)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final right = _letterOf(tester, 'apple');
     final wrong = _letterOf(tester, 'banana');
 
     await tester.tap(find.text('banana'));
     await tester.pump();
     await tester.pump();
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
 
     expect(
       find.bySemanticsLabel(
@@ -146,7 +154,7 @@ void main() {
     final handle = tester.ensureSemantics();
     final id = await _guess(env);
     env.sessions.isLocked = true;
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     final other = tester
         .widgetList<Semantics>(find.byType(Semantics))
         .map((node) => node.properties.label)
@@ -183,7 +191,7 @@ void main() {
   libraryTest('a second tap while the turn is held writes nothing '
       '(BR-STUDY-042)', (tester, env) async {
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text('banana'));
     await tester.pump();
@@ -204,7 +212,7 @@ void main() {
         const FakeAccessibilityFeatures(accessibleNavigation: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text('apple'));
     await tester.pump();
@@ -221,7 +229,7 @@ void main() {
   libraryTest('nothing overflows and each option is '
       'at least 48 tall (C4)', (tester, env) async {
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(tester.takeException(), isNull);
     final row = find.ancestor(
@@ -233,20 +241,15 @@ void main() {
 
   libraryTest('at normal size no fade is drawn', (tester, env) async {
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
 
   testWidgets('a blocked question shows the notice, and Close ends the '
       'session (BR-STUDY-040, G3, C2)', (tester) async {
-    final env = LibraryEnv(
-      openTestDatabase(interceptor: ThinMeaningSource(4)),
-      FakeDayClock(libraryToday),
-    );
-    try {
-      final id = await _guess(env);
-      await pumpLibraryScreen(tester, env, _screen(id));
+    await _withBlockedGuess(tester, (env, id) async {
+      await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
       expect(find.text(_en.studyGuessBlockedTitle), findsOneWidget);
       // M3-D6: Close is the error state's own action.
@@ -283,63 +286,50 @@ void main() {
         (await sessionOf(env.db, id)).read<String>('end_reason'),
         'user_exit',
       );
-    } finally {
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(Duration.zero);
-      await env.db.close();
-    }
+    });
   });
 
-  libraryTest('the context line names the round, not the first-pick rule, '
-      'which the footer states (critique 2026-09-30 part 3c-2, R9)', (
-    tester,
-    env,
-  ) async {
-    final handle = tester.ensureSemantics();
-    final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-    final round = _en.studyContextRound(
-      _en.studyContextReview('Lesson', _en.studyKindReview),
-      1,
-    );
+  for (final (locale, name) in [
+    (
+      const Locale('en'),
+      'the context line names the round, not the first-pick '
+          'rule, which the footer states (critique 2026-09-30 part 3c-2, R9)',
+    ),
+    (
+      const Locale('vi'),
+      'the context line names the round in Vietnamese too (R9)',
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final handle = tester.ensureSemantics();
+      final l10n = lookupAppLocalizations(locale);
+      final id = await _guess(env);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        studySessionScreen(id),
+        locale: locale,
+      );
+      final round = l10n.studyContextRound(
+        l10n.studyContextReview('Lesson', l10n.studyKindReview),
+        1,
+      );
 
-    expect(find.bySemanticsLabel(round), findsOneWidget);
-    expect(find.textContaining(_en.studyGuessHintIdle), findsOneWidget);
-    handle.dispose();
-  });
-
-  libraryTest('in Vietnamese too (R9)', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    final vi = lookupAppLocalizations(const Locale('vi'));
-    final id = await _guess(env);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(id),
-      locale: const Locale('vi'),
-    );
-
-    expect(
-      find.bySemanticsLabel(
-        vi.studyContextRound(
-          vi.studyContextReview('Lesson', vi.studyKindReview),
-          1,
-        ),
-      ),
-      findsOneWidget,
-    );
-    handle.dispose();
-  });
+      expect(find.bySemanticsLabel(round), findsOneWidget);
+      expect(find.textContaining(l10n.studyGuessHintIdle), findsOneWidget);
+      handle.dispose();
+    });
+  }
 
   testWidgets('at text scale 2 the blocked notice scrolls from the top and '
       'nothing overflows (Review Focus 5)', (tester) async {
-    final env = LibraryEnv(
-      openTestDatabase(interceptor: ThinMeaningSource(4)),
-      FakeDayClock(libraryToday),
-    );
-    try {
-      final id = await _guess(env);
-      await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+    await _withBlockedGuess(tester, (env, id) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        studySessionScreen(id),
+        textScale: 2,
+      );
 
       expect(tester.takeException(), isNull);
       expect(
@@ -349,10 +339,6 @@ void main() {
         ),
         findsOneWidget,
       );
-    } finally {
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(Duration.zero);
-      await env.db.close();
-    }
+    });
   });
 }

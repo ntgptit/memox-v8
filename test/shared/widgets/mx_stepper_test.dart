@@ -19,14 +19,17 @@ MxStepper _stepper({
   bool isInvalid = false,
   bool isBusy = false,
   bool isEnabled = true,
+  bool canIncrement = true,
   int minDigits = 1,
+  String? valueLabel,
 }) => MxStepper(
   value: value,
+  valueLabel: valueLabel,
   minDigits: minDigits,
   decrementLabel: 'Fewer cards',
   incrementLabel: 'More cards',
   onDecrement: onDecrement ?? () {},
-  onIncrement: onIncrement ?? () {},
+  onIncrement: canIncrement ? (onIncrement ?? () {}) : null,
   isInvalid: isInvalid,
   isBusy: isBusy,
   isEnabled: isEnabled,
@@ -149,15 +152,7 @@ void main() {
       '(closing audit 2026-10-17)', (tester) async {
     await pumpMx(
       tester,
-      MxStepper(
-        value: 20,
-        valueLabel: 'Cards per session',
-        decrementLabel: 'Fewer cards',
-        incrementLabel: 'More cards',
-        onDecrement: () {},
-        onIncrement: () {},
-        isBusy: true,
-      ),
+      _stepper(valueLabel: 'Cards per session', isBusy: true),
     );
     expect(
       tester.widget<MxSpinner>(find.byType(MxSpinner)).semanticLabel,
@@ -166,16 +161,7 @@ void main() {
   });
 
   testWidgets('at a bound the button stops without dimming', (tester) async {
-    await pumpMx(
-      tester,
-      MxStepper(
-        value: 200,
-        decrementLabel: 'Fewer cards',
-        incrementLabel: 'More cards',
-        onDecrement: () {},
-        onIncrement: null,
-      ),
-    );
+    await pumpMx(tester, _stepper(value: 200, canIncrement: false));
     await tester.tap(_button('More cards'), warnIfMissed: false);
     await tester.pumpAndSettle();
 
@@ -237,22 +223,28 @@ void main() {
     expect(_opacityAbove(tester, find.byType(FButton).first), 1);
   });
 
-  testWidgets('minDigits pads the value and what it reads as (critique '
-      '2026-09-30 part 3d-2, E14)', (tester) async {
-    await pumpMx(tester, _stepper(value: 5, minDigits: 2));
-    expect(find.text('05'), findsOneWidget);
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is Semantics && widget.properties.value == '05',
-      ),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('by default a value keeps its digits', (tester) async {
-    await pumpMx(tester, _stepper(value: 5));
-    expect(find.text('5'), findsOneWidget);
-  });
+  // Critique 2026-09-30 part 3d-2, E14: minDigits pads the value and what it
+  // reads as; by default a value keeps its digits.
+  for (final (name, minDigits, shown) in [
+    (
+      'minDigits pads the value and what it reads as (critique 2026-09-30 part '
+          '3d-2, E14)',
+      2,
+      '05',
+    ),
+    ('by default a value keeps its digits', 1, '5'),
+  ]) {
+    testWidgets(name, (tester) async {
+      await pumpMx(tester, _stepper(value: 5, minDigits: minDigits));
+      expect(find.text(shown), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.value == shown,
+        ),
+        findsOneWidget,
+      );
+    });
+  }
 
   testWidgets('an invalid value reads as invalid each time TalkBack visits '
       'it (audit 2026-10-07)', (tester) async {

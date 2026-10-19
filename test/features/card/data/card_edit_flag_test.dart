@@ -5,13 +5,11 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -28,13 +26,7 @@ void main() {
   setUp(() async {
     db = openTestDatabase();
     final decks = DeckRepositoryImpl(db, now: _t0);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: _t0),
-      TagRepositoryImpl(db, now: _t0),
-      DeckTreeDataSource(db),
-      now: _t0,
-    );
+    cards = cardRepository(db, now: _t0);
     final root = await decks.root('Korean');
     nouns = await decks.sub(root.id, 'Nouns');
   });

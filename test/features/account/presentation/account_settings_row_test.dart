@@ -65,56 +65,54 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  accountTest('offline, Sign in waits and says when it will work', (
-    tester,
-    env,
-    world,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      section(),
-      overrides: [...accountOverrides(world), authStateOf(const LocalOnly())],
-    );
-
-    expect(find.text(_en.accountSignInLater), findsOneWidget);
-    final row = tester.widget<MxSettingsRow>(find.byType(MxSettingsRow));
-    expect(row.isEnabled, isFalse);
-  });
-
-  for (final starting in <AuthState>[const Booting(), const Bootstrapping()]) {
-    accountTest('while the account starts (${starting.runtimeType}), Sign in '
-        'waits without saying it needs a connection (audit 2026-10-17, as '
-        'ACC-2)', (tester, env, world) async {
+  // No account to show: the row offers Sign in, but it waits unless the
+  // device can link. [saysLater] is "Sign in later", the connection line;
+  // while the account starts the row says the hint instead.
+  final waiting = <({String name, AuthState state, bool saysLater})>[
+    (
+      name: 'offline, Sign in waits and says when it will work',
+      state: const LocalOnly(),
+      saysLater: true,
+    ),
+    for (final starting in <AuthState>[const Booting(), const Bootstrapping()])
+      (
+        name:
+            'while the account starts (${starting.runtimeType}), Sign in '
+            'waits without saying it needs a connection (audit 2026-10-17, '
+            'as ACC-2)',
+        state: starting,
+        saysLater: false,
+      ),
+    (
+      name:
+          'offline with a session (Validating stays until the network '
+          'returns), Sign in says it needs a connection (closing review '
+          '2026-10-17)',
+      state: const Validating(null),
+      saysLater: true,
+    ),
+  ];
+  for (final c in waiting) {
+    accountTest(c.name, (tester, env, world) async {
       await pumpLibraryScreen(
         tester,
         env,
         section(),
-        overrides: [...accountOverrides(world), authStateOf(starting)],
+        overrides: [...accountOverrides(world), authStateOf(c.state)],
       );
 
-      expect(find.text(_en.accountSignInLater), findsNothing);
-      expect(find.text(_en.accountSignInHint), findsOneWidget);
+      expect(
+        find.text(_en.accountSignInLater),
+        c.saysLater ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.text(_en.accountSignInHint),
+        c.saysLater ? findsNothing : findsOneWidget,
+      );
       final row = tester.widget<MxSettingsRow>(find.byType(MxSettingsRow));
       expect(row.isEnabled, isFalse);
     });
   }
-
-  accountTest('offline with a session (Validating stays until the network '
-      'returns), Sign in says it needs a connection (closing review '
-      '2026-10-17)', (tester, env, world) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      section(),
-      overrides: [
-        ...accountOverrides(world),
-        authStateOf(const Validating(null)),
-      ],
-    );
-
-    expect(find.text(_en.accountSignInLater), findsOneWidget);
-  });
 
   accountTest('an attached account shows its email', (
     tester,

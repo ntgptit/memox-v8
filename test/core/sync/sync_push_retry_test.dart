@@ -5,14 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
-import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
-import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
-import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
-import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
 
+import '../../support/sync_adapters.dart';
+import '../../support/sync_rows.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
 
@@ -30,15 +25,7 @@ class _Device {
     coordinator = SyncCoordinator(
       api: server,
       store: store,
-      adapters: [
-        DeleteBatchSyncDao(db),
-        DeckSyncDao(db),
-        TagSyncDao(db, store),
-        CardSyncDao(db),
-        CardScheduleSyncDao(db, store),
-        ReviewLogSyncDao(db),
-        AccountSettingsSyncDao(db),
-      ],
+      adapters: deviceSyncAdapters(db),
     );
   }
 
@@ -70,17 +57,6 @@ class _Device {
   }
 }
 
-Future<void> _root(
-  AppDatabase db,
-  String id, {
-  String name = 'r',
-}) => db.customStatement(
-  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-  "scheduler_version, generation, sibling_position, created_at, updated_at) "
-  "VALUES (?, ?, NULL, ?, 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-  [id, name, id],
-);
-
 Future<void> _child(
   AppDatabase db,
   String id,
@@ -110,7 +86,7 @@ void main() {
   group('a push that fails keeps the outbox (DEV-225, ADR-013)', () {
     test('thrown before the server: the entry stays with the same op id, one '
         'more attempt, and the next run converges', () async {
-      await _root(a.db, 'R');
+      await insertRootDeck(a.db, 'R');
       final before = (await a.outbox()).single;
       server.duringPush = () async => throw const SocketException('offline');
 
@@ -136,7 +112,7 @@ void main() {
 
     test('committed on the server, response lost: the retry resends the op id, '
         'the server does not apply it again, and the ack lands', () async {
-      await _root(a.db, 'R');
+      await insertRootDeck(a.db, 'R');
       final before = (await a.outbox()).single;
       server.afterPushCommit = () async {
         server.afterPushCommit = null;
@@ -164,7 +140,7 @@ void main() {
 
     test('a delete whose response was lost is resent as the same delete and '
         'tombstones once', () async {
-      await _root(a.db, 'R');
+      await insertRootDeck(a.db, 'R');
       await a.coordinator.runOnce();
       await a.db.customStatement("DELETE FROM deck WHERE id = 'R'");
       final before = (await a.outbox()).single;
@@ -199,7 +175,7 @@ void main() {
       /// not pulled; A edits C offline and the server refuses the edit with
       /// C's copy under X.
       Future<void> moveAwayOnB() async {
-        await _root(a.db, 'R');
+        await insertRootDeck(a.db, 'R');
         await _child(a.db, 'C', 'R');
         await a.coordinator.runOnce();
         await b.coordinator.runOnce();

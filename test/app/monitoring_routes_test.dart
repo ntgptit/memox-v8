@@ -19,9 +19,6 @@ import '../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _tab(String label) =>
-    find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
-
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 500));
@@ -54,7 +51,7 @@ void main() {
         monitoringRepositoryProvider.overrideWithValue(repository),
       ],
     );
-    await tester.tap(_tab(_en.navSettings));
+    await tester.tap(bottomTab(_en.navSettings));
     await tester.pumpAndSettle();
     // Through the Admin page (23b, settings hub spec D4).
     await tester.tap(find.text(_en.settingsAdminTools));

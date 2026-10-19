@@ -2,54 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
-import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_question_bar_chart_widget.dart';
 import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
-
-/// Question [no] answered [selected] (null: blank) where 1 is right, taking
-/// [ms].
-TopikAttemptAnswer _answer(
-  int no, {
-  int? selected,
-  int ms = 60000,
-  TopikQuestionType type = TopikQuestionType.r1Topic,
-}) => TopikAttemptAnswer(
-  questionNo: no,
-  selectedIdx: selected,
-  timeSpentMs: ms,
-  answeredAt: selected == null ? null : DateTime.utc(2026, 10, 15),
-  correctIdx: 1,
-  points: 2,
-  pointsEarned: selected == 1 ? 2 : 0,
-  questionType: type,
-);
+import '../../../support/topik_summary_parts.dart';
 
 // Screen 38's time chart (detail file 38; critique S4, owner 2026-10-17).
 void main() {
-  final answers = [
-    _answer(31, selected: 1, ms: 65000),
-    _answer(32, selected: 3, ms: 125000, type: TopikQuestionType.r1FillBlank),
-    _answer(33, ms: 0, type: TopikQuestionType.r1FillBlank),
-    _answer(34, selected: 1, ms: 30000),
-  ];
-
-  Future<void> host(WidgetTester tester, LibraryEnv env, Widget child) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(body: SingleChildScrollView(child: child)),
-    );
-    await tester.pumpAndSettle();
-  }
+  final answers = topikSummaryAnswers();
 
   libraryTest('the chart: a bar per question with its real number and a '
       'status glyph, and a tap opens it (critique S4)', (tester, env) async {
     final opened = <int>[];
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikQuestionBarChartWidget(answers: answers, onOpen: opened.add),
@@ -86,7 +53,7 @@ void main() {
   libraryTest('the chart is one TalkBack node; its bars are hidden from the '
       'tree (owner 2026-10-17, ruling S4)', (tester, env) async {
     final handle = tester.ensureSemantics();
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikQuestionBarChartWidget(answers: answers, onOpen: (_) {}),
@@ -108,11 +75,11 @@ void main() {
     env,
   ) async {
     final handle = tester.ensureSemantics();
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikQuestionBarChartWidget(
-        answers: [_answer(31, ms: 0), _answer(32, ms: 0)],
+        answers: [topikSummaryAnswer(31, ms: 0), topikSummaryAnswer(32, ms: 0)],
         onOpen: (_) {},
       ),
     );
@@ -126,11 +93,13 @@ void main() {
 
   libraryTest('a long chart fades its right edge while more lies past it '
       '(owner 2026-10-17)', (tester, env) async {
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikQuestionBarChartWidget(
-        answers: [for (var no = 1; no <= 40; no++) _answer(no, selected: 1)],
+        answers: [
+          for (var no = 1; no <= 40; no++) topikSummaryAnswer(no, selected: 1),
+        ],
         onOpen: (_) {},
       ),
     );
@@ -141,14 +110,17 @@ void main() {
 
   libraryTest('at the compact column a seventh bar peeks under the fade '
       '(audit 2026-10-17, P2-1)', (tester, env) async {
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       // The chart column at 360 dp: 360 less two screen margins.
       SizedBox(
         width: 328,
         child: TopikQuestionBarChartWidget(
-          answers: [for (var no = 1; no <= 40; no++) _answer(no, selected: 1)],
+          answers: [
+            for (var no = 1; no <= 40; no++)
+              topikSummaryAnswer(no, selected: 1),
+          ],
           onOpen: (_) {},
         ),
       ),

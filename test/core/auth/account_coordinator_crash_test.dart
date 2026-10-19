@@ -153,14 +153,7 @@ final _flows = [
   _Flow(
     'sign-out',
     (world) async {
-      final x = world.server.addUser(email: _xEmail).id;
-      world.gateway.adopt(x);
-      world.boot();
-      await world.coordinator.start();
-      world.device
-        ..owner = x
-        ..rows = 4
-        ..pending = 2;
+      final x = await readyAccount(world, email: _xEmail, rows: 4);
       return {'x': x};
     },
     [(world) => world.coordinator.signOut()],
@@ -177,13 +170,7 @@ final _flows = [
   _Flow(
     'deletion',
     (world) async {
-      final x = world.server.addUser(email: _xEmail).id;
-      world.gateway.adopt(x);
-      world.boot();
-      await world.coordinator.start();
-      world.device
-        ..owner = x
-        ..rows = 4;
+      final x = await readyAccount(world, email: _xEmail, rows: 4, pending: 0);
       return {'x': x};
     },
     [(world) => world.coordinator.deleteAccount()],

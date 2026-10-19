@@ -3,38 +3,33 @@ import 'package:memox/core/database/app_database.dart' show AppDatabase;
 import 'package:memox/core/sync/sync_store.dart';
 import 'package:memox/features/topik/data/datasources/topik_attempt_sync_dao.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
-import 'package:memox/features/topik/domain/models/topik_level_model.dart';
-import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 
 import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
-import '../../../support/topik_content_fixtures.dart';
+import '../../../support/topik_attempt_store.dart';
 
 // TOPIK spec §13.2: the adapter reads a submitted attempt with its answers,
 // writes a pulled one once, deletes a tombstoned one and records versions.
-final _test = topikTestFixture(
-  level: TopikLevel.topik1,
-  section: TopikSection.listening,
-);
-final _t0 = DateTime.utc(2026, 10, 15, 9);
 
 Future<String> _submitted(TopikAttemptRepositoryImpl repository) async {
-  final attempt = topikOk(await repository.start(_test, now: _t0));
+  final attempt = topikOk(
+    await repository.start(topikListeningTest, now: topikT0),
+  );
   topikOk(
     await repository.answer(
       attemptId: attempt.id,
       questionNo: 1,
       selectedIdx: 1,
       elapsedMs: 1500,
-      now: _t0.add(const Duration(seconds: 2)),
+      now: topikT0.add(const Duration(seconds: 2)),
     ),
   );
   topikOk(
     await repository.submit(
       attemptId: attempt.id,
-      test: _test,
+      test: topikListeningTest,
       elapsedMs: 0,
-      now: _t0.add(const Duration(seconds: 9)),
+      now: topikT0.add(const Duration(seconds: 9)),
     ),
   );
   return attempt.id;
@@ -45,9 +40,8 @@ void main() {
   late TopikAttemptSyncDao dao;
   late TopikAttemptRepositoryImpl repository;
   setUp(() {
-    db = openTestDatabase();
+    (:db, :repository) = openTopikAttemptStore();
     dao = TopikAttemptSyncDao(db);
-    repository = TopikAttemptRepositoryImpl(db, now: () => _t0);
   });
   tearDown(() => db.close());
 
@@ -57,7 +51,7 @@ void main() {
     final row = (await dao.readRow(id))!;
 
     expect(row['id'], id);
-    expect(row['testId'], _test.testId);
+    expect(row['testId'], topikListeningTest.testId);
     expect(row['status'], 'completed');
     expect(row['score'], 4);
     expect(row['startedAt'], '2026-10-15T09:00:00Z');
@@ -77,7 +71,7 @@ void main() {
   });
 
   test('an attempt in progress or gone reads as null', () async {
-    final open = topikOk(await repository.start(_test));
+    final open = topikOk(await repository.start(topikListeningTest));
     expect(await dao.readRow(open.id), isNull);
     expect(await dao.readRow('gone'), isNull);
   });

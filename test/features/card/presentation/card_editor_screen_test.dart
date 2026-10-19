@@ -2,9 +2,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
@@ -12,9 +10,7 @@ import 'package:memox/features/card/domain/usecases/create_card_use_case.dart';
 import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/presentation/providers/create_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
-import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -29,27 +25,11 @@ import '../../../support/forui_expect.dart';
 
 import 'package:forui/forui.dart';
 
+import 'support/card_editor_host.dart';
+import 'support/words_deck.dart';
+import 'support/failing_card_writes.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Widget _context(String deckId, String label) =>
-    DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
-
-CardEditorScreen _create(String deckId) =>
-    CardEditorScreen.create(deckId: deckId, deckContext: _context);
-
-CardEditorScreen _edit(String cardId) =>
-    CardEditorScreen.edit(cardId: cardId, deckContext: _context);
-
-/// Front, back, then the tag input once opened; the optional fields sit
-/// between them once "Add details" is open.
-Finder _field(int index) => find.byType(EditableText).at(index);
-
-Finder _footerSave(String label) => find.widgetWithText(MxButton, label);
-
-Future<String> _words(LibraryEnv env) async {
-  final korean = await env.decks.root('Korean');
-  return (await env.decks.sub(korean.id, 'Words')).id;
-}
 
 Future<int> _count(
   LibraryEnv env,
@@ -65,9 +45,8 @@ Future<int> _count(
         .read<int>('n');
 
 bool _isEnabled(WidgetTester tester, String label) =>
-    tester.widget<MxButton>(_footerSave(label)).onPressed != null;
+    tester.widget<MxButton>(editorFooterButton(label)).onPressed != null;
 
-/// Cards whose create fails the first way a real database can.
 /// Counts the edits it passes on to [_cards].
 final class _CountingEdits implements CardRepository {
   _CountingEdits(this._cards);
@@ -89,27 +68,15 @@ final class _CountingEdits implements CardRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-final class _FailingCards implements CardRepository {
-  @override
-  Future<Outcome<CardEntity, CardRejection>> createCard({
-    required String deckId,
-    required CardDraft draft,
-    DateTime? now,
-  }) => Future.error(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
 void main() {
   libraryTest('Save waits for a front and a back', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
 
     expect(_isEnabled(tester, _en.cardSaveCard), isFalse);
     expect(find.text(_en.cardCaptionRequired), findsOneWidget);
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await tester.pump();
 
     expect(_isEnabled(tester, _en.cardSaveCard), isTrue);
@@ -120,23 +87,26 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await tester.tap(find.text(_en.cardAddTag));
     await tester.pump();
-    await tester.enterText(_field(2), 'food');
+    await tester.enterText(editorField(2), 'food');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.tap(editorFooterButton(_en.cardSaveCard));
     await tester.pumpAndSettle();
 
     expect(await _count(env, 'SELECT COUNT(*) AS n FROM card'), 1);
     expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 1);
     expect(find.text(_en.cardAddedToast), findsOneWidget);
     expect(find.text('bap'), findsNothing);
-    expect(tester.widget<EditableText>(_field(0)).focusNode.hasFocus, isTrue);
+    expect(
+      tester.widget<EditableText>(editorField(0)).focusNode.hasFocus,
+      isTrue,
+    );
 
     // Saved, so leaving asks nothing.
     await tester.binding.handlePopRoute();
@@ -145,13 +115,13 @@ void main() {
   });
 
   libraryTest('a double tap on Save adds one card', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveCard));
-    await tester.tap(_footerSave(_en.cardSaveCard), warnIfMissed: false);
+    await tester.tap(editorFooterButton(_en.cardSaveCard));
+    await tester.tap(editorFooterButton(_en.cardSaveCard), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     expect(await _count(env, 'SELECT COUNT(*) AS n FROM card'), 1);
@@ -161,11 +131,14 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(1), 'x');
-    await tester.enterText(_field(1), '');
-    await tester.enterText(_field(0), 'a' * (CardDraft.maxFrontLength + 1));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(1), 'x');
+    await tester.enterText(editorField(1), '');
+    await tester.enterText(
+      editorField(0),
+      'a' * (CardDraft.maxFrontLength + 1),
+    );
     // ForUI's field eases its message in.
     await tester.pumpAndSettle();
 
@@ -176,8 +149,8 @@ void main() {
   });
 
   libraryTest('Add details opens the optional fields', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
     expect(find.text(_en.cardExampleHint), findsNothing);
 
     await tester.tap(find.byType(CardAddDetailsWidget));
@@ -196,9 +169,9 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'bap');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'bap');
     await tester.pump();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
@@ -213,25 +186,25 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     await pumpLibraryScreen(
       tester,
       env,
-      _create(deckId),
+      createEditor(deckId),
       overrides: [
         createCardUseCaseProvider.overrideWithValue(
-          CreateCardUseCase(_FailingCards()),
+          CreateCardUseCase(FailingCardWrites()),
         ),
       ],
     );
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.tap(editorFooterButton(_en.cardSaveCard));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardSaveFailedTitle), findsOneWidget);
-    expect(_footerSave(_en.cardRetrySave), findsOneWidget);
+    expect(editorFooterButton(_en.cardRetrySave), findsOneWidget);
     expect(find.text('bap'), findsOneWidget);
     expect(find.textContaining('sqlite'), findsNothing);
   });
@@ -240,13 +213,13 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
     await env.decks.sub(deckId, 'Verbs');
-    await tester.enterText(_field(0), 'bap');
-    await tester.enterText(_field(1), 'rice');
+    await tester.enterText(editorField(0), 'bap');
+    await tester.enterText(editorField(1), 'rice');
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.tap(editorFooterButton(_en.cardSaveCard));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardDeckRejectsTitle), findsOneWidget);
@@ -258,20 +231,20 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice', tagNames: ['food']),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
 
     expect(find.text('bap'), findsOneWidget);
     expect(find.textContaining(_en.cardSummaryAnswers(0)), findsOneWidget);
     await tester.tap(byControlLabel(_en.cardFlagLabel));
-    await tester.enterText(_field(1), 'cooked rice');
+    await tester.enterText(editorField(1), 'cooked rice');
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.tap(editorFooterButton(_en.cardSaveChanges));
     await tester.pumpAndSettle();
 
     expect(
@@ -294,11 +267,11 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(deckId);
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
-    await tester.enterText(_field(1), 'changed');
+    await tester.enterText(editorField(1), 'changed');
     await env.cards.deleteCards(cardIds: {card.id});
     await tester.pump();
     await tester.pump();
@@ -318,9 +291,9 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), List.filled(4, '한국어 단어').join(' '));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), List.filled(4, '한국어 단어').join(' '));
     await tester.pump();
 
     expect(find.text(_en.cardFieldCount(27, 60)), findsOneWidget);
@@ -333,9 +306,9 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(deckId);
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
     expect(
       tester.getSemantics(byControlLabel(_en.cardFlagLabel)),
@@ -355,11 +328,11 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
     await tester.tap(find.text(_en.cardAddTag));
     await tester.pump();
-    await tester.enterText(_field(2), 'food');
+    await tester.enterText(editorField(2), 'food');
     await tester.pump();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
@@ -368,22 +341,25 @@ void main() {
   });
 
   libraryTest('a double tap on Save changes writes once', (tester, env) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(deckId);
     final counting = _CountingEdits(env.cards);
     await pumpLibraryScreen(
       tester,
       env,
-      _edit(card.id),
+      editEditor(card.id),
       overrides: [
         editCardUseCaseProvider.overrideWithValue(EditCardUseCase(counting)),
       ],
     );
     await tester.pumpAndSettle();
-    await tester.enterText(_field(1), 'changed');
+    await tester.enterText(editorField(1), 'changed');
     await tester.pump();
-    await tester.tap(_footerSave(_en.cardSaveChanges));
-    await tester.tap(_footerSave(_en.cardSaveChanges), warnIfMissed: false);
+    await tester.tap(editorFooterButton(_en.cardSaveChanges));
+    await tester.tap(
+      editorFooterButton(_en.cardSaveChanges),
+      warnIfMissed: false,
+    );
     await tester.pumpAndSettle();
 
     expect(counting.edits, 1);
@@ -393,21 +369,21 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'a' * 60);
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'a' * 60);
     await tester.pump();
 
-    final term = tester.renderObject<RenderBox>(_field(0));
-    final role = tester.element(_field(0)).texts.body;
+    final term = tester.renderObject<RenderBox>(editorField(0));
+    final role = tester.element(editorField(0)).texts.body;
     expect(term.size.height, greaterThan(role.fontSize! * role.height!));
     expect(tester.takeException(), isNull);
   });
 
   libraryTest('Cancel and Save share the footer 1 : 1, outline first '
       '(DEV-169)', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
 
     final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
     expect(pair.leadingFlex, pair.trailingFlex);
@@ -420,10 +396,10 @@ void main() {
 
   libraryTest('the front and back of a card sit on the form field\'s box '
       '(DEV-169)', (tester, env) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
-    await tester.enterText(_field(0), 'gamsahamnida');
-    await tester.enterText(_field(1), 'thank you');
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
+    await tester.enterText(editorField(0), 'gamsahamnida');
+    await tester.enterText(editorField(1), 'thank you');
     await tester.pump();
 
     final box = tester
@@ -439,8 +415,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId));
+    final deckId = await seedWordsDeck(env);
+    await pumpLibraryScreen(tester, env, createEditor(deckId));
     await tester.pumpAndSettle();
     expect(find.widgetWithText(MxButton, _en.cardSave), findsNothing);
     expect(find.widgetWithText(MxButton, _en.cardSaveCard), findsOneWidget);
@@ -450,15 +426,15 @@ void main() {
 
   libraryTest('leaving an edited card names what was edited (kit 09 '
       'discard)', (tester, env) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice'),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
-    await tester.enterText(_field(0), 'bab');
-    await tester.enterText(_field(1), 'cooked rice');
+    await tester.enterText(editorField(0), 'bab');
+    await tester.enterText(editorField(1), 'cooked rice');
     await tester.pump();
 
     await tester.binding.handlePopRoute();
@@ -476,14 +452,14 @@ void main() {
 
   libraryTest('an edited card missing its back asks for the missing field '
       '(kit 09 validation)', (tester, env) async {
-    final deckId = await _words(env);
+    final deckId = await seedWordsDeck(env);
     final card = await env.cards.card(
       deckId,
       const CardDraft(front: 'bap', back: 'rice'),
     );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await pumpLibraryScreen(tester, env, editEditor(card.id));
     await tester.pumpAndSettle();
-    await tester.enterText(_field(1), '');
+    await tester.enterText(editorField(1), '');
     await tester.pump();
 
     expect(find.text(_en.cardCaptionAddMissing), findsOneWidget);

@@ -15,27 +15,26 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
+const _invalidRow = ImportRow(
+  rowNumber: 3,
+  kind: ImportRowKind.invalid,
+  draft: CardDraft(front: 'bul', back: ''),
+  reason: CardRejection.blankContent,
+);
+
+Future<void> _pumpRow(WidgetTester tester, LibraryEnv env, ImportRow row) =>
+    pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: Column(children: [ImportPreviewRowWidget(row: row)]),
+      ),
+    );
+
 void main() {
   libraryTest('the row number and the status mark are centred on a row of '
       'three lines (kit 11, owner 2026-09-26)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const Scaffold(
-        body: Column(
-          children: [
-            ImportPreviewRowWidget(
-              row: ImportRow(
-                rowNumber: 3,
-                kind: ImportRowKind.invalid,
-                draft: CardDraft(front: 'bul', back: ''),
-                reason: CardRejection.blankContent,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    await _pumpRow(tester, env, _invalidRow);
 
     final row = find.byType(ImportPreviewRowWidget);
     expectCentredOn(tester, row, [
@@ -49,24 +48,7 @@ void main() {
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const Scaffold(
-        body: Column(
-          children: [
-            ImportPreviewRowWidget(
-              row: ImportRow(
-                rowNumber: 3,
-                kind: ImportRowKind.invalid,
-                draft: CardDraft(front: 'bul', back: ''),
-                reason: CardRejection.blankContent,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    await _pumpRow(tester, env, _invalidRow);
 
     final row = find.byType(ImportPreviewRowWidget);
     expect(
@@ -81,21 +63,13 @@ void main() {
 
   libraryTest('a ready row is marked with a success check (critique '
       '2026-09-30 tone pass, T6)', (tester, env) async {
-    await pumpLibraryScreen(
+    await _pumpRow(
       tester,
       env,
-      const Scaffold(
-        body: Column(
-          children: [
-            ImportPreviewRowWidget(
-              row: ImportRow(
-                rowNumber: 2,
-                kind: ImportRowKind.ready,
-                draft: CardDraft(front: 'mul', back: 'water'),
-              ),
-            ),
-          ],
-        ),
+      const ImportRow(
+        rowNumber: 2,
+        kind: ImportRowKind.ready,
+        draft: CardDraft(front: 'mul', back: 'water'),
       ),
     );
     final mark = find.byIcon(AppIcons.check);
@@ -109,24 +83,7 @@ void main() {
   libraryTest('a row with a note says it once to TalkBack, not in the text '
       'and again on its mark (audit 2026-10-17)', (tester, env) async {
     final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const Scaffold(
-        body: Column(
-          children: [
-            ImportPreviewRowWidget(
-              row: ImportRow(
-                rowNumber: 3,
-                kind: ImportRowKind.invalid,
-                draft: CardDraft(front: 'bul', back: ''),
-                reason: CardRejection.blankContent,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    await _pumpRow(tester, env, _invalidRow);
 
     final row = tester.getSemantics(find.byType(ImportPreviewRowWidget));
     final note = _en.importRowBackEmpty;

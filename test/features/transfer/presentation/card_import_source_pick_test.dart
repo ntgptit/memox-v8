@@ -1,18 +1,14 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-import '../../../support/widget_harness.dart';
+import 'support/import_screen_helpers.dart';
+import 'support/words_deck.dart';
 
 // Screen 11's source step picks a file from its "Choose a file" card; the
 // empty state below carries no second button (critique 2026-10-02, F9).
@@ -24,16 +20,14 @@ Future<int Function()> _pump(
   LibraryEnv env, {
   ImportPickedFile? file,
 }) async {
-  final root = await env.decks.root('Korean');
-  final deck = await env.decks.sub(root.id, 'Words');
+  final deck = await seedWordsDeck(env);
   var picks = 0;
   await pumpLibraryScreen(
     tester,
     env,
     CardImportScreen(
       deckId: deck.id,
-      deckContext: (id, label) =>
-          DeckContextHeaderWidget(deckId: id, currentLabel: label),
+      deckContext: importDeckContext,
       onClose: () {},
       onViewCards: () {},
     ),
@@ -47,19 +41,10 @@ Future<int Function()> _pump(
   return () => picks;
 }
 
-Future<void> _tap(WidgetTester tester, String label) async {
-  await tapVisible(tester, find.text(label).last);
-  await tester.pumpAndSettle();
-}
-
 void main() {
   libraryTest('the empty state has no button; the selected file card opens '
       'the picker', (tester, env) async {
-    final picks = await _pump(
-      tester,
-      env,
-      file: (name: 'vocab.csv', bytes: Uint8List.fromList(utf8.encode('a,b'))),
-    );
+    final picks = await _pump(tester, env, file: importFile('a,b'));
 
     expect(
       find.descendant(
@@ -68,7 +53,7 @@ void main() {
       ),
       findsNothing,
     );
-    await _tap(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importSourceFile);
 
     expect(picks(), 1);
     expect(find.text('vocab.csv'), findsOneWidget);
@@ -80,11 +65,11 @@ void main() {
     env,
   ) async {
     final picks = await _pump(tester, env);
-    await _tap(tester, _en.importSourcePaste);
+    await tapImportLabel(tester, _en.importSourcePaste);
     await tester.enterText(find.byType(EditableText), 'a,b');
     await tester.pumpAndSettle();
 
-    await _tap(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importSourceFile);
 
     expect(picks(), 1);
     expect(find.text(_en.importPickTitle), findsOneWidget);

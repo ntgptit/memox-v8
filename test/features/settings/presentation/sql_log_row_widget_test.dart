@@ -15,6 +15,17 @@ import '../../../support/settings_fakes.dart';
 
 // SQL log switch spec §5: the row shows the account's value, saves the
 // flipped one, and a failed save says so while the row keeps its value.
+// A read that fails at once.
+Stream<AppSettingsEntity> _failingRead() =>
+    Stream<AppSettingsEntity>.error(StateError('read failed'));
+
+// A read that never answers; it closes when the test ends.
+Stream<AppSettingsEntity> _neverRead() {
+  final never = StreamController<AppSettingsEntity>();
+  addTearDown(never.close);
+  return never.stream;
+}
+
 void main() {
   Future<int> flag(LibraryEnv env) async =>
       (await env.db.select(env.db.appSettings).getSingle()).logSqlStatements;
@@ -58,44 +69,29 @@ void main() {
 
   // The row never claims a value it has not read: off and disabled, until
   // the settings are known (audit 2026-10-17 SET-12).
-  libraryTest('while the settings load the toggle is off and disabled', (
-    tester,
-    env,
-  ) async {
-    final never = StreamController<AppSettingsEntity>();
-    addTearDown(never.close);
-    await pumpLibraryScreen(
+  final unreadSettings = [
+    (name: 'while the settings load', failsToRead: false),
+    (name: 'after a failed read', failsToRead: true),
+  ];
+  for (final c in unreadSettings) {
+    libraryTest('${c.name} the toggle is off and disabled', (
       tester,
       env,
-      const Scaffold(body: SqlLogRowWidget()),
-      overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
-    );
+    ) async {
+      final settings = c.failsToRead ? _failingRead() : _neverRead();
+      await pumpLibraryScreen(
+        tester,
+        env,
+        const Scaffold(body: SqlLogRowWidget()),
+        overrides: [appSettingsProvider.overrideWith((ref) => settings)],
+      );
+      await tester.pump();
 
-    final toggle = tester.widget<MxToggle>(find.byType(MxToggle));
-    expect(toggle.isOn, isFalse);
-    expect(toggle.onChanged, isNull);
-  });
-
-  libraryTest('after a failed read the toggle is off and disabled', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const Scaffold(body: SqlLogRowWidget()),
-      overrides: [
-        appSettingsProvider.overrideWith(
-          (ref) => Stream<AppSettingsEntity>.error(StateError('read failed')),
-        ),
-      ],
-    );
-    await tester.pump();
-
-    final toggle = tester.widget<MxToggle>(find.byType(MxToggle));
-    expect(toggle.isOn, isFalse);
-    expect(toggle.onChanged, isNull);
-  });
+      final toggle = tester.widget<MxToggle>(find.byType(MxToggle));
+      expect(toggle.isOn, isFalse);
+      expect(toggle.onChanged, isNull);
+    });
+  }
 
   libraryTest('a failed save shows the snackbar and keeps the value', (
     tester,

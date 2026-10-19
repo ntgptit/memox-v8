@@ -21,14 +21,12 @@ void main() {
   /// The device on account X with [pending] unsent changes; then the SDK is
   /// found on another account U, with no transition saying why.
   Future<(String, String)> sdkOnAnother({required int pending}) async {
-    final x = world.server.addUser(email: xEmail).id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 4
-      ..pending = pending;
+    final x = await readyAccount(
+      world,
+      email: xEmail,
+      rows: 4,
+      pending: pending,
+    );
     final u = world.server.addUser(email: uEmail).id;
     world.gateway.adopt(u);
     world.boot();

@@ -61,21 +61,46 @@ void main() {
         },
       );
 
-      testWidgets('hero: the accent tint over the page surface', (
-        tester,
-      ) async {
-        await pumpMx(
-          tester,
-          const MxCard(isHero: true, child: SizedBox(height: 40)),
-          brightness: brightness,
-        );
+      // One flag per case: the ground, and the edge's colour and weight (in
+      // hairlines). Every card here is flat.
+      final variants = [
+        (
+          name: 'hero: the accent tint over the page surface',
+          card: const MxCard(isHero: true, child: SizedBox(height: 40)),
+          ground: colors.primary.tintOver(colors.background),
+          edge: colors.border,
+          hairlines: 1,
+        ),
+        (
+          name: 'recessed: the muted ground, flat, the hairline edge',
+          card: const MxCard(isRecessed: true, child: SizedBox(height: 40)),
+          ground: colors.muted,
+          edge: colors.border,
+          hairlines: 1,
+        ),
+        (
+          name: 'selected: a primary control-weight edge (screen 07 rows)',
+          card: const MxCard(isSelected: true, child: SizedBox(height: 40)),
+          ground: colors.card,
+          edge: colors.primary,
+          hairlines: 2,
+        ),
+      ];
+      for (final c in variants) {
+        testWidgets(c.name, (tester) async {
+          await pumpMx(tester, c.card, brightness: brightness);
 
-        expect(
-          _surface(tester).color,
-          colors.primary.tintOver(colors.background),
-        );
-        expect(_shape(tester).side.color, colors.border);
-      });
+          expect(_surface(tester).color, c.ground);
+          expect(
+            _shape(tester).side,
+            BorderSide(
+              color: c.edge,
+              width: _theme(tester).style.borderWidth * c.hairlines,
+            ),
+          );
+          expect(_surface(tester).shadows, isNull);
+        });
+      }
 
       testWidgets('warning, success and danger cards tint their colour over '
           'the page surface (FE-A6 D14)', (tester) async {
@@ -100,39 +125,6 @@ void main() {
           mx.success.tintOver(colors.background),
           colors.error.tintOver(colors.background),
         ]);
-      });
-
-      testWidgets('recessed: the muted ground, flat, the hairline edge', (
-        tester,
-      ) async {
-        await pumpMx(
-          tester,
-          const MxCard(isRecessed: true, child: SizedBox(height: 40)),
-          brightness: brightness,
-        );
-
-        expect(_surface(tester).color, colors.muted);
-        expect(_shape(tester).side.color, colors.border);
-        expect(_surface(tester).shadows, isNull);
-      });
-
-      testWidgets('selected: a primary control-weight edge (screen 07 rows)', (
-        tester,
-      ) async {
-        await pumpMx(
-          tester,
-          const MxCard(isSelected: true, child: SizedBox(height: 40)),
-          brightness: brightness,
-        );
-
-        expect(
-          _shape(tester).side,
-          BorderSide(
-            color: colors.primary,
-            width: _theme(tester).style.borderWidth * 2,
-          ),
-        );
-        expect(_surface(tester).color, colors.card);
       });
     });
   }

@@ -247,6 +247,77 @@ but it is not a substitute: platform channels, secure storage, SQLite and deep
 links all behave differently. Run the suite on a real Android and iOS device
 before release.
 
+## One behaviour, one test
+
+The suite was deduplicated on 2026-10-18 (about 190 test declarations and
+2,400 lines fewer, no behaviour lost). These rules keep it that way, for a new
+test and for any later cleanup.
+
+**Before writing a test, look for the one that already exists.** Search
+(`rg`) for the widget, use case or query under test and read the tests that
+pump or call it. If one already builds the same inputs, add the missing
+assertion to it instead of writing a twin.
+
+**What counts as a duplicate.** A test is a duplicate only when another test
+with the same inputs makes, or strictly implies, every assertion it makes.
+"Same inputs" covers sizes, widths, the text scale, the locale, the overrides,
+the seed rows, the mode and the entry point. A similar name, a similar flow or
+the same widget does not make a duplicate. These stay separate even when they
+look alike:
+
+- the same rule tested at another layer (repository, use case, controller,
+  widget), since each one tests different wiring;
+- another entry point (a UI Back and a system pop, a Cancel tap and
+  `handlePopRoute`, `start()` and `recheckSession()`);
+- the two sides of a boundary, a negative case, a regression and a state
+  transition;
+- a real path and a stub of it (an override that copies a controller method
+  does not cover the real method).
+
+**Removing a duplicate.** First move into the kept test any assertion it lacks.
+Then carry the deleted test's ids (UC-, BR-, IT-, DEV-, M3F-, SW-REV-, audit
+and critique ids) into the kept test's name or a comment *in the same file*.
+`docs/_generated/traceability.md` lists a test file under every UC id the file
+contains.
+
+**Same flow, different data: a table.** Write
+`for (final c in cases) test('… ${c.name}', …)` (or a record list), so each
+case is still one reported test and a failure still names its case.
+
+- Each row keeps its original case's exact inputs. Use `null` for "not set"
+  rather than a value that equals today's default, because an unset parameter
+  and a default value are different inputs.
+- Each row keeps every assertion its original case had. Applying a stronger
+  assertion to every row is fine when it holds.
+- Never fold independent behaviours into one big test, and never pack two cases
+  into one test body.
+
+**Setup copied twice becomes a helper, at the narrowest home:**
+
+- private in the file when one file uses it;
+- in the feature's `presentation/support/` (or `data/support/`) when one
+  feature uses it;
+- in `test/support/` when features share it, preferably in a *new, narrow* file
+  that imports only what it needs.
+
+Tests are selected by imports (`build_verification_plan.py`), so a new import
+in a widely used helper (`test_database.dart`, `sync_fakes.dart`,
+`study_fixtures.dart`) ties every importer to that code. Add to an existing
+helper only; never change a signature other areas call. Keep a helper file
+under the guard's 400-line limit (`common.no_large_source_file`). A UC id in a
+shared helper's comment puts the helper in the traceability table, so ids stay
+in the tests.
+
+**Out of scope for merging.** The `test/visual_audit/` companions are pinned by
+`screen_audit_coverage_test.dart` and the guard (MX-VIS-001). Golden tests
+need the golden review. Leave both as they are.
+
+**Prove it.** Run the touched files with `run_tests.sh` before and after the
+change. The difference in count must equal the tests you meant to delete, and a
+table keeps one test per case. Then reread the diff against the base for every
+deleted test and every changed row. A row that changed an input, or a deletion
+whose kept twin uses other inputs, is restored.
+
 ## What to test, honestly
 
 Test business rules, state transitions, error paths, mappers, migrations and

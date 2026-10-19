@@ -1,36 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
 import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
 import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
+import '../../support/sync_adapters.dart';
+import '../../support/sync_rows.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
-
-Future<void> _root(
-  AppDatabase db,
-  String id, {
-  String name = 'r',
-}) => db.customStatement(
-  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-  "scheduler_version, generation, sibling_position, created_at, updated_at) "
-  "VALUES (?, ?, NULL, ?, 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-  [id, name, id],
-);
-
-Future<void> _child(AppDatabase db, String id, String parent) =>
-    db.customStatement(
-      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
-      "sibling_position, created_at, updated_at) VALUES (?, 'c', ?, ?, 2, 'unset', 0, 0, 0)",
-      [id, parent, parent],
-    );
 
 Future<String?> _name(AppDatabase db, String id) async => (await (db.select(
   db.deck,
@@ -42,21 +22,10 @@ class _Device {
     int pullLimit = SyncCoordinator.pullPageSize,
     List<EntitySyncAdapter> Function(AppDatabase db)? adapters,
   }) : db = openTestDatabase() {
-    final cards = CardSyncDao(db);
     coordinator = SyncCoordinator(
       api: server,
       store: SyncStore(db),
-      adapters:
-          adapters?.call(db) ??
-          [
-            DeleteBatchSyncDao(db),
-            DeckSyncDao(db),
-            TagSyncDao(db, SyncStore(db)),
-            cards,
-            CardScheduleSyncDao(db, SyncStore(db)),
-            ReviewLogSyncDao(db),
-            AccountSettingsSyncDao(db),
-          ],
+      adapters: adapters?.call(db) ?? deviceSyncAdapters(db),
       pullLimit: pullLimit,
     );
   }
@@ -171,8 +140,8 @@ void main() {
   });
 
   test('a deck created on one device reaches the other', () async {
-    await _root(a.db, 'R', name: 'Korean');
-    await _child(a.db, 'C', 'R');
+    await insertRootDeck(a.db, 'R', name: 'Korean');
+    await insertChildDeck(a.db, 'C', 'R');
 
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
@@ -189,7 +158,7 @@ void main() {
 
   test('an edit made while its push is in flight survives the ack and goes '
       'in the next batch of the same run', () async {
-    await _root(a.db, 'R', name: 'first');
+    await insertRootDeck(a.db, 'R', name: 'first');
     server.duringPush = () async {
       server.duringPush = null;
       await a.db.customStatement(
@@ -205,7 +174,7 @@ void main() {
   });
 
   test('a rejection applies the server copy', () async {
-    await _root(a.db, 'R', name: 'server name');
+    await insertRootDeck(a.db, 'R', name: 'server name');
     await a.coordinator.runOnce();
     await a.db.customStatement(
       "UPDATE deck SET name = 'refused' WHERE id = 'R'",
@@ -219,7 +188,7 @@ void main() {
   });
 
   test('a rejection never overwrites a newer local edit', () async {
-    await _root(a.db, 'R', name: 'server name');
+    await insertRootDeck(a.db, 'R', name: 'server name');
     await a.coordinator.runOnce();
     await a.db.customStatement(
       "UPDATE deck SET name = 'refused' WHERE id = 'R'",
@@ -238,7 +207,7 @@ void main() {
   });
 
   test('pull skips a row with a pending local edit', () async {
-    await _root(a.db, 'R', name: 'shared');
+    await insertRootDeck(a.db, 'R', name: 'shared');
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
     await b.db.customStatement(
@@ -256,7 +225,7 @@ void main() {
   });
 
   test('a rejection of a row the server never saw keeps the local row and its cards', () async {
-    await _root(a.db, 'R', name: 'offline only');
+    await insertRootDeck(a.db, 'R', name: 'offline only');
     await a.db.customStatement(
       "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) "
       "VALUES ('C', 'c', 'R', 'R', 2, 'card', 0, 0, 0)",
@@ -287,8 +256,8 @@ void main() {
   });
 
   test('a tombstone deletes the deck and its local subtree', () async {
-    await _root(a.db, 'R');
-    await _child(a.db, 'C', 'R');
+    await insertRootDeck(a.db, 'R');
+    await insertChildDeck(a.db, 'C', 'R');
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
     await a.db.customStatement("DELETE FROM deck WHERE id = 'R'");
@@ -303,7 +272,7 @@ void main() {
   test(
     'a refusal without a server copy is recorded; a later apply clears it',
     () async {
-      await _root(a.db, 'R', name: 'offline only');
+      await insertRootDeck(a.db, 'R', name: 'offline only');
       server.rejectNext['deck/R'] = 'VALIDATION_FAILED';
 
       await a.coordinator.runOnce();
@@ -319,7 +288,7 @@ void main() {
   );
 
   test('a refusal with a server copy is not recorded', () async {
-    await _root(a.db, 'R');
+    await insertRootDeck(a.db, 'R');
     await a.coordinator.runOnce();
     await a.db.customStatement("UPDATE deck SET name = 'x' WHERE id = 'R'");
     server.rejectNext['deck/R'] = 'SYNC_ENTITY_CONFLICT';
@@ -330,7 +299,7 @@ void main() {
   });
 
   test('requeue turns a vanished entity into a delete', () async {
-    await _root(a.db, 'R');
+    await insertRootDeck(a.db, 'R');
     server.rejectNext['deck/R'] = 'VALIDATION_FAILED';
     await a.coordinator.runOnce();
     await SyncStore(a.db).applyingRemote(

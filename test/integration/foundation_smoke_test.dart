@@ -98,14 +98,6 @@ void main() {
 
     // Every invariant query of schema.md still returns no row, 25 included:
     // it weighs only the turns of the card's current generation.
-    for (final MapEntry(key: number, value: query)
-        in invariantQueries.entries) {
-      final rows = await db.customSelect(query).get();
-      expect(
-        rows,
-        isEmpty,
-        reason: 'invariant $number: ${invariantSummaries[number]}',
-      );
-    }
+    await expectNoInvariantViolations(db);
   });
 }

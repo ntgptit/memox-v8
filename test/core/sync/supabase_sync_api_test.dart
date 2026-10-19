@@ -118,23 +118,23 @@ void main() {
       timeout: const Duration(milliseconds: 20),
     );
 
-    test('push times out as a network failure', () async {
-      final error = await hanging()
-          .push(const PushRequestModel(deviceId: 'd', operations: []))
-          .then<Object>((_) => 'no error', onError: (Object e) => e);
+    final cases = <(String, Future<Object?> Function(SupabaseSyncApi))>[
+      (
+        'push',
+        (api) =>
+            api.push(const PushRequestModel(deviceId: 'd', operations: [])),
+      ),
+      ('changes', (api) => api.changes(0, 500)),
+    ];
+    for (final (name, call) in cases) {
+      test('$name times out as a network failure', () async {
+        final error = await call(hanging())
+            .then<Object>((_) => 'no error', onError: (Object e) => e);
 
-      expect(error, isA<TimeoutException>());
-      expect(classifySyncFailure(error), SyncFailureKind.network);
-    });
-
-    test('changes times out as a network failure', () async {
-      final error = await hanging()
-          .changes(0, 500)
-          .then<Object>((_) => 'no error', onError: (Object e) => e);
-
-      expect(error, isA<TimeoutException>());
-      expect(classifySyncFailure(error), SyncFailureKind.network);
-    });
+        expect(error, isA<TimeoutException>());
+        expect(classifySyncFailure(error), SyncFailureKind.network);
+      });
+    }
 
     test('the default bound is 30 seconds', () {
       expect(SupabaseSyncApi.rpcTimeout, const Duration(seconds: 30));

@@ -65,17 +65,8 @@ void main() {
     expect(tester.getSize(reviewing.first).height, closeTo(10 * 78 / 20, 0.01));
   });
 
-  testWidgets('a day with nothing is a 2-high baseline', (tester) async {
-    await pumpMx(tester, _chart([_day('F', 0, 0), _day('S', 3, 0)]));
-    final baseline = find.byWidgetPredicate(
-      (widget) => widget is Container && widget.constraints?.maxHeight == 2,
-    );
-
-    expect(baseline, findsOneWidget);
-  });
-
-  testWidgets('the empty-day mark is the progress track, visible on the card '
-      'it sits in, light and dark', (tester) async {
+  testWidgets('a day with nothing is one 2-high baseline: the progress track, '
+      'visible on the card it sits in, light and dark', (tester) async {
     for (final (brightness, colors) in [
       (Brightness.light, appLightColors),
       (Brightness.dark, appDarkColors),

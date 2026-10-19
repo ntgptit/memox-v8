@@ -29,50 +29,46 @@ void main() {
       expect(shapeViolations(sources), isEmpty);
     });
 
-    test('a barrel at the feature root is rejected', () {
-      final sources = [_file('lib/features/deck/deck.dart')];
+    // Each row plants paths the ADR-011 layout does not allow, and counts
+    // the violations the rule reports: one per path.
+    const widgets = 'lib/features/deck/presentation/widgets';
+    for (final (name, paths) in [
+      (
+        'a barrel at the feature root is rejected',
+        ['lib/features/deck/deck.dart'],
+      ),
+      (
+        'a file directly in a layer folder is rejected',
+        ['lib/features/deck/domain/deck.dart'],
+      ),
+      (
+        'an unknown layer, bucket or top-level folder is rejected',
+        [
+          'lib/features/deck/logic/deck_rules.dart',
+          'lib/features/deck/domain/rules/deck_rule.dart',
+          'lib/utils/strings.dart',
+        ],
+      ),
+      (
+        'a widget sits one level deep in an ADR-011 D8 bucket',
+        [
+          '$widgets/deck_tile_widget.dart',
+          '$widgets/rows/deck_tile_widget.dart',
+          '$widgets/items/tile/deck_tile_widget.dart',
+        ],
+      ),
+      (
+        'core/ holds concern folders, not loose files',
+        ['lib/core/outcome.dart'],
+      ),
+      ('di/ is flat', ['lib/features/deck/di/sub/deck_provider.dart']),
+    ]) {
+      test(name, () {
+        final sources = [for (final path in paths) _file(path)];
 
-      expect(shapeViolations(sources), hasLength(1));
-    });
-
-    test('a file directly in a layer folder is rejected', () {
-      final sources = [_file('lib/features/deck/domain/deck.dart')];
-
-      expect(shapeViolations(sources), hasLength(1));
-    });
-
-    test('an unknown layer, bucket or top-level folder is rejected', () {
-      final sources = [
-        _file('lib/features/deck/logic/deck_rules.dart'),
-        _file('lib/features/deck/domain/rules/deck_rule.dart'),
-        _file('lib/utils/strings.dart'),
-      ];
-
-      expect(shapeViolations(sources), hasLength(3));
-    });
-
-    test('a widget sits one level deep in an ADR-011 D8 bucket', () {
-      const widgets = 'lib/features/deck/presentation/widgets';
-      final sources = [
-        _file('$widgets/deck_tile_widget.dart'),
-        _file('$widgets/rows/deck_tile_widget.dart'),
-        _file('$widgets/items/tile/deck_tile_widget.dart'),
-      ];
-
-      expect(shapeViolations(sources), hasLength(3));
-    });
-
-    test('core/ holds concern folders, not loose files', () {
-      final sources = [_file('lib/core/outcome.dart')];
-
-      expect(shapeViolations(sources), hasLength(1));
-    });
-
-    test('di/ is flat', () {
-      final sources = [_file('lib/features/deck/di/sub/deck_provider.dart')];
-
-      expect(shapeViolations(sources), hasLength(1));
-    });
+        expect(shapeViolations(sources), hasLength(paths.length));
+      });
+    }
   });
 
   group('domain purity', () {
@@ -244,10 +240,6 @@ void main() {
   });
 
   group('import map', () {
-    test('the declared map is acyclic', () {
-      expect(cyclesIn(allowedFeatureImports), isEmpty);
-    });
-
     test('a cycle is reported with its path', () {
       const cyclic = {
         'srs': {'deck'},

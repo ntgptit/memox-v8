@@ -11,14 +11,19 @@ import 'package:memox/core/network/logging_http_client.dart';
 import '../../support/recording_log_sink.dart';
 
 final _url = Uri.parse('https://x.supabase.co/rest/v1/rpc/sync_push?a=1');
-final _logPush = Uri.parse('https://x.supabase.co/rest/v1/rpc/log_push');
 
-/// The admin's log RPCs (ADR-018 §7): Monitoring's reads and its status
+/// The log RPCs that are never logged, with the body each answers: the log
+/// push, and the admin's (ADR-018 §7), Monitoring's reads and its status
 /// change. Their answers are logs, so logging them would copy logs into logs.
-final _adminLogRpcs = {
-  for (final name in ['log_query', 'log_get', 'log_set_status'])
-    name: Uri.parse('https://x.supabase.co/rest/v1/rpc/$name'),
-};
+final _unloggedRpcs = [
+  for (final (name, body) in [
+    ('log_push', '{"accepted":[]}'),
+    ('log_query', '{"items":[]}'),
+    ('log_get', '{"items":[]}'),
+    ('log_set_status', '{"items":[]}'),
+  ])
+    (name, Uri.parse('https://x.supabase.co/rest/v1/rpc/$name'), body),
+];
 
 // Spec 2026-09-29-network-logging-design.md §2, §5.
 void main() {
@@ -115,34 +120,14 @@ void main() {
     expect(entry.stackTrace, isNotNull);
   });
 
-  test('the log push logs nothing and still returns', () async {
-    final c = client((request) async => http.Response('{"accepted":[]}', 200));
-
-    final response = await c.post(_logPush, body: '{}');
-
-    expect(response.statusCode, 200);
-    expect(sink.entries, isEmpty);
-  });
-
-  test('a failing log_push logs nothing and still throws', () async {
-    final c = client((request) async => throw const SocketException('down'));
-
-    await expectLater(
-      c.post(_logPush, body: '{}'),
-      throwsA(isA<SocketException>()),
-    );
-
-    expect(sink.entries, isEmpty);
-  });
-
-  for (final MapEntry(key: name, value: url) in _adminLogRpcs.entries) {
+  for (final (name, url, body) in _unloggedRpcs) {
     test('$name logs nothing and still returns', () async {
-      final c = client((request) async => http.Response('{"items":[]}', 200));
+      final c = client((request) async => http.Response(body, 200));
 
       final response = await c.post(url, body: '{}');
 
       expect(response.statusCode, 200);
-      expect(response.body, '{"items":[]}');
+      expect(response.body, body);
       expect(sink.entries, isEmpty);
     });
 
@@ -182,19 +167,6 @@ void main() {
     );
     expect(context['response_body_bytes'], LoggingHttpClient.maxBodyBytes + 10);
     expect(context['response_body_truncated'], isTrue);
-  });
-
-  test('a 64 KB cut inside a multi-byte character stays valid text', () async {
-    final big = '${'a' * (LoggingHttpClient.maxBodyBytes - 1)}é tail';
-    final c = client(
-      (request) async => http.Response.bytes(utf8.encode(big), 200),
-    );
-
-    await c.get(_url);
-
-    final body = sink.entries.single.context['response_body']! as String;
-    expect(body.contains('\uFFFD'), isFalse);
-    expect(body.endsWith('a'), isTrue);
   });
 
   test('a body that is not UTF-8 is logged as its size', () async {
@@ -266,7 +238,11 @@ void main() {
     );
   });
 
-  for (final (name, char) in [('3-byte', '€'), ('4-byte', '😀')]) {
+  for (final (name, char) in [
+    ('2-byte', 'é'),
+    ('3-byte', '€'),
+    ('4-byte', '😀'),
+  ]) {
     test(
       'a 64 KB cut inside a $name character keeps whole characters only',
       () async {

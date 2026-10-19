@@ -2,9 +2,9 @@ import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/progress/data/datasources/progress_dao.dart';
-import 'package:memox/features/progress/domain/models/progress_days_model.dart';
 
 import '../support/test_database.dart';
+import '../support/progress_days_fixture.dart';
 
 // DEV-208: the Progress statements read review_log through
 // idx_review_log_answered (schema 14): the week and the month are a range of
@@ -55,11 +55,7 @@ void main() {
   late AppDatabase db;
   late ProgressDao dao;
   late _SelectRecorder recorder;
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   setUp(() {
     recorder = _SelectRecorder();

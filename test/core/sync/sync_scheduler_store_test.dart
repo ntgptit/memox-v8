@@ -3,16 +3,10 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
-import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
-import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
-import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
 
 import '../../support/deck_fixtures.dart';
+import '../../support/sync_adapters.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
 
@@ -28,15 +22,7 @@ class _Device {
     coordinator = SyncCoordinator(
       api: server,
       store: store,
-      adapters: [
-        DeleteBatchSyncDao(db),
-        DeckSyncDao(db),
-        TagSyncDao(db, store),
-        CardSyncDao(db),
-        CardScheduleSyncDao(db, store),
-        ReviewLogSyncDao(db),
-        AccountSettingsSyncDao(db),
-      ],
+      adapters: deviceSyncAdapters(db),
     );
   }
 

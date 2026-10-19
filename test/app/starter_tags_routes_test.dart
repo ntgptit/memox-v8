@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -22,14 +21,6 @@ import 'package:forui/forui.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Finder _barTitle(String title) =>
-    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.tap(finder);
-  await tester.pumpAndSettle();
-}
-
 /// Korean › Words with bap, tagged "food".
 Future<void> _seed(LibraryEnv env) async {
   final words = await env.decks.sub(
@@ -47,17 +38,17 @@ void main() {
     final library = StarterLibraryFake(env);
     await pumpMemoxApp(tester, env, overrides: [library.asOverride]);
 
-    await _tap(tester, byControlLabel(_en.libraryStarterDecks));
-    expect(_barTitle(_en.starterTitle), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.libraryStarterDecks));
+    expect(barTitle(_en.starterTitle), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
-    await _tap(tester, byControlLabel(_en.commonBack));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
+    expect(barTitle(_en.navLibrary), findsOneWidget);
 
-    await _tap(tester, byControlLabel(_en.libraryTags));
-    expect(_barTitle(_en.tagsTitle), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.libraryTags));
+    expect(barTitle(_en.tagsTitle), findsOneWidget);
     expect(find.byType(MxBottomNav), findsNothing);
     expect(find.text('food'), findsOneWidget);
-    await _tap(tester, byControlLabel(_en.commonBack));
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
     expect(find.byType(MxBottomNav), findsOneWidget);
   });
 
@@ -66,18 +57,18 @@ void main() {
     final library = StarterLibraryFake(env);
     await pumpMemoxApp(tester, env, overrides: [library.asOverride]);
 
-    await _tap(tester, find.text(_en.libraryBrowseStarterDecks));
-    await _tap(
+    await tapAndSettle(tester, find.text(_en.libraryBrowseStarterDecks));
+    await tapAndSettle(
       tester,
       find.widgetWithText(MxButton, _en.starterAddToLibrary).last,
     );
-    await _tap(tester, find.text(_en.starterAddDeck));
-    await _tap(tester, find.text(_en.starterOpen));
+    await tapAndSettle(tester, find.text(_en.starterAddDeck));
+    await tapAndSettle(tester, find.text(_en.starterOpen));
 
-    expect(_barTitle(hangulTemplate.title), findsOneWidget);
+    expect(barTitle(hangulTemplate.title), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
-    await _tap(tester, byControlLabel(_en.commonBack));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
+    expect(barTitle(_en.navLibrary), findsOneWidget);
     expect(find.text(hangulTemplate.title), findsOneWidget);
   });
 
@@ -86,27 +77,27 @@ void main() {
     final library = StarterLibraryFake(env, templates: const []);
     await pumpMemoxApp(tester, env, overrides: [library.asOverride]);
 
-    await _tap(tester, find.text(_en.libraryBrowseStarterDecks));
-    await _tap(tester, find.text(_en.starterCreateDeck));
+    await tapAndSettle(tester, find.text(_en.libraryBrowseStarterDecks));
+    await tapAndSettle(tester, find.text(_en.starterCreateDeck));
 
     expect(find.byType(MxDialog), findsOneWidget);
-    await _tap(tester, find.text(_en.commonCancel));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, find.text(_en.commonCancel));
+    expect(barTitle(_en.navLibrary), findsOneWidget);
   });
 
   libraryTest('Find cards with this tag opens the Library search on its '
       'name; Back returns to the Library (D11)', (tester, env) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, byControlLabel(_en.libraryTags));
-    await _tap(tester, byControlLabel(_en.tagsRowActions('food')));
-    await _tap(tester, find.text(_en.tagsFindCards));
+    await tapAndSettle(tester, byControlLabel(_en.libraryTags));
+    await tapAndSettle(tester, byControlLabel(_en.tagsRowActions('food')));
+    await tapAndSettle(tester, find.text(_en.tagsFindCards));
     await tester.pump(searchDebounce);
     await tester.pumpAndSettle();
 
     expect(find.widgetWithText(FTextField, 'food'), findsOneWidget);
     expect(find.text('bap · back'), findsOneWidget);
-    await _tap(tester, byControlLabel(_en.commonBack));
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    await tapAndSettle(tester, byControlLabel(_en.commonBack));
+    expect(barTitle(_en.navLibrary), findsOneWidget);
   });
 }

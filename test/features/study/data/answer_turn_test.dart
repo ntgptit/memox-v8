@@ -16,17 +16,11 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/srs_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 steps 6–13 on sm2 decks: browse, self_assess and the errors
 // every answer checks first.
-
-Matcher _refusedWith(StudyRejection reason) =>
-    isA<Rejected<void, StudyRejection>>().having(
-      (rejected) => rejected.reason,
-      'reason',
-      reason,
-    );
 
 void main() {
   late AppDatabase db;
@@ -45,6 +39,9 @@ void main() {
     await db.close();
   });
 
+  Future<void> answer(String sessionId, StudyAnswer answer) =>
+      acceptAnswer(db, sessions, sessionId, answer);
+
   /// A learning session on [count] new cards `c1`… of an sm2 tree.
   Future<(String, String)> learning(int count) async {
     final root = await decks.root('Korean', SchedulerType.sm2);
@@ -56,30 +53,11 @@ void main() {
     return (root.id, (opened as Ok<String, StudyRejection>).value);
   }
 
-  Future<void> answer(String sessionId, StudyAnswer answer) async {
-    final cardId = await servedCard(db, sessionId);
-    expect(
-      await sessions.answerTurn(
-        sessionId: sessionId,
-        cardId: cardId!,
-        answer: answer,
-      ),
-      isA<Ok<void, StudyRejection>>(),
-      reason: 'answer on $cardId',
-    );
-  }
-
   Future<void> browseAll(String sessionId, int count) async {
     for (var i = 0; i < count; i++) {
       await answer(sessionId, const AdvanceAnswer());
     }
   }
-
-  Future<int> logCount() async =>
-      (await db
-              .customSelect('SELECT COUNT(*) AS n FROM review_log')
-              .getSingle())
-          .read<int>('n');
 
   test('browse moves on without a turn: the row leaves the queue and the '
       'cursor moves, with no log and no schedule change (BR-MODE-005, '
@@ -91,7 +69,7 @@ void main() {
 
     expect((await sessionOf(db, id)).read<int>('cursor'), 1);
     expect(await servedCard(db, id), isNot(first));
-    expect(await logCount(), 0);
+    expect(await reviewLogCount(db), 0);
     expect((await scheduleRowOf(db, first!)).data['last_answered_at'], isNull);
   });
 
@@ -235,14 +213,14 @@ void main() {
         cardId: card!,
         answer: const SelfAssessAnswer(Sm2Action.good),
       ),
-      _refusedWith(StudyRejection.staleGeneration),
+      refusedWith<void>(StudyRejection.staleGeneration),
     );
 
     final session = await sessionOf(db, id);
     expect(session.read<String>('status'), 'invalidated');
     expect(session.read<String>('end_reason'), 'stale_generation');
     expect(session.read<DateTime>('ended_at'), now);
-    expect(await logCount(), 0);
+    expect(await reviewLogCount(db), 0);
     expect((await scheduleRowOf(db, card)).data['last_answered_at'], isNull);
     // Back to the root's generation: the teardown's invariants are about
     // what the answer wrote, not this setup.
@@ -266,7 +244,7 @@ void main() {
           cardId: card!,
           answer: const AdvanceAnswer(),
         ),
-        _refusedWith(StudyRejection.staleGeneration),
+        refusedWith<void>(StudyRejection.staleGeneration),
       );
 
       final session = await sessionOf(db, id);
@@ -274,7 +252,7 @@ void main() {
       expect(session.read<String>('end_reason'), 'stale_generation');
       expect(session.read<DateTime>('ended_at'), now);
       expect(session.read<int>('cursor'), 0);
-      expect(await logCount(), 0);
+      expect(await reviewLogCount(db), 0);
     },
   );
 
@@ -291,9 +269,9 @@ void main() {
         cardId: card!,
         answer: const SelfAssessAnswer(Sm2Action.good),
       ),
-      _refusedWith(StudyRejection.notCurrentCard),
+      refusedWith<void>(StudyRejection.notCurrentCard),
     );
-    expect(await logCount(), 1);
+    expect(await reviewLogCount(db), 1);
   });
 
   test('an answer of another mode, or an action the algorithm lacks, is '
@@ -308,7 +286,7 @@ void main() {
         cardId: card,
         answer: const SelfAssessAnswer(Sm2Action.good),
       ),
-      _refusedWith(StudyRejection.answerDoesNotFitMode),
+      refusedWith<void>(StudyRejection.answerDoesNotFitMode),
     );
     await answer(id, const AdvanceAnswer());
     final atSelfAssess = await totalChanges(db);
@@ -318,7 +296,7 @@ void main() {
         cardId: card,
         answer: const SelfAssessAnswer(EightBoxAction.remembered),
       ),
-      _refusedWith(StudyRejection.unsupportedAction),
+      refusedWith<void>(StudyRejection.unsupportedAction),
     );
     expect(atSelfAssess, greaterThan(before));
     expect(await totalChanges(db), atSelfAssess);
@@ -338,7 +316,7 @@ void main() {
         cardId: card,
         answer: const AdvanceAnswer(),
       ),
-      _refusedWith(StudyRejection.sessionClosed),
+      refusedWith<void>(StudyRejection.sessionClosed),
     );
     expect(
       await sessions.answerTurn(
@@ -346,7 +324,7 @@ void main() {
         cardId: card,
         answer: const AdvanceAnswer(),
       ),
-      _refusedWith(StudyRejection.notFound),
+      refusedWith<void>(StudyRejection.notFound),
     );
   });
 }

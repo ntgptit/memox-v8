@@ -23,26 +23,8 @@ import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/topik_summary_parts.dart';
 import '../../../support/topik_screen_fixtures.dart';
-
-/// Question [no] answered [selected] (null: blank) where [correct] is right,
-/// taking [ms]; of [type].
-TopikAttemptAnswer _answer(
-  int no, {
-  int? selected,
-  int correct = 1,
-  int ms = 60000,
-  TopikQuestionType type = TopikQuestionType.r1Topic,
-}) => TopikAttemptAnswer(
-  questionNo: no,
-  selectedIdx: selected,
-  timeSpentMs: ms,
-  answeredAt: selected == null ? null : DateTime.utc(2026, 10, 15),
-  correctIdx: correct,
-  points: 2,
-  pointsEarned: selected == correct ? 2 : 0,
-  questionType: type,
-);
 
 TopikAttemptSummary _summary(List<TopikAttemptAnswer> answers) {
   final correct = answers.where((a) => a.status == TopikAnswerStatus.correct);
@@ -86,25 +68,11 @@ TopikAttempt _attempt(TopikAttemptSummary summary) => TopikAttempt(
 
 // Screen 38's parts (detail file 38; critique S1, S3–S7).
 void main() {
-  final answers = [
-    _answer(31, selected: 1, ms: 65000),
-    _answer(32, selected: 3, ms: 125000, type: TopikQuestionType.r1FillBlank),
-    _answer(33, ms: 0, type: TopikQuestionType.r1FillBlank),
-    _answer(34, selected: 1, ms: 30000),
-  ];
+  final answers = topikSummaryAnswers();
   final summary = _summary(answers);
 
-  Future<void> host(WidgetTester tester, LibraryEnv env, Widget child) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(body: SingleChildScrollView(child: child)),
-    );
-    await tester.pumpAndSettle();
-  }
-
   libraryTest('the donut writes correct of total', (tester, env) async {
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       const TopikScoreDonutWidget(correct: 48, total: 50),
@@ -124,7 +92,7 @@ void main() {
     tester,
     env,
   ) async {
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikQuestionBarChartWidget(answers: answers, onOpen: (_) {}),
@@ -147,7 +115,11 @@ void main() {
     tester,
     env,
   ) async {
-    await host(tester, env, TopikSummaryFiguresWidget(summary: summary));
+    await pumpSummaryPart(
+      tester,
+      env,
+      TopikSummaryFiguresWidget(summary: summary),
+    );
 
     // (65 + 125 + 0 + 30) s over 4 questions.
     expect(find.text('55s'), findsOneWidget);
@@ -195,8 +167,15 @@ void main() {
   libraryTest('no time on any question: Longest shows a dash and reads '
       '"None" (Q-P6-5)', (tester, env) async {
     final handle = tester.ensureSemantics();
-    final blank = _summary([_answer(31, ms: 0), _answer(32, ms: 0)]);
-    await host(tester, env, TopikSummaryFiguresWidget(summary: blank));
+    final blank = _summary([
+      topikSummaryAnswer(31, ms: 0),
+      topikSummaryAnswer(32, ms: 0),
+    ]);
+    await pumpSummaryPart(
+      tester,
+      env,
+      TopikSummaryFiguresWidget(summary: blank),
+    );
 
     // Both time figures have no value: a dash that reads "None".
     expect(find.text('–'), findsNWidgets(2));
@@ -216,11 +195,11 @@ void main() {
     env,
   ) async {
     final picks = <TopikAnswerFilter>[];
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikAnswerFilterChipsWidget(
-        summary: _summary([_answer(31, selected: 1)]),
+        summary: _summary([topikSummaryAnswer(31, selected: 1)]),
         selected: TopikAnswerFilter.all,
         onSelected: picks.add,
         isEmptyDisabled: true,
@@ -243,11 +222,11 @@ void main() {
 
   libraryTest('the chip row fades its cut edge at 360 dp instead of '
       'clipping "Correct" (audit 2026-10-17 TOPIK-2)', (tester, env) async {
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikAnswerFilterChipsWidget(
-        summary: _summary([_answer(31, selected: 1)]),
+        summary: _summary([topikSummaryAnswer(31, selected: 1)]),
         selected: TopikAnswerFilter.all,
         onSelected: (_) {},
       ),
@@ -263,7 +242,7 @@ void main() {
     env,
   ) async {
     var opens = 0;
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       Column(
@@ -310,7 +289,7 @@ void main() {
 
   libraryTest('by type: each with its share; the weakest marked '
       '(BR-TOPIK-024)', (tester, env) async {
-    await host(tester, env, TopikTypeStatsWidget(summary: summary));
+    await pumpSummaryPart(tester, env, TopikTypeStatsWidget(summary: summary));
 
     expect(find.text("What it's about"), findsOneWidget);
     expect(find.text('Fill the blank'), findsOneWidget);
@@ -336,13 +315,13 @@ void main() {
       weakestType: null,
       answers: [answers.first, answers.last],
     );
-    await host(tester, env, TopikTypeStatsWidget(summary: perfect));
+    await pumpSummaryPart(tester, env, TopikTypeStatsWidget(summary: perfect));
     expect(find.text('Weakest'), findsNothing);
   });
 
   libraryTest('a chip says selected to TalkBack', (tester, env) async {
     final handle = tester.ensureSemantics();
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikAnswerFilterChipsWidget(
@@ -362,7 +341,7 @@ void main() {
     env,
   ) async {
     final handle = tester.ensureSemantics();
-    await host(
+    await pumpSummaryPart(
       tester,
       env,
       TopikSummaryHeroWidget(attempt: _attempt(summary), summary: summary),

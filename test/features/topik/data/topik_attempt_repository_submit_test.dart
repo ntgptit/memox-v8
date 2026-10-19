@@ -10,28 +10,22 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 
 import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
+import '../../../support/topik_attempt_store.dart';
 import '../../../support/topik_content_fixtures.dart';
 
 // TOPIK spec §5.1, §5.3, §13.5: submit and delete. Fixture: TOPIK I listening, questions 1–30,
 // 1–10 worth 4 and 11–30 worth 3; the answer of question n is (n - 1) % 4 + 1.
-final _test = topikTestFixture(
-  level: TopikLevel.topik1,
-  section: TopikSection.listening,
-);
-final _t0 = DateTime.utc(2026, 10, 15, 9);
-DateTime _at(int seconds) => _t0.add(Duration(seconds: seconds));
 
 void main() {
   late AppDatabase db;
   late TopikAttemptRepositoryImpl repository;
   setUp(() {
-    db = openTestDatabase();
-    repository = TopikAttemptRepositoryImpl(db, now: () => _t0);
+    (:db, :repository) = openTopikAttemptStore();
   });
   tearDown(() => db.close());
   group('submit (BR-TOPIK-013)', () {
     test('scores against the content and snapshots every answer', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       topikOk(
         await repository.answer(
           attemptId: attempt.id,
@@ -60,9 +54,9 @@ void main() {
       final done = topikOk(
         await repository.submit(
           attemptId: attempt.id,
-          test: _test,
+          test: topikListeningTest,
           elapsedMs: 2000,
-          now: _at(60),
+          now: topikAt(60),
         ),
       );
 
@@ -73,7 +67,7 @@ void main() {
       expect(done.answeredCount, 3);
       expect(done.questionCount, 30);
       expect(done.totalTimeMs, 5000);
-      expect(done.completedAt!.isAtSameMomentAs(_at(60)), isTrue);
+      expect(done.completedAt!.isAtSameMomentAs(topikAt(60)), isTrue);
       final answers = {
         for (final a in await topikAnswerRows(db, attempt.id)) a.questionNo: a,
       };
@@ -92,11 +86,11 @@ void main() {
 
     test('queues the attempt for sync in the same transaction '
         '(BR-TOPIK-026)', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       topikOk(
         await repository.submit(
           attemptId: attempt.id,
-          test: _test,
+          test: topikListeningTest,
           elapsedMs: 0,
         ),
       );
@@ -112,35 +106,35 @@ void main() {
     test(
       'a second submit is refused and changes nothing (BR-TOPIK-014)',
       () async {
-        final attempt = topikOk(await repository.start(_test));
+        final attempt = topikOk(await repository.start(topikListeningTest));
         topikOk(
           await repository.submit(
             attemptId: attempt.id,
-            test: _test,
+            test: topikListeningTest,
             elapsedMs: 0,
-            now: _at(10),
+            now: topikAt(10),
           ),
         );
         expect(
           topikReason(
             await repository.submit(
               attemptId: attempt.id,
-              test: _test,
+              test: topikListeningTest,
               elapsedMs: 900,
-              now: _at(20),
+              now: topikAt(20),
             ),
           ),
           TopikRejection.attemptCompleted,
         );
         final row = (await topikAttemptRow(db, attempt.id))!;
-        expect(row.completedAt!.isAtSameMomentAs(_at(10)), isTrue);
+        expect(row.completedAt!.isAtSameMomentAs(topikAt(10)), isTrue);
         expect(row.totalTimeMs, 0);
       },
     );
 
     test('refuses content that is not the attempt\'s test and writes nothing '
         '(BR-TOPIK-019)', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       final other = topikTestFixture(level: TopikLevel.topik1);
       expect(
         topikReason(
@@ -159,10 +153,10 @@ void main() {
 
     test('refuses the same test id with other question numbers, fewer or '
         'as many, and writes nothing (BR-TOPIK-019)', () async {
-      final attempt = topikOk(await repository.start(_test));
-      final first = _test.questions.first;
+      final attempt = topikOk(await repository.start(topikListeningTest));
+      final first = topikListeningTest.questions.first;
       final variants = {
-        'one question fewer': _test.questions.skip(1).toList(),
+        'one question fewer': topikListeningTest.questions.skip(1).toList(),
         'as many, one renumbered': [
           TopikQuestion(
             no: 31,
@@ -173,7 +167,7 @@ void main() {
             options: first.options,
             answerIdx: first.answerIdx,
           ),
-          ..._test.questions.skip(1),
+          ...topikListeningTest.questions.skip(1),
         ],
       };
       final before = await totalChanges(db);
@@ -196,7 +190,7 @@ void main() {
     test(
       'a content correction made before submit is the one that scores',
       () async {
-        final attempt = topikOk(await repository.start(_test));
+        final attempt = topikOk(await repository.start(topikListeningTest));
         topikOk(
           await repository.answer(
             attemptId: attempt.id,
@@ -229,7 +223,7 @@ void main() {
 
   group('delete (BR-TOPIK-018)', () {
     test('removes the attempt and its answers', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       topikOk(await repository.delete(attempt.id));
       expect(await topikAttemptRow(db, attempt.id), isNull);
       expect(await topikAnswerRows(db, attempt.id), isEmpty);
@@ -259,7 +253,11 @@ void main() {
       );
       expect(
         topikReason(
-          await repository.submit(attemptId: 'gone', test: _test, elapsedMs: 0),
+          await repository.submit(
+            attemptId: 'gone',
+            test: topikListeningTest,
+            elapsedMs: 0,
+          ),
         ),
         TopikRejection.notFound,
       );
@@ -269,21 +267,21 @@ void main() {
   });
 }
 
-/// [_test] with other [questions]: the same test id, a later content version.
+/// [topikListeningTest] with other [questions]: the same test id, a later content version.
 /// The content check would refuse such a test, so it is built by hand.
 TopikTest _withQuestions(List<TopikQuestion> questions) => TopikTest(
-  schemaVersion: _test.schemaVersion,
-  contentVersion: _test.contentVersion + 1,
-  testId: _test.testId,
-  level: _test.level,
-  round: _test.round,
-  section: _test.section,
-  format: _test.format,
-  form: _test.form,
-  titleKo: _test.titleKo,
-  officialTimeLimitSec: _test.officialTimeLimitSec,
-  source: _test.source,
-  groups: _test.groups,
+  schemaVersion: topikListeningTest.schemaVersion,
+  contentVersion: topikListeningTest.contentVersion + 1,
+  testId: topikListeningTest.testId,
+  level: topikListeningTest.level,
+  round: topikListeningTest.round,
+  section: topikListeningTest.section,
+  format: topikListeningTest.format,
+  form: topikListeningTest.form,
+  titleKo: topikListeningTest.titleKo,
+  officialTimeLimitSec: topikListeningTest.officialTimeLimitSec,
+  source: topikListeningTest.source,
+  groups: topikListeningTest.groups,
   questions: questions,
-  audioAsset: _test.audioAsset,
+  audioAsset: topikListeningTest.audioAsset,
 );

@@ -16,24 +16,11 @@ void main() {
   const bEmail = 'b@example.com';
   const xEmail = 'x@example.com';
   late AuthWorld world;
-  final t0 = DateTime.utc(2026, 9, 30);
 
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
 
   /// The device on account X, with unsent changes.
-  Future<String> readyAccount() async {
-    final x = world.server.addUser(email: xEmail).id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 5
-      ..pending = 2;
-    return x;
-  }
-
   test('a merge records and sends nothing until the run in progress ended; '
       'then A is sent under A (#18, #19)', () async {
     final a = await readyAnonymous(world);
@@ -73,7 +60,7 @@ void main() {
 
   test('a sign-out sends, signs out and clears nothing until the run in '
       'progress ended (#39, #40)', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail);
     final run = world.sync.pauseGate = Completer<void>();
 
     final signingOut = world.coordinator.signOut();
@@ -98,18 +85,8 @@ void main() {
 
   test('a launch with a pending sign-out shuts the gate at once and drives '
       'it only once the run in progress ended (R3 #1)', () async {
-    final x = await readyAccount();
-    await world.store.saveTransition(
-      AccountTransition(
-        opId: 'op-x',
-        kind: TransitionKind.signOut,
-        sourceUserId: x,
-        sourceIsAnonymous: false,
-        stage: TransitionStage.started,
-        createdAt: t0,
-        updatedAt: t0,
-      ),
-    );
+    final x = await readyAccount(world, email: xEmail);
+    await savePending(world, TransitionKind.signOut, source: x);
 
     world.boot();
     final run = world.sync.pauseGate = Completer<void>();
@@ -172,7 +149,7 @@ void main() {
 
   test('a sign-out asked again after it stopped waits for the run in '
       'progress before it sends (#39, final review I2)', () async {
-    final x = await readyAccount();
+    final x = await readyAccount(world, email: xEmail);
     world.network.goOffline();
     await world.coordinator.signOut();
     expect(

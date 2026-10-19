@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
@@ -16,7 +15,6 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
-import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
 
 import 'package:forui/forui.dart';
@@ -37,13 +35,7 @@ void main() {
       CodeScreen(email: 'a@example.com', onSignedIn: () => signIns++);
 
   accountTest('six digits sign in and say so', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
 
     expect(find.text(_en.accountCodeSentTo), findsOneWidget);
     expect(find.text('a@example.com'), findsOneWidget);
@@ -59,14 +51,8 @@ void main() {
     env,
     world,
   ) async {
-    await world.coordinator.requestCode('a@example.com');
     final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
 
     final node = tester.getSemantics(find.text(_en.accountCodeTitle));
     expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
@@ -78,13 +64,7 @@ void main() {
 
   accountTest('a code being checked is read-only and its digits stay at '
       'full strength', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
 
     final held = world.gateway.holdRequests = Completer<void>();
     await tester.enterText(find.byType(FTextField), '123456');
@@ -122,20 +102,13 @@ void main() {
       findsNothing,
     );
 
-    held.complete();
-    world.gateway.holdRequests = null;
+    releaseHeldRequests(world, held);
     await _settle(tester);
   });
 
   accountTest('a wrong code clears the field and says so; the right one then '
       'signs in (Review Focus 4)', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
 
     await tester.enterText(find.byType(FTextField), '000000');
     await _settle(tester);
@@ -153,6 +126,13 @@ void main() {
           .text,
       '',
     );
+    // The wait runs on, so the message does not ask for a new code, and the
+    // field keeps the keyboard.
+    expect(_en.accountCodeWrong, isNot(contains('new code')));
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
     expect(signIns, 0);
 
     await tester.enterText(find.byType(FTextField), '123456');
@@ -165,13 +145,7 @@ void main() {
     env,
     world,
   ) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
 
     expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
     expect(
@@ -189,13 +163,7 @@ void main() {
 
   accountTest('a resend in flight spins on the button, not "New code in '
       '0:00" (final review F1)', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
     await tester.pump(const Duration(seconds: 60));
 
     final held = world.gateway.holdRequests = Completer<void>();
@@ -207,8 +175,7 @@ void main() {
     expect(resend, findsOneWidget);
     expect(tester.widget<MxButton>(resend).isLoading, isTrue);
 
-    held.complete();
-    world.gateway.holdRequests = null;
+    releaseHeldRequests(world, held);
     await _settle(tester);
 
     expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
@@ -217,10 +184,10 @@ void main() {
   accountTest('a re-auth resend to another address names the unsent '
       'changes again (P3b minor M7)', (tester, env, world) async {
     await refuseSession(world);
-    await world.coordinator.requestCode('b@example.com', confirmedLoss: true);
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       Scaffold(
         body: CodeFormWidget(
           email: 'b@example.com',
@@ -229,7 +196,8 @@ void main() {
           onSignedIn: () {},
         ),
       ),
-      overrides: accountOverrides(world),
+      email: 'b@example.com',
+      confirmedLoss: true,
     );
     await tester.pump(const Duration(seconds: 60));
 
@@ -253,10 +221,10 @@ void main() {
     world,
   ) async {
     await refuseSession(world);
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       Scaffold(
         body: CodeFormWidget(
           email: 'a@example.com',
@@ -265,7 +233,6 @@ void main() {
           onSignedIn: () {},
         ),
       ),
-      overrides: accountOverrides(world),
     );
     await tester.pump(const Duration(seconds: 60));
 
@@ -278,13 +245,7 @@ void main() {
 
   accountTest('a code typed while a new one is on its way is kept and '
       'checked', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
     await tester.pump(const Duration(seconds: 60));
     final held = world.gateway.holdRequests = Completer<void>();
     await tester.tap(find.text(_en.accountResend));
@@ -292,50 +253,25 @@ void main() {
 
     await tester.enterText(find.byType(FTextField), '123456');
     await tester.pump();
-    held.complete();
-    world.gateway.holdRequests = null;
+    releaseHeldRequests(world, held);
     await _settle(tester);
     await _settle(tester);
 
     expect(signIns, 1);
   });
 
-  accountTest('after a wrong code the field keeps the keyboard', (
-    tester,
-    env,
-    world,
-  ) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
-
-    await tester.enterText(find.byType(FTextField), '000000');
-    await _settle(tester);
-
-    expect(find.text(_en.accountCodeWrong), findsOneWidget);
-    expect(
-      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
-      isTrue,
-    );
-  });
-
   accountTest('a re-auth code signs in again', (tester, env, world) async {
     await refuseSession(world);
-    await world.coordinator.requestCode('a@example.com');
     var signedIn = 0;
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       CodeScreen(
         email: 'a@example.com',
         purpose: SignInPurpose.reauth,
         onSignedIn: () => signedIn++,
       ),
-      overrides: accountOverrides(world),
     );
 
     await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
@@ -353,18 +289,17 @@ void main() {
     world,
   ) async {
     await refuseSession(world);
-    await world.coordinator.requestCode('a@example.com');
     // Signed in, then `me()` meets no network: the state stays Validating.
     world.gateway.afterSignIn = () => world.server.offline = true;
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       const CodeScreen(
         email: 'a@example.com',
         purpose: SignInPurpose.reauth,
         onSignedIn: _noop,
       ),
-      overrides: accountOverrides(world),
     );
 
     await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
@@ -382,18 +317,19 @@ void main() {
     world,
   ) async {
     await refuseSession(world);
-    await world.coordinator.requestCode('b@example.com', confirmedLoss: true);
     // The switch that follows the sign-in meets no network.
     world.gateway.afterSignIn = () => world.server.offline = true;
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       const CodeScreen(
         email: 'b@example.com',
         purpose: SignInPurpose.reauth,
         onSignedIn: _noop,
       ),
-      overrides: accountOverrides(world),
+      email: 'b@example.com',
+      confirmedLoss: true,
     );
 
     await tester.enterText(find.byType(FTextField), FakeAuthGateway.code);
@@ -407,13 +343,7 @@ void main() {
 
   accountTest('the code step leads with its title, the address and the spam '
       'hint, and opens on the code', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
     await tester.pump();
 
     expect(find.text(_en.accountCodeTitle), findsOneWidget);
@@ -426,13 +356,7 @@ void main() {
 
   accountTest('while six digits are checked a spinner takes the wait line, '
       'and nothing under it moves', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
+    await pumpCode(tester, env, world, screen());
     final before = tester.getTopLeft(find.text(_en.accountUseAnotherEmail));
 
     final held = world.gateway.holdRequests = Completer<void>();
@@ -443,29 +367,8 @@ void main() {
     expect(find.text(_en.accountResendIn('1:00')), findsNothing);
     expect(tester.getTopLeft(find.text(_en.accountUseAnotherEmail)), before);
 
-    held.complete();
-    world.gateway.holdRequests = null;
+    releaseHeldRequests(world, held);
     await _settle(tester);
-  });
-
-  accountTest('a wrong code no longer asks for a new one while the wait runs', (
-    tester,
-    env,
-    world,
-  ) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      screen(),
-      overrides: accountOverrides(world),
-    );
-
-    await tester.enterText(find.byType(FTextField), '000000');
-    await _settle(tester);
-
-    expect(find.text(_en.accountCodeWrong), findsOneWidget);
-    expect(_en.accountCodeWrong, isNot(contains('new code')));
   });
 }
 

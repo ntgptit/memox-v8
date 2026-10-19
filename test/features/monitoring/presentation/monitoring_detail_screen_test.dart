@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -19,6 +18,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 
+import '../../../support/clipboard_capture.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/forui_expect.dart';
@@ -181,22 +181,7 @@ void main() {
     env,
   ) async {
     final repository = FakeMonitoringRepository()..servers['a'] = record('a');
-    final copied = <String>[];
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'Clipboard.setData') {
-          copied.add((call.arguments as Map)['text'] as String);
-        }
-        return null;
-      },
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
+    final copied = captureClipboard(tester);
     await _pump(tester, env, repository);
 
     await tester.tap(byControlLabel('Copy device ID'));
@@ -378,30 +363,15 @@ void main() {
     env,
   ) async {
     final repository = FakeMonitoringRepository()..servers['a'] = record('a');
-    String? copied;
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'Clipboard.setData') {
-          copied = (call.arguments as Map)['text'] as String;
-        }
-        return null;
-      },
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
+    final copied = captureClipboard(tester);
     await _pump(tester, env, repository);
 
     await tester.tap(byControlLabel('Copy log'));
     await _settle(tester);
 
-    expect(copied, contains('"event": "sync.push_failed"'));
-    expect(copied, contains('"stackTrace"'));
-    expect(copied, contains('"deviceId": "device-1"'));
+    expect(copied.last, contains('"event": "sync.push_failed"'));
+    expect(copied.last, contains('"stackTrace"'));
+    expect(copied.last, contains('"deviceId": "device-1"'));
     expect(find.text('Copied'), findsOneWidget);
   });
 

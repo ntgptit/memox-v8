@@ -7,7 +7,6 @@ import '../../support/auth_fakes.dart';
 // Auth spec §3.3 rows #1–#12, #14, #15 and plan Review Focus 1, on fakes.
 void main() {
   late AuthWorld world;
-  final t0 = DateTime.utc(2026, 9, 30);
 
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
@@ -120,20 +119,14 @@ void main() {
   test(
     '#14 an account whose session is refused keeps its data and waits',
     () async {
-      final b = world.server.addUser(email: 'b@example.com');
-      world.gateway.adopt(b.id);
-      world.boot();
-      await world.coordinator.start();
-      world.device
-        ..owner = b.id
-        ..pending = 2;
+      final b = await readyAccount(world, email: 'b@example.com', rows: 0);
 
       world.gateway.dropSession();
       await pumpEventQueue();
 
       expect(
         world.state,
-        isA<ReauthRequired>().having((s) => s.last.id, 'last', b.id),
+        isA<ReauthRequired>().having((s) => s.last.id, 'last', b),
       );
       expect(world.device.resets, 0);
       expect(world.device.pending, 2);
@@ -156,16 +149,11 @@ void main() {
     () async {
       final a = await readyAnonymous(world);
       world.server.deleteUser(a);
-      await world.store.saveTransition(
-        AccountTransition(
-          opId: 'op-x',
-          kind: TransitionKind.anonRecovery,
-          sourceUserId: a,
-          sourceIsAnonymous: true,
-          stage: TransitionStage.started,
-          createdAt: t0,
-          updatedAt: t0,
-        ),
+      await savePending(
+        world,
+        TransitionKind.anonRecovery,
+        source: a,
+        anonymous: true,
       );
 
       world.boot();
@@ -179,15 +167,7 @@ void main() {
   );
 
   test('R3 prepare shuts the gate for a pending blocking transition', () async {
-    await world.store.saveTransition(
-      AccountTransition(
-        opId: 'op-x',
-        kind: TransitionKind.signOut,
-        stage: TransitionStage.started,
-        createdAt: t0,
-        updatedAt: t0,
-      ),
-    );
+    await savePending(world, TransitionKind.signOut);
 
     world.boot();
     await world.coordinator.prepare();

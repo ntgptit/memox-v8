@@ -1,18 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
-import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 
 import '../../../support/tag_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/tag_outcomes.dart';
 
 // UC-TAG-001 steps 1-3 and 6: every tag of the library with the active cards
 // carrying it, in the library or in one deck (BR-TAG-003, BR-TAG-010; tag
 // management spec §5).
-
-List<(String, int)> _rows(List<TagCount> counts) => [
-  for (final count in counts) (count.name, count.cardCount),
-];
 
 void main() {
   late AppDatabase db;
@@ -26,7 +22,7 @@ void main() {
   tearDown(() => db.close());
 
   Future<List<(String, int)>> catalog([String searchTerm = '']) async =>
-      _rows(await tags.watchTagCounts(searchTerm: searchTerm).first);
+      tagRows(await tags.watchTagCounts(searchTerm: searchTerm).first);
 
   test('the catalog lists every tag by its folded name, each with its active '
       'cards, one with none at 0 (UC-TAG-001 step 1, BR-TAG-003)', () async {
@@ -56,7 +52,7 @@ void main() {
     await insertTag(db, 't1', 'noun', cardIds: ['c1', 'c2']);
     final seen = <List<(String, int)>>[];
     final subscription = tags.watchTagCounts().listen(
-      (counts) => seen.add(_rows(counts)),
+      (counts) => seen.add(tagRows(counts)),
     );
     await pumpEventQueue();
     expect(seen.last, [('noun', 2)]);
@@ -101,7 +97,7 @@ void main() {
     await insertTag(db, 't2', 'verb', cardIds: ['c2']);
 
     Future<List<(String, int)>> inDeck(String deckId) async =>
-        _rows(await tags.watchTagCounts(deckId: deckId).first);
+        tagRows(await tags.watchTagCounts(deckId: deckId).first);
 
     expect(await inDeck('leaf'), [('noun', 1), ('verb', 0)]);
     expect(await inDeck('other'), [('noun', 1), ('verb', 1)]);
@@ -123,7 +119,7 @@ void main() {
     final seen = <List<(String, int)>>[];
     final subscription = tags
         .watchTagCounts(deckId: 'leaf')
-        .listen((counts) => seen.add(_rows(counts)));
+        .listen((counts) => seen.add(tagRows(counts)));
     await pumpEventQueue();
     expect(seen.last, isEmpty);
 

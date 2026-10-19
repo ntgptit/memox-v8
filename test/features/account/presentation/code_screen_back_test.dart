@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../../support/account_harness.dart';
-import '../../../support/library_harness.dart';
 
 import 'package:forui/forui.dart';
 
@@ -27,10 +25,10 @@ void main() {
 
   accountTest('Back is held while the code is checked, so the sign-in ends '
       'on this screen (audit 2026-10-17 ACC-3)', (tester, env, world) async {
-    await world.coordinator.requestCode('a@example.com');
-    await pumpLibraryScreen(
+    await pumpCode(
       tester,
       env,
+      world,
       Builder(
         builder: (context) => TextButton(
           onPressed: () => unawaited(
@@ -40,7 +38,6 @@ void main() {
           child: const Text('open'),
         ),
       ),
-      overrides: accountOverrides(world),
     );
     await tester.tap(find.text('open'));
     await _settle(tester);
@@ -56,8 +53,7 @@ void main() {
     await _settle(tester);
     expect(find.byType(CodeScreen), findsOneWidget);
 
-    held.complete();
-    world.gateway.holdRequests = null;
+    releaseHeldRequests(world, held);
     await _settle(tester);
     expect(signIns, 1);
     expect(tester.widget<MxIconButton>(back).onPressed, isNotNull);

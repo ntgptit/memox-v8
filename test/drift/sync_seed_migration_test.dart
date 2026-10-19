@@ -12,42 +12,50 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('a v9 database queues its schedules and its reviews', () async {
-    final schema = await verifier.schemaAt(9);
-    schema.rawDatabase
-      ..execute(
-        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-        "scheduler_version, generation, sibling_position, created_at, updated_at) "
-        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'eight_box', 1, 1, 0, 0, 0)",
-      )
-      ..execute(
-        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'R', 'f', 'b', 0, 0)",
-      )
-      ..execute(
-        "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, "
-        "answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 0, 0, 1)",
-      )
-      ..execute(
-        "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, "
-        "\"action\", answered_at) VALUES ('V2', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 2), "
-        "('V1', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
-      )
-      ..execute('DELETE FROM sync_outbox');
+  /// A database of version [from] holding the rows of [seed], migrated to v13.
+  Future<AppDatabase> migrated(int from, List<String> seed) async {
+    final schema = await verifier.schemaAt(from);
+    for (final statement in seed) {
+      schema.rawDatabase.execute(statement);
+    }
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
     await verifier.migrateAndValidate(db, 13);
+    return db;
+  }
+
+  /// What the outbox holds, as `type/id`, in the order it was queued.
+  Future<List<String>> queuedOf(AppDatabase db) async {
     final queued = await db
         .customSelect(
           'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
         )
         .get();
-    expect(
-      queued.map(
-        (r) =>
-            '${r.read<String>('entity_type')}/${r.read<String>('entity_id')}',
-      ),
-      ['card_schedule/K', 'review_log/V1', 'review_log/V2'],
-    );
+    return [
+      for (final r in queued)
+        '${r.read<String>('entity_type')}/${r.read<String>('entity_id')}',
+    ];
+  }
+
+  test('a v9 database queues its schedules and its reviews', () async {
+    final db = await migrated(9, [
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+          "scheduler_version, generation, sibling_position, created_at, updated_at) "
+          "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'eight_box', 1, 1, 0, 0, 0)",
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'R', 'f', 'b', 0, 0)",
+      "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, "
+          "answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 0, 0, 1)",
+      "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, "
+          "\"action\", answered_at) VALUES ('V2', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 2), "
+          "('V1', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
+      'DELETE FROM sync_outbox',
+    ]);
+
+    expect(await queuedOf(db), [
+      'card_schedule/K',
+      'review_log/V1',
+      'review_log/V2',
+    ]);
   });
 
   test('a v8 database queues its settings only when they are not the defaults', () async {
@@ -72,56 +80,29 @@ void main() {
   });
 
   test('a v7 database queues its tags and its tagged cards', () async {
-    final schema = await verifier.schemaAt(7);
-    schema.rawDatabase
-      ..execute(
-        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-        "scheduler_version, generation, sibling_position, created_at, updated_at) "
-        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-      )
-      ..execute(
-        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
-        "('K1', 'R', 'f', 'b', 1, 1), ('K2', 'R', 'f', 'b', 2, 2)",
-      )
-      ..execute(
-        "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('T', 'v', 'v', 0)",
-      )
-      ..execute("INSERT INTO card_tags (card_id, tag_id) VALUES ('K1', 'T')")
-      ..execute('DELETE FROM sync_outbox');
-    final db = AppDatabase(schema.newConnection());
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 13);
+    final db = await migrated(7, [
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+          "scheduler_version, generation, sibling_position, created_at, updated_at) "
+          "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
+          "('K1', 'R', 'f', 'b', 1, 1), ('K2', 'R', 'f', 'b', 2, 2)",
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('T', 'v', 'v', 0)",
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K1', 'T')",
+      'DELETE FROM sync_outbox',
+    ]);
 
-    final queued = await db
-        .customSelect(
-          'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
-        )
-        .get();
-    expect(
-      queued.map(
-        (r) =>
-            '${r.read<String>('entity_type')}/${r.read<String>('entity_id')}',
-      ),
-      ['tag/T', 'card/K1'],
-    );
+    expect(await queuedOf(db), ['tag/T', 'card/K1']);
   });
 
   test('a v6 database queues its cards for the first card sync', () async {
-    final schema = await verifier.schemaAt(6);
-    schema.rawDatabase
-      ..execute(
-        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-        "scheduler_version, generation, sibling_position, created_at, updated_at) "
-        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-      )
-      ..execute('DELETE FROM sync_outbox')
-      ..execute(
-        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
-        "('K2', 'R', 'f', 'b', 2, 2), ('K1', 'R', 'f', 'b', 1, 1)",
-      );
-    final db = AppDatabase(schema.newConnection());
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 13);
+    final db = await migrated(6, [
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+          "scheduler_version, generation, sibling_position, created_at, updated_at) "
+          "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+      'DELETE FROM sync_outbox',
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
+          "('K2', 'R', 'f', 'b', 2, 2), ('K1', 'R', 'f', 'b', 1, 1)",
+    ]);
 
     final queued = await db
         .customSelect(

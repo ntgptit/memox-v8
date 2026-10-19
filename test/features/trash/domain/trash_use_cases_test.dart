@@ -3,12 +3,9 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/domain/usecases/purge_expired_trash_use_case.dart';
@@ -20,6 +17,7 @@ import 'package:memox/features/trash/domain/usecases/watch_deck_restore_targets_
 import 'package:memox/features/trash/domain/usecases/watch_trash_use_case.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_day_clock.dart';
 import '../../../support/test_database.dart';
@@ -38,13 +36,7 @@ void main() {
     db = openTestDatabase();
     clock = FakeDayClock(DateTime(2026, 9, 25, 9));
     decks = DeckRepositoryImpl(db, now: clock.now);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: clock.now),
-      TagRepositoryImpl(db, now: clock.now),
-      DeckTreeDataSource(db),
-      now: clock.now,
-    );
+    cards = cardRepository(db, now: clock.now);
     trash = TrashRepositoryImpl(db);
   });
   tearDown(() => db.close());

@@ -6,12 +6,10 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
-import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -33,12 +31,6 @@ List<Element> _shownBadges() => find
           badge.findAncestorWidgetOfExactType<Visibility>()?.visible != false,
     )
     .toList();
-
-/// The app bar's refresh, which a screen reader can reach where the drag
-/// down is out of reach (audit 2026-10-17 SET-11).
-final _refreshAction = find.byWidgetPredicate(
-  (widget) => widget is MxIconButton && widget.semanticLabel == 'Refresh',
-);
 
 void main() {
   libraryTest('it opens on open warnings and errors, with their count', (
@@ -354,7 +346,7 @@ void main() {
     await pumpMonitoring(tester, env, repository);
     expect(repository.queries, hasLength(1));
 
-    await tester.tap(_refreshAction);
+    await tester.tap(monitoringRefreshAction);
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
@@ -366,14 +358,9 @@ void main() {
       '(audit 2026-10-17 SET-11)', (tester, env) async {
     final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
     await pumpMonitoring(tester, env, repository);
-    repository.watches.single.feed.add(
-      PendingLogs(items: [summary('p1', status: null)], total: 1),
-    );
-    await settleMonitoring(tester);
-    await tester.tap(find.text('Not sent (1)'));
-    await tester.pumpAndSettle();
+    await openNotSentTabWithOne(tester, repository);
 
-    expect(_refreshAction, findsNothing);
+    expect(monitoringRefreshAction, findsNothing);
   });
 
   libraryTest('the search asks once the field has been still for 400 ms', (

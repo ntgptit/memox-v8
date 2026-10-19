@@ -6,10 +6,8 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/load_card_history_page_use_case.dart';
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_history_event_widget.dart';
@@ -25,6 +23,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/wrap_rule.dart';
+import 'support/flaky_card_history.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _addedAt = DateTime(2026, 8, 1);
@@ -64,29 +63,6 @@ Future<void> _answers(LibraryEnv env, int count) async {
       at: DateTime(2026, 9, 1, 8).add(Duration(minutes: i)),
     );
   }
-}
-
-/// Fails the first older page, then answers as [_cards] does.
-final class _FlakyHistory implements CardRepository {
-  _FlakyHistory(this._cards);
-
-  final CardRepository _cards;
-  var _hasFailed = false;
-
-  @override
-  Future<ReviewHistoryPage?> historyPage({
-    required String cardId,
-    ReviewHistoryCursor? after,
-  }) async {
-    if (after != null && !_hasFailed) {
-      _hasFailed = true;
-      throw const UnknownDatabaseFailure(cause: '/data/memox.sqlite');
-    }
-    return _cards.historyPage(cardId: cardId, after: after);
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 /// Scrolls to the end-of-history line, which follows the oldest answer.
@@ -300,7 +276,7 @@ void main() {
       _section(),
       overrides: [
         loadCardHistoryPageUseCaseProvider.overrideWithValue(
-          LoadCardHistoryPageUseCase(_FlakyHistory(env.cards)),
+          LoadCardHistoryPageUseCase(FlakyCardHistory(env.cards)),
         ),
       ],
     );

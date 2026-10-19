@@ -410,24 +410,8 @@ void main() {
       expect(signIns, 1);
     });
 
-    accountTest('Continue without an account names the changes it loses '
-        '(final review I2)', (tester, env, world) async {
-      await refuseSession(world);
-      await pumpLibraryScreen(
-        tester,
-        env,
-        reauth(),
-        overrides: accountOverrides(world),
-      );
-      await _settle(tester);
-
-      await tester.tap(find.text(_en.accountContinueWithoutThis));
-      await _settle(tester);
-
-      expect(find.text(_en.accountUnsentBody(2)), findsOneWidget);
-    });
-
-    accountTest('Continue without an account asks, then leaves the account', (
+    accountTest('Continue without an account asks, names the changes it loses '
+        '(final review I2), then leaves the account', (
       tester,
       env,
       world,
@@ -446,6 +430,7 @@ void main() {
         find.text(_en.accountWithoutBody('a@example.com')),
         findsOneWidget,
       );
+      expect(find.text(_en.accountUnsentBody(2)), findsOneWidget);
       // The dialog's confirm.
       await tester.tap(
         find.descendant(

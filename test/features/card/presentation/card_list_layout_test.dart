@@ -23,50 +23,15 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
-import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+import 'support/card_list_search.dart';
+import 'support/card_list_section_host.dart';
+import 'support/card_list_seed.dart';
 
 /// Screen 07's layout: the search behind the app bar's action, the deck
 /// summary, the header, the selection and the four-command bulk bar.
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-    // As the router wires it: the bulk bar holds its five commands.
-    onExport: (_) {},
-  ),
-);
-
-/// Korean › Words: annyeong (new) and gamsa (due, "thanks").
-Future<String> _seed(LibraryEnv env) async {
-  final korean = await env.decks.root('Korean');
-  final words = await env.decks.sub(korean.id, 'Words');
-  await insertCard(env.db, id: 'new1', deckId: words.id, front: 'annyeong');
-  await insertCard(
-    env.db,
-    id: 'due1',
-    deckId: words.id,
-    front: 'gamsa',
-    back: 'thanks',
-    learnedAt: DateTime(2026, 9, 1),
-    dueAt: DateTime(2026, 9, 24),
-  );
-  return words.id;
-}
-
-/// The app bar's search action: here, straight on the state.
-Future<void> _openSearch(WidgetTester tester, String deckId) async {
-  ProviderScope.containerOf(tester.element(find.byType(CardListSectionWidget)))
-      .read(cardSearchOpenProvider(deckId).notifier)
-      .open();
-  await tester.pumpAndSettle();
-}
 
 /// Flags that fail the first way a real database can.
 final class _FailingFlags implements CardRepository {
@@ -108,11 +73,11 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     expect(find.byType(MxSearchField), findsNothing);
 
-    await _openSearch(tester, deckId);
+    await openCardSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'thank');
     await tester.pumpAndSettle();
     expect(find.byType(CardRowWidget), findsOneWidget);
@@ -129,8 +94,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     // Every card shows: the chips count, the header only names the list
     // (critique 2026-09-30 part 3b).
     final header = find.text(_en.cardListHeader.toUpperCase());
@@ -152,8 +117,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
@@ -166,8 +131,8 @@ void main() {
 
   libraryTest('a filter narrows the list: the header says how many of the '
       "deck's cards show (critique 2026-09-30 part 3b)", (tester, env) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterDue));
     await tester.pumpAndSettle();
 
@@ -179,8 +144,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
@@ -208,11 +173,11 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
+    final deckId = await seedAnnyeongGamsa(env);
     await pumpLibraryScreen(
       tester,
       env,
-      _section(deckId),
+      cardListSectionWithExport(deckId),
       overrides: [
         setCardsFlaggedUseCaseProvider.overrideWithValue(
           SetCardsFlaggedUseCase(_FailingFlags()),
@@ -241,8 +206,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
@@ -254,8 +219,8 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
     final row = find.widgetWithText(CardRowWidget, 'gamsa');
     final before = tester.element(row);
 
@@ -270,9 +235,9 @@ void main() {
     tester,
     env,
   ) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await _openSearch(tester, deckId);
+    final deckId = await seedAnnyeongGamsa(env);
+    await pumpLibraryScreen(tester, env, cardListSectionWithExport(deckId));
+    await openCardSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'a');
     await tester.pumpAndSettle();
 
@@ -293,7 +258,7 @@ void main() {
 
   libraryTest('the add FAB steps aside while search is open, so it covers '
       'no row (critique 2026-09-30 part 3d-1)', (tester, env) async {
-    final deckId = await _seed(env);
+    final deckId = await seedAnnyeongGamsa(env);
     await pumpLibraryScreen(
       tester,
       env,
@@ -313,7 +278,7 @@ void main() {
     );
     expect(find.byType(MxFab), findsOneWidget);
 
-    await _openSearch(tester, deckId);
+    await openCardSearch(tester, deckId);
     expect(find.byType(MxFab), findsNothing);
 
     ProviderScope.containerOf(
@@ -325,11 +290,11 @@ void main() {
 
   Future<_FlakyFlags> failOneFlag(WidgetTester tester, LibraryEnv env) async {
     final flags = _FlakyFlags();
-    final deckId = await _seed(env);
+    final deckId = await seedAnnyeongGamsa(env);
     await pumpLibraryScreen(
       tester,
       env,
-      _section(deckId),
+      cardListSectionWithExport(deckId),
       overrides: [
         setCardsFlaggedUseCaseProvider.overrideWithValue(
           SetCardsFlaggedUseCase(flags),

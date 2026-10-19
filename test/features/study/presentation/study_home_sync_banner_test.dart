@@ -32,22 +32,21 @@ SyncStatus _waiting(LibraryEnv env, int hours) => SyncStatus(
 );
 
 void main() {
-  libraryTest('no banner without Supabase', (tester, env) async {
-    await pumpLibraryScreen(tester, env, _screen());
-    await _settle(tester);
-    expect(find.text('Details'), findsNothing);
-  });
-
-  libraryTest('no banner when nothing waits', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: syncOverrides(const SyncStatus()),
-    );
-    await _settle(tester);
-    expect(find.text('Details'), findsNothing);
-  });
+  for (final (name, hasSupabase) in [
+    ('no banner without Supabase', false),
+    ('no banner when nothing waits', true),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(),
+        overrides: hasSupabase ? syncOverrides(const SyncStatus()) : const [],
+      );
+      await _settle(tester);
+      expect(find.text('Details'), findsNothing);
+    });
+  }
 
   libraryTest('refused rows show the banner; Details opens screen 27', (
     tester,
@@ -86,30 +85,21 @@ void main() {
     expect(find.text("1 change wasn't accepted."), findsOneWidget);
   });
 
-  libraryTest('a change waiting 25 h shows the stale banner', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: syncOverrides(_waiting(env, 25)),
+  for (final (hours, isShown) in [(25, true), (23, false)]) {
+    libraryTest(
+      'a change waiting $hours h shows ${isShown ? 'the stale' : 'no'} banner',
+      (tester, env) async {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(),
+          overrides: syncOverrides(_waiting(env, hours)),
+        );
+        await _settle(tester);
+        expect(find.text(_stale), isShown ? findsOneWidget : findsNothing);
+      },
     );
-    await _settle(tester);
-    expect(find.text(_stale), findsOneWidget);
-  });
-
-  libraryTest('a change waiting 23 h shows no banner', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: syncOverrides(_waiting(env, 23)),
-    );
-    await _settle(tester);
-    expect(find.text(_stale), findsNothing);
-  });
+  }
 
   libraryTest('the notice hides when the status stream fails (spec §6)', (
     tester,

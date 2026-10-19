@@ -111,60 +111,69 @@ void main() {
       TextAlign.center,
     );
   });
-  testWidgets('the caption steps aside while the keyboard is up', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MediaQuery(
-        data: const MediaQueryData(viewInsets: EdgeInsets.only(bottom: 300)),
-        child: MxFooterBar(
-          caption: 'Front and back are required to save.',
-          child: MxButton(label: 'Save', onPressed: () {}),
-        ),
-      ),
-    );
 
-    expect(find.text('Front and back are required to save.'), findsNothing);
-    expect(find.text('Save'), findsOneWidget);
-  });
-  testWidgets('the caption steps aside in a real shell, whose Scaffold '
-      'strips the keyboard inset from its body', (tester) async {
-    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
-    addTearDown(tester.view.resetViewInsets);
-    await pumpMxPage(
-      tester,
-      MxAppShell(
-        body: const SizedBox.expand(),
-        footer: MxFooterBar(
-          caption: 'Front and back are required to save.',
-          child: MxButton(label: 'Save', onPressed: () {}),
-        ),
-      ),
-    );
-
-    expect(find.text('Front and back are required to save.'), findsNothing);
-    expect(find.text('Save'), findsOneWidget);
-  });
-  testWidgets('the caption steps aside in a shell nested in a tab shell', (
-    tester,
-  ) async {
-    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
-    addTearDown(tester.view.resetViewInsets);
-    await pumpMxPage(
-      tester,
-      MxAppShell(
-        body: MxAppShell(
-          body: const SizedBox.expand(),
-          footer: MxFooterBar(
-            caption: 'Front and back are required to save.',
-            child: MxButton(label: 'Save', onPressed: () {}),
+  // The caption steps aside under the keyboard, on every host the footer
+  // lives in: each reads the inset differently (a bare MediaQuery, a Scaffold
+  // that strips it from its body, a shell nested in a tab shell).
+  final hosts =
+      <
+        ({
+          String name,
+          Future<void> Function(WidgetTester tester, Widget footer) pump,
+        })
+      >[
+        (
+          name: 'the caption steps aside while the keyboard is up',
+          pump: (tester, footer) => pumpMx(
+            tester,
+            MediaQuery(
+              data: const MediaQueryData(
+                viewInsets: EdgeInsets.only(bottom: 300),
+              ),
+              child: footer,
+            ),
           ),
         ),
-        bottomBar: const SizedBox(height: 80),
-      ),
-    );
+        (
+          name:
+              'the caption steps aside in a real shell, whose Scaffold strips '
+              'the keyboard inset from its body',
+          pump: (tester, footer) {
+            tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+            addTearDown(tester.view.resetViewInsets);
+            return pumpMxPage(
+              tester,
+              MxAppShell(body: const SizedBox.expand(), footer: footer),
+            );
+          },
+        ),
+        (
+          name: 'the caption steps aside in a shell nested in a tab shell',
+          pump: (tester, footer) {
+            tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+            addTearDown(tester.view.resetViewInsets);
+            return pumpMxPage(
+              tester,
+              MxAppShell(
+                body: MxAppShell(body: const SizedBox.expand(), footer: footer),
+                bottomBar: const SizedBox(height: 80),
+              ),
+            );
+          },
+        ),
+      ];
+  for (final host in hosts) {
+    testWidgets(host.name, (tester) async {
+      await host.pump(
+        tester,
+        MxFooterBar(
+          caption: 'Front and back are required to save.',
+          child: MxButton(label: 'Save', onPressed: () {}),
+        ),
+      );
 
-    expect(find.text('Front and back are required to save.'), findsNothing);
-  });
+      expect(find.text('Front and back are required to save.'), findsNothing);
+      expect(find.text('Save'), findsOneWidget);
+    });
+  }
 }

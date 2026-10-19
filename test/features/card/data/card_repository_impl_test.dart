@@ -6,16 +6,14 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
+import '../../../support/card_repository_fixture.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -48,13 +46,7 @@ void main() {
   setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardRepositoryImpl(
-      db,
-      ScheduleRepositoryImpl(db, now: _now),
-      TagRepositoryImpl(db, now: _now),
-      DeckTreeDataSource(db),
-      now: _now,
-    );
+    cards = cardRepository(db, now: _now);
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'l');
   });
@@ -100,12 +92,10 @@ void main() {
   test(
     'when the schedule row cannot be written, the card is not created either',
     () async {
-      final failing = CardRepositoryImpl(
+      final failing = cardRepository(
         db,
-        _FailingScheduleRepository(),
-        TagRepositoryImpl(db, now: _now),
-        DeckTreeDataSource(db),
         now: _now,
+        schedules: _FailingScheduleRepository(),
       );
 
       await expectLater(
@@ -125,31 +115,28 @@ void main() {
     },
   );
 
-  test('a card cannot be created directly on a root deck', () async {
-    final result = await cards.createCard(
-      deckId: root.id,
-      draft: const CardDraft(front: 'f', back: 'b'),
-    );
-
-    expect(_reason(result), CardRejection.notACardContainer);
-    expect(await _count(db, 'card'), 0);
-    expect(await _count(db, 'card_schedule'), 0);
-  });
-
-  test(
-    'a card cannot be created in a deck that already holds sub-decks',
-    () async {
-      final branch = await decks.sub(root.id, 'b');
-      await decks.sub(branch.id, 'child');
-
+  for (final c in <(String, Future<String> Function())>[
+    ('a card cannot be created directly on a root deck', () async => root.id),
+    (
+      'a card cannot be created in a deck that already holds sub-decks',
+      () async {
+        final branch = await decks.sub(root.id, 'b');
+        await decks.sub(branch.id, 'child');
+        return branch.id;
+      },
+    ),
+  ]) {
+    test(c.$1, () async {
       final result = await cards.createCard(
-        deckId: branch.id,
+        deckId: await c.$2(),
         draft: const CardDraft(front: 'f', back: 'b'),
       );
 
       expect(_reason(result), CardRejection.notACardContainer);
-    },
-  );
+      expect(await _count(db, 'card'), 0);
+      expect(await _count(db, 'card_schedule'), 0);
+    });
+  }
 
   test('a draft the card rules refuse writes nothing (BR-CARD-001..003, BR-TAG-002)', () async {
     final before = await totalChanges(db);

@@ -28,6 +28,34 @@ import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
+/// The screen with the permission denied and the toggle tapped: the guidance
+/// banner is up. [platform] defaults to one that denies.
+Future<({FakeReminderPlatform platform, FlakySettingsRepository store})>
+_pumpDenied(
+  WidgetTester tester,
+  LibraryEnv env, {
+  FakeReminderPlatform? platform,
+}) async {
+  final pumped = await pumpReminderScreen(
+    tester,
+    env,
+    platform:
+        platform ?? FakeReminderPlatform(permission: ReminderPermission.denied),
+  );
+  await tapReminderToggle(tester);
+  return pumped;
+}
+
+/// The guidance banner's buttons, in order.
+List<MxButton> _bannerButtons(WidgetTester tester) => tester
+    .widgetList<MxButton>(
+      find.descendant(
+        of: find.byType(MxInlineBanner),
+        matching: find.byType(MxButton),
+      ),
+    )
+    .toList();
+
 void main() {
   libraryTest('off: toggle off, time row disabled, note and preview (main 1)', (
     tester,
@@ -116,12 +144,7 @@ void main() {
     tester,
     env,
   ) async {
-    final s = await pumpReminderScreen(
-      tester,
-      env,
-      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
-    );
-    await tapReminderToggle(tester);
+    final s = await _pumpDenied(tester, env);
 
     expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
     expect(find.text(_en.reminderDeniedBody), findsOneWidget);
@@ -137,21 +160,9 @@ void main() {
 
   libraryTest('permDenied: Try again outlined, then Open system settings '
       'last and primary (R5, amends FE-B6)', (tester, env) async {
-    await pumpReminderScreen(
-      tester,
-      env,
-      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
-    );
-    await tapReminderToggle(tester);
+    await _pumpDenied(tester, env);
 
-    final buttons = tester
-        .widgetList<MxButton>(
-          find.descendant(
-            of: find.byType(MxInlineBanner),
-            matching: find.byType(MxButton),
-          ),
-        )
-        .toList();
+    final buttons = _bannerButtons(tester);
     expect(buttons.map((b) => b.label), [
       _en.reminderTryAgain,
       _en.reminderOpenSystemSettings,
@@ -167,8 +178,7 @@ void main() {
     final platform = FakeReminderPlatform(
       permission: ReminderPermission.denied,
     );
-    await pumpReminderScreen(tester, env, platform: platform);
-    await tapReminderToggle(tester);
+    await _pumpDenied(tester, env, platform: platform);
     platform.permissionHold = Completer<void>();
     await tester.tap(find.text(_en.reminderTryAgain));
     await tester.pump();
@@ -176,14 +186,7 @@ void main() {
 
     platform.permissionHold!.complete();
     await settleReminderScreen(tester);
-    final buttons = tester
-        .widgetList<MxButton>(
-          find.descendant(
-            of: find.byType(MxInlineBanner),
-            matching: find.byType(MxButton),
-          ),
-        )
-        .toList();
+    final buttons = _bannerButtons(tester);
     expect(buttons.map((b) => b.label), [
       _en.reminderTryAgain,
       _en.reminderOpenSystemSettings,
@@ -193,12 +196,7 @@ void main() {
   libraryTest('permDenied: Open system settings opens them and changes nothing '
       'else: no permission asked, nothing written, the banner stays '
       '(FE-B6; BR-REMINDER-011)', (tester, env) async {
-    final s = await pumpReminderScreen(
-      tester,
-      env,
-      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
-    );
-    await tapReminderToggle(tester);
+    final s = await _pumpDenied(tester, env);
     final asked = s.platform.calls
         .where((c) => c == PlatformCall.requestPermission)
         .length;
@@ -220,8 +218,7 @@ void main() {
       'is (FE-B6)', (tester, env) async {
     final platform = FakeReminderPlatform(permission: ReminderPermission.denied)
       ..refusing.add(PlatformCall.openSettings);
-    await pumpReminderScreen(tester, env, platform: platform);
-    await tapReminderToggle(tester);
+    await _pumpDenied(tester, env, platform: platform);
 
     await tester.tap(find.text(_en.reminderOpenSystemSettings));
     await settleReminderScreen(tester);

@@ -13,6 +13,7 @@ import '../../../support/progress_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 import '../../../support/trash_fixtures.dart';
+import '../../../support/progress_days_fixture.dart';
 
 // UC-PROGRESS-001 and UC-PROGRESS-002 at the library level: what one
 // snapshot of `/progress` says (Progress spec §5, §6).
@@ -21,11 +22,7 @@ void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late ProgressRepositoryImpl progress;
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   setUp(() {
     db = openTestDatabase();

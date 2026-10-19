@@ -23,6 +23,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/forui_expect.dart';
+import 'support/study_screen_helpers.dart';
 
 // The session route's screen: spec D2–D8 (D8 as the owner ruled it);
 // UC-STUDY-001 A3, A5, E2, E4.
@@ -49,11 +50,6 @@ Future<String> _session(LibraryEnv env, List<String> ids) async {
   ).openLearningSession(deckId: leaf.id);
   return (opened as Ok<String, StudyRejection>).value;
 }
-
-String _front(WidgetTester tester) => tester
-    .widgetList<Text>(find.textContaining(RegExp(r'^front ')))
-    .single
-    .data!;
 
 /// The screen pushed over a page, as the router pushes it, so Back and
 /// leaving act on a real route.
@@ -162,7 +158,7 @@ void main() {
     final id = await _session(env, ['a', 'b']);
     env.sessions.isAbandonLocked = true;
     await _pumpScreen(tester, env, id);
-    final front = _front(tester);
+    final front = shownFront(tester);
 
     await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
@@ -170,7 +166,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.studyExitFailed), findsOneWidget);
-    expect(_front(tester), front);
+    expect(shownFront(tester), front);
     final session = await sessionOf(env.db, id);
     expect(session.read<String>('status'), 'in_progress');
     await tester.pump(const Duration(seconds: 5));
@@ -195,32 +191,48 @@ void main() {
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
   });
 
-  libraryTest('the deck gone while the exit dialog is open closes it and '
-      'leaves, never a blank page', (tester, env) async {
-    final id = await _session(env, ['a', 'b']);
-    final left = <String?>[];
-    await _pumpScreen(tester, env, id, onLeave: left.add);
+  // The deck goes while the session is on screen: it leaves once, for the
+  // Library, with a message, and never to a blank page.
+  for (final (name, isDialogOpen) in [
+    (
+      'the deck gone while the exit dialog is open closes it and leaves, '
+          'never a blank page',
+      true,
+    ),
+    (
+      'the deck moved to the Trash leaves once, for the Library, with a '
+          'message (UC-STUDY-001 A5)',
+      false,
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final id = await _session(env, ['a', 'b']);
+      final left = <String?>[];
+      await _pumpScreen(tester, env, id, onLeave: left.add);
+      if (isDialogOpen) {
+        await tester.tap(byControlLabel(_en.studySessionClose));
+        await tester.pumpAndSettle();
+      }
 
-    await tester.tap(byControlLabel(_en.studySessionClose));
-    await tester.pumpAndSettle();
-    final session = await sessionOf(env.db, id);
-    await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
-    await tester.pumpAndSettle();
+      final session = await sessionOf(env.db, id);
+      await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
+      await tester.pumpAndSettle();
 
-    expect(find.text(_en.studyExitTitle), findsNothing);
-    expect(left, [null]);
-    expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
-    expect(
-      (await sessionOf(env.db, id)).read<String?>('end_reason'),
-      isNot('user_exit'),
-    );
-  });
+      expect(find.text(_en.studyExitTitle), findsNothing);
+      expect(left, [null]);
+      expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
+      expect(
+        (await sessionOf(env.db, id)).read<String?>('end_reason'),
+        isNot('user_exit'),
+      );
+    });
+  }
 
   libraryTest('Keep studying in the exit dialog changes nothing: the '
       'session stays open on the same card (IT-CONT-004)', (tester, env) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
-    final front = _front(tester);
+    final front = shownFront(tester);
 
     await tester.tap(byControlLabel(_en.studySessionClose));
     await tester.pumpAndSettle();
@@ -228,7 +240,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.studyExitTitle), findsNothing);
-    expect(_front(tester), front);
+    expect(shownFront(tester), front);
     final session = await sessionOf(env.db, id);
     expect(session.read<String>('status'), 'in_progress');
   });
@@ -263,17 +275,17 @@ void main() {
     final id = await _session(env, ['a', 'b']);
     final sessions = env.sessions..isLocked = true;
     await _pumpScreen(tester, env, id);
-    final front = _front(tester);
+    final front = shownFront(tester);
 
     await _swipeLeft(tester);
     expect(find.text(_en.studyAnswerBusyTitle), findsOneWidget);
-    expect(_front(tester), front);
+    expect(shownFront(tester), front);
 
     sessions.isLocked = false;
     await tester.tap(find.text(_en.commonRetry));
     await tester.pumpAndSettle();
     expect(find.text(_en.studyAnswerBusyTitle), findsNothing);
-    expect(_front(tester), isNot(front));
+    expect(shownFront(tester), isNot(front));
   });
 
   for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
@@ -292,20 +304,6 @@ void main() {
       expect(page.right - tester.getTopRight(banner).dx, margin);
     });
   }
-
-  libraryTest('the deck moved to the Trash leaves once, for the Library, '
-      'with a message (UC-STUDY-001 A5)', (tester, env) async {
-    final id = await _session(env, ['a', 'b']);
-    final left = <String?>[];
-    await _pumpScreen(tester, env, id, onLeave: left.add);
-
-    final session = await sessionOf(env.db, id);
-    await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
-    await tester.pumpAndSettle();
-
-    expect(left, [null]);
-    expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
-  });
 
   libraryTest('a write from a stale generation leaves for the deck, with no '
       'summary (UC-STUDY-001 E4)', (tester, env) async {
@@ -454,7 +452,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _screen('s'),
+      studySessionScreen('s'),
       overrides: [
         studySessionProvider('s').overrideWith((_) {
           reads++;
@@ -474,13 +472,6 @@ void main() {
     expect(reads, before + 1);
   });
 }
-
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
 
 StudySessionController _controllerOf(WidgetTester tester, String id) =>
     ProviderScope.containerOf(tester.element(find.byType(StudySessionScreen)))

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -72,6 +73,27 @@ Future<void> _backSwipe(WidgetTester tester) async {
   await send('commitBackGesture');
   await _settle(tester);
 }
+
+/// The static transition layer over [state], as the app's root would show
+/// it, plus whatever else the layer reads.
+Future<void> _pumpLayer(
+  WidgetTester tester,
+  LibraryEnv env,
+  AuthState state, [
+  List<Override> extra = const [],
+]) async {
+  await pumpLibraryScreen(
+    tester,
+    env,
+    AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+    overrides: [authStateOf(state), ...extra],
+  );
+  await tester.pump();
+}
+
+/// [text] inside the layer's footer bar.
+Finder _inFooter(String text) =>
+    find.descendant(of: find.byType(MxFooterBar), matching: find.text(text));
 
 void main() {
   accountTest('a switch covers the app; Back steps from the code to the '
@@ -214,27 +236,46 @@ void main() {
     expect(find.byType(SignInFormWidget), findsOneWidget);
   });
 
-  accountTest('Cancel on a sign-out stopped offline keeps the account and '
-      'everything on the phone (critique 2026-10-02, F2)', (
-    tester,
-    env,
-    world,
-  ) async {
-    await linkEmail(world);
-    world.device.pending = 2;
-    await _onThemePage(tester, env, world);
-    world.network.goOffline();
-    await world.coordinator.signOut();
-    await _settle(tester);
+  // The same sign-out stopped offline, left through each way out: the Cancel
+  // button, and system Back (DEV-167). Both keep the account and every change.
+  final leaves = [
+    (
+      name:
+          'Cancel on a sign-out stopped offline keeps the account and '
+          'everything on the phone (critique 2026-10-02, F2)',
+      start: _onThemePage,
+      leave: (WidgetTester tester) async {
+        await tester.tap(find.text(_en.commonCancel));
+      },
+    ),
+    (
+      name:
+          'Back on a sign-out stopped offline does what Cancel does: the '
+          'account and every change stay (DEV-167)',
+      start: (WidgetTester tester, LibraryEnv env, AuthWorld world) =>
+          pumpMemoxApp(tester, env, overrides: accountOverrides(world)),
+      leave: (WidgetTester tester) => tester.binding.handlePopRoute(),
+    ),
+  ];
+  for (final c in leaves) {
+    accountTest(c.name, (tester, env, world) async {
+      await linkEmail(world);
+      world.device.pending = 2;
+      await c.start(tester, env, world);
+      world.network.goOffline();
+      await world.coordinator.signOut();
+      await _settle(tester);
+      expect(find.text(_en.commonCancel), findsOneWidget);
 
-    await tester.tap(find.text(_en.commonCancel));
-    await _settle(tester);
+      await c.leave(tester);
+      await _settle(tester);
 
-    expect(find.byType(AccountTransitionLayerWidget), findsNothing);
-    expect(world.state, isA<Validating>());
-    expect(world.device.resets, 0);
-    expect(world.device.pending, 2);
-  });
+      expect(find.byType(AccountTransitionLayerWidget), findsNothing);
+      expect(world.state, isA<Validating>());
+      expect(world.device.resets, 0);
+      expect(world.device.pending, 2);
+    });
+  }
 
   accountTest('a refused merge is said once the device is back', (
     tester,
@@ -276,68 +317,48 @@ void main() {
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Transitioning(
-            transitionOf(TransitionKind.signOut, TransitionStage.started),
-            error: const OfflineFailure(cause: 'test'),
-          ),
-        ),
-        unsentCountProvider.overrideWith((ref) async => 2),
-      ],
+      Transitioning(
+        transitionOf(TransitionKind.signOut, TransitionStage.started),
+        error: const OfflineFailure(cause: 'test'),
+      ),
+      [unsentCountProvider.overrideWith((ref) async => 2)],
     );
-    await tester.pump();
 
     expect(find.text(_en.accountSignOutStoppedOffline), findsOneWidget);
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
     // L5: the stopped layer's actions sit in the footer, once.
-    Finder inFooter(String text) => find.descendant(
-      of: find.byType(MxFooterBar),
-      matching: find.text(text),
-    );
-    expect(inFooter(_en.commonRetry), findsOneWidget);
+    expect(_inFooter(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
-    expect(inFooter(_en.accountSignOutLosing(2)), findsOneWidget);
+    expect(_inFooter(_en.accountSignOutLosing(2)), findsOneWidget);
   });
 
   libraryTest('a merge stopped on rows the server refused names them, and '
       'offers to lose them and go on (DEV-191)', (tester, env) async {
     final commands = FakeSyncCommands();
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Transitioning(
-            transitionOf(
-              TransitionKind.switchAccount,
-              TransitionStage.started,
-              choice: TransitionChoice.merge,
-            ),
-            error: const UnsentChangesFailure(count: 2),
-          ),
+      Transitioning(
+        transitionOf(
+          TransitionKind.switchAccount,
+          TransitionStage.started,
+          choice: TransitionChoice.merge,
         ),
-        ...syncOverrides(const SyncStatus(), commands),
-      ],
+        error: const UnsentChangesFailure(count: 2),
+      ),
+      [...syncOverrides(const SyncStatus(), commands)],
     );
-    await tester.pump();
 
     expect(find.text(_en.accountSwitchRefused(2)), findsOneWidget);
     expect(find.text(_en.accountLayerFailed), findsNothing);
     expect(find.text(_en.commonCancel), findsOneWidget);
-    Finder inFooter(String text) => find.descendant(
-      of: find.byType(MxFooterBar),
-      matching: find.text(text),
-    );
-    expect(inFooter(_en.commonRetry), findsOneWidget);
-    expect(inFooter(_en.accountSwitchLosing(2)), findsOneWidget);
+    expect(_inFooter(_en.commonRetry), findsOneWidget);
+    expect(_inFooter(_en.accountSwitchLosing(2)), findsOneWidget);
 
     await tester.tap(find.text(_en.accountSwitchLosing(2)));
     await _settle(tester);
@@ -349,19 +370,13 @@ void main() {
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Transitioning(
-            transitionOf(TransitionKind.signOut, TransitionStage.started),
-          ),
-        ),
-      ],
+      Transitioning(
+        transitionOf(TransitionKind.signOut, TransitionStage.started),
+      ),
     );
-    await tester.pump();
 
     expect(find.text(_en.commonCancel), findsNothing);
   });
@@ -370,58 +385,40 @@ void main() {
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Recovering(
-            transitionOf(
-              TransitionKind.switchAccount,
-              TransitionStage.merged,
-              choice: TransitionChoice.merge,
-            ),
-            isStuck: true,
-          ),
+      Recovering(
+        transitionOf(
+          TransitionKind.switchAccount,
+          TransitionStage.merged,
+          choice: TransitionChoice.merge,
         ),
-      ],
+        isStuck: true,
+      ),
     );
-    await tester.pump();
 
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
-    expect(
-      find.descendant(
-        of: find.byType(MxFooterBar),
-        matching: find.text(_en.commonRetry),
-      ),
-      findsOneWidget,
-    );
+    expect(_inFooter(_en.commonRetry), findsOneWidget);
   });
 
   libraryTest('running, it names the step and says closing loses nothing', (
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Transitioning(
-            transitionOf(
-              TransitionKind.switchAccount,
-              TransitionStage.targetSignedIn,
-              choice: TransitionChoice.merge,
-            ),
-          ),
+      Transitioning(
+        transitionOf(
+          TransitionKind.switchAccount,
+          TransitionStage.targetSignedIn,
+          choice: TransitionChoice.merge,
         ),
-      ],
+      ),
     );
-    await tester.pump();
 
     expect(find.text(_en.accountStepMerging), findsWidgets);
     expect(find.text(_en.accountSafeToClose), findsOneWidget);
@@ -432,23 +429,17 @@ void main() {
   libraryTest('the step is announced once, by its live region and not by '
       'the spinner as well (audit 2026-10-17 ACC-6)', (tester, env) async {
     final handle = tester.ensureSemantics();
-    await pumpLibraryScreen(
+    await _pumpLayer(
       tester,
       env,
-      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
-      overrides: [
-        authStateOf(
-          Transitioning(
-            transitionOf(
-              TransitionKind.switchAccount,
-              TransitionStage.targetSignedIn,
-              choice: TransitionChoice.merge,
-            ),
-          ),
+      Transitioning(
+        transitionOf(
+          TransitionKind.switchAccount,
+          TransitionStage.targetSignedIn,
+          choice: TransitionChoice.merge,
         ),
-      ],
+      ),
     );
-    await tester.pump();
 
     expect(find.bySemanticsLabel(_en.accountStepMerging), findsOneWidget);
     handle.dispose();

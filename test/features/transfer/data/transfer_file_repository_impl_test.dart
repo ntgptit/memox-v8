@@ -45,51 +45,195 @@ Uint8List _workbook(Map<String, List<List<CellValue?>>> sheets) {
   return Uint8List.fromList(workbook.encode()!);
 }
 
+FileSource _csv(String text) =>
+    FileSource(bytes: _utf8(text), format: TransferFormat.csv);
+
+typedef _TableCase = ({
+  String name,
+  TransferSource source,
+  List<List<String>> rows,
+});
+
 void main() {
-  group('CSV and TSV (BR-TRANSFER-006)', () {
-    test(
-      'quotes, delimiters and line breaks inside a cell, CRLF and a BOM',
-      () async {
-        final table = await _table(
-          FileSource(
-            bytes: _utf8('﻿front,back\r\n"a,b","c\nd"\r\n"say ""hi""",e\r\n'),
-            format: TransferFormat.csv,
-          ),
-        );
-
-        expect(table.rows, [
-          ['front', 'back'],
-          ['a,b', 'c\nd'],
-          ['say "hi"', 'e'],
-        ]);
-      },
-    );
-
-    test('a blank line stays a row, so row numbers match the file', () async {
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('front,back\n\na,b\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(table.rows, [
+  final tableCases = <_TableCase>[
+    (
+      name: 'quotes, delimiters and line breaks inside a cell, CRLF and a BOM',
+      source: _csv('﻿front,back\r\n"a,b","c\nd"\r\n"say ""hi""",e\r\n'),
+      rows: [
+        ['front', 'back'],
+        ['a,b', 'c\nd'],
+        ['say "hi"', 'e'],
+      ],
+    ),
+    (
+      name: 'a blank line stays a row, so row numbers match the file',
+      source: _csv('front,back\n\na,b\n'),
+      rows: [
         ['front', 'back'],
         [''],
         ['a', 'b'],
-      ]);
-    });
+      ],
+    ),
+    (
+      name: 'TSV splits on tabs only',
+      source: FileSource(
+        bytes: _utf8('front\tback\na, b\tc'),
+        format: TransferFormat.tsv,
+      ),
+      rows: [
+        ['front', 'back'],
+        ['a, b', 'c'],
+      ],
+    ),
+    (
+      name:
+          'a .csv file whose records each hold ";" as often is split on ";", '
+          'as Excel saves CSV where the decimal mark is a comma (D9)',
+      source: _csv('front;back\r\nmenu;thực đơn\r\n'),
+      rows: [
+        ['front', 'back'],
+        ['menu', 'thực đơn'],
+      ],
+    ),
+    (
+      name:
+          'a headerless ";" file whose first row holds a comma in a cell '
+          'stays ";" (D9)',
+      source: _csv('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'),
+      rows: [
+        ['tip', 'tiền boa, phí phục vụ'],
+        ['bill', 'hóa đơn'],
+      ],
+    ),
+    (
+      name: 'a "," file whose first row holds ";" in a cell stays "," (D9)',
+      source: _csv('tip,a;b\nbill,c\n'),
+      rows: [
+        ['tip', 'a;b'],
+        ['bill', 'c'],
+      ],
+    ),
+    (
+      name: 'a record also ends at a lone CR, as Excel for Mac writes CSV (D9)',
+      source: _csv('tip;tiền boa, phí phục vụ\rbill;hóa đơn\r'),
+      rows: [
+        ['tip', 'tiền boa, phí phục vụ'],
+        ['bill', 'hóa đơn'],
+      ],
+    ),
+    (
+      name:
+          'a file whose rows hold different numbers of delimiters splits on '
+          'the one its first row holds: ";" when it holds ";" and no ",", '
+          'else "," (D9), ";" first row',
+      source: _csv('front;back;tags\nmenu;thực đơn\n'),
+      rows: [
+        ['front', 'back', 'tags'],
+        ['menu', 'thực đơn'],
+      ],
+    ),
+    (
+      name:
+          'a file whose rows hold different numbers of delimiters splits on '
+          'the one its first row holds: ";" when it holds ";" and no ",", '
+          'else "," (D9), "," first row',
+      source: _csv('front,back,tags\nmenu,thực đơn\n'),
+      rows: [
+        ['front', 'back', 'tags'],
+        ['menu', 'thực đơn'],
+      ],
+    ),
+    (
+      name: 'a .csv file never splits on tab (D9)',
+      source: _csv('a\tb,c\nd\te,f\n'),
+      rows: [
+        ['a\tb', 'c'],
+        ['d\te', 'f'],
+      ],
+    ),
+    (
+      name: 'a delimiter inside quotes does not count (D9)',
+      source: _csv('"a,b";c\n"d,e";f\n'),
+      rows: [
+        ['a,b', 'c'],
+        ['d,e', 'f'],
+      ],
+    ),
+    (
+      name: 'a delimiter after an escaped quote inside quotes does not count (D9)',
+      source: _csv('"nói ""chào"", cười";a\n"hỏi ""ai"", đáp";b\n'),
+      rows: [
+        ['nói "chào", cười', 'a'],
+        ['hỏi "ai", đáp', 'b'],
+      ],
+    ),
+    (
+      // The quote after "5" is text: the cell runs on to the quote before ";".
+      name:
+          'a quote closes its cell, for the vote as for the parser, only '
+          'before a delimiter, a line end or the end of the text (D9)',
+      source: _csv('"5" screen,x";a\n"7" phone,y";b\n'),
+      rows: [
+        ['5" screen,x', 'a'],
+        ['7" phone,y', 'b'],
+      ],
+    ),
+    (
+      name:
+          'pasted text is tab-separated when its first record that holds '
+          'text has a tab outside quotes (A1)',
+      source: const PastedSource('a\tb,c\nd\te'),
+      rows: [
+        ['a', 'b,c'],
+        ['d', 'e'],
+      ],
+    ),
+    (
+      name:
+          'pasted text with a blank first record is tab-separated by the '
+          'first record that holds text (A1)',
+      source: const PastedSource('\na\tb,c\nd\te'),
+      rows: [
+        [''],
+        ['a', 'b,c'],
+        ['d', 'e'],
+      ],
+    ),
+    (
+      // A spreadsheet copies a cell that holds a line break in quotes.
+      name:
+          'pasted text with a quoted line break before the tab is '
+          'tab-separated (A1)',
+      source: const PastedSource('"a\nb"\tc\nd\te'),
+      rows: [
+        ['a\nb', 'c'],
+        ['d', 'e'],
+      ],
+    ),
+    (
+      name: 'pasted text without a tab reads as a .csv file, "," included (A1)',
+      source: const PastedSource('a,b\nc,d'),
+      rows: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+    ),
+    (
+      name: 'pasted text without a tab reads as a .csv file, ";" included (A1)',
+      source: const PastedSource('a;b\nc;d'),
+      rows: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+    ),
+  ];
 
-    test('TSV splits on tabs only', () async {
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('front\tback\na, b\tc'),
-          format: TransferFormat.tsv,
-        ),
-      );
-
-      expect(table.rows.last, ['a, b', 'c']);
-    });
+  group('CSV and TSV (BR-TRANSFER-006)', () {
+    for (final c in tableCases) {
+      test(c.name, () async {
+        expect((await _table(c.source)).rows, c.rows);
+      });
+    }
 
     test(
       'UTF-16, Latin-1 and UTF-16 without a BOM are refused, never guessed',
@@ -116,145 +260,6 @@ void main() {
       },
     );
 
-    test('a .csv file whose records each hold ";" as often is split on ";", as '
-        'Excel saves CSV where the decimal mark is a comma (D9)', () async {
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('front;back\r\nmenu;thực đơn\r\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(table.rows, [
-        ['front', 'back'],
-        ['menu', 'thực đơn'],
-      ]);
-    });
-
-    test(
-      'a headerless ";" file whose first row holds a comma in a cell stays '
-      '";", and a "," file whose first row holds ";" in a cell stays "," (D9)',
-      () async {
-        final semicolons = await _table(
-          FileSource(
-            bytes: _utf8('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'),
-            format: TransferFormat.csv,
-          ),
-        );
-        final commas = await _table(
-          FileSource(
-            bytes: _utf8('tip,a;b\nbill,c\n'),
-            format: TransferFormat.csv,
-          ),
-        );
-
-        expect(semicolons.rows, [
-          ['tip', 'tiền boa, phí phục vụ'],
-          ['bill', 'hóa đơn'],
-        ]);
-        expect(commas.rows, [
-          ['tip', 'a;b'],
-          ['bill', 'c'],
-        ]);
-      },
-    );
-
-    test('a record also ends at a lone CR, as Excel for Mac writes CSV '
-        '(D9)', () async {
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('tip;tiền boa, phí phục vụ\rbill;hóa đơn\r'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(table.rows, [
-        ['tip', 'tiền boa, phí phục vụ'],
-        ['bill', 'hóa đơn'],
-      ]);
-    });
-
-    test('a file whose rows hold different numbers of delimiters splits on the '
-        'one its first row holds: ";" when it holds ";" and no ",", else "," '
-        '(D9)', () async {
-      final semicolons = await _table(
-        FileSource(
-          bytes: _utf8('front;back;tags\nmenu;thực đơn\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-      final commas = await _table(
-        FileSource(
-          bytes: _utf8('front,back,tags\nmenu,thực đơn\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(semicolons.rows, [
-        ['front', 'back', 'tags'],
-        ['menu', 'thực đơn'],
-      ]);
-      expect(commas.rows, [
-        ['front', 'back', 'tags'],
-        ['menu', 'thực đơn'],
-      ]);
-    });
-
-    test('a .csv file never splits on tab (D9)', () async {
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('a\tb,c\nd\te,f\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(table.rows, [
-        ['a\tb', 'c'],
-        ['d\te', 'f'],
-      ]);
-    });
-
-    test('a delimiter inside quotes does not count, nor after an escaped '
-        'quote inside them (D9)', () async {
-      final quoted = await _table(
-        FileSource(
-          bytes: _utf8('"a,b";c\n"d,e";f\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-      final escaped = await _table(
-        FileSource(
-          bytes: _utf8('"nói ""chào"", cười";a\n"hỏi ""ai"", đáp";b\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(quoted.rows, [
-        ['a,b', 'c'],
-        ['d,e', 'f'],
-      ]);
-      expect(escaped.rows, [
-        ['nói "chào", cười', 'a'],
-        ['hỏi "ai", đáp', 'b'],
-      ]);
-    });
-
-    test('a quote closes its cell, for the vote as for the parser, only '
-        'before a delimiter, a line end or the end of the text (D9)', () async {
-      // The quote after "5" is text: the cell runs on to the quote before ";".
-      final table = await _table(
-        FileSource(
-          bytes: _utf8('"5" screen,x";a\n"7" phone,y";b\n'),
-          format: TransferFormat.csv,
-        ),
-      );
-
-      expect(table.rows, [
-        ['5" screen,x', 'a'],
-        ['7" phone,y', 'b'],
-      ]);
-    });
-
     test(
       'the delimiter is judged on the first 20 records that hold text (D9)',
       () async {
@@ -270,38 +275,6 @@ void main() {
         expect(await rows('\n\na;b\nc;d\n'), [
           [''],
           [''],
-          ['a', 'b'],
-          ['c', 'd'],
-        ]);
-      },
-    );
-
-    test('pasted text is tab-separated when its first record that holds text '
-        'has a tab outside quotes (A1)', () async {
-      expect((await _table(const PastedSource('a\tb,c\nd\te'))).rows, [
-        ['a', 'b,c'],
-        ['d', 'e'],
-      ]);
-      expect((await _table(const PastedSource('\na\tb,c\nd\te'))).rows, [
-        [''],
-        ['a', 'b,c'],
-        ['d', 'e'],
-      ]);
-      // A spreadsheet copies a cell that holds a line break in quotes.
-      expect((await _table(const PastedSource('"a\nb"\tc\nd\te'))).rows, [
-        ['a\nb', 'c'],
-        ['d', 'e'],
-      ]);
-      expect((await _table(const PastedSource('a,b\nc,d'))).rows.last, [
-        'c',
-        'd',
-      ]);
-    });
-
-    test(
-      'pasted text without a tab reads as a .csv file, ";" included (A1)',
-      () async {
-        expect((await _table(const PastedSource('a;b\nc;d'))).rows, [
           ['a', 'b'],
           ['c', 'd'],
         ]);

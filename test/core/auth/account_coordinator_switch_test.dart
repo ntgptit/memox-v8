@@ -35,13 +35,6 @@ void main() {
     await world.coordinator.verifyCode(bEmail, code);
   }
 
-  void expectSettledOn(String userId) {
-    expect(world.state, isA<Ready>().having((s) => s.user.id, 'user', userId));
-    expect(world.gate.isClosed, isFalse);
-    expect(world.secrets.values, isEmpty);
-    expect(world.sync.paused, isFalse);
-  }
-
   test(
     '#16 a code attaches the email to the same user; nothing is cleared',
     () async {
@@ -78,7 +71,7 @@ void main() {
       throwsA(isA<IdentityTakenFailure>()),
     );
 
-    expectSettledOn(a);
+    expectSettledOn(world, a);
     expect(await world.store.transition(), isNull);
   });
 
@@ -112,7 +105,7 @@ void main() {
 
       await signInB();
 
-      expectSettledOn(b);
+      expectSettledOn(world, b);
       expect(world.server.users.containsKey(a), isFalse);
       expect(world.server.receipts.values.single.acknowledged, isTrue);
       expect(world.device.resets, 1);
@@ -129,7 +122,7 @@ void main() {
 
     await world.coordinator.cancelSwitch();
 
-    expectSettledOn(a);
+    expectSettledOn(world, a);
     expect(world.device.resets, 0);
     expect(await world.store.transition(), isNull);
   });
@@ -142,7 +135,7 @@ void main() {
 
       await signInB();
 
-      expectSettledOn(a);
+      expectSettledOn(world, a);
       expect(world.device.resets, 0);
       expect(world.device.owner, a);
       expect(world.notices, [isA<MergeNotDone>()]);
@@ -189,7 +182,7 @@ void main() {
     world.network.goOnline();
     await pumpEventQueue();
 
-    expectSettledOn(b);
+    expectSettledOn(world, b);
   });
 
   test('#31 a launch that finds the SDK still on A before the target sign-in '
@@ -199,7 +192,7 @@ void main() {
     world.boot();
     await world.coordinator.start();
 
-    expectSettledOn(a);
+    expectSettledOn(world, a);
     expect(world.device.resets, 0);
     expect(await world.store.transition(), isNull);
   });
@@ -218,7 +211,7 @@ void main() {
     world.boot();
     await world.coordinator.start();
 
-    expectSettledOn(b);
+    expectSettledOn(world, b);
     expect(world.server.users.containsKey(a), isFalse);
     expect(world.server.receipts, hasLength(1));
   });
@@ -237,7 +230,7 @@ void main() {
       world.boot();
       await world.coordinator.start();
 
-      expectSettledOn(a);
+      expectSettledOn(world, a);
       expect(world.device.resets, 0);
     },
   );
@@ -266,18 +259,16 @@ void main() {
 
     await signInB();
 
-    expectSettledOn(b);
+    expectSettledOn(world, b);
   });
 
   test('#34 #35 an account switches to another: X is sent, Y is pulled, no anonymous user in between', () async {
-    final x = world.server.addUser(email: 'x@example.com').id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 4
-      ..pending = 1;
+    final x = await readyAccount(
+      world,
+      email: 'x@example.com',
+      rows: 4,
+      pending: 1,
+    );
     final y = world.server.addUser(email: 'y@example.com').id;
 
     await world.coordinator.beginSwitch(choice: TransitionChoice.discard);
@@ -285,7 +276,7 @@ void main() {
     await world.coordinator.requestCode('y@example.com');
     await world.coordinator.verifyCode('y@example.com', code);
 
-    expectSettledOn(y);
+    expectSettledOn(world, y);
     expect(world.server.anonymousCreated, 0);
     expect(world.server.users.containsKey(x), isTrue);
     expect(world.device.resets, 1);
@@ -299,7 +290,7 @@ void main() {
 
       await signInB();
 
-      expectSettledOn(b);
+      expectSettledOn(world, b);
       expect(world.server.receipts, isEmpty);
       expect(world.server.users.containsKey(a), isTrue);
       expect(world.device.resets, 1);
@@ -376,7 +367,7 @@ void main() {
     world.boot();
     await world.coordinator.start();
 
-    expectSettledOn(u);
+    expectSettledOn(world, u);
     expect(world.device.resets, 1);
     expect(world.device.pulls, [u]);
     expect(world.device.pushes.where((p) => p.signedIn != p.owner), isEmpty);

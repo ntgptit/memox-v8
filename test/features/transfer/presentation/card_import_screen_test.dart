@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,9 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
-import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
-import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
-import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -17,9 +13,9 @@ import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-import '../../../support/widget_harness.dart';
+import 'support/import_screen_helpers.dart';
+import 'support/words_deck.dart';
 import '../../../support/wrap_rule.dart';
 import '../../../support/forui_expect.dart';
 
@@ -28,66 +24,31 @@ import '../../../support/forui_expect.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-ImportPickedFile _file(String text) =>
-    (name: 'vocab.csv', bytes: Uint8List.fromList(utf8.encode(text)));
-
-Widget _context(String deckId, String label) =>
-    DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
-
-Future<int> _cards(LibraryEnv env) async =>
-    (await env.db.customSelect('SELECT COUNT(*) AS n FROM card').getSingle())
-        .read<int>('n');
-
-Future<void> _pump(
-  WidgetTester tester,
-  LibraryEnv env,
-  String deckId, {
-  ImportPickedFile? file,
-  VoidCallback? onClose,
-  VoidCallback? onViewCards,
-}) => pumpLibraryScreen(
-  tester,
-  env,
-  CardImportScreen(
-    deckId: deckId,
-    deckContext: _context,
-    onClose: onClose ?? () {},
-    onViewCards: onViewCards ?? () {},
-  ),
-  overrides: [importFilePickerProvider.overrideWithValue(() async => file)],
-);
-
-Future<void> _tap(WidgetTester tester, String label) async {
-  await tapVisible(tester, find.text(label).last);
-  await tester.pumpAndSettle();
-}
-
 void main() {
   libraryTest('a file becomes cards through the four steps (IT-CARD-014)', (
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
+    final deck = await seedWordsDeck(env);
     var viewed = 0;
-    await _pump(
+    await pumpImportScreen(
       tester,
       env,
       deck.id,
-      file: _file('front,back,tags\nmul,water,noun\nbul,fire,\n'),
+      file: importFile('front,back,tags\nmul,water,noun\nbul,fire,\n'),
       onViewCards: () => viewed++,
     );
 
     expect(find.text(_en.importPickTitle), findsOneWidget);
     expect(find.text(metaDots(_en.importSourceFileHint)), findsOneWidget);
-    await _tap(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileReady('CSV'))),
     );
 
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
     // The file's own column names keep their spaces; each dot stays with the
     // name before it (The Wrap Rule).
@@ -97,7 +58,7 @@ void main() {
     );
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
-    await _tap(tester, _en.importPreviewAction);
+    await tapImportLabel(tester, _en.importPreviewAction);
     // Ready is a fine state, not learning progress (tone pass T6).
     expect(
       tester
@@ -112,29 +73,28 @@ void main() {
     expect(find.textContaining('rows ready'), findsNothing);
     expect(find.text('2 rows will become new cards.'), findsNothing);
 
-    await _tap(tester, _en.importCommitAction(2));
+    await tapImportLabel(tester, _en.importCommitAction(2));
     expect(find.text(_en.importDoneTitle), findsOneWidget);
-    expect(await _cards(env), 2);
+    expect(await cardsWritten(env), 2);
 
-    await _tap(tester, _en.importViewCards);
+    await tapImportLabel(tester, _en.importViewCards);
     expect(viewed, 1);
   });
 
   libraryTest(
     'Back steps back one step; at step 1 it closes (IT-NAV-012 step 4)',
     (tester, env) async {
-      final root = await env.decks.root('Korean');
-      final deck = await env.decks.sub(root.id, 'Words');
+      final deck = await seedWordsDeck(env);
       var closed = 0;
-      await _pump(
+      await pumpImportScreen(
         tester,
         env,
         deck.id,
-        file: _file('front,back\nmul,water\n'),
+        file: importFile('front,back\nmul,water\n'),
         onClose: () => closed++,
       );
-      await _tap(tester, _en.importSourceFile);
-      await _tap(tester, _en.importReadAction);
+      await tapImportLabel(tester, _en.importSourceFile);
+      await tapImportLabel(tester, _en.importReadAction);
 
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
@@ -151,16 +111,20 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id, file: _file('term,meaning\nmul,water\n'));
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
+      tester,
+      env,
+      deck.id,
+      file: importFile('term,meaning\nmul,water\n'),
+    );
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
 
     expect(find.text(_en.importMappingIncomplete), findsOneWidget);
     // Nothing was mapped, so the note does not say it was.
     expect(find.text(_en.importMappingNote), findsNothing);
-    await _tap(tester, _en.importPreviewAction);
+    await tapImportLabel(tester, _en.importPreviewAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
   });
 
@@ -168,9 +132,8 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
       tester,
       env,
       deck.id,
@@ -179,11 +142,11 @@ void main() {
         bytes: Uint8List.fromList([0x63, 0xE9, 0x2C, 0x62]),
       ),
     );
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
 
     expect(find.text(_en.importProblemEncodingTitle), findsOneWidget);
-    expect(await _cards(env), 0);
+    expect(await cardsWritten(env), 0);
     // Reading the same file again cannot help (kit 11 badEncoding).
     final read = find.widgetWithText(MxButton, _en.importReadAction);
     expect(tester.widget<MxButton>(read).onPressed, isNull);
@@ -202,10 +165,9 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id);
-    await _tap(tester, _en.importSourcePaste);
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(tester, env, deck.id);
+    await tapImportLabel(tester, _en.importSourcePaste);
     await tester.enterText(
       find.byType(EditableText),
       'front\tback\nbap\trice\n',
@@ -219,8 +181,7 @@ void main() {
   libraryTest(
     'duplicates are skipped unless included (A4); every row a duplicate locks Import (E3)',
     (tester, env) async {
-      final root = await env.decks.root('Korean');
-      final deck = await env.decks.sub(root.id, 'Words');
+      final deck = await seedWordsDeck(env);
       await insertCard(
         env.db,
         id: 'x',
@@ -228,15 +189,20 @@ void main() {
         front: 'mul',
         back: 'water',
       );
-      await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
-      await _tap(tester, _en.importSourceFile);
-      await _tap(tester, _en.importReadAction);
-      await _tap(tester, _en.importPreviewAction);
+      await pumpImportScreen(
+        tester,
+        env,
+        deck.id,
+        file: importFile('front,back\nmul,water\n'),
+      );
+      await tapImportLabel(tester, _en.importSourceFile);
+      await tapImportLabel(tester, _en.importReadAction);
+      await tapImportLabel(tester, _en.importPreviewAction);
 
       expect(find.text(_en.importRowDuplicateInDeck), findsOneWidget);
       expect(find.text(_en.importCaptionNothingToImport), findsOneWidget);
 
-      await _tap(tester, _en.importIncludeDuplicates);
+      await tapImportLabel(tester, _en.importIncludeDuplicates);
       expect(find.text(_en.importCommitAction(1)), findsOneWidget);
     },
   );
@@ -246,9 +212,13 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
+      tester,
+      env,
+      deck.id,
+      file: importFile('front,back\nmul,water\n'),
+    );
 
     Rect rect(String label) =>
         tester.getRect(find.widgetWithText(MxButton, label));
@@ -262,11 +232,11 @@ void main() {
     expect(pair.leading!.tone, MxButtonTone.outline);
     expectSideBySide(_en.importReadAction);
 
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
     expectSideBySide(_en.importPreviewAction);
 
-    await _tap(tester, _en.importPreviewAction);
+    await tapImportLabel(tester, _en.importPreviewAction);
     expectSideBySide(_en.importCommitAction(1));
   });
 
@@ -274,13 +244,17 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
-    await _tap(tester, _en.importPreviewAction);
-    await _tap(tester, _en.importCommitAction(1));
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
+      tester,
+      env,
+      deck.id,
+      file: importFile('front,back\nmul,water\n'),
+    );
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importPreviewAction);
+    await tapImportLabel(tester, _en.importCommitAction(1));
 
     final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
     expect(pair.leading!.tone, MxButtonTone.outline);
@@ -288,9 +262,8 @@ void main() {
   });
   libraryTest('the deck path steps aside while typing and comes back after '
       '(audit P1)', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id);
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(tester, env, deck.id);
     await tester.pumpAndSettle();
 
     expect(find.byType(MxBreadcrumb), findsOneWidget);
@@ -305,16 +278,15 @@ void main() {
 
   libraryTest('the mapping rows end their field chips on one edge, with no '
       'arrow wandering between (critique 2026-09-30)', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
       tester,
       env,
       deck.id,
-      file: _file('front,back,tags\nmul,water,noun\n'),
+      file: importFile('front,back,tags\nmul,water,noun\n'),
     );
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
 
     expect(find.byIcon(AppIcons.arrowRight), findsNothing);
     final chips = find.byType(MxChipTrigger);
@@ -327,32 +299,30 @@ void main() {
 
   libraryTest('the file helper can be hidden, and stays hidden '
       '(critique 2026-09-30)', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id);
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(tester, env, deck.id);
     expect(find.text(_en.importHelperBody), findsOneWidget);
 
     await tester.tap(byControlLabel(_en.commonDismissNote));
     await tester.pumpAndSettle();
     expect(find.text(_en.importHelperBody), findsNothing);
 
-    await _pump(tester, env, deck.id);
+    await pumpImportScreen(tester, env, deck.id);
     await tester.pumpAndSettle();
     expect(find.text(_en.importHelperBody), findsNothing);
   });
 
   libraryTest('each column shows its first value, under the header when '
       'there is one (critique 2026-09-30)', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
       tester,
       env,
       deck.id,
-      file: _file('front,back,tags\nmul,water,noun\n'),
+      file: importFile('front,back,tags\nmul,water,noun\n'),
     );
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
     expect(find.text('mul'), findsOneWidget);
     expect(find.text('water'), findsOneWidget);
 
@@ -366,11 +336,15 @@ void main() {
     tester,
     env,
   ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(tester, env, deck.id, file: _file('front,back,tags\nmul, \n'));
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
+      tester,
+      env,
+      deck.id,
+      file: importFile('front,back,tags\nmul, \n'),
+    );
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
     expect(find.text('mul'), findsOneWidget);
     // Columns B (a blank cell) and C (a missing one) show only their name
     // and header, no sample line.
@@ -390,22 +364,21 @@ void main() {
 
   libraryTest('the file line counts data rows: a header row is not a row '
       '(critique 2026-09-30 part 3b)', (tester, env) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await _pump(
+    final deck = await seedWordsDeck(env);
+    await pumpImportScreen(
       tester,
       env,
       deck.id,
-      file: _file('front,back\nmul,water\nbul,fire\n'),
+      file: importFile('front,back\nmul,water\nbul,fire\n'),
     );
-    await _tap(tester, _en.importSourceFile);
-    await _tap(tester, _en.importReadAction);
+    await tapImportLabel(tester, _en.importSourceFile);
+    await tapImportLabel(tester, _en.importReadAction);
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
     );
 
-    await _tap(tester, _en.importHeaderToggle);
+    await tapImportLabel(tester, _en.importHeaderToggle);
     expectBreaksOnlyBetweenWords(
       tester,
       find.text(metaLine(_en.importFileRead('CSV', 3, 2))),

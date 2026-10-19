@@ -11,17 +11,9 @@ import '../../../support/forui_expect.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import 'support/card_list_section_host.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
 
 void main() {
   libraryTest('after a new request the window grows again: a growth is '
@@ -36,7 +28,7 @@ void main() {
         front: 'card $i',
       );
     }
-    await pumpLibraryScreen(tester, env, _section(words.id));
+    await pumpLibraryScreen(tester, env, cardListSection(words.id));
     final container = ProviderScope.containerOf(
       tester.element(find.byType(CardListSectionWidget)),
     );
@@ -76,7 +68,7 @@ void main() {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
-    await pumpLibraryScreen(tester, env, _section(words.id));
+    await pumpLibraryScreen(tester, env, cardListSection(words.id));
 
     expect(
       byControlLabel(_en.cardSortTrigger(_en.cardSortNewest)),

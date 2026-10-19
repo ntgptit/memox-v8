@@ -57,6 +57,31 @@ Future<void> linkEmail(
   await world.coordinator.verifyCode(email, FakeAuthGateway.code);
 }
 
+/// A code requested for [email] on [world], then [screen] over it: the start
+/// of every code-step test.
+Future<void> pumpCode(
+  WidgetTester tester,
+  LibraryEnv env,
+  AuthWorld world,
+  Widget screen, {
+  String email = 'a@example.com',
+  bool confirmedLoss = false,
+}) async {
+  await world.coordinator.requestCode(email, confirmedLoss: confirmedLoss);
+  await pumpLibraryScreen(
+    tester,
+    env,
+    screen,
+    overrides: accountOverrides(world),
+  );
+}
+
+/// Lets [world]'s held requests through: [held] completes and the hold goes.
+void releaseHeldRequests(AuthWorld world, Completer<void> held) {
+  held.complete();
+  world.gateway.holdRequests = null;
+}
+
 /// [world]'s linked account refused its session: REAUTH_REQUIRED (auth
 /// spec #14). Waits on microtasks only, so it runs under a widget test's
 /// fake clock too.

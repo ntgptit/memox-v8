@@ -10,7 +10,6 @@ import '../../support/auth_fakes.dart';
 // first frame) waits for the first listener instead of being dropped.
 void main() {
   late AuthWorld world;
-  final t0 = DateTime.utc(2026, 9, 30);
 
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
@@ -24,17 +23,7 @@ void main() {
     world.gateway.adopt(x);
     world.boot();
     await world.coordinator.start();
-    await world.store.saveTransition(
-      AccountTransition(
-        opId: 'op-x',
-        kind: TransitionKind.delete,
-        sourceUserId: x,
-        sourceIsAnonymous: false,
-        stage: TransitionStage.started,
-        createdAt: t0,
-        updatedAt: t0,
-      ),
-    );
+    await savePending(world, TransitionKind.delete, source: x);
     world.boot(subscribeNotices: false);
     await world.coordinator.start();
   }

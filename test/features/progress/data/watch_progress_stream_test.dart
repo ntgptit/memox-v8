@@ -1,6 +1,4 @@
-import 'package:drift/drift.dart'
-    show QueryExecutor, QueryInterceptor, UpdateKind;
-import 'package:drift/native.dart' show SqliteException;
+import 'package:drift/drift.dart' show QueryInterceptor, UpdateKind;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
@@ -12,7 +10,6 @@ import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart'
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/progress/data/repositories/progress_repository_impl.dart';
-import 'package:memox/features/progress/domain/models/progress_days_model.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -26,39 +23,18 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/progress_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/progress_days_fixture.dart';
 
 // UC-PROGRESS-001 A3, A5, A6 and UC-PROGRESS-002 step 6, E1: when `/progress`
 // reads again, what a write changes, and a read that fails (Progress spec
 // §6.3, §6.4, §6.6).
-
-/// Fails every SELECT while [isArmed], the way a disk that cannot be read
-/// does (UC-PROGRESS-001 E1).
-final class _FailingSelects extends QueryInterceptor {
-  bool isArmed = false;
-
-  @override
-  Future<List<Map<String, Object?>>> runSelect(
-    QueryExecutor executor,
-    String statement,
-    List<Object?> args,
-  ) {
-    if (isArmed) {
-      throw SqliteException(extendedResultCode: 10, message: 'disk I/O error');
-    }
-    return super.runSelect(executor, statement, args);
-  }
-}
 
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late ProgressRepositoryImpl progress;
   final now = DateTime(2026, 9, 25, 12);
-  // Noon on 25 September 2026 in Hanoi.
-  final days = ProgressDays.of(
-    DateTime.utc(2026, 9, 25, 5),
-    const Duration(hours: 7),
-  );
+  final days = noonInHanoi;
 
   void open([QueryInterceptor? interceptor]) {
     db = openTestDatabase(interceptor: interceptor);
@@ -246,10 +222,7 @@ void main() {
     await read();
 
     expect(await totalChanges(db), before);
-    final sessions = await db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(await studySessionCount(db), 0);
   });
 
   test('opening Progress while a study session is open leaves it open and '
@@ -277,7 +250,7 @@ void main() {
     'a read that fails comes as a database Failure (UC-PROGRESS-001 E1)',
     () async {
       await db.close();
-      final failing = _FailingSelects();
+      final failing = FailingSelects();
       open(failing);
       await decks.root('Korean');
       failing.isArmed = true;

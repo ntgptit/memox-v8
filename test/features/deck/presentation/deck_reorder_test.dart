@@ -210,7 +210,7 @@ void main() {
     handle.dispose();
   });
 
-  libraryTest('Done ends the mode and brings back the FAB', (
+  libraryTest('reorder hides the FAB; Done ends the mode and brings it back', (
     tester,
     env,
   ) async {
@@ -219,6 +219,7 @@ void main() {
     }
     await pumpLibraryScreen(tester, env, deckScreen());
     await startReorder(tester);
+    expect(find.byType(MxFab), findsNothing);
     await tester.tap(find.text(_en.libraryReorderDone));
     await tester.pumpAndSettle();
 

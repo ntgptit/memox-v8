@@ -15,16 +15,6 @@ List<TopikContentRule> _rulesOf(TopikTestRead read) => [
 ];
 
 void main() {
-  test('every synthetic level and section reads without an issue', () {
-    for (final level in TopikLevel.values) {
-      for (final section in TopikSection.values) {
-        final read = topikTestOf(topikTestJson(level: level, section: section));
-        expect(read.issues, isEmpty, reason: '${level.code} ${section.code}');
-        expect(read.test, isNotNull);
-      }
-    }
-  });
-
   test('the model keeps every field of the file', () {
     final test = topikTestOf(
       topikTestJson(level: TopikLevel.topik1, section: TopikSection.listening),

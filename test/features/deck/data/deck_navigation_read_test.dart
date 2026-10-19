@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
-import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -99,11 +98,11 @@ void main() {
         final grammar = await repo.sub(korean.id, 'Grammar');
         final moving = await repo.sub(grammar.id, 'Particles');
         await repo.sub(moving.id, 'Inside the moving deck');
-        await repo.sub(korean.id, 'Vocabulary');
+        final vocabulary = await repo.sub(korean.id, 'Vocabulary');
         final cards = await repo.sub(korean.id, 'Holds cards');
         await insertCard(db, id: 'c', deckId: cards.id);
         final japanese = await repo.root('Japanese');
-        await repo.sub(japanese.id, 'Kana');
+        final kana = await repo.sub(japanese.id, 'Kana');
         final sm2 = await repo.root('Spanish', SchedulerType.sm2);
         await repo.sub(sm2.id, 'Verbs');
 
@@ -117,6 +116,11 @@ void main() {
             ('Japanese', ''),
             ('Kana', 'Japanese'),
           ],
+        );
+        // A target carries the deck id.
+        expect(
+          [for (final target in targets) target.id],
+          [korean.id, vocabulary.id, japanese.id, kana.id],
         );
       },
     );
@@ -159,17 +163,5 @@ void main() {
         expect(await repo.watchMoveTargets(leaf.id).first, isEmpty);
       },
     );
-  });
-
-  test('a target carries the deck id', () async {
-    final korean = await repo.root('Korean');
-    final moving = await repo.sub(korean.id, 'Moving');
-    final other = await repo.sub(korean.id, 'Other');
-
-    final List<DeckMoveTarget> targets = await repo
-        .watchMoveTargets(moving.id)
-        .first;
-
-    expect([for (final target in targets) target.id], [other.id]);
   });
 }

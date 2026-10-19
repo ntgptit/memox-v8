@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 
 import '../support/invariant_queries.dart';
+import '../support/test_database.dart';
 import 'generated/schema.dart';
 
 // BE-D1: every schema version upgrades to the current one, with its rows and
@@ -136,89 +137,15 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(1));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v2 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(2));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v3 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(3));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v4 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(4));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v5 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(5));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v6 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(6));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v7 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(7));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v8 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(8));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v9 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(9));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v10 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(10));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v11 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(11));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v12 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(12));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v13 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(13));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
-
-  test('v14 upgrades to the schema of v17', () async {
-    final db = AppDatabase(await verifier.startAt(14));
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
-  });
+  // The explicit sweep: every version without rows of its own upgrades to the
+  // schema of v17. v15 and v16 assert more, below.
+  for (var version = 1; version <= 14; version++) {
+    test('v$version upgrades to the schema of v17', () async {
+      final db = AppDatabase(await verifier.startAt(version));
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 17);
+    });
+  }
 
   test('v15 upgrades to the schema of v17 (study speech spec §4)', () async {
     final db = AppDatabase(await verifier.startAt(15));
@@ -337,20 +264,11 @@ void main() {
     });
 
     test('still holds every invariant of schema.md', () async {
-      for (final MapEntry(key: number, value: query)
-          in invariantQueries.entries) {
-        expect(
-          await db.customSelect(query).get(),
-          isEmpty,
-          reason: 'invariant $number: ${invariantSummaries[number]}',
-        );
-      }
+      await expectNoInvariantViolations(db);
     });
 
     test('passes the integrity and foreign key checks', () async {
-      final integrity = await db.customSelect('PRAGMA integrity_check').get();
-      expect([for (final row in integrity) row.data.values.single], ['ok']);
-      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+      await expectIntegrity(db);
     });
   });
 
@@ -391,20 +309,11 @@ void main() {
     });
 
     test('still holds every invariant of schema.md', () async {
-      for (final MapEntry(key: number, value: query)
-          in invariantQueries.entries) {
-        expect(
-          await db.customSelect(query).get(),
-          isEmpty,
-          reason: 'invariant $number: ${invariantSummaries[number]}',
-        );
-      }
+      await expectNoInvariantViolations(db);
     });
 
     test('passes the integrity and foreign key checks', () async {
-      final integrity = await db.customSelect('PRAGMA integrity_check').get();
-      expect([for (final row in integrity) row.data.values.single], ['ok']);
-      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+      await expectIntegrity(db);
     });
 
     test('deleting a batch deletes its rows and what hangs off them, and no '

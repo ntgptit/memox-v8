@@ -10,33 +10,28 @@ import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 
 import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
-import '../../../support/topik_content_fixtures.dart';
+import '../../../support/topik_attempt_store.dart';
 
 // TOPIK spec §5.1, §5.2, §5.4, §13.5: start, answer and time. Fixture: TOPIK I listening, questions 1–30,
 // 1–10 worth 4 and 11–30 worth 3; the answer of question n is (n - 1) % 4 + 1.
-final _test = topikTestFixture(
-  level: TopikLevel.topik1,
-  section: TopikSection.listening,
-);
-final _t0 = DateTime.utc(2026, 10, 15, 9);
-DateTime _at(int seconds) => _t0.add(Duration(seconds: seconds));
 
 void main() {
   late AppDatabase db;
   late TopikAttemptRepositoryImpl repository;
   setUp(() {
-    db = openTestDatabase();
-    repository = TopikAttemptRepositoryImpl(db, now: () => _t0);
+    (:db, :repository) = openTopikAttemptStore();
   });
   tearDown(() => db.close());
 
   group('start', () {
     test('creates an attempt in progress with one blank answer per question '
         '(BR-TOPIK-010)', () async {
-      final attempt = topikOk(await repository.start(_test, now: _t0));
+      final attempt = topikOk(
+        await repository.start(topikListeningTest, now: topikT0),
+      );
 
       expect(attempt.status, TopikAttemptStatus.inProgress);
-      expect(attempt.testId, _test.testId);
+      expect(attempt.testId, topikListeningTest.testId);
       expect(attempt.level, TopikLevel.topik1);
       expect(attempt.section, TopikSection.listening);
       expect(attempt.round, 96);
@@ -47,7 +42,7 @@ void main() {
       expect(attempt.totalTimeMs, 0);
       expect(attempt.score, isNull);
       expect(attempt.contentVersion, 1);
-      expect(attempt.startedAt.isAtSameMomentAs(_t0), isTrue);
+      expect(attempt.startedAt.isAtSameMomentAs(topikT0), isTrue);
       final answers = await topikAnswerRows(db, attempt.id);
       expect(answers.map((a) => a.questionNo), [
         for (var n = 1; n <= 30; n++) n,
@@ -58,9 +53,9 @@ void main() {
 
     test('refuses a second attempt in progress of the same test '
         '(BR-TOPIK-011)', () async {
-      topikOk(await repository.start(_test));
+      topikOk(await repository.start(topikListeningTest));
       expect(
-        topikReason(await repository.start(_test)),
+        topikReason(await repository.start(topikListeningTest)),
         TopikRejection.inProgressExists,
       );
       expect(await db.select(db.topikAttempt).get(), hasLength(1));
@@ -69,8 +64,8 @@ void main() {
     test('two Starts at once leave one attempt in progress; the other is '
         'refused (BR-TOPIK-011)', () async {
       final outcomes = await Future.wait([
-        repository.start(_test),
-        repository.start(_test),
+        repository.start(topikListeningTest),
+        repository.start(topikListeningTest),
       ]);
       final started = outcomes.whereType<Ok<TopikAttempt, TopikRejection>>();
       expect(started, hasLength(1));
@@ -92,7 +87,7 @@ void main() {
 
     test('Start new replaces the attempt in progress in one transaction '
         '(BR-TOPIK-011)', () async {
-      final old = topikOk(await repository.start(_test));
+      final old = topikOk(await repository.start(topikListeningTest));
       topikOk(
         await repository.answer(
           attemptId: old.id,
@@ -102,7 +97,9 @@ void main() {
         ),
       );
 
-      final fresh = await repository.replaceInProgressAndStart(_test);
+      final fresh = await repository.replaceInProgressAndStart(
+        topikListeningTest,
+      );
 
       expect(fresh.id, isNot(old.id));
       expect(await topikAttemptRow(db, old.id), isNull);
@@ -111,12 +108,16 @@ void main() {
     });
 
     test('Start new keeps the completed attempts', () async {
-      final done = topikOk(await repository.start(_test));
+      final done = topikOk(await repository.start(topikListeningTest));
       topikOk(
-        await repository.submit(attemptId: done.id, test: _test, elapsedMs: 0),
+        await repository.submit(
+          attemptId: done.id,
+          test: topikListeningTest,
+          elapsedMs: 0,
+        ),
       );
 
-      await repository.replaceInProgressAndStart(_test);
+      await repository.replaceInProgressAndStart(topikListeningTest);
 
       expect(await db.select(db.topikAttempt).get(), hasLength(2));
     });
@@ -125,14 +126,14 @@ void main() {
   group('answer', () {
     test('saves the choice, replacing the old one, and its time '
         '(BR-TOPIK-012)', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       topikOk(
         await repository.answer(
           attemptId: attempt.id,
           questionNo: 1,
           selectedIdx: 2,
           elapsedMs: 4000,
-          now: _at(4),
+          now: topikAt(4),
         ),
       );
       topikOk(
@@ -141,22 +142,22 @@ void main() {
           questionNo: 1,
           selectedIdx: 4,
           elapsedMs: 1000,
-          now: _at(5),
+          now: topikAt(5),
         ),
       );
 
       final first = (await topikAnswerRows(db, attempt.id)).first;
       expect(first.selectedIdx, 4);
-      expect(first.answeredAt!.isAtSameMomentAs(_at(5)), isTrue);
+      expect(first.answeredAt!.isAtSameMomentAs(topikAt(5)), isTrue);
       expect(first.timeSpentMs, 5000);
       final row = (await topikAttemptRow(db, attempt.id))!;
       expect(row.totalTimeMs, 5000);
-      expect(row.updatedAt.isAtSameMomentAs(_at(5)), isTrue);
+      expect(row.updatedAt.isAtSameMomentAs(topikAt(5)), isTrue);
     });
 
     test('refuses an option outside 1–4, an unknown question, a submitted '
         'or a deleted attempt, and writes nothing', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       expect(
         topikReason(
           await repository.answer(
@@ -184,7 +185,7 @@ void main() {
       topikOk(
         await repository.submit(
           attemptId: attempt.id,
-          test: _test,
+          test: topikListeningTest,
           elapsedMs: 0,
         ),
       );
@@ -217,7 +218,7 @@ void main() {
   group('elapsed time', () {
     test('negative elapsed time is a programming error on every timed '
         'write, which then writes nothing', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       final before = await totalChanges(db);
       final writes = <String, Future<Object?> Function()>{
         'answer': () => repository.answer(
@@ -235,7 +236,7 @@ void main() {
             repository.recordTime(attemptId: attempt.id, elapsedMs: -1),
         'submit': () => repository.submit(
           attemptId: attempt.id,
-          test: _test,
+          test: topikListeningTest,
           elapsedMs: -1,
         ),
       };
@@ -248,7 +249,7 @@ void main() {
 
   group('time (BR-TOPIK-015)', () {
     test('accrues to the question that was current, and adds up on return', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       // 40 s on question 5 (reached by a move), 20 s on 6, back to 5 for 10 s.
       topikOk(
         await repository.move(
@@ -286,7 +287,7 @@ void main() {
     });
 
     test('move refuses an unknown question and writes nothing', () async {
-      final attempt = topikOk(await repository.start(_test));
+      final attempt = topikOk(await repository.start(topikListeningTest));
       expect(
         topikReason(
           await repository.move(

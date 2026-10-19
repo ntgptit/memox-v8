@@ -144,35 +144,6 @@ void main() {
     });
   }
 
-  libraryTest('a hint keeps the window\'s screen margin at its sides', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      WindowWidthScope(
-        width: 700,
-        child: _host(
-          const SessionFooterHintWidget(icon: AppIcons.check, text: 'Tap'),
-        ),
-      ),
-    );
-    final padding = tester.widget<Padding>(
-      find
-          .descendant(
-            of: find.byType(SessionFooterHintWidget),
-            matching: find.byType(Padding),
-          )
-          .first,
-    );
-
-    expect(
-      padding.padding.resolve(TextDirection.ltr).horizontal,
-      2 * const AppDimens().marginScreenMedium,
-    );
-  });
-
   libraryTest('a hint is as tall as its own lines: no empty reserved line '
       'under a one-line hint, and a wrapped one still grows (owner, critique '
       '2026-09-30 part 3c-2 golden review; amends R6)', (tester, env) async {

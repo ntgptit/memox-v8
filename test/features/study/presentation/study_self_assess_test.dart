@@ -2,38 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import 'support/study_screen_helpers.dart';
 
 // Screen 16a, Self-assess: BR-MODE-006, BR-MODE-011, BR-MODE-014,
 // BR-STUDY-004, BR-STUDY-005; FE-A6 D11b.
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-StudySessionScreen _screen(String id) => StudySessionScreen(
-  sessionId: id,
-  onDone: (_) {},
-  onStudyDeck: (_) {},
-  onLeave: (_) {},
-);
-
 Future<void> _reveal(WidgetTester tester) async {
   await tester.tap(find.text(_en.studySelfAssessShowAnswer));
   await tester.pumpAndSettle();
 }
 
-/// The footer hint's glyph (critique 2026-10-02, F7).
-IconData _hintIcon(WidgetTester tester) => tester
-    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
-    .icon;
+// footerHintIcon reads the footer hint's glyph (critique 2026-10-02, F7).
 
 void main() {
   libraryTest('the prompt shows first, the answer waits for Show answer, and '
@@ -42,18 +31,18 @@ void main() {
     env,
   ) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text('meaning 1'), findsNothing);
     expect(find.text(_en.cardActionGood), findsNothing);
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
 
     await _reveal(tester);
 
     expect(find.text('meaning 1'), findsOneWidget);
     expect(find.text('example 1'), findsOneWidget);
-    expect(_hintIcon(tester), AppIcons.info);
+    expect(footerHintIcon(tester), AppIcons.info);
     expect(find.text(_en.studySelfAssessShowAnswer), findsNothing);
     // M3-C3: the grades sit in the shared CTA row, at its full inner width.
     final grades = find.byType(StudyGradeRowWidget);
@@ -69,47 +58,49 @@ void main() {
     expect(await turnKindsOf(env.db, 'R1'), isEmpty);
   });
 
-  libraryTest('the reveal is announced: the answer is read, term-first and '
-      'meaning-first alike (TalkBack)', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+  // The reveal is announced: the answer is read, whichever face asked
+  // (TalkBack).
+  for (final (name, cards, direction, announced) in [
+    (
+      'a term-first reveal announces the meaning',
+      2,
+      DirectionChoice.koreanToMeaning,
+      'meaning 1',
+    ),
+    (
+      'a meaning-first reveal announces the term',
+      1,
+      DirectionChoice.meaningToKorean,
+      'term 1',
+    ),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      final handle = tester.ensureSemantics();
+      final id = await openSelfAssessReview(
+        env.db,
+        env.decks,
+        libraryToday,
+        cards: cards,
+        direction: direction,
+      );
+      await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
-    await _reveal(tester);
+      await _reveal(tester);
 
-    expect(
-      tester.takeAnnouncements().map((a) => a.message),
-      contains(_en.studySelfAssessAnnounceRevealed('meaning 1')),
-    );
-    handle.dispose();
-  });
-
-  libraryTest('a meaning-first reveal announces the term', (tester, env) async {
-    final handle = tester.ensureSemantics();
-    final id = await openSelfAssessReview(
-      env.db,
-      env.decks,
-      libraryToday,
-      cards: 1,
-      direction: DirectionChoice.meaningToKorean,
-    );
-    await pumpLibraryScreen(tester, env, _screen(id));
-
-    await _reveal(tester);
-
-    expect(
-      tester.takeAnnouncements().map((a) => a.message),
-      contains(_en.studySelfAssessAnnounceRevealed('term 1')),
-    );
-    handle.dispose();
-  });
+      expect(
+        tester.takeAnnouncements().map((a) => a.message),
+        contains(_en.studySelfAssessAnnounceRevealed(announced)),
+      );
+      handle.dispose();
+    });
+  }
 
   libraryTest('tapping the prompt card reveals, as Show answer does', (
     tester,
     env,
   ) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text('term 1'));
     await tester.pumpAndSettle();
@@ -121,7 +112,7 @@ void main() {
       'reads "Good, next in 6 days" (16a)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await _reveal(tester);
 
     expect(find.text('1d'), findsOneWidget);
@@ -138,7 +129,7 @@ void main() {
   libraryTest('Good records one scheduled turn and the next card follows, '
       'unrevealed', (tester, env) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await _reveal(tester);
 
     await tester.tap(find.text(_en.cardActionGood));
@@ -152,7 +143,7 @@ void main() {
   libraryTest('a double tap on a grade records one turn (IT-MODE-012, '
       'BR-STUDY-004)', (tester, env) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await _reveal(tester);
 
     await tester.tap(find.text(_en.cardActionGood));
@@ -170,7 +161,7 @@ void main() {
       libraryToday,
       cards: 1,
     );
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
     await _reveal(tester);
     await tester.tap(find.text(_en.cardActionAgain));
     await tester.pumpAndSettle();
@@ -192,7 +183,7 @@ void main() {
       cards: 1,
       direction: DirectionChoice.meaningToKorean,
     );
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(find.text('meaning 1'), findsOneWidget);
     expect(find.text('term 1'), findsNothing);
@@ -208,7 +199,7 @@ void main() {
       'plan R1)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     expect(
       find.bySemanticsLabel(
@@ -227,7 +218,7 @@ void main() {
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text(_en.studySelfAssessShowAnswer));
     await tester.pump();
@@ -239,7 +230,7 @@ void main() {
   libraryTest('a double tap on Show answer grades nothing: the grades settle '
       'first (critique 2026-09-30 part 3c-2, R1)', (tester, env) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id));
+    await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
     await tester.tap(find.text(_en.studySelfAssessShowAnswer));
     await tester.pump();

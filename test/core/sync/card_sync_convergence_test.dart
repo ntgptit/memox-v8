@@ -1,65 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
-import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
-import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
-import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
-import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
+import '../../support/sync_adapters.dart';
+import '../../support/sync_rows.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
 
 class _Device {
   _Device(FakeSyncServer server, {int pullLimit = SyncCoordinator.pullPageSize})
     : db = openTestDatabase() {
-    final cards = CardSyncDao(db);
     coordinator = SyncCoordinator(
       api: server,
       store: SyncStore(db),
-      adapters: [
-        DeleteBatchSyncDao(db),
-        DeckSyncDao(db),
-        TagSyncDao(db, SyncStore(db)),
-        cards,
-        CardScheduleSyncDao(db, SyncStore(db)),
-        ReviewLogSyncDao(db),
-        AccountSettingsSyncDao(db),
-      ],
+      adapters: deviceSyncAdapters(db),
       pullLimit: pullLimit,
     );
   }
   final AppDatabase db;
   late final SyncCoordinator coordinator;
 }
-
-Future<void> _root(AppDatabase db, String id) => db.customStatement(
-  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-  "scheduler_version, generation, sibling_position, created_at, updated_at) "
-  "VALUES (?, 'r', NULL, ?, 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-  [id, id],
-);
-
-Future<void> _child(AppDatabase db, String id, String parent) =>
-    db.customStatement(
-      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
-      "sibling_position, created_at, updated_at) VALUES (?, 'c', ?, ?, 2, 'card', 0, 0, 0)",
-      [id, parent, parent],
-    );
-
-Future<void> _card(
-  AppDatabase db,
-  String id,
-  String deck, {
-  String front = 'f',
-}) => db.customStatement(
-  "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
-  "VALUES (?, ?, ?, 'b', 0, 0)",
-  [id, deck, front],
-);
 
 Future<String?> _front(AppDatabase db, String id) async => (await (db.select(
   db.card,
@@ -80,9 +41,9 @@ void main() {
   });
 
   test('a card and its edit reach the other device', () async {
-    await _root(a.db, 'R');
-    await _child(a.db, 'D', 'R');
-    await _card(a.db, 'K', 'D', front: 'one');
+    await insertRootDeck(a.db, 'R');
+    await insertChildDeck(a.db, 'D', 'R', contentType: 'card');
+    await insertCard(a.db, 'K', 'D', front: 'one');
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
     expect(await _front(b.db, 'K'), 'one');
@@ -96,10 +57,10 @@ void main() {
   test(
     'a deck edited after its cards lands pages later and the pull commits',
     () async {
-      await _root(a.db, 'R');
-      await _child(a.db, 'D', 'R');
+      await insertRootDeck(a.db, 'R');
+      await insertChildDeck(a.db, 'D', 'R', contentType: 'card');
       for (var i = 0; i < 5; i++) {
-        await _card(a.db, 'K$i', 'D');
+        await insertCard(a.db, 'K$i', 'D');
       }
       await a.coordinator.runOnce();
       await a.db.customStatement(
@@ -115,9 +76,9 @@ void main() {
   );
 
   test('deleting a deck removes its cards on the other device', () async {
-    await _root(a.db, 'R');
-    await _child(a.db, 'D', 'R');
-    await _card(a.db, 'K', 'D');
+    await insertRootDeck(a.db, 'R');
+    await insertChildDeck(a.db, 'D', 'R', contentType: 'card');
+    await insertCard(a.db, 'K', 'D');
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
 
@@ -130,8 +91,8 @@ void main() {
   });
 
   test('an offline edit refused with a tombstone deletes the card', () async {
-    await _root(a.db, 'R');
-    await _card(a.db, 'K', 'R');
+    await insertRootDeck(a.db, 'R');
+    await insertCard(a.db, 'K', 'R');
     await a.coordinator.runOnce();
     await b.coordinator.runOnce();
     server.seed('card', 'K', null); // the server tombstoned it meanwhile
@@ -149,8 +110,8 @@ void main() {
   test(
     'trash, restore and purge of a card travel as upserts and a delete',
     () async {
-      await _root(a.db, 'R');
-      await _card(a.db, 'K', 'R');
+      await insertRootDeck(a.db, 'R');
+      await insertCard(a.db, 'K', 'R');
       await a.coordinator.runOnce();
       await b.coordinator.runOnce();
 
@@ -194,13 +155,13 @@ void main() {
   test(
     'a card moved into a deck made after its pending edit follows that deck',
     () async {
-      await _root(a.db, 'R');
-      await _card(a.db, 'K', 'R');
+      await insertRootDeck(a.db, 'R');
+      await insertCard(a.db, 'K', 'R');
       await a.coordinator.runOnce();
       await a.db.customStatement(
         "UPDATE card SET front = 'edited' WHERE id = 'K'",
       );
-      await _root(a.db, 'R2');
+      await insertRootDeck(a.db, 'R2');
       await a.db.customStatement(
         "UPDATE card SET deck_id = 'R2' WHERE id = 'K'",
       );

@@ -1,5 +1,4 @@
-import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor;
-import 'package:drift/native.dart' show SqliteException;
+import 'package:drift/drift.dart' show QueryInterceptor;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
@@ -19,24 +18,6 @@ import '../../../support/trash_fixtures.dart';
 
 // UC-SEARCH-001: the deck group of the library search, its pages and its
 // updates (Search spec §5, §6).
-
-/// Fails every SELECT while [isArmed], the way a disk that cannot be read
-/// does (UC-SEARCH-001 E1).
-final class _FailingSelects extends QueryInterceptor {
-  bool isArmed = false;
-
-  @override
-  Future<List<Map<String, Object?>>> runSelect(
-    QueryExecutor executor,
-    String statement,
-    List<Object?> args,
-  ) {
-    if (isArmed) {
-      throw SqliteException(extendedResultCode: 10, message: 'disk I/O error');
-    }
-    return super.runSelect(executor, statement, args);
-  }
-}
 
 void main() {
   late AppDatabase db;
@@ -180,10 +161,7 @@ void main() {
     await read('học');
 
     expect(await totalChanges(db), before);
-    final sessions = await db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
+    expect(await studySessionCount(db), 0);
   });
 
   test('renaming an ancestor or moving a deck gives the hits shown their '
@@ -229,7 +207,7 @@ void main() {
     'a read that fails comes as a database Failure (UC-SEARCH-001 E1)',
     () async {
       await db.close();
-      final failing = _FailingSelects();
+      final failing = FailingSelects();
       open(failing);
       await decks.root('Học');
       failing.isArmed = true;

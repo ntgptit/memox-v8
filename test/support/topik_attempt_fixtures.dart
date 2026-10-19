@@ -35,3 +35,9 @@ Future<TopikAttemptRow?> topikAttemptRow(AppDatabase db, String id) =>
     (db.select(
       db.topikAttempt,
     )..where((a) => a.id.equals(id))).getSingleOrNull();
+
+/// The instant the TOPIK attempt repository tests start from.
+final topikT0 = DateTime.utc(2026, 10, 15, 9);
+
+/// [seconds] after [topikT0].
+DateTime topikAt(int seconds) => topikT0.add(Duration(seconds: seconds));

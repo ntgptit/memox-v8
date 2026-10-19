@@ -33,13 +33,6 @@ void main() {
     await world.coordinator.verifyCode(bEmail, code);
   }
 
-  void expectSettledOn(String userId) {
-    expect(world.state, isA<Ready>().having((s) => s.user.id, 'user', userId));
-    expect(world.gate.isClosed, isFalse);
-    expect(world.secrets.values, isEmpty);
-    expect(world.sync.paused, isFalse);
-  }
-
   test("#19 A's logs are shipped once after its push, before B signs in "
       '(DEV-190)', () async {
     await switchStarted(TransitionChoice.merge);
@@ -92,15 +85,13 @@ void main() {
 
   test('#34 a discard switch with rows the server refused goes on: they are '
       'lost with the rest of the device (DEV-191)', () async {
-    final x = world.server.addUser(email: 'x@example.com').id;
-    world.gateway.adopt(x);
-    world.boot();
-    await world.coordinator.start();
-    world.device
-      ..owner = x
-      ..rows = 4
-      ..pending = 1
-      ..refused = 2;
+    final x = await readyAccount(
+      world,
+      email: 'x@example.com',
+      rows: 4,
+      pending: 1,
+    );
+    world.device.refused = 2;
     final y = world.server.addUser(email: 'y@example.com').id;
 
     await world.coordinator.beginSwitch(choice: TransitionChoice.discard);
@@ -121,7 +112,7 @@ void main() {
     await world.coordinator.requestCode('y@example.com');
     await world.coordinator.verifyCode('y@example.com', code);
 
-    expectSettledOn(y);
+    expectSettledOn(world, y);
     expect(world.device.refused, 0);
     expect(world.device.resets, 1);
   });

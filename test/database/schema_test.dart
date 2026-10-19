@@ -32,13 +32,6 @@ Future<void> _child(
   [id, parent, root, depth, content],
 );
 
-Future<int> _count(AppDatabase db, String table) async {
-  final row = await db
-      .customSelect('SELECT COUNT(*) AS n FROM $table')
-      .getSingle();
-  return row.read<int>('n');
-}
-
 Future<Failure> _failureOf(Future<void> Function() body) async {
   try {
     await body();
@@ -84,32 +77,27 @@ void main() {
     expect(f, isA<ConstraintFailure>());
   });
 
-  test('a sub-deck cannot carry a scheduler', () async {
-    await _root(db, 'r');
-    final f = await _failureOf(
-      () => db.customStatement(
-        'INSERT INTO deck (id, name, parent_id, root_id, depth, scheduler_type, '
-        'scheduler_version, generation, sibling_position, created_at, updated_at) '
-        "VALUES ('s', 'x', 'r', 'r', 2, 'sm2', 1, 1, 0, 0, 0)",
-      ),
-    );
-    expect(f, isA<ConstraintFailure>());
-  });
-
-  test(
-    'a sub-deck cannot carry a scheduler version either (BR-DECK-025)',
-    () async {
-      await _root(db, 'r');
-      final f = await _failureOf(
-        () => db.customStatement(
-          'INSERT INTO deck (id, name, parent_id, root_id, depth, scheduler_version, '
+  // A sub-deck row that names a scheduler column is refused.
+  for (final (name, insert) in [
+    (
+      'a sub-deck cannot carry a scheduler',
+      'INSERT INTO deck (id, name, parent_id, root_id, depth, scheduler_type, '
+          'scheduler_version, generation, sibling_position, created_at, updated_at) '
+          "VALUES ('s', 'x', 'r', 'r', 2, 'sm2', 1, 1, 0, 0, 0)",
+    ),
+    (
+      'a sub-deck cannot carry a scheduler version either (BR-DECK-025)',
+      'INSERT INTO deck (id, name, parent_id, root_id, depth, scheduler_version, '
           'sibling_position, created_at, updated_at) '
           "VALUES ('s', 'x', 'r', 'r', 2, 1, 0, 0, 0)",
-        ),
-      );
+    ),
+  ]) {
+    test(name, () async {
+      await _root(db, 'r');
+      final f = await _failureOf(() => db.customStatement(insert));
       expect(f, isA<ConstraintFailure>());
-    },
-  );
+    });
+  }
 
   test('deleting a root cascades to sub-decks, cards, schedules, logs and sessions', () async {
     await _root(db, 'r');
@@ -140,7 +128,7 @@ void main() {
       'review_log',
       'study_session',
     ]) {
-      expect(await _count(db, table), 0, reason: table);
+      expect(await rowCount(db, table), 0, reason: table);
     }
   });
 
@@ -231,7 +219,7 @@ void main() {
     );
     await db.customStatement("DELETE FROM card WHERE id = 'c1'");
     await db.customStatement("DELETE FROM tags WHERE id = 't2'");
-    expect(await _count(db, 'card_tags'), 0);
+    expect(await rowCount(db, 'card_tags'), 0);
   });
 
   test(

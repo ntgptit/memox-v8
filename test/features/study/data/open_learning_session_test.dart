@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
@@ -12,22 +11,11 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
 import '../../../support/trash_fixtures.dart';
 
 // UC-STUDY-001 steps 3 and 5: opening a learning session.
-
-Matcher _refusedWith(StudyRejection reason) =>
-    isA<Rejected<String, StudyRejection>>().having(
-      (rejected) => rejected.reason,
-      'reason',
-      reason,
-    );
-
-String _opened(Outcome<String, StudyRejection> result) => switch (result) {
-  Ok(:final value) => value,
-  Rejected(:final reason) => fail('opening refused: $reason'),
-};
 
 void main() {
   late AppDatabase db;
@@ -91,8 +79,12 @@ void main() {
     final inB = await newCards(lessonB.id, 'b', 2);
     await learnedCard(root.id, lessonA.id, 'a-learned');
 
-    final ofA = _opened(await entries.openLearningSession(deckId: lessonA.id));
-    final ofRoot = _opened(await entries.openLearningSession(deckId: root.id));
+    final ofA = openedSessionId(
+      await entries.openLearningSession(deckId: lessonA.id),
+    );
+    final ofRoot = openedSessionId(
+      await entries.openLearningSession(deckId: root.id),
+    );
 
     expect((await queueOf(db, ofA, 'browse'))..sort(), inA);
     expect((await queueOf(db, ofRoot, 'browse'))..sort(), [...inA, ...inB]);
@@ -107,7 +99,9 @@ void main() {
     final leaf = await decks.sub(root.id, 'Lesson');
     await newCards(leaf.id, 'c', 2);
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
 
     final session = await sessionOf(db, id);
     expect(session.read<String>('deck_id'), leaf.id);
@@ -151,7 +145,9 @@ void main() {
       ),
     );
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
     await settings.saveRootStudyOptions(
       rootDeckId: root.id,
       options: const StudyOptions(
@@ -177,7 +173,9 @@ void main() {
       ),
     );
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
 
     final set = await queueOf(db, id, 'browse');
     expect(set.toSet(), hasLength(7));
@@ -191,7 +189,9 @@ void main() {
     final leaf = await decks.sub(root.id, 'Lesson');
     final cards = await newCards(leaf.id, 'c', 5, withExample: true);
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
 
     expect(await modesOf(db, id), [
       'browse',
@@ -218,7 +218,9 @@ void main() {
     final leaf = await decks.sub(root.id, 'Lesson');
     await newCards(leaf.id, 'c', 2);
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
 
     expect(await modesOf(db, id), ['browse', 'self_assess']);
   });
@@ -230,7 +232,9 @@ void main() {
     final plain = await newCards(leaf.id, 'p', 3);
     final withExample = await newCards(leaf.id, 'x', 2, withExample: true);
 
-    final id = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final id = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
 
     expect((await queueOf(db, id, 'recall'))..sort(), [
       ...plain,
@@ -247,8 +251,12 @@ void main() {
     await newCards(four.id, 'f', 4);
     await newCards(one.id, 'o', 1);
 
-    final ofFour = _opened(await entries.openLearningSession(deckId: four.id));
-    final ofOne = _opened(await entries.openLearningSession(deckId: one.id));
+    final ofFour = openedSessionId(
+      await entries.openLearningSession(deckId: four.id),
+    );
+    final ofOne = openedSessionId(
+      await entries.openLearningSession(deckId: one.id),
+    );
 
     expect(await modesOf(db, ofFour), ['browse', 'match', 'recall']);
     expect(await modesOf(db, ofOne), ['browse', 'recall']);
@@ -269,11 +277,11 @@ void main() {
       await learnedCard(other.id, otherLeaf.id, id);
     }
 
-    final withThree = _opened(
+    final withThree = openedSessionId(
       await entries.openLearningSession(deckId: lesson.id),
     );
     await learnedCard(root.id, learned.id, 'l4');
-    final withFour = _opened(
+    final withFour = openedSessionId(
       await entries.openLearningSession(deckId: lesson.id),
     );
 
@@ -291,15 +299,15 @@ void main() {
     await newCards(lessonA.id, 'a', 2);
     await newCards(lessonB.id, 'b', 2);
 
-    final first = _opened(
+    final first = openedSessionId(
       await entries.openLearningSession(deckId: lessonA.id),
     );
     clock = DateTime(2026, 9, 24, 21);
-    final second = _opened(
+    final second = openedSessionId(
       await entries.openLearningSession(deckId: lessonB.id),
     );
     clock = DateTime(2026, 9, 25, 7);
-    final third = _opened(
+    final third = openedSessionId(
       await entries.openLearningSession(deckId: lessonA.id),
     );
 
@@ -320,12 +328,14 @@ void main() {
     final done = await decks.sub(root.id, 'Done');
     await newCards(leaf.id, 'c', 1);
     await learnedCard(root.id, done.id, 'l1');
-    final open = _opened(await entries.openLearningSession(deckId: leaf.id));
+    final open = openedSessionId(
+      await entries.openLearningSession(deckId: leaf.id),
+    );
     final before = await totalChanges(db);
 
     expect(
       await entries.openLearningSession(deckId: done.id),
-      _refusedWith(StudyRejection.nothingToLearn),
+      refusedWith<String>(StudyRejection.nothingToLearn),
     );
     expect(await totalChanges(db), before);
     expect((await sessionOf(db, open)).read<String>('status'), 'in_progress');
@@ -339,11 +349,11 @@ void main() {
 
     expect(
       await entries.openLearningSession(deckId: 'missing'),
-      _refusedWith(StudyRejection.notFound),
+      refusedWith<String>(StudyRejection.notFound),
     );
     expect(
       await entries.openLearningSession(deckId: leaf.id),
-      _refusedWith(StudyRejection.notFound),
+      refusedWith<String>(StudyRejection.notFound),
     );
   });
 }

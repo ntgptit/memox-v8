@@ -15,6 +15,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
+import '../support/app_harness.dart';
 import '../support/library_harness.dart';
 import '../support/study_fixtures.dart';
 import '../support/forui_expect.dart';
@@ -41,24 +42,14 @@ Future<void> _pumpApp(
   await tester.pumpAndSettle();
 }
 
-Finder _barTitle(String title, {bool skipOffstage = true}) => find.descendant(
-  of: find.byType(MxAppBar, skipOffstage: skipOffstage),
-  matching: find.text(title, skipOffstage: skipOffstage),
-  skipOffstage: skipOffstage,
-);
-
 MxBottomNav _nav(WidgetTester tester) =>
     tester.widget<MxBottomNav>(find.byType(MxBottomNav));
-
-/// A tab label inside the bottom nav; the app bar may show the same text.
-Finder _tab(String label) =>
-    find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
 
 void main() {
   libraryTest('cold start lands on Library', (tester, env) async {
     await _pumpApp(tester, env);
 
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    expect(barTitle(_en.navLibrary), findsOneWidget);
     expect(_nav(tester).selectedIndex, 0);
   });
 
@@ -73,28 +64,39 @@ void main() {
     );
   });
 
-  libraryTest('four tabs in navigation.md order', (tester, env) async {
-    await _pumpApp(tester, env);
+  for (final (name, deviceLocale) in const [
+    ('four tabs in navigation.md order', null),
+    ('Vietnamese device locale gives Vietnamese tabs', Locale('vi')),
+  ]) {
+    libraryTest(name, (tester, env) async {
+      // The first row keeps the test platform's own locale, English.
+      if (deviceLocale != null) {
+        tester.platformDispatcher.localesTestValue = [deviceLocale];
+        addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+      }
+      await _pumpApp(tester, env);
+      final l10n = lookupAppLocalizations(deviceLocale ?? const Locale('en'));
 
-    expect(_nav(tester).destinations.map((d) => d.label), [
-      _en.navLibrary,
-      _en.navStudy,
-      _en.navProgress,
-      _en.navSettings,
-    ]);
-  });
+      expect(_nav(tester).destinations.map((d) => d.label), [
+        l10n.navLibrary,
+        l10n.navStudy,
+        l10n.navProgress,
+        l10n.navSettings,
+      ]);
+    });
+  }
 
   libraryTest('switching tabs keeps the other branch alive', (
     tester,
     env,
   ) async {
     await _pumpApp(tester, env);
-    await tester.tap(_tab(_en.navStudy));
+    await tester.tap(bottomTab(_en.navStudy));
     await tester.pumpAndSettle();
 
     expect(_nav(tester).selectedIndex, 1);
-    expect(_barTitle(_en.navStudy), findsOneWidget);
-    expect(_barTitle(_en.navLibrary, skipOffstage: false), findsOneWidget);
+    expect(barTitle(_en.navStudy), findsOneWidget);
+    expect(barTitle(_en.navLibrary, skipOffstage: false), findsOneWidget);
   });
 
   libraryTest('re-tapping the current tab keeps it selected', (
@@ -102,7 +104,7 @@ void main() {
     env,
   ) async {
     await _pumpApp(tester, env);
-    await tester.tap(_tab(_en.navLibrary));
+    await tester.tap(bottomTab(_en.navLibrary));
     await tester.pumpAndSettle();
 
     expect(_nav(tester).selectedIndex, 0);
@@ -114,30 +116,13 @@ void main() {
     await _pumpApp(tester, env);
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
 
-    await tester.tap(_tab(_en.navStudy));
+    await tester.tap(bottomTab(_en.navStudy));
     await tester.pumpAndSettle();
     expect(find.text(_en.studyHomeNoDecksTitle), findsOneWidget);
 
-    await tester.tap(_tab(_en.navProgress));
+    await tester.tap(bottomTab(_en.navProgress));
     await tester.pumpAndSettle();
     expect(find.text(_en.progressNoDecksTitle), findsOneWidget);
-  });
-
-  libraryTest('Vietnamese device locale gives Vietnamese tabs', (
-    tester,
-    env,
-  ) async {
-    tester.platformDispatcher.localesTestValue = const [Locale('vi')];
-    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await _pumpApp(tester, env);
-    final vi = lookupAppLocalizations(const Locale('vi'));
-
-    expect(_nav(tester).destinations.map((d) => d.label), [
-      vi.navLibrary,
-      vi.navStudy,
-      vi.navProgress,
-      vi.navSettings,
-    ]);
   });
 
   libraryTest('an unsupported locale falls back to English', (
@@ -148,7 +133,7 @@ void main() {
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await _pumpApp(tester, env);
 
-    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    expect(barTitle(_en.navLibrary), findsOneWidget);
   });
 
   libraryTest('dark system theme gives the dark page ground', (
@@ -181,23 +166,12 @@ void main() {
     );
   });
 
-  libraryTest('Settings offers the gallery in debug builds', (
-    tester,
-    env,
-  ) async {
-    await _pumpApp(tester, env);
-    await tester.tap(_tab(_en.navSettings));
-    await tester.pumpAndSettle();
-
-    expect(byControlLabel(_en.openGallery), findsOneWidget);
-  });
-
   libraryTest('without the gallery there is no route and no action', (
     tester,
     env,
   ) async {
     await _pumpApp(tester, env, hasGallery: false);
-    await tester.tap(_tab(_en.navSettings));
+    await tester.tap(bottomTab(_en.navSettings));
     await tester.pumpAndSettle();
 
     expect(byControlLabel(_en.openGallery), findsNothing);
