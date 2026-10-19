@@ -128,13 +128,16 @@ void main() {
 
     final chart = find.byType(TopikQuestionBarChartWidget);
     final right = tester.getTopRight(chart).dx;
-    final seventh = find.byKey(const ValueKey('topik-chart-fill-7'));
+    // The bar is centred in its cell.
+    final seventh = tester
+        .getCenter(find.byKey(const ValueKey('topik-chart-cell-7')))
+        .dx;
     // 328 / 48 = 6.83 cells: 40 dp of the seventh cell show, its painted
     // bar inside them and under the fade.
-    expect(tester.getTopLeft(seventh).dx, lessThan(right));
+    expect(seventh, lessThan(right));
     expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
     expect(
-      tester.getTopLeft(seventh).dx,
+      seventh,
       greaterThan(tester.getTopLeft(find.byKey(MxScrollFade.trailingKey)).dx),
       reason: 'the bar sits under the fade, not beside it',
     );

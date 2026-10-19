@@ -1,13 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_donut.dart';
 
 /// Screen 38's donut (detail file 38, critique S3): the correct answers of
 /// the questions, a `success` arc on the `muted` track (as every track),
-/// "{correct} / {total}" inside. A topik widget, not MxMasteryDonut, which
-/// draws the mastery ramp. A caption under the figure says what it counts,
+/// "{correct} / {total}" inside, drawn with `MxDonut`. A topik widget, not
+/// MxMasteryDonut, which draws the mastery ramp. A caption under the figure says what it counts,
 /// beside the score. Its row says the figures to TalkBack.
 class TopikScoreDonutWidget extends StatelessWidget {
   const TopikScoreDonutWidget({
@@ -24,70 +23,27 @@ class TopikScoreDonutWidget extends StatelessWidget {
     final dimens = context.dimens;
     return SizedBox.square(
       dimension: dimens.sizeControl * 2,
-      child: CustomPaint(
-        painter: _DonutPainter(
-          fraction: total == 0 ? 0 : correct / total,
-          track: context.colors.muted,
-          arc: context.status.success,
-          width: dimens.space8,
-        ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                context.l10n.topikOfTotal(correct, total),
-                style: context.texts.sectionTitle,
+      child: MxDonut(
+        fraction: total == 0 ? 0 : correct / total,
+        track: context.colors.muted,
+        arc: context.status.success,
+        strokeWidth: dimens.space8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              context.l10n.topikOfTotal(correct, total),
+              style: context.texts.sectionTitle,
+            ),
+            Text(
+              context.l10n.topikCorrect,
+              style: context.texts.meta.copyWith(
+                color: context.colors.mutedForeground,
               ),
-              Text(
-                context.l10n.topikCorrect,
-                style: context.texts.meta.copyWith(
-                  color: context.colors.mutedForeground,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-class _DonutPainter extends CustomPainter {
-  const _DonutPainter({
-    required this.fraction,
-    required this.track,
-    required this.arc,
-    required this.width,
-  });
-
-  final double fraction;
-  final Color track;
-  final Color arc;
-  final double width;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = (Offset.zero & size).deflate(width / 2);
-    final stroke = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, 0, 2 * pi, false, stroke..color = track);
-    if (fraction <= 0) return;
-    canvas.drawArc(
-      rect,
-      -pi / 2,
-      2 * pi * fraction,
-      false,
-      stroke..color = arc,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_DonutPainter old) =>
-      old.fraction != fraction ||
-      old.track != track ||
-      old.arc != arc ||
-      old.width != width;
 }

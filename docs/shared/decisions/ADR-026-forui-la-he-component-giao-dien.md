@@ -63,8 +63,8 @@ system Material riêng.
   `FColors` và thang chữ ForUI, không ngược lại (`tools/ui_lint` UIL03, UIL05).
 - **Biểu đồ vẽ bằng `fl_chart`, chỉ trong widget `Mx*`.** ForUI không có
   component biểu đồ, nên biểu đồ dùng `fl_chart` (MIT, ghim đúng phiên bản),
-  bọc trong widget `Mx*` của `lib/shared/widgets/` (bản đầu tiên là
-  `MxStackedDayBars`, quyết định của chủ sở hữu ngày 2026-10-19). Mọi màu,
+  bọc trong widget `Mx*` của `lib/shared/widgets/` (`MxStackedDayBars` và
+  `MxBarChart`, quyết định của chủ sở hữu ngày 2026-10-19). Mọi màu,
   kích thước và kiểu chữ truyền từ theme; TalkBack do widget `Mx*` dựng, vì
   `fl_chart` không tạo node ngữ nghĩa. `package:fl_chart` chỉ được import trong
   `lib/shared/widgets/` (`tools/ui_lint` UIL07).
