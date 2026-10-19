@@ -15,7 +15,7 @@ enum MxChoiceTone { idle, selected, right, wrong }
 /// in one semantics node, and fades when it is out of play. Promoted from
 /// the study feature when TOPIK became its second user (owner brief
 /// 2026-10-15); its look did not change.
-class MxChoiceTile extends StatelessWidget {
+class MxChoiceTile extends StatefulWidget {
   const MxChoiceTile({
     super.key,
     required this.tone,
@@ -51,73 +51,23 @@ class MxChoiceTile extends StatelessWidget {
   /// Null makes it inert.
   final VoidCallback? onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    final motion = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : Durations.short4;
-    // The tone eases in, surface and foreground together, so the content never
-    // sits on a surface it was not drawn for (Impeccable after P3). Not an
-    // AnimatedContainer: it would inset the content by the border.
-    final foreground = _foreground(context);
-    final surface = ConstrainedBox(
-      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
-      child: TweenAnimationBuilder<Decoration>(
-        tween: DecorationTween(end: _decoration(context)),
-        duration: motion,
-        curve: Easing.standard,
-        builder: (context, decoration, child) =>
-            DecoratedBox(decoration: decoration, child: child),
-        child: Padding(
-          padding: padding,
-          child: TweenAnimationBuilder<Color?>(
-            tween: ColorTween(end: foreground),
-            duration: motion,
-            curve: Easing.standard,
-            builder: (context, color, _) => builder(color ?? foreground),
-          ),
-        ),
-      ),
-    );
-    return Semantics(
-      container: true,
-      button: onTap != null,
-      selected: isSelected,
-      label: semanticsLabel,
-      sortKey: sortKey,
-      onTap: onTap,
-      excludeSemantics: true,
-      // Tab reaches the tile, Enter presses it and the theme's outline marks
-      // it (DEV-391). Its own semantics node stays hidden under the one
-      // above, which also carries the reading order.
-      child: FTappable.static(
-        onPress: onTap,
-        behavior: HitTestBehavior.opaque,
-        focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
-          borderRadius: context.radii.md,
-        ),
-        // The fade eases in with the tones, at once under Remove animations.
-        child: AnimatedOpacity(
-          opacity: isFaded ? context.dimens.opacityMuted : 1,
-          duration: motion,
-          child: surface,
-        ),
-      ),
-    );
-  }
-
   /// The content colour of [tone].
-  Color _foreground(BuildContext context) => switch (tone) {
-    MxChoiceTone.idle => context.colors.foreground,
-    MxChoiceTone.selected => context.colors.primaryForeground,
-    MxChoiceTone.right => context.status.success,
-    MxChoiceTone.wrong => context.colors.error,
-  };
+  static Color _foreground(BuildContext context, MxChoiceTone tone) =>
+      switch (tone) {
+        MxChoiceTone.idle => context.colors.foreground,
+        MxChoiceTone.selected => context.colors.primaryForeground,
+        MxChoiceTone.right => context.status.success,
+        MxChoiceTone.wrong => context.colors.error,
+      };
 
   /// The surface of [tone]: the card ground inside the `border` hairline at
   /// rest, the primary fill when picked, a tint of the answer's colour over
   /// the page with that colour's edge once answered.
-  BoxDecoration _decoration(BuildContext context) {
+  static BoxDecoration _decoration(
+    BuildContext context,
+    MxChoiceTone tone, {
+    required bool isRecessed,
+  }) {
     final colors = context.colors;
     final rest = isRecessed ? colors.muted : context.colors.card;
     // At rest the edge is the hairline: in light the card is the page
@@ -139,6 +89,121 @@ class MxChoiceTile extends StatelessWidget {
       color: fill,
       borderRadius: context.radii.md,
       border: Border.all(color: edge, width: context.hairline),
+    );
+  }
+
+  @override
+  State<MxChoiceTile> createState() => _MxChoiceTileState();
+}
+
+/// The look a tile eases from: its previous tone and ground.
+typedef _Look = ({MxChoiceTone tone, bool isRecessed});
+
+class _MxChoiceTileState extends State<MxChoiceTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ease = AnimationController(
+    vsync: this,
+    duration: Durations.short4,
+    value: 1,
+  );
+  late final Animation<double> _curve = CurvedAnimation(
+    parent: _ease,
+    curve: Easing.standard,
+  );
+  late _Look _from = _look(widget);
+
+  static _Look _look(MxChoiceTile tile) =>
+      (tone: tile.tone, isRecessed: tile.isRecessed);
+
+  @override
+  void didUpdateWidget(MxChoiceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final old = _look(oldWidget);
+    if (old == _look(widget)) return;
+    // Only a tone or ground eases. Both ends are read from the theme at each
+    // frame, so a theme change follows ForUI's own easing instead of being
+    // eased again after it (follow-ups spec T1).
+    _from = old;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _ease.value = 1;
+      return;
+    }
+    _ease.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _ease.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final motion = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : Durations.short4;
+    // The tone eases in, surface and foreground together, so the content never
+    // sits on a surface it was not drawn for (Impeccable after P3). Not an
+    // AnimatedContainer: it would inset the content by the border.
+    final surface = ConstrainedBox(
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+      child: AnimatedBuilder(
+        animation: _curve,
+        builder: (context, _) {
+          final t = _curve.value;
+          final from = _from;
+          final decoration = BoxDecoration.lerp(
+            MxChoiceTile._decoration(
+              context,
+              from.tone,
+              isRecessed: from.isRecessed,
+            ),
+            MxChoiceTile._decoration(
+              context,
+              widget.tone,
+              isRecessed: widget.isRecessed,
+            ),
+            t,
+          )!;
+          final foreground = Color.lerp(
+            MxChoiceTile._foreground(context, from.tone),
+            MxChoiceTile._foreground(context, widget.tone),
+            t,
+          )!;
+          return DecoratedBox(
+            decoration: decoration,
+            child: Padding(
+              padding: widget.padding,
+              child: widget.builder(foreground),
+            ),
+          );
+        },
+      ),
+    );
+    return Semantics(
+      container: true,
+      button: widget.onTap != null,
+      selected: widget.isSelected,
+      label: widget.semanticsLabel,
+      sortKey: widget.sortKey,
+      onTap: widget.onTap,
+      excludeSemantics: true,
+      // Tab reaches the tile, Enter presses it and the theme's outline marks
+      // it (DEV-391). Its own semantics node stays hidden under the one
+      // above, which also carries the reading order.
+      child: FTappable.static(
+        onPress: widget.onTap,
+        behavior: HitTestBehavior.opaque,
+        focusedOutlineStyle: FFocusedOutlineStyleDelta.delta(
+          borderRadius: context.radii.md,
+        ),
+        // The fade eases in with the tones, at once under Remove animations.
+        child: AnimatedOpacity(
+          opacity: widget.isFaded ? context.dimens.opacityMuted : 1,
+          duration: motion,
+          child: surface,
+        ),
+      ),
     );
   }
 }

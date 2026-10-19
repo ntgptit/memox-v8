@@ -134,6 +134,11 @@ Future<void> expectThemedGoldens(
       // deterministically instead of its empty first frame.
       await tester.pump(_indicatorFrame);
       await expectBoundaryGolden(tester, 'goldens/${name}_$suffix.png');
+      // Each theme mounts cold: a tree kept from the light capture would
+      // ease into dark through ForUI's theme motion, and a widget's own
+      // motion restarting at the capture frame would still paint light
+      // (follow-ups spec T1).
+      await tester.pumpWidget(const SizedBox.shrink());
     }
   });
 }

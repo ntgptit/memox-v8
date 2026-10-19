@@ -404,16 +404,31 @@ void main() {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, studySessionScreen(id));
 
-    final box = tester.widget<TweenAnimationBuilder<Decoration>>(
-      find.descendant(
-        of: find.ancestor(
-          of: find.text('term 1'),
-          matching: find.byType(MxChoiceTile),
-        ),
-        matching: find.byType(TweenAnimationBuilder<Decoration>),
-      ),
-    );
-    expect(box.duration, Durations.short4);
+    Color? surface() =>
+        (tester
+                    .widget<DecoratedBox>(
+                      find
+                          .descendant(
+                            of: find.ancestor(
+                              of: find.text('term 1'),
+                              matching: find.byType(MxChoiceTile),
+                            ),
+                            matching: find.byType(DecoratedBox),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration)
+            .color;
+    final idle = surface();
+    await tester.tap(find.text('term 1'));
+    await tester.pump();
+    await tester.pump(Durations.short4 ~/ 2);
+    final mid = surface();
+    await tester.pumpAndSettle();
+
+    expect(mid, isNot(anyOf(idle, surface())));
+    expect(surface(), tester.element(find.text('term 1')).colors.primary);
   });
 
   libraryTest('a tile keeps its content in place as its tone changes, and '

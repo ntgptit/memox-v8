@@ -220,6 +220,25 @@ void main() {
     expect(_decoration(tester).color, colors.primary);
   });
 
+  testWidgets('a theme change is followed at the theme\'s pace, not eased '
+      'again after it (follow-ups spec T1)', (tester) async {
+    final dark = buildDarkTheme().colors;
+    await tester.pumpWidget(_host(_tile()));
+    await tester.pumpAndSettle();
+
+    // ForUI eases the theme over 200 ms; a tile that eased its own colours
+    // on top would still be on its way here.
+    await tester.pumpWidget(_host(_tile(), brightness: Brightness.dark));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(_decoration(tester).color, dark.card);
+    expect(
+      tester.widget<Text>(find.text('① 보기 1')).style?.color,
+      dark.foreground,
+    );
+  });
+
   testWidgets('the sort key reaches the node TalkBack reads', (tester) async {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
