@@ -24,7 +24,10 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 /// Card writes that land, counted: a second one would write twice.
 final class _CountedCardActions extends CardActionsController {
-  final writes = <String>[];
+  _CountedCardActions(this.writes);
+
+  /// Shared across rebuilds: the provider makes a new one each time.
+  final List<String> writes;
 
   @override
   Future<Outcome<CardEntity, CardRejection>> createCard({
@@ -82,33 +85,29 @@ Future<String> _seedWords(LibraryEnv env) async {
 
 /// Picks the one card and opens its bulk command [label], with every toast
 /// throwing (no toast host).
-Future<_CountedCardActions> _bulk(
+Future<List<String>> _bulk(
   WidgetTester tester,
   LibraryEnv env,
   String label,
 ) async {
   final words = await _seedWords(env);
-  final actions = _CountedCardActions();
+  final writes = <String>[];
   await pumpLibraryScreen(
     tester,
     env,
     _section(words),
-    overrides: [cardActionsControllerProvider.overrideWith(() => actions)],
+    overrides: [
+      cardActionsControllerProvider.overrideWith(
+        () => _CountedCardActions(writes),
+      ),
+    ],
     hasToastHost: false,
   );
   await tester.longPress(find.text('annyeong'));
   await tester.pumpAndSettle();
   await tester.tap(find.text(label));
   await tester.pumpAndSettle();
-  return actions;
-}
-
-/// Taps [finder]: the toast after the write meets its bug, which is left
-/// uncaught as itself, and no failure is said.
-Future<void> _confirm(WidgetTester tester, Finder finder) async {
-  final uncaught = await tapKeepingUncaught(tester, finder);
-  expect(uncaught, [isA<FlutterError>()]);
-  expect(find.text(_en.failureUnknown), findsNothing);
+  return writes;
 }
 
 // REG-HELD-SCOPE: a bug in what follows a landed write (here the toast,
@@ -118,8 +117,8 @@ Future<void> _confirm(WidgetTester tester, Finder finder) async {
 void main() {
   libraryTest('a move that landed closes its sheet though its toast fails '
       '(UC-CARD-001 A5)', (tester, env) async {
-    final actions = await _bulk(tester, env, _en.cardMove);
-    await _confirm(
+    final writes = await _bulk(tester, env, _en.cardMove);
+    await tapThroughToastBug(
       tester,
       find.descendant(
         of: find.byType(MxDeckPickerSheet),
@@ -128,14 +127,14 @@ void main() {
     );
 
     expect(find.byType(MxBottomSheet), findsNothing);
-    expect(actions.writes, ['move']);
+    expect(writes, ['move']);
   });
 
   libraryTest('a tag that landed closes its dialog though its toast fails '
       '(UC-CARD-001 A8)', (tester, env) async {
-    final actions = await _bulk(tester, env, _en.cardTag);
+    final writes = await _bulk(tester, env, _en.cardTag);
     await tester.enterText(find.byType(EditableText), 'greetings');
-    await _confirm(
+    await tapThroughToastBug(
       tester,
       find.descendant(
         of: find.byType(MxDialog),
@@ -144,13 +143,13 @@ void main() {
     );
 
     expect(find.byType(MxDialog), findsNothing);
-    expect(actions.writes, ['tag']);
+    expect(writes, ['tag']);
   });
 
   libraryTest('a delete that landed closes its dialog though its toast fails '
       '(FE-B1)', (tester, env) async {
-    final actions = await _bulk(tester, env, _en.cardDelete);
-    await _confirm(
+    final writes = await _bulk(tester, env, _en.cardDelete);
+    await tapThroughToastBug(
       tester,
       find.descendant(
         of: find.byType(MxDialog),
@@ -159,7 +158,7 @@ void main() {
     );
 
     expect(find.byType(MxDialog), findsNothing);
-    expect(actions.writes, ['delete']);
+    expect(writes, ['delete']);
   });
 
   libraryTest('a new card that landed clears the form for the next and '
@@ -168,7 +167,7 @@ void main() {
     env,
   ) async {
     final words = await _seedWords(env);
-    final actions = _CountedCardActions();
+    final writes = <String>[];
     await pumpLibraryScreen(
       tester,
       env,
@@ -177,18 +176,57 @@ void main() {
         deckContext: (deckId, label) =>
             DeckContextHeaderWidget(deckId: deckId, currentLabel: label),
       ),
-      overrides: [cardActionsControllerProvider.overrideWith(() => actions)],
+      overrides: [
+        cardActionsControllerProvider.overrideWith(
+          () => _CountedCardActions(writes),
+        ),
+      ],
       hasToastHost: false,
     );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText).at(0), 'bap');
     await tester.enterText(find.byType(EditableText).at(1), 'rice');
     await tester.pump();
-    await _confirm(tester, find.widgetWithText(MxButton, _en.cardSaveCard));
+    await tapThroughToastBug(
+      tester,
+      find.widgetWithText(MxButton, _en.cardSaveCard),
+    );
 
     expect(find.text(_en.cardSaveFailedTitle), findsNothing);
     expect(find.widgetWithText(MxButton, _en.cardRetrySave), findsNothing);
     expect(find.text('bap'), findsNothing);
-    expect(actions.writes, ['create']);
+    expect(writes, ['create']);
+  });
+
+  libraryTest('a second tap in the same frame does not tag twice '
+      '(UC-CARD-001 A8)', (tester, env) async {
+    final words = await _seedWords(env);
+    final writes = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(words),
+      overrides: [
+        cardActionsControllerProvider.overrideWith(
+          () => _CountedCardActions(writes),
+        ),
+      ],
+    );
+    await tester.longPress(find.text('annyeong'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardTag));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText), 'greetings');
+    final confirm = find.descendant(
+      of: find.byType(MxDialog),
+      matching: find.text(_en.cardTagConfirm),
+    );
+    // A second tap lands before the frame that draws the confirm busy.
+    await tester.tap(confirm);
+    await tester.tap(confirm);
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 5));
+
+    expect(writes, ['tag']);
   });
 }

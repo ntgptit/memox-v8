@@ -56,6 +56,9 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   static int _nextCycle(DeckView view) => view.deck.generation! + 1;
 
   Future<void> _reset(DeckView view, ResetLearningSummary summary) async {
+    // A second tap in the same frame reaches here before the busy confirm
+    // is drawn.
+    if (_isResetting) return;
     setState(() => _isResetting = true);
     final cycle = _nextCycle(view);
     final outcome = await runHeld(

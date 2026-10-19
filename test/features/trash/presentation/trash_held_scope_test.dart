@@ -20,7 +20,10 @@ const _entry = 'meokda · eat';
 
 /// Trash writes that land, counted: a second one would write twice.
 final class _CountedTrash extends TrashController {
-  final writes = <String>[];
+  _CountedTrash(this.writes);
+
+  /// Shared across rebuilds: the provider makes a new one each time.
+  final List<String> writes;
 
   @override
   Future<PurgeReport> purge(Set<String> batchIds) {
@@ -40,27 +43,21 @@ final class _CountedTrash extends TrashController {
 
 /// The trash with every toast throwing (no toast host), its entry's
 /// actions open.
-Future<_CountedTrash> _openActions(WidgetTester tester, LibraryEnv env) async {
+Future<List<String>> _openActions(WidgetTester tester, LibraryEnv env) async {
   await seedTrash(env);
-  final trash = _CountedTrash();
+  final writes = <String>[];
   await pumpLibraryScreen(
     tester,
     env,
     const TrashScreen(),
-    overrides: [trashControllerProvider.overrideWith(() => trash)],
+    overrides: [
+      trashControllerProvider.overrideWith(() => _CountedTrash(writes)),
+    ],
     hasToastHost: false,
   );
   await tester.tap(byControlLabel(_en.trashEntryActions(_entry)));
   await tester.pumpAndSettle();
-  return trash;
-}
-
-/// Taps [finder]: the toast after the write meets its bug, which is left
-/// uncaught as itself, and no failure is said.
-Future<void> _confirm(WidgetTester tester, Finder finder) async {
-  final uncaught = await tapKeepingUncaught(tester, finder);
-  expect(uncaught, [isA<FlutterError>()]);
-  expect(find.text(_en.failureUnknown), findsNothing);
+  return writes;
 }
 
 // REG-HELD-SCOPE: a bug in what follows a landed write (here the toast,
@@ -70,21 +67,21 @@ Future<void> _confirm(WidgetTester tester, Finder finder) async {
 void main() {
   libraryTest('a purge that landed closes its dialog though its toast fails '
       '(UC-TRASH-001 A3)', (tester, env) async {
-    final trash = await _openActions(tester, env);
+    final writes = await _openActions(tester, env);
     await tester.tap(find.text(_en.trashDeletePermanently));
     await tester.pumpAndSettle();
-    await _confirm(tester, find.text(_en.trashPurgeConfirm));
+    await tapThroughToastBug(tester, find.text(_en.trashPurgeConfirm));
 
     expect(find.byType(MxDialog), findsNothing);
-    expect(trash.writes, ['purge']);
+    expect(writes, ['purge']);
   });
 
   libraryTest('a restore that landed closes its sheet though its toast '
       'fails (UC-TRASH-001 steps 5-7)', (tester, env) async {
-    final trash = await _openActions(tester, env);
+    final writes = await _openActions(tester, env);
     await tester.tap(find.text(_en.trashRestore));
     await tester.pumpAndSettle();
-    await _confirm(
+    await tapThroughToastBug(
       tester,
       find.descendant(
         of: find.byType(MxDeckPickerSheet),
@@ -93,6 +90,6 @@ void main() {
     );
 
     expect(find.byType(MxDeckPickerSheet), findsNothing);
-    expect(trash.writes, ['restore']);
+    expect(writes, ['restore']);
   });
 }

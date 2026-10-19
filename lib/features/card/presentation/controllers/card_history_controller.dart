@@ -66,7 +66,7 @@ class CardHistoryController extends _$CardHistoryController {
     final cursor = view?.next;
     if (view == null || cursor == null || view.isLoadingMore) return;
     state = AsyncData(view.copyWith(isLoadingMore: true, hasMoreFailed: false));
-    // A record, so a page that came back empty is not read as failed.
+    // A record, so a refused page (null) is not read as a failed load.
     final loaded = await runHeld(
       () async => (page: await _page(cursor)),
       // A bug takes the Failure's way out: the retry row, never a spinner

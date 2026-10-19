@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // A held write that meets a bug, not a Failure (ADR-016, LIB-6): the flow
@@ -28,4 +29,20 @@ Future<List<Object>> tapKeepingUncaught(
   );
   await tester.pumpAndSettle();
   return uncaught;
+}
+
+/// What `showMxSnackbar` throws with no toast host: the bug a test puts
+/// after a landed write.
+final Matcher isToastHostMissing = isA<FlutterError>().having(
+  (error) => error.message,
+  'message',
+  contains('MxToastHost'),
+);
+
+/// Taps [finder], whose write lands and whose toast then meets its bug (the
+/// screen pumped without a toast host): the bug is left uncaught as itself.
+Future<void> tapThroughToastBug(WidgetTester tester, Finder finder) async {
+  expect(finder, findsOneWidget);
+  final uncaught = await tapKeepingUncaught(tester, finder);
+  expect(uncaught, [isToastHostMissing]);
 }

@@ -70,6 +70,9 @@ class _CreateRootDeckDialogWidgetState
   }
 
   Future<void> _submit() async {
+    // A second tap in the same frame reaches here before the busy confirm
+    // is drawn.
+    if (_isSubmitting) return;
     final scheduler = _scheduler;
     if (scheduler == null) {
       setState(() => _isSchedulerMissing = true);

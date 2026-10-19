@@ -90,6 +90,9 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
   }
 
   Future<void> _submit() async {
+    // A second tap in the same frame reaches here before the busy confirm
+    // is drawn.
+    if (_isSubmitting) return;
     setState(() {
       _isSubmitting = true;
       _rejection = null;
