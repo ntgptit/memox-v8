@@ -55,7 +55,7 @@ the device phases (`docs/shared/testing/device-e2e.md`) and
 | `flutter pub get` | OK | OK |
 | `dart format --output=none --set-exit-if-changed .` | 0 of 2137 files changed | 0 of 2184 files changed |
 | `flutter analyze` | `lib/`: no issues. 20 infos in `test/`: 3 trivial, fixed in `7584c737`; 17 deprecated-API uses, pre-existing | `lib/`: no issues. 17 infos in `test/` (pre-existing deprecated-API uses, REG-ANALYZE-2) |
-| `dod_check.sh --force` (format, analyze, generated code, architecture, docs, SDK pin, tooling and hook tests, theme and removed names, design tooling, ForUI boundary rules, guard self-tests, code verification guard, full host suite) | PASS. Host suite 4776 tests. | PASS. Host suite (final gate running) tests. Every step passes, the code verification guard included. |
+| `dod_check.sh --force` (format, analyze, generated code, architecture, docs, SDK pin, tooling and hook tests, theme and removed names, design tooling, ForUI boundary rules, guard self-tests, code verification guard, full host suite) | PASS. Host suite 4776 tests. | PASS. Host suite 4899 tests. Every step passes, the code verification guard included. |
 | `run_goldens.sh` | PASS, 615 | PASS, 615. The six Users shots (12 PNGs) were updated for their Refresh action and shown to the owner on a golden-compare page (https://claude.ai/artifact/FbmQA5z4bviQ5JxfnPg3EV); no other image changed. |
 | `dart run tools/ui_lint/ui_lint.dart` | 1057 files clean | 1061 files clean |
 | `check_architecture.sh` | boundaries clean | boundaries clean |
@@ -582,15 +582,15 @@ The owner's priority for this round: remove the duplicate-write risk, then run t
 | REG-MONITORING-STATUS | The same mechanism outside `runHeld`, in Monitoring's status change. | The change alone in the catch (`b45cd0b7`). | 1 test, failed before. |
 | REG-DOUBLE-SUBMIT | A second tap in the same frame ran the write again in five submits: reset learning (a second cycle), create root deck (a second deck), rename, bulk tag, the Users role. | Each refuses a call while busy (`b45cd0b7`). Confirm dialogs that only pop were probed and are safe. | 5 tests, all failed before with two writes. |
 
-Every `runHeld` call (31) and every async submit in `lib/features` was audited; the classification is in REGRESSION_FINDINGS.md under each row. The screens these fixes touch (01, 02, 06, 07, 08, 28, 33) have their new transitions in their detail files. No new Impeccable round was run (owner 2026-10-19); none of these fixes changes a pixel (goldens (final golden run pending)).
+Every `runHeld` call (31) and every async submit in `lib/features` was audited; the classification is in REGRESSION_FINDINGS.md under each row. The screens these fixes touch (01, 02, 06, 07, 08, 28, 33) have their new transitions in their detail files. No new Impeccable round was run (owner 2026-10-19); none of these fixes changes a pixel (goldens 615/615 pass).
 
 ### Decision per gate
 
 | Gate | Decision | Evidence or what is missing |
 |---|---|---|
-| Duplicate-write risk (REG-HELD-SCOPE and its check similar) | ACCEPTED | The tests above; full host suite (final gate running) pass; final whole-branch review (Opus) after `540fc264`, its should-fix items fixed in `b45cd0b7`. |
+| Duplicate-write risk (REG-HELD-SCOPE and its check similar) | ACCEPTED | The tests above; full host suite 4899 pass; final whole-branch review (Opus) after `540fc264`, its should-fix items fixed in `b45cd0b7`. |
 | Host gate (`dod_check.sh`: format, analyze, generated code, architecture, docs, guard, full suite) | ACCEPTED | PASS on `b45cd0b7` (§3). |
-| Goldens (`run_goldens.sh`) | ACCEPTED | (final golden run pending); no image changed in this round. |
+| Goldens (`run_goldens.sh`) | ACCEPTED | 615/615 pass; no image changed in this round. |
 | Notification tap over an unsaved form (REG-REMINDER-TAP) | ACCEPTED by owner ruling | Kept; BR-REMINDER-008 edge case. |
 | `MxStepper` typed field for TalkBack (REG-CA-6) | CONDITIONAL (accepted limitation) | Owner ruling 2026-10-19; waits on a ForUI semantics label. |
 | `flutter build apk --debug` | BLOCKED here, pending the owner's machine | Google Maven is unreachable from this environment. |
