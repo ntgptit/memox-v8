@@ -264,28 +264,29 @@ class CardImportController extends _$CardImportController {
     if (draft == null || preview == null || draft.isBusy) return;
     if (!draft.canCommit) return;
     state = draft.copyWith(step: CardImportStep.importing, isBusy: true);
-    await runHeld(
-      () async {
-        final result = await ref.read(commitImportUseCaseProvider)(
-          deckId: deckId,
-          preview: preview,
-          includeDuplicates: draft.isIncludingDuplicates,
-        );
-        if (!ref.mounted) return;
-        state = switch (result) {
-          Ok(:final value) => CardImportDone(value),
-          Rejected(reason: TransferRejection.targetRejected) =>
-            CardImportFailed(draft: draft, isTargetRejected: true),
-          Rejected(:final reason) => draft.copyWith(problem: reason),
-        };
-      },
+    final result = await runHeld(
+      () => ref.read(commitImportUseCaseProvider)(
+        deckId: deckId,
+        preview: preview,
+        includeDuplicates: draft.isIncludingDuplicates,
+      ),
       // A Failure or a bug never leaves the wizard on importing, where Back
       // and Close wait (step 5).
       onFailed: (_) {
-        if (!ref.mounted) return;
-        state = CardImportFailed(draft: draft, isTargetRejected: false);
+        if (ref.mounted) {
+          state = CardImportFailed(draft: draft, isTargetRejected: false);
+        }
       },
     );
+    if (result == null || !ref.mounted) return;
+    state = switch (result) {
+      Ok(:final value) => CardImportDone(value),
+      Rejected(reason: TransferRejection.targetRejected) => CardImportFailed(
+        draft: draft,
+        isTargetRejected: true,
+      ),
+      Rejected(:final reason) => draft.copyWith(problem: reason),
+    };
   }
 
   /// "Try again" after a failed write: the same preview, committed again

@@ -47,26 +47,24 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
   Future<void> _move(DeckMoveTarget target) async {
     if (_isMoving) return;
     setState(() => _isMoving = true);
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(deckActionsControllerProvider.notifier)
-            .moveDeck(deckId: widget.deck.id, newParentId: target.id);
-        if (!mounted) return;
-        final l10n = context.l10n;
-        showMxSnackbar(
-          context,
-          message: switch (outcome) {
-            Ok() => l10n.deckMovedToast(target.name),
-            Rejected(:final reason) => l10n.deckRejection(reason),
-          },
-        );
-        Navigator.of(context).pop();
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(deckActionsControllerProvider.notifier)
+          .moveDeck(deckId: widget.deck.id, newParentId: target.id),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isMoving = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop();
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: switch (outcome) {
+        Ok() => l10n.deckMovedToast(target.name),
+        Rejected(:final reason) => l10n.deckRejection(reason),
       },
     );
   }

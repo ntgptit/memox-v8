@@ -67,34 +67,29 @@ class _CardDeleteDialogWidgetState
     // is drawn.
     if (_isDeleting) return;
     setState(() => _isDeleting = true);
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(cardActionsControllerProvider.notifier)
-            .deleteCards(cardIds: widget.cardIds);
-        if (!mounted) return;
-        switch (outcome) {
-          case Ok(value: final batchIds):
-            showCardsTrashedSnackbar(
-              context,
-              batchIds: batchIds,
-              front: widget.preview?.front,
-              onOpenTrash: widget.onOpenTrash,
-            );
-          case Rejected(:final reason):
-            showMxSnackbar(
-              context,
-              message: context.l10n.cardRejection(reason),
-            );
-        }
-        Navigator.of(context).pop(outcome is Ok);
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(cardActionsControllerProvider.notifier)
+          .deleteCards(cardIds: widget.cardIds),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isDeleting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop(outcome is Ok);
+    switch (outcome) {
+      case Ok(value: final batchIds):
+        showCardsTrashedSnackbar(
+          context,
+          batchIds: batchIds,
+          front: widget.preview?.front,
+          onOpenTrash: widget.onOpenTrash,
+        );
+      case Rejected(:final reason):
+        showMxSnackbar(context, message: context.l10n.cardRejection(reason));
+    }
   }
 
   @override

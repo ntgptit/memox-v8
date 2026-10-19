@@ -43,39 +43,37 @@ class StudyEntryController extends _$StudyEntryController {
       status: StudyStartStatus.starting,
       lastStart: start,
     );
-    String? opened;
-    await runHeld(
-      () async {
-        final outcome = await _run(start);
-        if (!ref.mounted) return;
-        switch (outcome) {
-          case Ok(:final value):
-            state = const StudyStartState();
-            opened = value;
-          case Rejected(:final reason):
-            state = _changedMeanwhile.contains(reason)
-                ? StudyStartState(
-                    status: StudyStartStatus.refused,
-                    refusal: reason,
-                    lastStart: start,
-                  )
-                : StudyStartState(
-                    status: StudyStartStatus.failed,
-                    lastStart: start,
-                  );
-        }
-      },
+    final outcome = await runHeld(
+      () => _run(start),
       // A bug takes the Failure's way out: Try again, never starting for
       // good.
       onFailed: (_) {
-        if (!ref.mounted) return;
-        state = StudyStartState(
-          status: StudyStartStatus.failed,
-          lastStart: start,
-        );
+        if (ref.mounted) {
+          state = StudyStartState(
+            status: StudyStartStatus.failed,
+            lastStart: start,
+          );
+        }
       },
     );
-    return opened;
+    if (outcome == null || !ref.mounted) return null;
+    switch (outcome) {
+      case Ok(:final value):
+        state = const StudyStartState();
+        return value;
+      case Rejected(:final reason):
+        state = _changedMeanwhile.contains(reason)
+            ? StudyStartState(
+                status: StudyStartStatus.refused,
+                refusal: reason,
+                lastStart: start,
+              )
+            : StudyStartState(
+                status: StudyStartStatus.failed,
+                lastStart: start,
+              );
+        return null;
+    }
   }
 
   /// Try again: the last start, as it was asked.

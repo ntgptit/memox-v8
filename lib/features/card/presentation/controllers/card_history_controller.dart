@@ -66,19 +66,9 @@ class CardHistoryController extends _$CardHistoryController {
     final cursor = view?.next;
     if (view == null || cursor == null || view.isLoadingMore) return;
     state = AsyncData(view.copyWith(isLoadingMore: true, hasMoreFailed: false));
-    await runHeld(
-      () async {
-        final page = await _page(cursor);
-        if (!ref.mounted) return;
-        final current = state.value;
-        if (current == null || !identical(current.next, cursor)) return;
-        state = AsyncData(
-          CardHistoryView(
-            entries: [...current.entries, ...?page?.entries],
-            next: page?.next,
-          ),
-        );
-      },
+    // A record, so a page that came back empty is not read as failed.
+    final loaded = await runHeld(
+      () async => (page: await _page(cursor)),
       // A bug takes the Failure's way out: the retry row, never a spinner
       // for good.
       onFailed: (_) {
@@ -89,6 +79,16 @@ class CardHistoryController extends _$CardHistoryController {
           current.copyWith(isLoadingMore: false, hasMoreFailed: true),
         );
       },
+    );
+    if (loaded == null || !ref.mounted) return;
+    final current = state.value;
+    if (current == null || !identical(current.next, cursor)) return;
+    final page = loaded.page;
+    state = AsyncData(
+      CardHistoryView(
+        entries: [...current.entries, ...?page?.entries],
+        next: page?.next,
+      ),
     );
   }
 }

@@ -15,17 +15,13 @@ class SqlLogController extends _$SqlLogController {
   Future<void> set({required bool enabled}) async {
     if (state.isSaving) return;
     state = const SqlLogState(isSaving: true);
+    var hasFailed = false;
     await runHeld(
-      () async {
-        await ref.read(setLogSqlStatementsUseCaseProvider)(enabled: enabled);
-        if (!ref.mounted) return;
-        state = const SqlLogState();
-      },
+      () => ref.read(setLogSqlStatementsUseCaseProvider)(enabled: enabled),
       // A bug takes the Failure's way out: the switch is reported once.
-      onFailed: (_) {
-        if (ref.mounted) state = const SqlLogState(hasFailure: true);
-      },
+      onFailed: (_) => hasFailed = true,
     );
+    if (ref.mounted) state = SqlLogState(hasFailure: hasFailed);
   }
 
   void dismissFailure() => state = const SqlLogState();

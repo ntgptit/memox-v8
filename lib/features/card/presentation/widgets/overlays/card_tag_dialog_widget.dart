@@ -60,40 +60,38 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       _isSubmitting = true;
       _rejection = null;
     });
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(cardActionsControllerProvider.notifier)
-            .addTag(cardIds: widget.cardIds, tagName: _name.text);
-        if (!mounted) return;
-        final l10n = context.l10n;
-        switch (outcome) {
-          case Ok():
-            showMxSnackbar(
-              context,
-              message: l10n.cardTaggedToast(
-                widget.cardIds.length,
-                _name.text.trim(),
-              ),
-            );
-            Navigator.of(context).pop(true);
-          case Rejected(:final reason) when _nameReasons.contains(reason):
-            setState(() {
-              _rejection = reason;
-              _isSubmitting = false;
-            });
-          // IT-ORG-014: nothing was written; the selection stays.
-          case Rejected(:final reason):
-            showMxSnackbar(context, message: l10n.tagRejection(reason));
-            Navigator.of(context).pop(false);
-        }
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(cardActionsControllerProvider.notifier)
+          .addTag(cardIds: widget.cardIds, tagName: _name.text),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isSubmitting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+    if (outcome == null || !mounted) return;
+    final l10n = context.l10n;
+    switch (outcome) {
+      case Ok():
+        Navigator.of(context).pop(true);
+        showMxSnackbar(
+          context,
+          message: l10n.cardTaggedToast(
+            widget.cardIds.length,
+            _name.text.trim(),
+          ),
+        );
+      case Rejected(:final reason) when _nameReasons.contains(reason):
+        setState(() {
+          _rejection = reason;
+          _isSubmitting = false;
+        });
+      // IT-ORG-014: nothing was written; the selection stays.
+      case Rejected(:final reason):
+        Navigator.of(context).pop(false);
+        showMxSnackbar(context, message: l10n.tagRejection(reason));
+    }
   }
 
   @override

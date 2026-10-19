@@ -83,23 +83,10 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
       _switchingTo = type;
       _switchFailedFrom = null;
     });
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(deckActionsControllerProvider.notifier)
-            .changeScheduler(rootDeckId: view.deck.id, schedulerType: type);
-        if (!mounted) return;
-        final l10n = context.l10n;
-        showMxSnackbar(
-          context,
-          message: switch (outcome) {
-            Ok() => l10n.algorithmSwitchedToast(l10n.schedulerType(type)),
-            // Ruling D-L1: a tree that just locked, or a deck gone meanwhile.
-            Rejected(:final reason) => l10n.srsRejection(reason),
-          },
-        );
-        setState(() => _switchingTo = null);
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(deckActionsControllerProvider.notifier)
+          .changeScheduler(rootDeckId: view.deck.id, schedulerType: type),
       // A bug takes the Failure's way out: the failed banner with Retry.
       onFailed: (_) {
         if (!mounted) return;
@@ -108,6 +95,17 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
           _switchFailedFrom = view.schedulerType;
           _retryTarget = type;
         });
+      },
+    );
+    if (outcome == null || !mounted) return;
+    setState(() => _switchingTo = null);
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: switch (outcome) {
+        Ok() => l10n.algorithmSwitchedToast(l10n.schedulerType(type)),
+        // Ruling D-L1: a tree that just locked, or a deck gone meanwhile.
+        Rejected(:final reason) => l10n.srsRejection(reason),
       },
     );
   }

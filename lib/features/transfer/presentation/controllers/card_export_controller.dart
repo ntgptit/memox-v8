@@ -47,15 +47,14 @@ class CardExportController extends _$CardExportController {
     final artifact = await _build(format);
     if (artifact == null) return;
 
-    Outcome<ExportShareResult, TransferRejection>? answer;
-    await runHeld(
-      () async => answer = await ref.read(shareExportUseCaseProvider)(artifact),
-      // A bug from the share sheet reads as a failed share.
-      onFailed: (_) => answer = const Rejected(TransferRejection.shareFailed),
-    );
+    final shared =
+        await runHeld(
+          () => ref.read(shareExportUseCaseProvider)(artifact),
+          onFailed: (_) {},
+        ) ??
+        // A Failure or a bug from the share sheet reads as a failed share.
+        const Rejected(TransferRejection.shareFailed);
     if (!ref.mounted) return;
-    final shared = answer;
-    if (shared == null) return;
     state = switch (shared) {
       Ok(value: ExportShareResult.shared) => CardExportState(
         format: format,
@@ -77,9 +76,8 @@ class CardExportController extends _$CardExportController {
   /// Steps 4–5, E3–E6: the file, or null once the state says why not or
   /// the sheet has closed meanwhile.
   Future<ExportArtifact?> _build(TransferFormat format) async {
-    Outcome<ExportArtifact, TransferRejection>? outcome;
-    await runHeld(
-      () async => outcome = await ref.read(buildExportUseCaseProvider)(
+    final built = await runHeld(
+      () => ref.read(buildExportUseCaseProvider)(
         deckId: scope.deckId,
         format: format,
         today: ref.read(dayClockProvider).now(),
@@ -89,7 +87,6 @@ class CardExportController extends _$CardExportController {
         if (!_isGone) _fail(format, CardExportProblem.prepareFailed);
       },
     );
-    final built = outcome;
     if (built == null || _isGone) return null;
     switch (built) {
       case Ok(:final value):

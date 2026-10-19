@@ -61,35 +61,30 @@ class _DeckDeleteDialogWidgetState
     // is drawn.
     if (_isDeleting) return;
     setState(() => _isDeleting = true);
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(deckActionsControllerProvider.notifier)
-            .deleteDeck(deckId: widget.deck.id);
-        if (!mounted) return;
-        switch (outcome) {
-          case Ok(value: final batchId):
-            showDeckTrashedSnackbar(
-              context,
-              deckName: widget.deck.name,
-              summary: summary,
-              batchId: batchId,
-              onOpenTrash: widget.onOpenTrash,
-            );
-          case Rejected(:final reason):
-            showMxSnackbar(
-              context,
-              message: context.l10n.deckRejection(reason),
-            );
-        }
-        Navigator.of(context).pop(outcome is Ok);
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(deckActionsControllerProvider.notifier)
+          .deleteDeck(deckId: widget.deck.id),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isDeleting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop(outcome is Ok);
+    switch (outcome) {
+      case Ok(value: final batchId):
+        showDeckTrashedSnackbar(
+          context,
+          deckName: widget.deck.name,
+          summary: summary,
+          batchId: batchId,
+          onOpenTrash: widget.onOpenTrash,
+        );
+      case Rejected(:final reason):
+        showMxSnackbar(context, message: context.l10n.deckRejection(reason));
+    }
   }
 
   @override

@@ -79,29 +79,27 @@ class _CreateRootDeckDialogWidgetState
       _isSubmitting = true;
       _rejection = null;
     });
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(deckActionsControllerProvider.notifier)
-            .createRootDeck(name: _name.text, schedulerType: scheduler);
-        if (!mounted) return;
-        switch (outcome) {
-          case Ok(:final value):
-            Navigator.of(context).pop(value);
-          // Ruling L3: both reasons this use case returns are about the name.
-          case Rejected(:final reason):
-            setState(() {
-              _rejection = reason;
-              _isSubmitting = false;
-            });
-        }
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(deckActionsControllerProvider.notifier)
+          .createRootDeck(name: _name.text, schedulerType: scheduler),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isSubmitting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+    if (outcome == null || !mounted) return;
+    switch (outcome) {
+      case Ok(:final value):
+        Navigator.of(context).pop(value);
+      // Ruling L3: both reasons this use case returns are about the name.
+      case Rejected(:final reason):
+        setState(() {
+          _rejection = reason;
+          _isSubmitting = false;
+        });
+    }
   }
 
   @override

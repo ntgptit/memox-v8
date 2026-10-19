@@ -26,28 +26,26 @@ class StarterAddController extends _$StarterAddController {
   }) async {
     if (state.isAdding) return null;
     state = const StarterAddState(isAdding: true);
-    StarterAddResult? result;
-    await runHeld(
-      () async {
-        final outcome = await ref.read(addStarterDeckUseCaseProvider)(
-          templateId: templateId,
-          schedulerType: schedulerType,
-          allowSecondCopy: allowSecondCopy,
-        );
-        result = switch (outcome) {
-          Ok(:final value) => StarterAdded(value),
-          Rejected(reason: StarterRejection.alreadyInLibrary) =>
-            const StarterAlreadyPresent(),
-          Rejected(reason: StarterRejection.templateNotFound) => null,
-        };
-        if (ref.mounted) state = StarterAddState(hasFailed: result == null);
-      },
+    final outcome = await runHeld(
+      () => ref.read(addStarterDeckUseCaseProvider)(
+        templateId: templateId,
+        schedulerType: schedulerType,
+        allowSecondCopy: allowSecondCopy,
+      ),
       // A bug takes the Failure's way out: the sheet shows the failed banner
       // and is never held for good.
       onFailed: (_) {
         if (ref.mounted) state = const StarterAddState(hasFailed: true);
       },
     );
+    if (outcome == null) return null;
+    final StarterAddResult? result = switch (outcome) {
+      Ok(:final value) => StarterAdded(value),
+      Rejected(reason: StarterRejection.alreadyInLibrary) =>
+        const StarterAlreadyPresent(),
+      Rejected(reason: StarterRejection.templateNotFound) => null,
+    };
+    if (ref.mounted) state = StarterAddState(hasFailed: result == null);
     return result;
   }
 }

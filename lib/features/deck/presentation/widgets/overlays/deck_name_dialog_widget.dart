@@ -94,35 +94,30 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
       _isSubmitting = true;
       _rejection = null;
     });
-    await runHeld(
-      () async {
-        final outcome = await widget.submit(
-          ref.read(deckActionsControllerProvider.notifier),
-          _name.text,
-        );
-        if (!mounted) return;
-        switch (outcome) {
-          case Ok():
-            Navigator.of(context).pop();
-          case Rejected(:final reason) when _nameReasons.contains(reason):
-            setState(() {
-              _rejection = reason;
-              _isSubmitting = false;
-            });
-          case Rejected(:final reason):
-            showMxSnackbar(
-              context,
-              message: context.l10n.deckRejection(reason),
-            );
-            Navigator.of(context).pop();
-        }
-      },
+    final outcome = await runHeld(
+      () => widget.submit(
+        ref.read(deckActionsControllerProvider.notifier),
+        _name.text,
+      ),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isSubmitting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
     );
+    if (outcome == null || !mounted) return;
+    switch (outcome) {
+      case Ok():
+        Navigator.of(context).pop();
+      case Rejected(:final reason) when _nameReasons.contains(reason):
+        setState(() {
+          _rejection = reason;
+          _isSubmitting = false;
+        });
+      case Rejected(:final reason):
+        Navigator.of(context).pop();
+        showMxSnackbar(context, message: context.l10n.deckRejection(reason));
+    }
   }
 
   @override

@@ -6,29 +6,29 @@ import '../../support/held_bug_capture.dart';
 
 // A held flow always gets its way out back: a Failure and a bug both reach
 // onFailed, the bug reported first (closing acceptance 2026-10-18 LIB-6).
+// The write's result comes back to the caller, which does what follows a
+// landed write outside the held run (REG-HELD-SCOPE).
 
 void main() {
-  test('a write that lands calls nothing', () async {
+  test('a write that lands returns its result and calls nothing', () async {
     var calls = 0;
-    await runHeld(() async {}, onFailed: (_) => calls++);
+    final result = await runHeld(() async => 7, onFailed: (_) => calls++);
+    expect(result, 7);
     expect(calls, 0);
   });
 
-  test('a Failure reaches onFailed as itself and is not reported', () async {
+  test('a Failure reaches onFailed as itself, is not reported, and returns '
+      'null', () async {
     final reported = captureReportedBugs();
-    Failure? seen;
-    var calls = 0;
+    final seen = <Failure?>[];
 
-    await runHeld(
+    final result = await runHeld<int>(
       () async => throw const DatabaseLockedFailure(cause: 'locked'),
-      onFailed: (failure) {
-        calls++;
-        seen = failure;
-      },
+      onFailed: seen.add,
     );
 
-    expect(calls, 1);
-    expect(seen, isA<DatabaseLockedFailure>());
+    expect(result, isNull);
+    expect(seen.single, isA<DatabaseLockedFailure>());
     expect(reported, isEmpty);
   });
 
@@ -36,9 +36,13 @@ void main() {
     final reported = captureReportedBugs();
     final seen = <Failure?>[];
 
-    await runHeld(() async => throw StateError('a bug'), onFailed: seen.add);
+    final result = await runHeld<int>(
+      () async => throw StateError('a bug'),
+      onFailed: seen.add,
+    );
 
+    expect(result, isNull);
     expect(seen, [null]);
-    expect(reported.single.exception, isA<StateError>());
+    expectOneBugReported(reported);
   });
 }

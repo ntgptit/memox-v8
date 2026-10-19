@@ -64,33 +64,33 @@ class _TrashRestoreSheetWidgetState
     if (_isRestoring) return;
     setState(() => _isRestoring = true);
     final trash = ref.read(trashControllerProvider.notifier);
-    await runHeld(
-      () async {
-        final refusal = await _refusalOf(trash, target);
-        if (!mounted) return;
-        final l10n = context.l10n;
-        showMxSnackbar(
-          context,
-          message:
-              refusal ??
-              switch (widget.entries) {
-                [final entry] => l10n.trashRestoredOne(
-                  trashEntryName(entry),
-                  target.name,
-                ),
-                final entries => l10n.trashRestoredMany(
-                  entries.length,
-                  target.name,
-                ),
-              },
-        );
-        Navigator.of(context).pop(refusal == null);
-      },
+    // A record, so a restore that landed (no refusal) is not read as failed.
+    final restored = await runHeld(
+      () async => (refusal: await _refusalOf(trash, target)),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isRestoring = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
+    );
+    if (restored == null || !mounted) return;
+    final refusal = restored.refusal;
+    Navigator.of(context).pop(refusal == null);
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message:
+          refusal ??
+          switch (widget.entries) {
+            [final entry] => l10n.trashRestoredOne(
+              trashEntryName(entry),
+              target.name,
+            ),
+            final entries => l10n.trashRestoredMany(
+              entries.length,
+              target.name,
+            ),
+          },
     );
   }
 

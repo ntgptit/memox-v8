@@ -48,29 +48,26 @@ class _TrashPurgeDialogWidgetState
     // is drawn.
     if (_isPurging) return;
     setState(() => _isPurging = true);
-    await runHeld(
-      () async {
-        final report = await ref.read(trashControllerProvider.notifier).purge({
-          for (final entry in widget.entries) entry.batchId,
-        });
-        if (!mounted) return;
-        final purged = report.purged.length;
-        if (purged > 0) {
-          final l10n = context.l10n;
-          showMxSnackbar(
-            context,
-            message: _isCards
-                ? l10n.trashPurgedCards(purged)
-                : l10n.trashPurgedDecks(purged),
-          );
-        }
-        Navigator.of(context).pop(true);
-      },
+    final report = await runHeld(
+      () => ref.read(trashControllerProvider.notifier).purge({
+        for (final entry in widget.entries) entry.batchId,
+      }),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isPurging = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
       },
+    );
+    if (report == null || !mounted) return;
+    Navigator.of(context).pop(true);
+    final purged = report.purged.length;
+    if (purged == 0) return;
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: _isCards
+          ? l10n.trashPurgedCards(purged)
+          : l10n.trashPurgedDecks(purged),
     );
   }
 

@@ -59,32 +59,31 @@ class StudySessionController extends _$StudySessionController {
       shouldHoldFeedback: shouldHoldFeedback,
       cardId: cardId ?? item.cardId,
     );
-    await runHeld(
-      () async {
-        final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
-          sessionId: sessionId,
-          cardId: pending.cardId,
-          answer: answer,
-        );
-        if (!ref.mounted) return;
-        state = switch (outcome) {
-          Ok(:final value) when shouldHoldFeedback => StudyTurnState(
-            held: HeldTurn(item, value),
-          ),
-          // A refusal (the card moved on, the session closed) is the
-          // stream's to show; nothing is held.
-          _ => const StudyTurnState(),
-        };
-      },
+    final outcome = await runHeld(
+      () => ref.read(answerStudyTurnUseCaseProvider)(
+        sessionId: sessionId,
+        cardId: pending.cardId,
+        answer: answer,
+      ),
       // A bug takes the way out of any other failure: the stream shows
       // the session, nothing is held.
       onFailed: (failure) {
-        if (!ref.mounted) return;
-        state = failure is DatabaseLockedFailure
-            ? StudyTurnState(unsaved: pending)
-            : const StudyTurnState();
+        if (ref.mounted) {
+          state = failure is DatabaseLockedFailure
+              ? StudyTurnState(unsaved: pending)
+              : const StudyTurnState();
+        }
       },
     );
+    if (outcome == null || !ref.mounted) return;
+    state = switch (outcome) {
+      Ok(:final value) when shouldHoldFeedback => StudyTurnState(
+        held: HeldTurn(item, value),
+      ),
+      // A refusal (the card moved on, the session closed) is the stream's to
+      // show; nothing is held.
+      _ => const StudyTurnState(),
+    };
   }
 
   /// The answer a busy database refused, once more (E2).

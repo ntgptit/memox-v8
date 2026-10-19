@@ -221,14 +221,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       _hasFailed = false;
     });
     final actions = ref.read(cardActionsControllerProvider.notifier);
-    await runHeld(
-      () async {
-        final Outcome<Object?, CardRejection> outcome = _isCreating
-            ? await actions.createCard(deckId: widget.deckId, draft: draft)
-            : await _edit(draft);
-        if (!mounted) return;
-        _afterSave(outcome, draft);
-      },
+    final outcome = await runHeld<Outcome<Object?, CardRejection>>(
+      () => _isCreating
+          ? actions.createCard(deckId: widget.deckId, draft: draft)
+          : _edit(draft),
       // Ruling P4a-L3: said in the form, with the typed content kept. A bug
       // takes the same way out.
       onFailed: (_) {
@@ -239,6 +235,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         });
       },
     );
+    if (outcome == null || !mounted) return;
+    _afterSave(outcome, draft);
   }
 
   /// The content, then the flag only when the person toggled it here: the

@@ -58,30 +58,28 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   Future<void> _reset(DeckView view, ResetLearningSummary summary) async {
     setState(() => _isResetting = true);
     final cycle = _nextCycle(view);
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(deckActionsControllerProvider.notifier)
-            .resetLearning(
-              rootDeckId: view.deck.id,
-              schedulerType: _choice == view.schedulerType ? null : _choice,
-            );
-        if (!mounted) return;
-        final l10n = context.l10n;
-        showMxSnackbar(
-          context,
-          message: switch (outcome) {
-            Ok() => l10n.resetDoneToast(cycle, summary.cardCount),
-            Rejected(:final reason) => l10n.srsRejection(reason),
-          },
-        );
-        Navigator.of(context).pop();
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(deckActionsControllerProvider.notifier)
+          .resetLearning(
+            rootDeckId: view.deck.id,
+            schedulerType: _choice == view.schedulerType ? null : _choice,
+          ),
       onFailed: (failure) {
         if (!mounted) return;
         // E1: rolled back; the dialog stays for another try.
         setState(() => _isResetting = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop();
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: switch (outcome) {
+        Ok() => l10n.resetDoneToast(cycle, summary.cardCount),
+        Rejected(:final reason) => l10n.srsRejection(reason),
       },
     );
   }

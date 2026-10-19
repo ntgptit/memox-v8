@@ -85,30 +85,28 @@ class StudyOptionsController extends _$StudyOptionsController {
     if (stored == null || form == null || state.isSaving) return;
     if (!form.canSave) return;
     state = state.withSave(StudyOptionsSave.saving);
-    await runHeld(
-      () async {
-        final outcome = form.isUsingAppDefaults
-            ? await ref.read(useAppDefaultsUseCaseProvider)(
-                rootDeckId: stored.rootDeckId,
-              )
-            : await ref.read(saveRootStudyOptionsUseCaseProvider)(
-                rootDeckId: stored.rootDeckId,
-                options: form.options,
-              );
-        if (!ref.mounted) return;
-        state = switch (outcome) {
-          Ok() => StudyOptionsState(timesSaved: state.timesSaved + 1),
-          // The deck went meanwhile: the stream shows it gone.
-          Rejected(reason: SettingsRejection.deckNotFound) => state.withSave(
-            StudyOptionsSave.idle,
-          ),
-          Rejected() => state.withSave(StudyOptionsSave.failed),
-        };
-      },
+    final outcome = await runHeld(
+      () => form.isUsingAppDefaults
+          ? ref.read(useAppDefaultsUseCaseProvider)(
+              rootDeckId: stored.rootDeckId,
+            )
+          : ref.read(saveRootStudyOptionsUseCaseProvider)(
+              rootDeckId: stored.rootDeckId,
+              options: form.options,
+            ),
       // A bug takes the Failure's way out: the draft stays, with Retry save.
       onFailed: (_) {
         if (ref.mounted) state = state.withSave(StudyOptionsSave.failed);
       },
     );
+    if (outcome == null || !ref.mounted) return;
+    state = switch (outcome) {
+      Ok() => StudyOptionsState(timesSaved: state.timesSaved + 1),
+      // The deck went meanwhile: the stream shows it gone.
+      Rejected(reason: SettingsRejection.deckNotFound) => state.withSave(
+        StudyOptionsSave.idle,
+      ),
+      Rejected() => state.withSave(StudyOptionsSave.failed),
+    };
   }
 }

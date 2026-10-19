@@ -55,27 +55,24 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
   Future<void> _move(CardMoveTarget target) async {
     if (_isMoving) return;
     setState(() => _isMoving = true);
-    await runHeld(
-      () async {
-        final outcome = await ref
-            .read(cardActionsControllerProvider.notifier)
-            .moveCards(cardIds: widget.cardIds, targetDeckId: target.id);
-        if (!mounted) return;
-        final l10n = context.l10n;
-        final hasMoved = outcome is Ok;
-        showMxSnackbar(
-          context,
-          message: switch (outcome) {
-            Ok() => l10n.cardMovedToast(widget.cardIds.length, target.name),
-            Rejected(:final reason) => l10n.cardRejection(reason),
-          },
-        );
-        Navigator.of(context).pop(hasMoved);
-      },
+    final outcome = await runHeld(
+      () => ref
+          .read(cardActionsControllerProvider.notifier)
+          .moveCards(cardIds: widget.cardIds, targetDeckId: target.id),
       onFailed: (failure) {
         if (!mounted) return;
         setState(() => _isMoving = false);
         showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop(outcome is Ok);
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: switch (outcome) {
+        Ok() => l10n.cardMovedToast(widget.cardIds.length, target.name),
+        Rejected(:final reason) => l10n.cardRejection(reason),
       },
     );
   }

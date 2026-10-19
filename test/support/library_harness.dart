@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
+import 'package:material_ui/material_ui.dart' as mu;
 import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -103,6 +105,14 @@ ProviderContainer libraryContainer(
   return container;
 }
 
+/// The theme over every route, as [mxThemeBuilder] puts it, without the
+/// toast host: a toast shown then throws, as a bug after a write would.
+TransitionBuilder _themeWithoutToasts(FThemeData theme) =>
+    (context, child) => FTheme(
+      data: theme,
+      child: mu.Theme(data: theme.toApproximateMaterialTheme(), child: child!),
+    );
+
 Widget _app(
   LibraryEnv env,
   Widget screen, {
@@ -110,6 +120,7 @@ Widget _app(
   required double textScale,
   required Locale locale,
   required List<Override> overrides,
+  bool hasToastHost = true,
 }) => ProviderScope(
   overrides: [...libraryBackend(env), ...overrides],
   retry: noProviderRetry,
@@ -121,20 +132,24 @@ Widget _app(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     // Above the navigator, so sheets and dialogs scale with the screen.
-    builder: (context, child) => mxThemeBuilder(themeFor(brightness))(
-      context,
-      MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(textScale)),
-        child: child!,
-      ),
-    ),
+    builder: (context, child) =>
+        (hasToastHost ? mxThemeBuilder : _themeWithoutToasts)(
+          themeFor(brightness),
+        )(
+          context,
+          MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(textScale)),
+            child: child!,
+          ),
+        ),
     home: screen,
   ),
 );
 
 /// Pumps [screen] on a 360×800 phone over the real backend and lets its
-/// first streams emit.
+/// first streams emit. Without [hasToastHost], every toast throws: what
+/// follows a landed write meets a bug (REG-HELD-SCOPE).
 Future<void> pumpLibraryScreen(
   WidgetTester tester,
   LibraryEnv env,
@@ -143,6 +158,7 @@ Future<void> pumpLibraryScreen(
   double textScale = 1,
   Locale locale = const Locale('en'),
   List<Override> overrides = const [],
+  bool hasToastHost = true,
 }) async {
   tester.view.physicalSize = const Size(360, 800);
   tester.view.devicePixelRatio = 1;
@@ -155,6 +171,7 @@ Future<void> pumpLibraryScreen(
       textScale: textScale,
       locale: locale,
       overrides: overrides,
+      hasToastHost: hasToastHost,
     ),
   );
   await tester.pump();
