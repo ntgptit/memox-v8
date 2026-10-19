@@ -599,4 +599,6 @@ Every `runHeld` call (31) and every async submit in `lib/features` was audited; 
 | Real-stack auth (`tools/supabase/run_auth_it.sh`) | BLOCKED here, pending the owner's machine | Docker images unreachable. Required: the branch changes `lib/features/account/` (LIB-6, REG-DOUBLE-SUBMIT). |
 | TalkBack spot check on a device | NOT RUN, pending the owner | Host semantics tests only (§9). |
 
+After master's test deduplication (PR #312) was merged into the branch (`18c5e4d0`, one test conflict resolved by keeping both sides), the full gate passes again on the merged tree: 4887 host tests (the merge folds duplicates; none of this branch's tests was dropped) and 615/615 goldens.
+
 **Overall: BLOCKED (environment) until the owner's device run.** It becomes CONDITIONAL once both APK builds succeed, and ACCEPTED once the device E2E and `run_auth_it.sh` pass as well, with REG-CA-6 standing as the one accepted limitation. The owner's results go into this table, gate by gate.
