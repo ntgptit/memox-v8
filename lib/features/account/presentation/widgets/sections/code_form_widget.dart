@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/code_controller.dart';
 import 'package:memox/features/account/presentation/states/code_state.dart';
@@ -116,7 +117,10 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
                   color: context.colors.mutedForeground,
                 ),
               ),
-              Text(widget.email, style: context.texts.itemTitle),
+              Text(
+                wrappableEmail(widget.email),
+                style: context.texts.itemTitle,
+              ),
             ],
           ),
         ),

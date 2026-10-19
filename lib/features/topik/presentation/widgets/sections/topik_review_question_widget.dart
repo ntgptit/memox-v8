@@ -5,6 +5,7 @@ import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_choice_mark.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -95,10 +96,11 @@ class TopikReviewQuestionWidget extends StatelessWidget {
     final isRight = option.idx == _right;
     final isWrongChoice = !isRight && option.idx == answer.selectedIdx;
     final text = option.textKo ?? l10n.topikPicture;
+    final tone = isRight
+        ? MxChoiceTone.right
+        : (isWrongChoice ? MxChoiceTone.wrong : MxChoiceTone.idle);
     return MxChoiceTile(
-      tone: isRight
-          ? MxChoiceTone.right
-          : (isWrongChoice ? MxChoiceTone.wrong : MxChoiceTone.idle),
+      tone: tone,
       isSelected: option.idx == answer.selectedIdx,
       semanticsLabel: isRight || isWrongChoice
           ? l10n.topikOptionReviewLabel(
@@ -115,9 +117,19 @@ class TopikReviewQuestionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: dimens.space8,
         children: [
-          Text(
-            [topikCircled(option.idx), ?option.textKo].join(' '),
-            style: context.texts.content.copyWith(color: foreground),
+          // The mark is a second channel besides the tone's colour (audit
+          // 2026-10-19, G3).
+          Row(
+            spacing: dimens.space8,
+            children: [
+              Expanded(
+                child: Text(
+                  [topikCircled(option.idx), ?option.textKo].join(' '),
+                  style: context.texts.content.copyWith(color: foreground),
+                ),
+              ),
+              MxChoiceMark(tone: tone, color: foreground),
+            ],
           ),
           if (option.image case final image?)
             Image.asset(image, fit: BoxFit.contain, excludeFromSemantics: true),

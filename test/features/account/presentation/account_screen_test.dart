@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
@@ -66,7 +67,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    expect(find.text('a@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('a@example.com')), findsOneWidget);
     expect(find.text(_en.accountMethodEmail), findsOneWidget);
     for (final label in [
       _en.accountSwitch,
@@ -96,7 +97,7 @@ void main() {
       ],
     );
 
-    expect(find.text('a@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('a@example.com')), findsOneWidget);
     expect(find.text(_en.accountNeedsConnection), findsOneWidget);
     expect(_row(tester, _en.accountSignOut).isEnabled, isFalse);
   });

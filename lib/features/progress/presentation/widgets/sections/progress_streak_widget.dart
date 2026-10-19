@@ -125,43 +125,37 @@ class _StreakTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The kit's tile: the recessed ground at a 12 inset, tighter than a card,
-    // so two fit side by side on a phone.
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colors.muted,
-        borderRadius: context.radii.md,
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(context.dimens.space12),
-        child: Row(
-          spacing: context.dimens.space8,
-          children: [
-            MxIconTile(icon: icon, seed: tint, tone: tone),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label.toUpperCase(),
-                    semanticsLabel: label,
-                    style: context.texts.meta.copyWith(
-                      color: context.colors.mutedForeground,
+    // One figure on the card, as Today's: no inner tile and no eyebrow over
+    // a single value (audit 2026-10-19, G6). TalkBack still hears what the
+    // figure counts.
+    return MergeSemantics(
+      child: Row(
+        spacing: context.dimens.space12,
+        children: [
+          MxIconTile(icon: icon, seed: tint, tone: tone),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  label: label,
+                  child: Text(
+                    value,
+                    style: context.texts.figure.copyWith(
+                      color: context.colors.foreground,
                     ),
                   ),
-                  SizedBox(height: context.dimens.space4),
-                  Text(value, style: context.texts.itemTitle),
-                  Text(
-                    sub,
-                    style: context.texts.meta.copyWith(
-                      color: context.colors.mutedForeground,
-                    ),
+                ),
+                Text(
+                  sub,
+                  style: context.texts.meta.copyWith(
+                    color: context.colors.mutedForeground,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

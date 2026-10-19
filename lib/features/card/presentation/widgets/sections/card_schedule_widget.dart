@@ -65,19 +65,7 @@ class CardScheduleWidget extends StatelessWidget {
                 ],
               ),
             ],
-            for (var i = 0; i < facts.length; i += 2)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: context.dimens.space16,
-                children: [
-                  Expanded(child: facts[i]),
-                  Expanded(
-                    child: i + 1 < facts.length
-                        ? facts[i + 1]
-                        : const SizedBox.shrink(),
-                  ),
-                ],
-              ),
+            ..._rows(context, facts),
             // Its value is the longest; a row of its own keeps it on one
             // line (critique 2026-09-30 part 3d-2, E9).
             _schedulerFact(context),
@@ -85,6 +73,43 @@ class CardScheduleWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// A date takes a row of its own, so its year never breaks off at
+  /// 360 dp; the counts pair up (audit 2026-10-19, G5).
+  List<Widget> _rows(BuildContext context, List<_Fact> facts) {
+    final rows = <Widget>[];
+    final pending = <_Fact>[];
+    void pair() {
+      if (pending.isEmpty) return;
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: context.dimens.space16,
+          children: [
+            Expanded(child: pending.first),
+            Expanded(
+              child: pending.length > 1
+                  ? pending.last
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      );
+      pending.clear();
+    }
+
+    for (final fact in facts) {
+      if (fact.isWide) {
+        pair();
+        rows.add(fact);
+        continue;
+      }
+      pending.add(fact);
+      if (pending.length == 2) pair();
+    }
+    pair();
+    return rows;
   }
 
   Widget _schedulerFact(BuildContext context) {
@@ -101,7 +126,7 @@ class CardScheduleWidget extends StatelessWidget {
     );
   }
 
-  List<Widget> _facts(BuildContext context) {
+  List<_Fact> _facts(BuildContext context) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final schedule = detail.schedule;
@@ -117,11 +142,13 @@ class CardScheduleWidget extends StatelessWidget {
         icon: AppIcons.clock,
         label: l10n.cardFactDue,
         value: date(schedule.dueAt),
+        isWide: true,
       ),
       _Fact(
         icon: AppIcons.learned,
         label: l10n.cardFactLearned,
         value: date(schedule.learnedAt),
+        isWide: true,
       ),
       // With no answer yet these would only state nothing (critique
       // 2026-09-30).
@@ -130,6 +157,7 @@ class CardScheduleWidget extends StatelessWidget {
           icon: AppIcons.history,
           label: l10n.cardFactLastAnswered,
           value: dateTime(schedule.lastAnsweredAt),
+          isWide: true,
         ),
         _Fact(
           icon: AppIcons.repeat,
@@ -205,11 +233,19 @@ class _BoxRamp extends StatelessWidget {
 }
 
 class _Fact extends StatelessWidget {
-  const _Fact({required this.icon, required this.label, required this.value});
+  const _Fact({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.isWide = false,
+  });
 
   final IconData icon;
   final String label;
   final String value;
+
+  /// A date: a row of its own.
+  final bool isWide;
 
   @override
   Widget build(BuildContext context) {

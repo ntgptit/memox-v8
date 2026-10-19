@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
+import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -241,6 +244,21 @@ void main() {
 
     expect(find.text('bap'), findsOneWidget);
     expect(find.textContaining(_en.cardSummaryAnswers(0)), findsOneWidget);
+    // The status is the badge screen 10 shows, not a word in the line
+    // (audit 2026-10-19, G6).
+    expect(
+      find.descendant(
+        of: find.byType(CardEditSummaryWidget),
+        matching: find.byType(MxStatusBadge),
+      ),
+      findsOneWidget,
+    );
+    // Beside the badge the due date wraps rather than cut (final review F6).
+    final row = find.ancestor(
+      of: find.byType(MxStatusBadge),
+      matching: find.byType(MxListRow),
+    );
+    expect(tester.widget<MxListRow>(row).titleMaxLines, 2);
     await tester.tap(byControlLabel(_en.cardFlagLabel));
     await tester.enterText(editorField(1), 'cooked rice');
     await tester.pump();

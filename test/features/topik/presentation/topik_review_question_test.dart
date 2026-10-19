@@ -4,6 +4,8 @@ import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
 import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_review_question_widget.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/shared/widgets/mx_choice_mark.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
@@ -62,6 +64,23 @@ void main() {
       MxChoiceTone.wrong,
       MxChoiceTone.idle,
     ]);
+    // A check and a cross besides the colour (audit 2026-10-19, G3).
+    expect(
+      [
+        for (final mark in tester.widgetList<MxChoiceMark>(
+          find.byType(MxChoiceMark),
+        ))
+          mark.tone,
+      ],
+      [
+        MxChoiceTone.right,
+        MxChoiceTone.idle,
+        MxChoiceTone.wrong,
+        MxChoiceTone.idle,
+      ],
+    );
+    expect(find.byIcon(AppIcons.check), findsOneWidget);
+    expect(find.byIcon(AppIcons.close), findsOneWidget);
     expect(
       tester
           .widgetList<MxChoiceTile>(find.byType(MxChoiceTile))

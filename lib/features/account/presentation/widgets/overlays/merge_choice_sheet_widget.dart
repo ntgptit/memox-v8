@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -165,7 +166,7 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
           child: Text(
             email == null
                 ? l10n.accountTakenGoogle
-                : l10n.accountTakenEmail(email),
+                : l10n.accountTakenEmail(wrappableEmail(email)),
             style: context.texts.itemTitle,
           ),
         ),

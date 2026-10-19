@@ -142,6 +142,12 @@ class _TopikSummaryScreenState extends ConsumerState<TopikSummaryScreen> {
           SizedBox(height: dimens.space24),
           TopikSummaryFiguresWidget(summary: summary),
           SizedBox(height: dimens.space24),
+          // The weakest type says what to study next, so it comes before the
+          // long list of answers (audit 2026-10-19, G3).
+          if (summary.typeStats.isNotEmpty) ...[
+            TopikTypeStatsWidget(summary: summary),
+            SizedBox(height: dimens.space24),
+          ],
           MxListSectionHeader(label: l10n.topikAnswers),
           TopikAnswerFilterChipsWidget(
             summary: summary,
@@ -150,10 +156,6 @@ class _TopikSummaryScreenState extends ConsumerState<TopikSummaryScreen> {
           ),
           SizedBox(height: dimens.space16),
           ..._answers(shown),
-          if (summary.typeStats.isNotEmpty) ...[
-            SizedBox(height: dimens.space24),
-            TopikTypeStatsWidget(summary: summary),
-          ],
         ],
       ),
       footer: MxFooterBar(

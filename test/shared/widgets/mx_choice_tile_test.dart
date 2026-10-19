@@ -120,14 +120,30 @@ void main() {
     expect(text.style?.color, colors.primaryForeground);
   });
 
-  testWidgets('idle is the card ground with the content on the foreground', (
+  testWidgets('idle is the card ground inside the hairline edge, with the '
+      'content on the foreground, light and dark (audit 2026-10-19, G1)', (
     tester,
   ) async {
-    await tester.pumpWidget(_host(_tile()));
-    await tester.pumpAndSettle();
+    for (final (brightness, theme) in [
+      (Brightness.light, buildLightTheme()),
+      (Brightness.dark, buildDarkTheme()),
+    ]) {
+      await tester.pumpWidget(_host(_tile(), brightness: brightness));
+      await tester.pumpAndSettle();
 
-    final text = tester.widget<Text>(find.text('① 보기 1'));
-    expect(text.style?.color, buildLightTheme().colors.foreground);
+      final colors = theme.colors;
+      final decoration = _decoration(tester);
+      expect(decoration.color, colors.card, reason: '$brightness');
+      // In light the card is the page itself; the edge is what shows the
+      // tile.
+      expect(
+        (decoration.border! as Border).top.color,
+        colors.border,
+        reason: '$brightness',
+      );
+      final text = tester.widget<Text>(find.text('① 보기 1'));
+      expect(text.style?.color, colors.foreground, reason: '$brightness');
+    }
   });
 
   for (final tone in [MxChoiceTone.right, MxChoiceTone.wrong]) {
@@ -147,11 +163,14 @@ void main() {
     });
   }
 
-  testWidgets('an idle recessed tile sits on the muted ground', (tester) async {
+  testWidgets('an idle recessed tile sits on the muted ground inside the '
+      'hairline edge', (tester) async {
     await tester.pumpWidget(_host(_tile(isRecessed: true)));
     await tester.pumpAndSettle();
 
-    expect(_decoration(tester).color, buildLightTheme().colors.muted);
+    final colors = buildLightTheme().colors;
+    expect(_decoration(tester).color, colors.muted);
+    expect((_decoration(tester).border! as Border).top.color, colors.border);
   });
 
   testWidgets('a faded tile drops to the muted opacity and stays tappable', (

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
@@ -56,6 +57,14 @@ void main() {
     await tester.pump();
     expect(find.byKey(MxScrollFade.leadingKey), findsNothing);
     expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
+    // It reaches past the edge as far as a focus ring, which MxChipRow
+    // paints (audit 2026-10-19, G6).
+    final reach = tester.element(find.byType(MxScrollFade)).focusOutlineReach;
+    expect(reach, isPositive);
+    expect(
+      tester.getRect(find.byKey(MxScrollFade.trailingKey)).right,
+      closeTo(tester.getRect(find.byType(MxScrollFade)).right + reach, 0.01),
+    );
 
     await tester.drag(
       find.byType(SingleChildScrollView),

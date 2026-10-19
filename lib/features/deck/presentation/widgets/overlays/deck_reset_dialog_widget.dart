@@ -155,7 +155,8 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   }
 }
 
-/// Kept and Lost side by side (BR-SRS-030, spec A10).
+/// Kept above Lost, each at the dialog's full width (BR-SRS-030, spec A10;
+/// stacked by the visual audit 2026-10-19, G5).
 class _Consequences extends StatelessWidget {
   const _Consequences({required this.summary, required this.cycle});
 
@@ -168,29 +169,25 @@ class _Consequences extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cards = summary.cardCount;
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: context.dimens.space8,
-        children: [
-          Expanded(
-            child: MxOutcomeTile(
-              label: l10n.resetKeptLabel,
-              body: l10n.resetKeptBody(cycle),
-              tone: MxOutcomeTone.kept,
-            ),
-          ),
-          Expanded(
-            child: MxOutcomeTile(
-              label: l10n.resetLostLabel,
-              body: summary.openSessionCount > 0
-                  ? l10n.resetLostBodyWithSession(cards)
-                  : l10n.resetLostBody(cards),
-              tone: MxOutcomeTone.lost,
-            ),
-          ),
-        ],
-      ),
+    // Stacked full width: side by side at 360 dp each body broke into one
+    // to three words a line (audit 2026-10-19, G5).
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: context.dimens.space8,
+      children: [
+        MxOutcomeTile(
+          label: l10n.resetKeptLabel,
+          body: l10n.resetKeptBody(cycle),
+          tone: MxOutcomeTone.kept,
+        ),
+        MxOutcomeTile(
+          label: l10n.resetLostLabel,
+          body: summary.openSessionCount > 0
+              ? l10n.resetLostBodyWithSession(cards)
+              : l10n.resetLostBody(cards),
+          tone: MxOutcomeTone.lost,
+        ),
+      ],
     );
   }
 }

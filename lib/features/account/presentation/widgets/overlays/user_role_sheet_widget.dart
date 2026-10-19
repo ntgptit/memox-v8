@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
@@ -97,7 +98,7 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
     // always has a sheet to be said in (P4 minor M3).
     return MxBottomSheet(
       isHeld: _isSaving,
-      title: widget.user.email,
+      title: wrappableEmail(widget.user.email),
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.commonCancel,

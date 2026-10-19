@@ -113,6 +113,20 @@ void main() {
     expect(find.text(_en.resetDialogIntro(2, 'Korean', 2)), findsOneWidget);
     expect(find.text(_en.resetKeptBody(1)), findsOneWidget);
     expect(find.text(_en.resetLostBody(2)), findsOneWidget);
+    // Kept above Lost, each the dialog's width (audit 2026-10-19, G5).
+    final kept = find.ancestor(
+      of: find.text(_en.resetKeptBody(1)),
+      matching: find.byType(MxOutcomeTile),
+    );
+    final lost = find.ancestor(
+      of: find.text(_en.resetLostBody(2)),
+      matching: find.byType(MxOutcomeTile),
+    );
+    expect(
+      tester.getTopLeft(lost).dy,
+      greaterThan(tester.getBottomLeft(kept).dy),
+    );
+    expect(tester.getSize(lost).width, tester.getSize(kept).width);
     expect(
       _option(tester, _en.resetKeep(_en.deckSchedulerSm2)).isSelected,
       isTrue,

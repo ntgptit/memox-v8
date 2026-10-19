@@ -10,7 +10,10 @@ enum MxScrollFadeGround { page, raised, recessed }
 /// FE-A6 P3 C4; breadcrumb and chip rows, audit 2026-10-08 F-05, DEV-306).
 /// Vertical, it fades the bottom; horizontal, each edge that still has
 /// content, in the scroll's own direction, so a reversed view fades the
-/// right side. Decorative: it takes no taps and says nothing to TalkBack.
+/// right side. A horizontal fade reaches `focusOutlineReach` past each side
+/// edge, over the focus ring a chip row lets overhang (audit 2026-10-19,
+/// G6), so what lies within that reach must be on [ground]. Decorative: it
+/// takes no taps and says nothing to TalkBack.
 class MxScrollFade extends StatefulWidget {
   const MxScrollFade({
     super.key,
@@ -84,6 +87,10 @@ class _MxScrollFadeState extends State<MxScrollFade> {
     final ground = _ground(context);
     final (fadeStart, fadeEnd) = _edges();
     return Stack(
+      // A horizontal fade reaches past the edge as far as a focus ring does:
+      // MxChipRow paints that far, and the fade must cover it (audit
+      // 2026-10-19, G6).
+      clipBehavior: Clip.none,
       children: [
         NotificationListener<ScrollMetricsNotification>(
           onNotification: (notification) => _onMetrics(notification.metrics),
@@ -133,12 +140,15 @@ class _Fade extends StatelessWidget {
       end: isVertical ? Alignment.bottomCenter : Alignment.centerRight,
       colors: isAtEnd ? [clear, ground] : [ground, clear],
     );
+    final overhang = isVertical ? 0.0 : -context.focusOutlineReach;
     return Positioned(
-      left: isVertical || !isAtEnd ? 0 : null,
-      right: isVertical || isAtEnd ? 0 : null,
+      left: isVertical ? 0 : (!isAtEnd ? overhang : null),
+      right: isVertical ? 0 : (isAtEnd ? overhang : null),
       top: !isVertical || !isAtEnd ? 0 : null,
       bottom: !isVertical || isAtEnd ? 0 : null,
-      width: isVertical ? null : context.dimens.space24,
+      width: isVertical
+          ? null
+          : context.dimens.space24 + context.focusOutlineReach,
       height: isVertical ? context.dimens.space24 : null,
       child: IgnorePointer(
         child: ExcludeSemantics(

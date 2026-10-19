@@ -65,3 +65,10 @@ String syncFailureSentence(AppLocalizations l10n, SyncFailureKind kind) =>
       SyncFailureKind.server => l10n.syncFailedServer,
       SyncFailureKind.unknown => l10n.syncFailedUnknown,
     };
+
+/// The last run failed for want of a network, with nothing refused: the
+/// offline note says so, so the standing note steps aside (audit
+/// 2026-10-19, G6).
+bool syncIsOffline(SyncStatus status) =>
+    status.rejectedCount == 0 &&
+    status.lastFailure?.kind == SyncFailureKind.network;

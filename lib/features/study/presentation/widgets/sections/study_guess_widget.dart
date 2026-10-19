@@ -9,6 +9,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_mark.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
@@ -63,6 +64,9 @@ class StudyGuessWidget extends StatefulWidget {
 }
 
 class _StudyGuessWidgetState extends State<StudyGuessWidget> {
+  /// The prompt's height cap, in controls (audit 2026-10-19, G5).
+  static const int _promptMaxControls = 4;
+
   static const Duration _hold = Duration(milliseconds: 1200);
   static const int _letterA = 0x41;
 
@@ -140,31 +144,24 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                 horizontal: context.screenMargin,
                 vertical: context.focusOutlineReach,
               ),
+              // One word does not need half the screen: the prompt takes the
+              // room up to four controls tall, and only what is left goes
+              // between it and the options, which stay near the thumb (audit
+              // 2026-10-19, G5). A spacer would split the room in half.
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: context.dimens.space8,
                 children: [
-                  Expanded(
-                    child: StudyFaceCardWidget(
-                      label: l10n.studyGuessPrompt,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: context.dimens.space8,
-                        children: [
-                          StudyWholeWordTextWidget(
-                            widget.item.front,
-                            style: context.texts.term,
-                          ),
-                          StudySpeakButtonWidget(
-                            text: widget.item.front,
-                            language: widget.speechLanguage,
-                          ),
-                        ],
-                      ),
-                    ),
+                  _prompt(context),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: context.dimens.space8,
+                    children: [
+                      for (final (index, option) in question.options.indexed)
+                        _option(context, index, option),
+                    ],
                   ),
-                  for (final (index, option) in question.options.indexed)
-                    _option(context, index, option),
                 ],
               ),
             ),
@@ -239,20 +236,37 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
               style: context.texts.caption.copyWith(color: foreground),
             ),
           ),
-          if (tone == MxChoiceTone.right || tone == MxChoiceTone.wrong)
-            IconTheme(
-              data: IconThemeData(
-                color: foreground,
-                size: context.dimens.sizeIconInline,
-              ),
-              child: Icon(
-                tone == MxChoiceTone.right ? AppIcons.check : AppIcons.close,
-              ),
-            ),
+          MxChoiceMark(tone: tone, color: foreground),
         ],
       ),
     );
   }
+
+  /// The asked term, at most four controls tall (audit 2026-10-19, G5).
+  Widget _prompt(BuildContext context) => Flexible(
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: context.dimens.sizeControl * _promptMaxControls,
+      ),
+      child: StudyFaceCardWidget(
+        label: context.l10n.studyGuessPrompt,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: context.dimens.space8,
+          children: [
+            StudyWholeWordTextWidget(
+              widget.item.front,
+              style: context.texts.term,
+            ),
+            StudySpeakButtonWidget(
+              text: widget.item.front,
+              language: widget.speechLanguage,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 
   MxChoiceTone _toneOf(GuessOption option) {
     if (!_isAnswered) return MxChoiceTone.idle;

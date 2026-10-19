@@ -24,7 +24,7 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 |---|---|---|
 | App bar | `MxAppBar` (content) | Back and "Study options". |
 | Breadcrumb | `MxBreadcrumb` | Library › the deck's path › the deck › "Study options". |
-| Note | `MxNote` (layers) | The screen's one note (critique 2026-09-30): "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options." |
+| Note | `MxNote` (layers) | The screen's one note (critique 2026-09-30): "These options belong to {root} and every sub-deck in it. The card limit and order apply to sessions started from now on; the speech language changes at once." |
 | Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." Both banners on this screen (this one and "Not saved") keep one 16 gap beneath them: the spacer, not the banner's own bottom margin as well (`hasBottomMargin: false`). |
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
 | Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry; the number is a keyboard-focusable target that opens the typed entry on Enter, M3F-06); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("In order" · "Random"; critique 2026-09-30 part 3a, R2), as screen 23 draws it; each row carries its icon, as on screen 23. While the toggle is on, the two rows show their values as plain text at full contrast, with no stepper or tray (critique 2026-09-30); turning it off brings the controls back with the same values. |
@@ -100,14 +100,13 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 
 ## Copy
 
-"Study options" · "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options." · "This
+"Study options" · "These options belong to {root} and every sub-deck in it. The card limit and order apply to sessions started from now on; the speech language changes at once." · "This
 deck's options could not be read. Saving replaces them." · "Use app defaults" ·
 "Following Settings · {n} cards, {order}" · "in creation order" · "random order" · "Off · this
 deck has its own options" · "App defaults (read-only here)" · "This deck" · "Cards per
 session" · "1 to {max}" · "Enter a number from {min} to {max}" · "New-card order" ·
 "In order" · "Oldest cards first — the order you added or imported them" ·
-"Random" · "Shuffled each learning session" · "The card limit and order apply to sessions
-started from now on; the speech language changes at once." · "Save" · "Retry save" ·
+"Random" · "Shuffled each learning session" · "Save" · "Retry save" ·
 "Saved to this device only." · "Fix the limit to enable save." · "Couldn't save. The deck
 still uses {n} cards, {order}." · "Saved · applies to the next session" · "Cards per
 session · new-card order" · "Speech language" · "{language} · The language the term is

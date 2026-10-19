@@ -1,9 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_donut.dart';
 
 /// The circular mastery indicator. The ring fills clockwise from twelve
 /// o'clock in the MasteryRamp colour, and the percentage uses the same
@@ -45,22 +44,20 @@ class MxMasteryDonut extends StatelessWidget {
     ).format(MasteryRamp.percent(fraction) / 100);
     final donut = SizedBox.square(
       dimension: _box,
-      child: CustomPaint(
-        painter: _DonutPainter(
-          fraction: fraction,
-          arc: fill,
-          // The ramp's progress track, the same as the mastery bar's.
-          track: MasteryRamp.track(context.colors),
-        ),
-        child: Center(
-          child: SizedBox.square(
-            dimension: _innerDiameter,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                percent,
-                style: context.texts.meta.copyWith(color: foreground),
-              ),
+      child: MxDonut(
+        fraction: fraction,
+        arc: fill,
+        // The ramp's progress track, the same as the mastery bar's.
+        track: MasteryRamp.track(context.colors),
+        strokeWidth: _viewStroke * _scale,
+        radius: _viewRadius * _scale,
+        child: SizedBox.square(
+          dimension: _innerDiameter,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              percent,
+              style: context.texts.meta.copyWith(color: foreground),
             ),
           ),
         ),
@@ -75,46 +72,4 @@ class MxMasteryDonut extends StatelessWidget {
       child: donut,
     );
   }
-}
-
-class _DonutPainter extends CustomPainter {
-  const _DonutPainter({
-    required this.fraction,
-    required this.arc,
-    required this.track,
-  });
-
-  final double fraction;
-  final Color arc;
-  final Color track;
-
-  static const double _fullTurn = 2 * math.pi;
-  static const double _twelveOClock = -math.pi / 2;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    const radius = MxMasteryDonut._viewRadius * MxMasteryDonut._scale;
-    canvas.drawCircle(center, radius, _stroke(track));
-    if (fraction == 0) return;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      _twelveOClock,
-      _fullTurn * fraction,
-      false,
-      _stroke(arc),
-    );
-  }
-
-  Paint _stroke(Color color) => Paint()
-    ..color = color
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = MxMasteryDonut._viewStroke * MxMasteryDonut._scale
-    ..strokeCap = StrokeCap.round;
-
-  @override
-  bool shouldRepaint(_DonutPainter oldDelegate) =>
-      oldDelegate.fraction != fraction ||
-      oldDelegate.arc != arc ||
-      oldDelegate.track != track;
 }

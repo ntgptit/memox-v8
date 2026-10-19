@@ -25,7 +25,8 @@ class SyncStatusSectionWidget extends StatelessWidget {
     final success = status.lastSuccessAt;
     return MxSection(
       title: l10n.syncStatusSection,
-      note: l10n.syncNote,
+      // Offline, the notice below already says sync waits for a network.
+      note: syncIsOffline(status) ? null : l10n.syncNote,
       children: [
         MxSettingsRow(
           label: l10n.syncLastSynced,

@@ -33,8 +33,9 @@ Every row opens its page on the root navigator, with no bottom bar (FE-A3 D2): 2
 | Toasts | `MxSnackbar` | The reset's only (D9): "App options reset to defaults"; "Couldn't reset the app options. Nothing changed." · Retry. |
 
 At 360×800 the tab shows ≈696 dp between the bars. Without an account the hub fits; with
-a signed-in account and Sync it is ≈774 dp (about one row of scroll), ≈885 dp for an
-admin; only Reset falls below the fold (spec §5.1, measured on the goldens).
+a signed-in account and Sync it is ≈870 dp (≈175 dp, two and a half rows, of scroll), ≈965 dp
+for an admin; only Reset falls below the fold (spec §5.1, measured on the goldens again on
+2026-10-19, visual audit G6).
 
 ## States
 

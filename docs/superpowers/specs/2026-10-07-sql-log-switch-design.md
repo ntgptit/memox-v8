@@ -137,10 +137,9 @@ settings stream and calls the use case.
   is an admin, as the section already is.
 - Screen 28, Not sent tab: the same widget above the `MxNote`, under the admin gate the
   screen already has.
-- Copy (en / vi): "Log SQL statements" / "Ghi câu SQL vào log"; subtitle "Each
-  statement the app runs is logged, for performance checks. Turn off to keep the log
-  small." / "Mỗi câu lệnh app chạy đều được ghi log để kiểm tra hiệu năng. Tắt để log
-  gọn." TalkBack reads the row as a switch with its label.
+- Copy (en / vi): "Log SQL statements" / "Ghi câu SQL vào log"; subtitle "Logs each
+  statement the app runs, for performance checks." / "Ghi log mỗi câu lệnh app chạy để
+  kiểm tra hiệu năng." (shortened by the visual audit 2026-10-19, G7) TalkBack reads the row as a switch with its label.
 - Goldens: `settings_admin_rows_*` and `monitoring_not_sent_*` change; a golden review
   before merge. `DESIGN.md` does not change (no new component or token). The detail
   files 23 and 28 and their rows in the screen index record the row. Impeccable

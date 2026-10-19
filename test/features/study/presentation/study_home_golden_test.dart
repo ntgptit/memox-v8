@@ -124,6 +124,7 @@ void main() {
       LibraryEnv env,
       String name, {
       List<Override> overrides = const [],
+      Finder? scrollTo,
     }) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(
@@ -136,6 +137,14 @@ void main() {
             ...overrides,
           ],
         );
+        if (scrollTo != null) {
+          await tester.scrollUntilVisible(
+            scrollTo,
+            300,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+        }
         await expectBoundaryGolden(
           tester,
           'goldens/study_home_${name}_$theme.png',
@@ -151,6 +160,21 @@ void main() {
     libraryTest('study home, no resume, $theme', (tester, env) async {
       await _library(env);
       await shoot(tester, env, 'no_resume');
+    });
+
+    // The practice slot below several decks, the common case the frames
+    // above crop (audit 2026-10-19, G6).
+    libraryTest('study home, scrolled to practice, $theme', (
+      tester,
+      env,
+    ) async {
+      await _library(env);
+      await shoot(
+        tester,
+        env,
+        'scrolled',
+        scrollTo: find.byType(TopikPracticeEntryWidget),
+      );
     });
 
     libraryTest('study home, caught up, $theme', (tester, env) async {

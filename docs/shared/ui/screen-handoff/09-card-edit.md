@@ -13,7 +13,7 @@ touch the study state or history).
 |---|---|---|
 | App bar | `MxAppBar` | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); Save writes the content first, then the flag only when it was toggled here (`setFlagged`, BR-CARD-009, DEV-220), so a flag set elsewhere while the editor was open is kept. No Save here: the single Save is the footer's "Save changes" (`DESIGN.md` › `MxAppBar`, as 08 records it; DEV-233). |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
-| History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
+| History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxStatusBadge`) | The status as screen 10's badge, then "{n} answers · {n} lapses · due {date}" (audit 2026-10-19, G6); its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card: the app's form field box and body type (DEV-169). |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
 | Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create, including the "Add" button and Save adding the tag still typed (invalid: error, nothing saved). |
@@ -93,7 +93,7 @@ Every state above is built.
 ## Copy
 
 - App bar: "Edit card" · "Flag this card" (the one name; the on / off state is the toggle's).
-- History summary: "{status} · {answers}" · "{lapses}" · "due {date}".
+- History summary: the status badge, then "{answers}" · "{lapses}" · "due {date}".
 - Fields: same labels, hints and errors as 08-card-create, plus "Optional details".
 - Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · "Nothing was lost. Tap Retry save to try again." · "Edits never change the schedule or history." · "Add the missing field to enable save." · "Fix the marked field to enable save." · "Saving to this device…".
 - More: "More" · "Move this card to Trash" · "Leaves this deck and can be restored from Trash for 30 days, schedule and history included." · "Move to Trash".

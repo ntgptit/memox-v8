@@ -21,7 +21,7 @@ spec [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-acc
 |---|---|---|
 | Head | `MxIconTile` (large, tinted, deck glyph) | Stands in for the app icon, which is still Flutter's default (U5; UI-base row 149). |
 | Name and lead | `texts.screenTitle`; the lead `texts.body` in `mutedForeground` | "MemoX"; "MemoX works on this phone without an account, offline too. Signing in adds:" |
-| Benefits | `MxSection` + `MxSettingsRow` × 2 | Shield "Keep your decks when you reinstall"; devices "Study on several phones". Not tappable. "Still works offline" is gone: the lead says it. |
+| Benefits | `MxSection` + `MxSettingsRow` × 2 | Shield "Keep decks across reinstalls"; devices "Study on several phones". Not tappable. "Still works offline" is gone: the lead says it. |
 | Actions, can link | `MxFooterBar` + `MxButton` × 3, 12 apart | "Continue with Google" (primary, the G mark: the one fill); "Continue with email" (outline); "Continue without an account" (text). |
 | Actions, cannot link | `MxFooterBar` + `MxButton`, caption | "Continue without an account" (primary, block) alone, and the footer caption "Signing in needs a connection. Try later in Settings." When linking becomes possible the footer returns to the three buttons. While the account is still starting (`Booting`, `Bootstrapping`; not `Validating`, which offline with a session lasts until the network returns and then gets the offline caption: closing review 2026-10-17) the three buttons show with the two sign-in ways disabled and no caption, so the footer does not jump when `Ready` arrives; the offline layout is for an account that is unavailable (audit 2026-10-17 ACC-2). There is no mid-page note. |
 
@@ -78,7 +78,7 @@ The images are the goldens.
 ## Copy
 
 - "MemoX" · "MemoX works on this phone without an account, offline too. Signing in adds:"
-- "Keep your decks when you reinstall" · "Study on several phones".
+- "Keep decks across reinstalls" · "Study on several phones".
 - "Continue with Google" · "Continue with email" · "Continue without an account".
 - "Signing in needs a connection. Try later in Settings."
 - Toast: "Signed in as {email}" (or "Signed in").

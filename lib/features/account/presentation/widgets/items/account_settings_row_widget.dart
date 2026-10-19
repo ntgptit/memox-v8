@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
@@ -48,7 +49,10 @@ class AccountSettingsRowWidget extends ConsumerWidget {
       );
     }
     return MxSettingsRow(
-      label: account.email ?? l10n.accountSignedIn,
+      label: switch (account.email) {
+        final email? => wrappableEmail(email),
+        null => l10n.accountSignedIn,
+      },
       subtitle: l10n.accountSignedInHint,
       icon: AppIcons.account,
       onTap: onOpenAccount,

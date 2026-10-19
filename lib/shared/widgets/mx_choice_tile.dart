@@ -114,16 +114,17 @@ class MxChoiceTile extends StatelessWidget {
     MxChoiceTone.wrong => context.colors.error,
   };
 
-  /// The surface of [tone]: the card ground at rest, the primary fill when
-  /// picked, a tint of the answer's colour over the page with that colour's
-  /// edge once answered.
+  /// The surface of [tone]: the card ground inside the `border` hairline at
+  /// rest, the primary fill when picked, a tint of the answer's colour over
+  /// the page with that colour's edge once answered.
   BoxDecoration _decoration(BuildContext context) {
     final colors = context.colors;
     final rest = isRecessed ? colors.muted : context.colors.card;
-    // At rest the edge is the fill itself, so the tone eases in without a
-    // border appearing from nothing.
+    // At rest the edge is the hairline: in light the card is the page
+    // itself, so the edge is what shows a tile to tap (audit 2026-10-19, G1).
+    // Every tone has an edge, so a tone eases in from it.
     final (Color fill, Color edge) = switch (tone) {
-      MxChoiceTone.idle => (rest, rest),
+      MxChoiceTone.idle => (rest, colors.border),
       MxChoiceTone.selected => (colors.primary, colors.primary),
       MxChoiceTone.right => (
         context.status.success.tintOver(MxTintBase.of(context)),

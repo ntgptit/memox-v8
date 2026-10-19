@@ -9,7 +9,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/presentation/controllers/sync_controller.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_notice_widget.dart';
-import 'package:memox/core/sync/sync_failure.dart';
+import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_status_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -39,7 +39,7 @@ class SyncScreen extends ConsumerWidget {
   /// (critique 2026-10-02, F8).
   static bool _leadsSyncNow(SyncStatus status) =>
       status.rejectedCount == 0 &&
-      status.lastFailure?.kind != SyncFailureKind.network &&
+      !syncIsOffline(status) &&
       (status.pendingCount > 0 || status.lastFailure != null);
 
   @override

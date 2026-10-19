@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
+import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
@@ -68,7 +70,18 @@ void main() {
     await pump(tester, env);
 
     expect(find.text(_en.usersSection.toUpperCase()), findsOneWidget);
-    expect(find.text('ann@example.com'), findsOneWidget);
+    // An email wraps rather than lose its domain, breaking after the @
+    // (audit 2026-10-19, G5).
+    final ann = find.text(wrappableEmail('ann@example.com'));
+    expect(ann, findsOneWidget);
+    expect(
+      tester
+          .widget<MxListRow>(
+            find.ancestor(of: ann, matching: find.byType(MxListRow)),
+          )
+          .titleMaxLines,
+      2,
+    );
     expect(find.text(_en.usersJoined('Sep 1, 2026')), findsNWidgets(2));
     expect(find.text(_en.usersRoleAdmin), findsNWidgets(2));
     expect(find.text(_en.usersRoleUser), findsOneWidget);
@@ -80,7 +93,7 @@ void main() {
     await pump(tester, env);
 
     expect(find.text(_en.usersJoinedYou('Sep 1, 2026')), findsOneWidget);
-    await tester.tap(find.text('me@example.com'));
+    await tester.tap(find.text(wrappableEmail('me@example.com')));
     await _settle(tester);
     expect(find.byType(MxBottomSheet), findsNothing);
   });
@@ -89,7 +102,7 @@ void main() {
       'the row changes', (tester, env) async {
     await pump(tester, env);
 
-    await tester.tap(find.text('bob@example.com'));
+    await tester.tap(find.text(wrappableEmail('bob@example.com')));
     await _settle(tester);
     expect(find.byType(MxBottomSheet), findsOneWidget);
     expect(save(tester).onPressed, isNull);
@@ -110,7 +123,7 @@ void main() {
     env,
   ) async {
     await pump(tester, env);
-    await tester.tap(find.text('bob@example.com'));
+    await tester.tap(find.text(wrappableEmail('bob@example.com')));
     await _settle(tester);
     await tester.tap(find.text(_en.usersRoleAdminHint));
     await tester.pump();
@@ -136,7 +149,7 @@ void main() {
     await pump(tester, env);
     roles.failNextSet = const LastAdminFailure();
 
-    await tester.tap(find.text('ann@example.com'));
+    await tester.tap(find.text(wrappableEmail('ann@example.com')));
     await _settle(tester);
     await tester.tap(find.text(_en.usersRoleUserHint));
     await tester.pump();
@@ -160,7 +173,7 @@ void main() {
     final held = roles.holdSet = Completer<void>();
     roles.failNextSet = const LastAdminFailure();
 
-    await tester.tap(find.text('ann@example.com'));
+    await tester.tap(find.text(wrappableEmail('ann@example.com')));
     await _settle(tester);
     await tester.tap(find.text(_en.usersRoleUserHint));
     await tester.pump();
@@ -184,7 +197,7 @@ void main() {
     await pump(tester, env);
     roles.users.removeWhere((user) => user.id == 'bob');
 
-    await tester.tap(find.text('bob@example.com'));
+    await tester.tap(find.text(wrappableEmail('bob@example.com')));
     await _settle(tester);
     await tester.tap(find.text(_en.usersRoleAdminHint));
     await tester.pump();
@@ -220,7 +233,7 @@ void main() {
     expect(find.byIcon(AppIcons.offline), findsOneWidget);
     await tester.tap(find.text(_en.commonRetry));
     await _settle(tester);
-    expect(find.text('ann@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('ann@example.com')), findsOneWidget);
   });
 
   libraryTest('not an admin: only that is said', (tester, env) async {

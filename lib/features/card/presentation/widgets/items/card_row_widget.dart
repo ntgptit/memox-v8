@@ -141,6 +141,9 @@ class _Trailing extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.end,
     spacing: context.dimens.space4,
     children: [
+      // The flag's slot is kept on every row, so the due chip sits at the
+      // same place whether or not the card is flagged (audit 2026-10-19,
+      // G6).
       if (item.isFlagged)
         IconTheme.merge(
           data: IconThemeData(
@@ -151,7 +154,9 @@ class _Trailing extends StatelessWidget {
             AppIcons.flagged,
             semanticLabel: context.l10n.cardFlagged,
           ),
-        ),
+        )
+      else
+        SizedBox.square(dimension: context.dimens.sizeIconInline),
       CardDueChipWidget(due: item.due),
     ],
   );

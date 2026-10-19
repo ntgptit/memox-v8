@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -174,7 +176,10 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
         // An instruction takes the info glyph and a wrong answer the repeat
         // one, as in every mode (critique 2026-10-02 F7).
         SessionFooterHintWidget(
-          icon: _isWrong ? AppIcons.repeat : AppIcons.info,
+          // The wrong state's footer states the grading rule, not the
+          // comeback (the tag above says that), so it takes info (audit
+          // 2026-10-19, G6).
+          icon: AppIcons.info,
           text: _isWrong
               ? l10n.studyFillHintWrong
               : isHintShown
@@ -263,8 +268,9 @@ class _HintRow extends StatelessWidget {
   );
 }
 
-/// A wrong answer: what was typed, struck through in the error foreground, the
-/// right term below it, and when it comes back (F3, V1, V10).
+/// A wrong answer: what was typed, struck through with its slip in the error
+/// foreground ([typedAgainst]), the right term below it, and when it comes
+/// back (F3, V1, V10).
 class _Corrected extends StatelessWidget {
   const _Corrected({required this.typed, required this.term});
 
@@ -275,19 +281,33 @@ class _Corrected extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tag = l10n.studyFillTagWrong;
+    final colors = context.colors;
+    final struck = context.texts.term.copyWith(
+      color: colors.mutedForeground,
+      decoration: TextDecoration.lineThrough,
+      decorationColor: colors.mutedForeground,
+    );
+    final differing = struck.copyWith(
+      color: colors.error,
+      decorationColor: colors.error,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,
       children: [
-        Text(
-          typed,
+        // Struck through as a whole; only the letters that differ from the
+        // term are in `error`, so the eye finds the slip (V1; audit
+        // 2026-10-19, G6).
+        Text.rich(
+          TextSpan(
+            children: [
+              for (final (grapheme, isMatch) in typedAgainst(typed, term))
+                TextSpan(text: grapheme, style: isMatch ? null : differing),
+            ],
+          ),
           semanticsLabel: l10n.studyFillTyped(typed),
           textAlign: TextAlign.center,
-          style: context.texts.term.copyWith(
-            color: context.colors.error,
-            decoration: TextDecoration.lineThrough,
-            decorationColor: context.colors.error,
-          ),
+          style: struck,
         ),
         Text(
           term,
@@ -306,4 +326,59 @@ class _Corrected extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Each character of [typed] and whether it is one the term also has, in
+/// order (the longest common subsequence, compared as grading folds them:
+/// case and NFC ignored); the rest are the slip a wrong answer shows in
+/// `error`. Spaces at either end, which grading trims, are never the slip.
+/// When every character is in the term, the slip is a missing letter, which
+/// has no character to mark, so the whole answer is the slip.
+List<(String, bool)> typedAgainst(String typed, String term) {
+  final all = typed.characters.toList();
+  var start = 0;
+  var end = all.length;
+  while (start < end && all[start].trim().isEmpty) {
+    start++;
+  }
+  while (end > start && all[end - 1].trim().isEmpty) {
+    end--;
+  }
+  final a = [for (final g in all.sublist(start, end)) foldText(g)];
+  final b = [for (final g in term.characters) foldText(g)];
+  // lengths[i][j]: the common subsequence of a[i..] and b[j..].
+  final lengths = List.generate(
+    a.length + 1,
+    (_) => List.filled(b.length + 1, 0),
+  );
+  for (var i = a.length - 1; i >= 0; i--) {
+    for (var j = b.length - 1; j >= 0; j--) {
+      lengths[i][j] = a[i] == b[j]
+          ? lengths[i + 1][j + 1] + 1
+          : math.max(lengths[i + 1][j], lengths[i][j + 1]);
+    }
+  }
+  final isMatch = List.filled(a.length, false);
+  var i = 0;
+  var j = 0;
+  while (i < a.length) {
+    if (j < b.length && a[i] == b[j]) {
+      isMatch[i] = true;
+      i++;
+      j++;
+      continue;
+    }
+    if (j < b.length && lengths[i][j + 1] >= lengths[i + 1][j]) {
+      j++;
+      continue;
+    }
+    i++;
+  }
+  final isOmission = !isMatch.contains(false);
+  return [
+    for (final g in all.sublist(0, start)) (g, true),
+    for (final (k, g) in all.sublist(start, end).indexed)
+      (g, isMatch[k] && !isOmission),
+    for (final g in all.sublist(end)) (g, true),
+  ];
 }

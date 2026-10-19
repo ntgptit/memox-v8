@@ -80,6 +80,8 @@ void main() {
           cardDeckScreen(deckId),
           brightness,
         );
+        // The chip row's fade follows its first layout by a frame.
+        await tester.pump();
         await expectBoundaryGolden(tester, 'goldens/card_list_$theme.png');
       });
     });
