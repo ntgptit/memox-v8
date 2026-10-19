@@ -80,6 +80,7 @@ The images are the goldens.
 | role sheet | choose another role | Save enabled | VERIFIED the Review Focus 3 test above |
 | role sheet | Cancel, or choose the current role | no change; Save disabled for the current role | `UNVERIFIED (code read)` for Cancel; the disabled Save is VERIFIED in the Review Focus 3 test and the golden `users_role_sheet_*` |
 | role sheet | Save | role sheet, saving | VERIFIED `::a drag while saving keeps the sheet, so a refusal is still said (P4 minor M3)` |
+| role sheet | a second tap on Save in the same frame, before it spins | one role change; the sheet closes once and the screen stays (REG-DOUBLE-SUBMIT) | VERIFIED `users_screen_test.dart::a second Save in the same frame does not set the role twice` |
 | role sheet, saving | saved | the sheet closes, the badge changes in place, toast "{email} is now an admin" / "… a user" | VERIFIED `::the sheet saves only a different role (Review Focus 3), and the row changes`; `users_controller_test.dart::a saved role changes the row in place` |
 | role sheet, saving | the last admin | the sheet stays with the warning banner; a new choice clears it | VERIFIED `::the last admin stays, and the sheet says why`; `users_controller_test.dart::the server's refusals leave the list as it was (Review Focus 4)` |
 | role sheet, saving | anonymous, offline or another failure | the sheet stays with the banner | `users_controller_test.dart::the server's refusals leave the list as it was (Review Focus 4)` for the controller; the banner texts are `UNVERIFIED (code read)` |

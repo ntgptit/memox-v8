@@ -135,6 +135,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 | detail, changing | the change fails | detail, change failed | VERIFIED `::a change that fails offline says nothing changed and Retry does it`; `monitoring_detail_controller_test.dart::a change that fails changes nothing and offers the same change again` |
 | detail, changing | the log is gone | detail, gone | VERIFIED `monitoring_detail_controller_test.dart::a change of a log that is gone leaves the page saying so` |
 | detail, changing | a second tap | ignored (the button is disabled) | VERIFIED `monitoring_detail_controller_test.dart::a second change waits for the first` |
+| detail, changing | a bug after the change landed (its own state or the list's row) | not a failed change: no change-failed toast and no Retry; the bug surfaces as itself (REG-MONITORING-STATUS) | VERIFIED `monitoring_detail_controller_test.dart::a bug after a landed change surfaces as itself and offers nothing again` |
 | detail, change failed | leave the page | the toast is closed | VERIFIED `::leaving the page takes its failed-change toast with it` |
 | detail, loaded | the log is a 256 kB context | rendered whole, selectable, in a scroll | VERIFIED `::a 256 kB context renders whole, selectable, in a scroll` |
 

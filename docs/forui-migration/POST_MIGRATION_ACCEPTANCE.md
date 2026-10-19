@@ -18,7 +18,7 @@ No critical regression is known, and every gate that could run in this environme
 | Acceptance gate | Result | Evidence |
 |---|---|---|
 | All critical functional flows pass | PASS (host) | 15 priority journeys have executed tests (§8). The full suite passes (§3). The device half is not run (see the last row). |
-| No confirmed critical regression remains | PASS | No finding is Critical (REGRESSION_FINDINGS.md). The three Medium defects found were fixed with tests that failed before the fix. The final whole-branch review (Opus) found no blocker; its four should-fix items and the cheap nits were fixed in `11db3de3`. |
+| No confirmed critical regression remains | PASS | No finding is Critical (REGRESSION_FINDINGS.md). The Medium defects found (three on 2026-10-18, REG-DOUBLE-SUBMIT on 2026-10-19) were fixed with tests that failed before the fix. Each final whole-branch review (Opus) found no blocker; their should-fix items were fixed (`11db3de3`, `b45cd0b7`). |
 | All applicable architecture guards pass | PASS | `dod_check.sh` steps: architecture boundaries, ForUI boundary rules (`ui_lint`), theme structure and removed names, the code verification guard (§3). |
 | Every production screen has been audited | PASS | 43 detail files (01–41, 16a, 23a, 23b). Two new detail files cover the screens that had none: 40 Route not found and 41 Startup failure. 531 states, all with executed evidence (SCREEN_STATE_COVERAGE.md). |
 | Shared-widget contracts are preserved | PASS | The shared-widget tests pass in the full suite. Goldens show no unintended pixel change: the only images that changed are the six Users shots, which gained their Refresh action (golden-compare page given to the owner). The two new shared widgets and the changed ones are tested (§6). |
@@ -42,20 +42,20 @@ the device phases (`docs/shared/testing/device-e2e.md`) and
 |---|---|
 | Repository | `ntgptit/memox-v8` |
 | Base | master `aa4d943a` (the merge of PR #311), which is also the baseline state |
-| Branch | `claude/ecstatic-lovelace-s80gci`. The final code tree is `fef10b7e`; the commit that adds these acceptance documents changes only `docs/`. Not merged. |
+| Branch | `claude/ecstatic-lovelace-s80gci`. The final code tree is `b45cd0b7` (2026-10-19); the commits after it change only `docs/`. Not merged. |
 | Toolchain | Flutter 3.47.5 (stable, matches `.fvmrc`), Dart 3.13.4, Android SDK 36 present (`/opt/android-sdk`); no emulator, system image or KVM |
 | UI system | ForUI 0.27.6 (`pubspec.lock`) |
 | Pre-migration reference | `d5fccf31`, the first parent of the ForUI migration merge `727ecd4f` (PR #308). Its goldens are the historical "before" set. |
-| Commits in this cycle | `7584c737` Tests: drop two unnecessary imports and brace an if (analyzer infos)<br>`e437170b` Docs: point three test citations at the files the tests moved to<br>`4cec9d7b` Regenerate docs traceability<br>`bbc6b26e` Docs: complete the screen state machines and add detail files 40 and 41<br>`ca557ff6` Tests: pin keyboard submit, held overlays and theme-switch state<br>`93fa1f4a` A toast with an action leaves with the screen that showed it (NEW-1)<br>`d95653eb` Shared pull to refresh and divider replace feature copies (AV-1, AV-3)<br>`ad586f2c` Move isAccountStartingProvider to its own file (FR-N5)<br>`53439a86` TOPIK attempt: one phase drives the screen and the question clock (FR-N1)<br>`7920d346` A bug never leaves a held flow held for good (LIB-6)<br>`13e6dabe` runHeld for the remaining held flows: study, settings, reminders, account<br>`16adbfbb` Import: Preview again clears the stale-preview banner (E9); state coverage<br>`95e9ed54` Tests: picture tests no longer depend on a warm image cache; Material count<br>`11db3de3` Fix final review findings: reorder count, export bug path, Users Refresh<br>`fef10b7e` Export: a bug from the share sheet reads as a failed share, after the mounted check |
+| Commits in this cycle | `7584c737` Tests: drop two unnecessary imports and brace an if (analyzer infos)<br>`e437170b` Docs: point three test citations at the files the tests moved to<br>`4cec9d7b` Regenerate docs traceability<br>`bbc6b26e` Docs: complete the screen state machines and add detail files 40 and 41<br>`ca557ff6` Tests: pin keyboard submit, held overlays and theme-switch state<br>`93fa1f4a` A toast with an action leaves with the screen that showed it (NEW-1)<br>`d95653eb` Shared pull to refresh and divider replace feature copies (AV-1, AV-3)<br>`ad586f2c` Move isAccountStartingProvider to its own file (FR-N5)<br>`53439a86` TOPIK attempt: one phase drives the screen and the question clock (FR-N1)<br>`7920d346` A bug never leaves a held flow held for good (LIB-6)<br>`13e6dabe` runHeld for the remaining held flows: study, settings, reminders, account<br>`16adbfbb` Import: Preview again clears the stale-preview banner (E9); state coverage<br>`95e9ed54` Tests: picture tests no longer depend on a warm image cache; Material count<br>`11db3de3` Fix final review findings: reorder count, export bug path, Users Refresh<br>`fef10b7e` Export: a bug from the share sheet reads as a failed share, after the mounted check<br>`a47eea35` runHeld holds the write alone; what follows a landed write runs after it (REG-HELD-SCOPE, 2026-10-19)<br>`b45cd0b7` A same-frame second submit is refused; the Monitoring status change holds the write alone (REG-DOUBLE-SUBMIT, REG-MONITORING-STATUS) |
 
 ## 3. Baseline and final verification
 
-| Command | Baseline (master `aa4d943a`) | Final (`fef10b7e`) |
+| Command | Baseline (master `aa4d943a`) | Final (`b45cd0b7`, docs after it) |
 |---|---|---|
 | `flutter pub get` | OK | OK |
 | `dart format --output=none --set-exit-if-changed .` | 0 of 2137 files changed | 0 of 2184 files changed |
 | `flutter analyze` | `lib/`: no issues. 20 infos in `test/`: 3 trivial, fixed in `7584c737`; 17 deprecated-API uses, pre-existing | `lib/`: no issues. 17 infos in `test/` (pre-existing deprecated-API uses, REG-ANALYZE-2) |
-| `dod_check.sh --force` (format, analyze, generated code, architecture, docs, SDK pin, tooling and hook tests, theme and removed names, design tooling, ForUI boundary rules, guard self-tests, code verification guard, full host suite) | PASS. Host suite 4776 tests. | PASS. Host suite 4883 tests. Every step passes, the code verification guard included. |
+| `dod_check.sh --force` (format, analyze, generated code, architecture, docs, SDK pin, tooling and hook tests, theme and removed names, design tooling, ForUI boundary rules, guard self-tests, code verification guard, full host suite) | PASS. Host suite 4776 tests. | PASS. Host suite (final gate running) tests. Every step passes, the code verification guard included. |
 | `run_goldens.sh` | PASS, 615 | PASS, 615. The six Users shots (12 PNGs) were updated for their Refresh action and shown to the owner on a golden-compare page (https://claude.ai/artifact/FbmQA5z4bviQ5JxfnPg3EV); no other image changed. |
 | `dart run tools/ui_lint/ui_lint.dart` | 1057 files clean | 1061 files clean |
 | `check_architecture.sh` | boundaries clean | boundaries clean |
@@ -569,3 +569,34 @@ See [REGRESSION_FINDINGS.md](REGRESSION_FINDINGS.md):
 This branch changes `lib/features/account/` (REG-LIB-6), so CLAUDE.md
 requires `tools/supabase/run_auth_it.sh` before a merge. It could not run
 here.
+
+## 12. Android release acceptance (2026-10-19)
+
+The owner's priority for this round: remove the duplicate-write risk, then run the Android, device and auth gates, then decide acceptance per gate, then review and merge. The first part is done in this branch; the device half runs on the owner's machine.
+
+### Stabilization
+
+| Finding | What it was | Fix | Evidence |
+|---|---|---|---|
+| REG-HELD-SCOPE | A bug after a landed write (a toast, a pop, a cleared form) read as a failed write and offered Retry, which could write twice. | `runHeld` returns the write's result and holds the write alone; 22 calls narrowed; dialogs and sheets close before their toast (`a47eea35`). | 10 tests that pump without a toast host, so the toast after the write throws; all failed before. |
+| REG-MONITORING-STATUS | The same mechanism outside `runHeld`, in Monitoring's status change. | The change alone in the catch (`b45cd0b7`). | 1 test, failed before. |
+| REG-DOUBLE-SUBMIT | A second tap in the same frame ran the write again in five submits: reset learning (a second cycle), create root deck (a second deck), rename, bulk tag, the Users role. | Each refuses a call while busy (`b45cd0b7`). Confirm dialogs that only pop were probed and are safe. | 5 tests, all failed before with two writes. |
+
+Every `runHeld` call (31) and every async submit in `lib/features` was audited; the classification is in REGRESSION_FINDINGS.md under each row. The screens these fixes touch (01, 02, 06, 07, 08, 28, 33) have their new transitions in their detail files. No new Impeccable round was run (owner 2026-10-19); none of these fixes changes a pixel (goldens (final golden run pending)).
+
+### Decision per gate
+
+| Gate | Decision | Evidence or what is missing |
+|---|---|---|
+| Duplicate-write risk (REG-HELD-SCOPE and its check similar) | ACCEPTED | The tests above; full host suite (final gate running) pass; final whole-branch review (Opus) after `540fc264`, its should-fix items fixed in `b45cd0b7`. |
+| Host gate (`dod_check.sh`: format, analyze, generated code, architecture, docs, guard, full suite) | ACCEPTED | PASS on `b45cd0b7` (§3). |
+| Goldens (`run_goldens.sh`) | ACCEPTED | (final golden run pending); no image changed in this round. |
+| Notification tap over an unsaved form (REG-REMINDER-TAP) | ACCEPTED by owner ruling | Kept; BR-REMINDER-008 edge case. |
+| `MxStepper` typed field for TalkBack (REG-CA-6) | CONDITIONAL (accepted limitation) | Owner ruling 2026-10-19; waits on a ForUI semantics label. |
+| `flutter build apk --debug` | BLOCKED here, pending the owner's machine | Google Maven is unreachable from this environment. |
+| `flutter build apk --release` | BLOCKED here, pending the owner's machine | As above. Without `android/key.properties` the release build is signed with the debug key. |
+| Device E2E (`tools/device/run_device_e2e.sh all`, 8 scenarios) | BLOCKED here, pending the owner's machine | No emulator. **The script clears MemoX's data before each scenario: run it only on a test device or emulator, never on a phone whose MemoX data must be kept.** |
+| Real-stack auth (`tools/supabase/run_auth_it.sh`) | BLOCKED here, pending the owner's machine | Docker images unreachable. Required: the branch changes `lib/features/account/` (LIB-6, REG-DOUBLE-SUBMIT). |
+| TalkBack spot check on a device | NOT RUN, pending the owner | Host semantics tests only (§9). |
+
+**Overall: BLOCKED (environment) until the owner's device run.** It becomes CONDITIONAL once both APK builds succeed, and ACCEPTED once the device E2E and `run_auth_it.sh` pass as well, with REG-CA-6 standing as the one accepted limitation. The owner's results go into this table, gate by gate.
