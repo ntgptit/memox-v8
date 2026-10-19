@@ -19,9 +19,9 @@ import 'package:memox/features/settings/domain/repositories/settings_repository.
 /// for, not timed, so a starved test process cannot read the row before the
 /// write commits (follow-ups spec T2). Fails after ten seconds.
 Future<void> untilLanded(Future<bool> Function() landed) async {
-  final deadline = DateTime.now().add(const Duration(seconds: 10));
+  final waited = Stopwatch()..start();
   while (!await landed()) {
-    if (DateTime.now().isAfter(deadline)) {
+    if (waited.elapsed > const Duration(seconds: 10)) {
       fail('the write did not land within ten seconds');
     }
     await Future<void>.delayed(const Duration(milliseconds: 10));
