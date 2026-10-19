@@ -53,14 +53,6 @@ final List<_ColorRole> _colorRoles = [
     usage: 'Text and glyphs on primary.',
   ),
   (
-    key: 'accent-fill',
-    group: 'primary',
-    read: (_, s) => s.accentFill,
-    usage:
-        'The accent as a data fill: a bar, the reviewing band of the mastery '
-        "ramp, a chart line, a slider's played track; never text.",
-  ),
-  (
     key: 'secondary',
     group: 'neutral',
     read: (c, _) => c.secondary,

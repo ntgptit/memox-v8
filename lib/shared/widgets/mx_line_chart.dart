@@ -18,7 +18,7 @@ final class MxLinePoint {
 /// - one column per point, at least `sizeControl` wide: a few points stretch
 ///   to the width, more scroll sideways and open at the newest, the edge
 ///   fading while more lies past it;
-/// - the line and its dots in the accent fill, over a `border` baseline,
+/// - the line and its dots in the primary, over a `border` baseline,
 ///   under a dashed guide at [maxValue] carrying [maxLabel] at the newest
 ///   end, where the scroll opens; a room above the guide keeps a dot at the
 ///   maximum and the label inside the scroll's clip;
@@ -119,7 +119,7 @@ class MxLineChart extends StatelessWidget {
   /// end.
   LineChartData _data(BuildContext context, {required double top}) {
     final dimens = context.dimens;
-    final ink = context.status.accentFill;
+    final ink = context.colors.primary;
     return LineChartData(
       minX: -0.5,
       maxX: points.length - 0.5,
