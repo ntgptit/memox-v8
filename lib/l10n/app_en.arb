@@ -745,6 +745,25 @@
   "@topikTimePerQuestion": {
     "description": "Screen 38: the chart's header."
   },
+  "topikScoreTrend": "Score trend",
+  "@topikScoreTrend": {
+    "description": "Screen 36, Overview: the header over the line of scores across submitted attempts (follow-ups spec G8)."
+  },
+  "topikScoreTrendSummary": "Scores of {count} submitted attempts, oldest first: {scores}, out of {max}",
+  "@topikScoreTrendSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "scores": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36: what a screen reader says for the whole score trend, as one node. {scores} lists each submitted attempt's score, oldest first, separated by commas; shown from two attempts."
+  },
   "topikChartSummary": "{count, plural, =1{Time per question, 1 question, longest question {no}: {duration}} other{Time per question, {count} questions, longest question {no}: {duration}}}",
   "@topikChartSummary": {
     "placeholders": {

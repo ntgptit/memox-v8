@@ -12,7 +12,7 @@
 
 ## [shared/ui/screen-handoff/36-topik-test-detail.md](../shared/ui/screen-handoff/36-topik-test-detail.md)
 
-- L81: - **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
+- L84: - **Audit 2026-10-16 (DEV-394):** every History action carries its attempt number in its TalkBack name (`topik_test_detail_history_test.dart::every History action is named with its attempt number for TalkBack (PRODUCT.md, accessibility)`), as `deckMoreActions` names its deck; the visible labels stay short. A delete confirmed while a start still runs is dropped without a word (the busy guard sits after the dialog): OPEN QUESTION Q-A-4, low. A `notFound` refusal says nothing on purpose: the row has already left.
 
 ## [shared/ui/screen-handoff/37-topik-attempt.md](../shared/ui/screen-handoff/37-topik-attempt.md)
 

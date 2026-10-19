@@ -34,10 +34,10 @@ the file does. It does not guess why ForUI was not used.
 | DIRECT_FORUI | 3 | 0 | 0 | 3 |
 | FORUI_ADAPTER | 24 | 0 | 0 | 24 |
 | FORUI_COMPOSITION | 19 | 0 | 0 | 19 |
-| CUSTOM_FLUTTER | 23 | 0 | 0 | 23 |
+| CUSTOM_FLUTTER | 24 | 0 | 0 | 24 |
 | INFRASTRUCTURE | 5 | 10 | 1 | 16 |
 | REVIEW_REQUIRED | 0 | 0 | 0 | 0 |
-| **Total** | **74** | **10** | **1** | **85** |
+| **Total** | **75** | **10** | **1** | **86** |
 
 Counts were computed from the Class column of the three tables below, after
 the corrections of the ForUI research
@@ -86,6 +86,7 @@ total (85) equals the number of Dart files listed: 74 from
 | `lib/shared/widgets/mx_icon_button.dart` | `MxIconButton` | FORUI_ADAPTER | `FButton.icon`, `FButtonVariant.ghost`, `FButtonSizeVariant.lg`, `FButtonStyleDelta`, `FButtonIconContentStyleDelta`; via `MxTooltip` | none | Glyph at `sizeIcon` in a round 48 dp box. `semanticLabel` names it and is its long-press tooltip. Null `onPressed` disables (ForUI dims it). |
 | `lib/shared/widgets/mx_icon_tile.dart` | `MxIconTile`, `MxIconTileSize`, `MxIconTileTone` | CUSTOM_FLUTTER | none | none | Tinted square that leads a row; an icon xor a child (asserted); `seed` only with the tinted tone. |
 | `lib/shared/widgets/mx_inline_banner.dart` | `MxInlineBanner`, `MxBannerTone` | CUSTOM_FLUTTER | none | none | Tinted ground, no edge, tone on glyph and title. A live region, wraps. Actions are compact `MxButton`s passed by the caller. |
+| `lib/shared/widgets/mx_line_chart.dart` | `MxLinePoint`, `MxLineChart` | CUSTOM_FLUTTER | none | none | A line of values from 0 to a maximum drawn with fl_chart's `LineChart` (ADR-026, UIL07; follow-ups spec G8): at least a `sizeControl` column per point (a few stretch to the width, more scroll sideways and open at the newest, with the edge fade), the line and dots in `accentFill` over a `border` baseline, a dashed guide at the maximum carrying its label, a label under each point, no number on a point. One TalkBack node; no animation. TOPIK test detail (36). |
 | `lib/shared/widgets/mx_linear_progress.dart` | `MxLinearProgress` (named `.mastery`), `MxProgressTone` | FORUI_ADAPTER | `FDeterminateProgress`, `FDeterminateProgressStyleDelta`, `FDeterminateProgressMotionDelta`, `DecorationDelta` | `Durations`, `Easing` from `package:flutter/material.dart` | Decorative (`ExcludeSemantics`). Shows its value at once on mount (ForUI would sweep from 0), eases a later change, instant under Remove animations (ForUI's rule) or with `isInstant`. `tone` picks success, primary (drawn in `accentFill`, follow-ups spec G9), neutral or warning. The mastery form fills in the `MasteryRamp` colour and keeps the fill at least its height in from either end. |
 | `lib/shared/widgets/mx_list_row.dart` | `MxListRow` | FORUI_COMPOSITION | via `MxRowInk` (`FTappable`), `MxSpinner` | none | 56 dp, 72 dp with a subtitle or meta. A disabled or busy row blocks every tap and reads as disabled; it dims leading, title and end but not the subtitle or meta. Subtitle xor meta, trailing xor chevron (asserted). `busyLabel` is what TalkBack hears for the busy spinner; without it the busy state is silent (the tag rows pass "Saving this tag"). |
 | `lib/shared/widgets/mx_list_section_header.dart` | `MxListSectionHeader` | CUSTOM_FLUTTER | none | none | Overline read as a heading by screen readers. A trailing widget moves under the label when the row cannot hold both. |

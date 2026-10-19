@@ -429,7 +429,7 @@ Overall Progress, Recent Attempts, History with delete; Summary with the questio
 type breakdown; Review; sync of completed attempts; the round-96 pack for TOPIK I
 and II, 듣기 and 읽기, once the owner supplies the files.
 
-**Phase B:** Score Trend, Needs Review, Bookmarks, Notes, Words with "Create deck
+**Phase B:** Score Trend's Improving / Declining label (the line of scores shipped on 2026-10-19, follow-ups spec G8), Needs Review, Bookmarks, Notes, Words with "Create deck
 from this test" (through `DeckRepository` and `CardRepository.insertCards`, as
 `addStarterDeck` does), Exam mode, estimated grade, more rounds, downloadable
 packs (own spec).

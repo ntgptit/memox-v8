@@ -151,6 +151,8 @@
   "topikWrong": "Sai",
   "topikCorrect": "Đúng",
   "topikTimePerQuestion": "Thời gian mỗi câu",
+  "topikScoreTrend": "Xu hướng điểm",
+  "topikScoreTrendSummary": "Điểm của {count} lượt đã nộp, từ cũ đến mới: {scores}, trên {max}",
   "topikChartSummary": "{count, plural, other{Thời gian mỗi câu, {count} câu, lâu nhất câu {no}: {duration}}}",
   "topikChartSummaryNoTime": "{count, plural, other{Thời gian mỗi câu, {count} câu, chưa ghi thời gian}}",
   "topikAveragePerQuestion": "Trung bình/câu",

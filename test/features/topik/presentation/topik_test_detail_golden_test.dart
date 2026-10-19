@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_line_chart.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_test_detail_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
@@ -82,6 +83,35 @@ void main() {
     libraryTest('overview, $theme', (tester, env) async {
       await seedHistory(env);
       await shoot(tester, env, 'overview');
+    });
+
+    // The score trend under Overall Progress (follow-ups spec G8).
+    libraryTest('overview, the score trend, $theme', (tester, env) async {
+      await seedHistory(env);
+      await shoot(
+        tester,
+        env,
+        'overview_trend',
+        before: () => tester.scrollUntilVisible(
+          find.byType(MxLineChart),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        ),
+      );
+    });
+
+    libraryTest('overview, one submitted attempt: no trend, $theme', (
+      tester,
+      env,
+    ) async {
+      await topikSeedCompleted(
+        env,
+        test,
+        startedAt: libraryToday.subtract(const Duration(days: 1)),
+        correct: 31,
+        elapsedMs: 2700000,
+      );
+      await shoot(tester, env, 'overview_one');
     });
 
     libraryTest('overviewEmpty, $theme', (tester, env) async {

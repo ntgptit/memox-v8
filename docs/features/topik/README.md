@@ -38,7 +38,7 @@ Màn 34–39 đã xây (DEV-394, kế hoạch 6a–6c, 2026-10-15); mỗi detail
 
 | Thứ | Vì sao |
 |---|---|
-| Score Trend, Needs Review, Bookmarks, Notes, tab Words và tạo deck từ đề, Exam mode, cấp ước tính, thêm kỳ, gói nội dung tải về | Phase B ([spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §10); công thức của Trend, Needs Review, cấp và luật Exam mode đã chốt ở BR-TOPIK-029…BR-TOPIK-032 (draft) |
+| Nhãn Improving / Declining của Score Trend (đường điểm đã có từ 2026-10-19, follow-ups spec G8), Needs Review, Bookmarks, Notes, tab Words và tạo deck từ đề, Exam mode, cấp ước tính, thêm kỳ, gói nội dung tải về | Phase B ([spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §10); công thức của Trend, Needs Review, cấp và luật Exam mode đã chốt ở BR-TOPIK-029…BR-TOPIK-032 (draft) |
 | Level drills, 쓰기 (lưu bài, đếm chữ 원고지, bài mẫu), IBT | Phase C |
 | Đồng bộ lượt đang dở | Lượt dở gắn với máy (BR-TOPIK-026) |
 | Đề không phải của NIIED, quảng cáo | Không bao giờ ([ADR-023](../../shared/decisions/ADR-023-luyen-de-topik.md)) |
