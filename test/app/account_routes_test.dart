@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/features/account/presentation/widgets/items/user_row_widget.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/features/account/data/repositories/account_device_repository_impl.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
@@ -437,7 +438,7 @@ void main() {
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);
-    expect(find.text('ann@example.com'), findsOneWidget);
+    expect(find.text(userRowTitle('ann@example.com')), findsOneWidget);
 
     await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();

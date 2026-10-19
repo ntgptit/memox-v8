@@ -34,7 +34,11 @@ class UserRowWidget extends StatelessWidget {
     final isAdmin = user.role == AccountRole.admin;
     return MxListRow(
       leading: const MxIconTile(icon: AppIcons.account),
-      title: user.email,
+      // An email must stay recognisable: its domain tells accounts apart, so
+      // it wraps, and it breaks after the @ rather than inside the domain
+      // (audit 2026-10-19, G5).
+      title: userRowTitle(user.email),
+      titleMaxLines: 2,
       subtitle: isSelf ? l10n.usersJoinedYou(joined) : l10n.usersJoined(joined),
       trailing: MxBadge(
         label: isAdmin ? l10n.usersRoleAdmin : l10n.usersRoleUser,
@@ -44,3 +48,7 @@ class UserRowWidget extends StatelessWidget {
     );
   }
 }
+
+/// [email] as a row's title: a zero-width space after the @, a place the
+/// line may break that draws as nothing, so the domain wraps whole.
+String userRowTitle(String email) => email.replaceFirst('@', '@\u200B');

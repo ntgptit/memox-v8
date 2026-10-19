@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/account/presentation/widgets/items/user_row_widget.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/account/di/user_role_repository_provider.dart';
@@ -51,7 +52,7 @@ void main() {
       ],
     );
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('ann@example.com'), findsOneWidget);
+    expect(find.text(userRowTitle('ann@example.com')), findsOneWidget);
     expect(_refreshButton(tester).onPressed, isNotNull);
 
     roles.users.add(managedUser('bob@example.com'));
@@ -59,11 +60,11 @@ void main() {
     await tester.tap(_refreshAction);
     await tester.pump();
     expect(_refreshButton(tester).onPressed, isNull);
-    expect(find.text('ann@example.com'), findsOneWidget);
+    expect(find.text(userRowTitle('ann@example.com')), findsOneWidget);
 
     gate.complete();
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('bob@example.com'), findsOneWidget);
+    expect(find.text(userRowTitle('bob@example.com')), findsOneWidget);
     expect(_refreshButton(tester).onPressed, isNotNull);
   });
 }

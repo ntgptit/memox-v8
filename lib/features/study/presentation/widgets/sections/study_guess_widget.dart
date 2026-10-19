@@ -64,6 +64,9 @@ class StudyGuessWidget extends StatefulWidget {
 }
 
 class _StudyGuessWidgetState extends State<StudyGuessWidget> {
+  /// The prompt's height cap, in controls (audit 2026-10-19, G5).
+  static const int _promptMaxControls = 4;
+
   static const Duration _hold = Duration(milliseconds: 1200);
   static const int _letterA = 0x41;
 
@@ -145,25 +148,36 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: context.dimens.space8,
                 children: [
-                  Expanded(
-                    child: StudyFaceCardWidget(
-                      label: l10n.studyGuessPrompt,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: context.dimens.space8,
-                        children: [
-                          StudyWholeWordTextWidget(
-                            widget.item.front,
-                            style: context.texts.term,
-                          ),
-                          StudySpeakButtonWidget(
-                            text: widget.item.front,
-                            language: widget.speechLanguage,
-                          ),
-                        ],
+                  // One word does not need half the screen: the prompt is at
+                  // most four controls tall, and the room left goes between
+                  // it and the options, which stay near the thumb (audit
+                  // 2026-10-19, G5).
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight:
+                            context.dimens.sizeControl * _promptMaxControls,
+                      ),
+                      child: StudyFaceCardWidget(
+                        label: l10n.studyGuessPrompt,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: context.dimens.space8,
+                          children: [
+                            StudyWholeWordTextWidget(
+                              widget.item.front,
+                              style: context.texts.term,
+                            ),
+                            StudySpeakButtonWidget(
+                              text: widget.item.front,
+                              language: widget.speechLanguage,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                  const Spacer(),
                   for (final (index, option) in question.options.indexed)
                     _option(context, index, option),
                 ],

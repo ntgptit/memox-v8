@@ -20,7 +20,7 @@ auth spec O9; spec
 | App bar | `MxAppBar` (content) + back, and a Refresh `MxIconButton` while the list can be read | "Users". "Refresh" reads the first page again, as the pull down does, for TalkBack and a keyboard; it is off while that read runs (closing review 2026-10-18, as screen 28). |
 | Search | `MxSearchField` | "Search by email"; asks 400 ms after the last keystroke, and not at all when only spaces changed (P4 minor M5); hidden on the not-admin state. |
 | Overline | `MxListSectionHeader` | "ACCOUNTS" (no count: `role_list` has no total). |
-| Rows | `MxListRow` | Person tile (tinted, the same for all), the email, "Joined {date}" (locale medium date), `MxBadge` "Admin" (primary) or "User" (neutral); no chevron. The admin's own row reads "Joined {date} · You" and does not tap (U1); not dimmed. |
+| Rows | `MxListRow` | Person tile (tinted, the same for all), the email (up to two lines, breaking after the @ so the domain stays whole; audit 2026-10-19, G5), "Joined {date}" (locale medium date), `MxBadge` "Admin" (primary) or "User" (neutral); no chevron. The admin's own row reads "Joined {date} · You" and does not tap (U1); not dimmed. |
 | End | as screen 28 | The next page loads near the end; "No more users"; a failed page is a danger `MxInlineBanner` with Retry; a page refused as not an admin turns the screen to the not-admin state (final review I1). |
 
 **Role sheet** (`MxBottomSheet`, the merge sheet's form): the email as title; `MxOptionRow`s

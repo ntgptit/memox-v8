@@ -270,8 +270,9 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
-  libraryTest('Algorithm takes a row of its own, the card\'s full width '
-      '(critique 2026-09-30 part 3d-2, E9)', (tester, env) async {
+  libraryTest('Algorithm and each date take a row of their own, the card\'s '
+      'full width, so a date keeps its year on one line (critique 2026-09-30 '
+      'part 3d-2, E9; audit 2026-10-19, G5)', (tester, env) async {
     final deckId = await _words(env);
     await insertCard(
       env.db,
@@ -302,6 +303,19 @@ void main() {
     expect(
       tester.getSize(row).width,
       greaterThan(tester.getSize(find.byType(CardScheduleWidget)).width / 2),
+    );
+    // Due and Learned stack, each date on one line.
+    final learned = find.text(_en.cardFactLearned);
+    expect(
+      tester.getTopLeft(learned).dy,
+      greaterThan(tester.getTopLeft(due).dy),
+    );
+    expect(tester.getTopLeft(learned).dx, tester.getTopLeft(due).dx);
+    final dueDate = find.text('Sep 28, 2026');
+    final style = tester.widget<Text>(dueDate).style!;
+    expect(
+      tester.getSize(dueDate).height,
+      lessThanOrEqualTo(style.fontSize! * style.height! + 1),
     );
   });
 }

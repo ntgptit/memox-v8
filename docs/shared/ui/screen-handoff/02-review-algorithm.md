@@ -99,4 +99,5 @@ Notes on the states above:
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.
+- **Visual audit 2026-10-19 (G5):** Kept and Lost stack full width, Kept first; side by side at 360 dp each body broke into one to three words a line.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the unlocked lock strip is a plain card with no hero ground (it states status and is not a door; DESIGN.md "a hero leads somewhere tappable"); the reset confirm takes the warning tone, as the dialog's Lost tile does.

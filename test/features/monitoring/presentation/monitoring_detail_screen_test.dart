@@ -10,6 +10,7 @@ import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
+import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_detail_body_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -123,6 +124,18 @@ void main() {
   });
 
   // Impeccable 2026-09-29 F6: the type reads apart from its message.
+  test('a message drops the type the card already names, and only it', () {
+    for (final (message, type, shown) in [
+      ('PostgrestException(message: X)', 'PostgrestException', 'message: X'),
+      ('StateError: no row', 'StateError', 'no row'),
+      ('Bad state: no row', 'StateError', 'Bad state: no row'),
+      ('PostgrestExceptionX', 'PostgrestException', 'PostgrestExceptionX'),
+      ('only text', '', 'only text'),
+    ]) {
+      expect(withoutType(message, type), shown, reason: message);
+    }
+  });
+
   libraryTest('the error card sets its type apart from its message', (
     tester,
     env,
@@ -134,7 +147,9 @@ void main() {
     final card = tester.widget<SelectableText>(
       find.widgetWithText(
         SelectableText,
-        'PostgrestException\nPostgrestException(message: NOT_AUTHENTICATED)',
+        // The message drops the type the line above already names (audit
+        // 2026-10-19, G5).
+        'PostgrestException\nmessage: NOT_AUTHENTICATED',
       ),
     );
     final type = card.textSpan!.children!.first as TextSpan;

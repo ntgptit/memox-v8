@@ -45,7 +45,7 @@ class _MonitoringDetailBodyWidgetState
   /// the log has neither.
   Widget? _errorCard(String title) {
     final type = widget.record.errorType?.trim() ?? '';
-    final message = widget.record.errorMessage?.trim() ?? '';
+    final message = withoutType(widget.record.errorMessage?.trim() ?? '', type);
     if (type.isEmpty && message.isEmpty) return null;
     return MonitoringCodeCardWidget.error(
       title: title,
@@ -86,4 +86,17 @@ class _MonitoringDetailBodyWidgetState
       ],
     );
   }
+}
+
+/// [message] without a leading [type], which the card already sets apart:
+/// "PostgrestException(message: X)" reads "message: X", "StateError: X"
+/// reads "X" (audit 2026-10-19, G5).
+String withoutType(String message, String type) {
+  if (type.isEmpty || !message.startsWith(type)) return message;
+  final rest = message.substring(type.length).trim();
+  if (rest.startsWith('(') && rest.endsWith(')')) {
+    return rest.substring(1, rest.length - 1).trim();
+  }
+  if (rest.startsWith(':')) return rest.substring(1).trim();
+  return message;
 }

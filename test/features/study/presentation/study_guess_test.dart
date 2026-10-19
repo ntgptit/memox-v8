@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -67,6 +68,18 @@ void main() {
 
     expect(find.text(_en.studyGuessPrompt.toUpperCase()), findsOneWidget);
     expect(find.text('term 1'), findsOneWidget);
+    // The prompt is at most four controls tall, the room left between it
+    // and the options (audit 2026-10-19, G5).
+    final prompt = find.byType(StudyFaceCardWidget);
+    expect(
+      tester.getSize(prompt).height,
+      lessThanOrEqualTo(const AppDimens().sizeControl * 4),
+    );
+    expect(
+      tester.getTopLeft(find.text('apple')).dy -
+          tester.getBottomLeft(prompt).dy,
+      greaterThan(const AppDimens().space24),
+    );
     expect(footerHintIcon(tester), AppIcons.info);
     for (final letter in ['A', 'B', 'C', 'D', 'E']) {
       expect(find.text(letter), findsOneWidget);

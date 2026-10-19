@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/account/presentation/widgets/items/user_row_widget.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
@@ -112,7 +113,7 @@ void main() {
         const UsersScreen(),
         'users_role_sheet',
         before: () async {
-          await tester.tap(find.text('bao.tran@example.com'));
+          await tester.tap(find.text(userRowTitle('bao.tran@example.com')));
           await _settle(tester);
           await _rest(tester);
         },
@@ -126,7 +127,7 @@ void main() {
         const UsersScreen(),
         'users_role_sheet_changed',
         before: () async {
-          await tester.tap(find.text('bao.tran@example.com'));
+          await tester.tap(find.text(userRowTitle('bao.tran@example.com')));
           await _settle(tester);
           await tester.tap(find.text(_en.usersRoleAdminHint));
           await _settle(tester);
@@ -144,7 +145,7 @@ void main() {
         'users_role_sheet_refused',
         roles: roles,
         before: () async {
-          await tester.tap(find.text('ann.nguyen@example.com'));
+          await tester.tap(find.text(userRowTitle('ann.nguyen@example.com')));
           await _settle(tester);
           await tester.tap(find.text(_en.usersRoleUserHint));
           await _settle(tester);
