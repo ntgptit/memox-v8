@@ -89,7 +89,8 @@ ledger cites (2141 tests) were run, and all passed.
 | FIXED-VERIFIED (code and a pinning test; docs-only rows checked by reading) | 95 |
 | FIXED-CODE-ONLY (code read, no pinning test: a comment, a spacing seen in a golden, a Vietnamese string, two guards) | 5 |
 | DEFERRED-OWNER (owner decision pending or deferred by the owner) | 10 |
-| OPEN (confirmed, no clean fix in app code) | 1 (CA-6) |
+| ACCEPTED-LIMITATION (confirmed, no clean fix in app code; accepted by the owner 2026-10-19) | 1 (CA-6) |
+| OPEN | 0 |
 | NOT-REPRODUCIBLE | 1 (TOPIK-5) |
 | FALSE-POSITIVE | 0 rows (half of SHARED-3 is a false positive, noted in its row) |
 | **Total** | **112** |
@@ -200,7 +201,7 @@ is High, P2 is Medium, P3 is Low, and docs-only is Low.
 | CA-3 | Card editor close and Cancel while saving | Looked tappable | Low | `card_editor_form_widget.dart:349,385` | CARD-2 | `onPressed: null` | `card_editor_save_failure_test.dart::edit: while the save runs, Back, Cancel and the flag are off, not dead taps (closing audit 2026-10-17)` | code+test | FIXED-VERIFIED |
 | CA-4 | Card selection prune | Raced a fresh pick | Low | `card_selection_state.dart:46-50` (`retain(checked:)`) | CARD-14 | Only picks that were checked can drop | `card_selection_state_test.dart::retain keeps a pick made while the live ids were read (closing audit 2026-10-17)` | code+test | FIXED-VERIFIED |
 | CA-5 | `MxStepper` busy spinner | Unlabelled | Low | `mx_stepper.dart:193` | LIB-8 same class | `semanticLabel: valueLabel` | `test/shared/widgets/mx_stepper_test.dart::busy: the spinner carries the value's name for TalkBack (closing audit 2026-10-17)` | code+test | FIXED-VERIFIED |
-| CA-6 | `MxStepper` typed value | `Semantics(label)` around `FTextField` without `container`: unproven that TalkBack gets it on the field | Low | `lib/shared/widgets/mx_stepper.dart:196-206`. The existing test uses `find.bySemanticsLabel('Cards per session')` (`mx_stepper_input_test.dart:67-77`), which proves a node carries the label but not that it is the editable-text node (no `isTextField` or `value` check) | SHARED-4 | Strengthen the test (`getSemantics(find.byType(EditableText))`); if it fails add `container: true`. Touches lib/shared, owner approval | Confirmed 2026-10-18 by a semantics-tree walk: the label is on node 9, the text field (node 11) has label "" value "20"; MergeSemantics drops the text-field flag and value, reverted. No ForUI semantics-label API (REG-CA-6) | traced+probe | OPEN |
+| CA-6 | `MxStepper` typed value | `Semantics(label)` around `FTextField` without `container`: unproven that TalkBack gets it on the field | Low | `lib/shared/widgets/mx_stepper.dart:196-206`. The existing test uses `find.bySemanticsLabel('Cards per session')` (`mx_stepper_input_test.dart:67-77`), which proves a node carries the label but not that it is the editable-text node (no `isTextField` or `value` check) | SHARED-4 | Strengthen the test (`getSemantics(find.byType(EditableText))`); if it fails add `container: true`. Touches lib/shared, owner approval | Confirmed 2026-10-18 by a semantics-tree walk: the label is on node 9, the text field (node 11) has label "" value "20"; MergeSemantics drops the text-field flag and value, reverted. No ForUI semantics-label API (REG-CA-6) | traced+probe | ACCEPTED-LIMITATION (owner 2026-10-19) |
 | CA-7 | Docs 28 | Stale transition row | Low | docs only | ACC-D | Fixed | none (prose) | docs | FIXED-VERIFIED |
 | FR-B1 | Account starting | `isAccountStarting` counted Validating, so the offline note was lost offline with a session | High | `can_link_provider.dart:22-25` (now Booting or Bootstrapping only) | Trade-off tracked as AUTH-1 | Reduced to two states | `welcome_screen_test.dart::offline with a session (Validating stays until the network returns), Welcome says it is offline (closing review 2026-10-17)`; `account_settings_row_test.dart::offline with a session (Validating stays until the network returns), Sign in says it needs a connection (closing review 2026-10-17)` | code+test | FIXED-VERIFIED |
 | FR-S1 | Import `previewRows`, `readSource` | No catch: stuck busy with Back swallowed | Medium | `card_import_controller.dart:121-140` (`_whileBusy`), `card_import_screen.dart:63-70` | CARD-9 | Leaves busy on Failure or bug | `card_import_read_failure_test.dart::a failed preview leaves busy, passes the Failure on, and Back still steps back` | code+test | FIXED-VERIFIED |
@@ -507,7 +508,7 @@ paths, the toast lifetime and the import preview's problem state.
 | Reduced motion | PASS (host) | The toast fades only, or shows at once, under reduced or disabled motion (`mx_snackbar_test.dart`). |
 | Text scaling | Out of product scope above 1.0 | PRODUCT.md:87. At 1.5× the sweep found 3 unreachable-content cases and some cut lines (REG-SCALE), recorded only. |
 | Error feedback | PASS (host) | Every held flow says what failed, a bug included (REG-LIB-6). |
-| Typed value in `MxStepper` | OPEN (Low) | REG-CA-6: the edit field has no name for TalkBack. |
+| Typed value in `MxStepper` | ACCEPTED LIMITATION (Low; owner 2026-10-19) | REG-CA-6: the edit field has no name for TalkBack until ForUI gives `FTextField` a semantics label; the stepper's own node is named just before it. |
 | **TalkBack on a device** | **NOT TESTED** | No device was available. Every claim above comes from widget tests of the semantics tree. |
 
 ## 10. Responsive verification
@@ -547,15 +548,15 @@ Results:
 
 See [REGRESSION_FINDINGS.md](REGRESSION_FINDINGS.md):
 - **Open:**
-  - REG-REMINDER-TAP: Medium, blocked by specification;
-  - REG-CA-6;
   - REG-SWEEP-1 to REG-SWEEP-4;
   - REG-AV-REST;
   - REG-ANALYZE-2;
-  - REG-HELD-SCOPE;
   - REG-STATEERROR;
   - AUTH-1;
   - TOPIK-5.
+- **Decided by the owner (2026-10-19):** REG-REMINDER-TAP (kept, written
+  into BR-REMINDER-008) and REG-CA-6 (accepted limitation until ForUI).
+- **Fixed on 2026-10-19:** REG-HELD-SCOPE (§12).
 - **Owner-deferred in the ledger:** STUDYB-7, STUDYB-9, SET-9, ACC-7,
   SHARED-9, SHARED-10, SET-7, STUDYB-12 and STUDYB-15.
 - **Blocked by the environment:**

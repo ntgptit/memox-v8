@@ -112,7 +112,7 @@ turns the reminder on.
 - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`.
 - The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a small `MxButton`.
 - "What it says" is built from the notification's own strings, in en and vi, so it matches what is shown.
-- **Open for the owner (closing acceptance 2026-10-18):** a tap on the reminder runs `_router.go(AppRoutes.study)` (`lib/app/app.dart:154-156`) whatever route is open, so it replaces the whole stack: an unsaved card-editor draft or any other in-memory form is dropped without asking. BR-REMINDER-008 says only that the tap opens Study home and does not cover this, and no test pins what happens to the open route (`app/reminder_tap_test.dart` covers the destination only). Flagged for an owner decision; no code changed.
+- **Owner ruling (2026-10-19, REG-REMINDER-TAP):** a tap on the reminder runs `_router.go(AppRoutes.study)` (`lib/app/app.dart:154-156`) whatever route is open, so it replaces the whole stack: an unsaved card-editor draft or any other in-memory form is dropped without asking. The owner kept this behaviour, and it is now an edge case of BR-REMINDER-008. No code changed. `app/reminder_tap_test.dart` covers the destination only.
 - **Q-C-1 (owner, 2026-10-16):** the reminder hints keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Accessibility

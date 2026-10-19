@@ -26,3 +26,4 @@ Không áp dụng
 |---|---|
 | Chạm notification | Mở Study Home, không tự mở phiên (BR-REMINDER-008) |
 | Vuốt bỏ notification | Không đụng study state, không ghi history (BR-REMINDER-008) |
+| Chạm notification khi đang mở một form chưa lưu (ví dụ card editor) | Mở Study Home, thay cả stack đang mở; bản nháp chưa lưu bị mất, không hỏi trước (owner chốt 2026-10-19) |

@@ -191,8 +191,9 @@ class _MxStepperState extends State<MxStepper> {
           heightFactor: 1,
           child: switch ((widget.isBusy, _isEditing)) {
             (true, _) => MxSpinner(semanticLabel: widget.valueLabel),
-            // The typed number keeps the value's name: the edit box alone
-            // would reach TalkBack unnamed.
+            // The value's name for the typed number. TalkBack still reaches
+            // ForUI's edit box, a node of its own, unnamed: FTextField takes
+            // no semantics label (REG-CA-6, accepted by the owner).
             (_, true) => SizedBox(
               width: MxStepper._valueColumn,
               child: Semantics(
