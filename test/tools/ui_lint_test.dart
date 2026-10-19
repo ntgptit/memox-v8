@@ -90,6 +90,7 @@ void main() {
       'lib/core/theme/app_theme.dart',
       'lib/features/deck/deck_list.dart',
       'lib/shared/widgets/mx_app_shell.dart',
+      'lib/shared/widgets/mx_bar_chart.dart',
       'lib/shared/widgets/mx_dialog.dart',
     });
   });
@@ -99,6 +100,8 @@ void main() {
     // A ForUI import in a file outside lib/core/theme, lib/shared, lib/app.
     expect(_count(violations, 'uil06_forui_import.dart', 'UIL06'), 1);
     expect(_count(violations, 'uil01_forui_overlay.dart', 'UIL06'), 1);
+    // An fl_chart import outside lib/shared/widgets.
+    expect(_count(violations, 'uil07_fl_chart_import.dart', 'UIL07'), 1);
   }, timeout: const Timeout(Duration(minutes: 3)));
 
   test('a Windows path becomes a forward-slash path relative to the root', () {

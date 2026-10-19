@@ -106,7 +106,7 @@ mechanism in the other `Mx*` widgets before closing.
 
 | Gate | Command |
 |---|---|
-| UI boundary lint | `dart run tools/ui_lint/ui_lint.dart [files]` (UIL00..UIL06, table in `FORUI_ARCHITECTURE.md`) |
+| UI boundary lint | `dart run tools/ui_lint/ui_lint.dart [files]` (UIL00..UIL07, table in `FORUI_ARCHITECTURE.md`) |
 | Theme structure, palette, removed names | `python3 tools/design/check.py` |
 | Design docs equal the theme | `test/tools/design_doc_test.dart` (`MEMOX_WRITE_DESIGN_DOCS=1` rewrites) |
 | Contrast | `test/core/theme/token_contrast_test.dart` |

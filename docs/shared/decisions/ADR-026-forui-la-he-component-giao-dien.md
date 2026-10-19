@@ -61,12 +61,19 @@ system Material riêng.
   `Durations`, `Easing`, `ThemeMode`); `material_ui` chỉ cho kiểu ForUI tự nhận
   (`ThemeExtension`, `InputBorder`). Theme host (`materialHostTheme`) được suy ra từ
   `FColors` và thang chữ ForUI, không ngược lại (`tools/ui_lint` UIL03, UIL05).
+- **Biểu đồ vẽ bằng `fl_chart`, chỉ trong widget `Mx*`.** ForUI không có
+  component biểu đồ, nên biểu đồ dùng `fl_chart` (MIT, ghim đúng phiên bản),
+  bọc trong widget `Mx*` của `lib/shared/widgets/` (bản đầu tiên là
+  `MxStackedDayBars`, quyết định của chủ sở hữu ngày 2026-10-19). Mọi màu,
+  kích thước và kiểu chữ truyền từ theme; TalkBack do widget `Mx*` dựng, vì
+  `fl_chart` không tạo node ngữ nghĩa. `package:fl_chart` chỉ được import trong
+  `lib/shared/widgets/` (`tools/ui_lint` UIL07).
 - **Overlay chỉ qua adapter.** `showMxDialog`, `showMxBottomSheet` và
   `showMxSnackbar` là nơi duy nhất mở route overlay (UIL01). Barrier là
   `FColors.barrier`; popup đang giữ (`MxHeldRoute`) chặn chạm barrier, kéo và Back.
 - **Không Cupertino, chỉ Android.** iOS không thuộc phạm vi xác minh; Cupertino và
   `.adaptive` bị cấm (UIL02).
-- **Cổng mới thay cổng M3.** `tools/ui_lint` (UIL00..UIL06) thay `tools/m3_lint`;
+- **Cổng mới thay cổng M3.** `tools/ui_lint` (UIL00..UIL07) thay `tools/m3_lint`;
   rule guard `colors_reads_are_forui_roles` thay `color_scheme_reads_are_m3_roles`;
   `test/app/production_theme_test.dart` thay hai test M3 của `test/app/`. Danh sách
   tên bị cấm (`tools/design/removed_symbols.json`) phủ toàn bộ theme Material 3.

@@ -44,7 +44,7 @@ audit reaches the screen. The visual system is in
 | 19 | Study · Recall | 4 | FE-A6, study speech (2026-10-07) | built | [19-study-recall.md](19-study-recall.md) |
 | 20 | Study · Fill | 4 | FE-A6 | built | [20-study-fill.md](20-study-fill.md) |
 | 21 | Session summary | 9 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
-| 22 | Progress | 13 | FE-A9 | built | [22-progress.md](22-progress.md) |
+| 22 | Progress | 14 | FE-A9 | built | [22-progress.md](22-progress.md) |
 | 23 | Settings | 15 | FE-A3, SB-U1, FE-B8, FE-B9, SQL log switch (2026-10-07), study speech (2026-10-07), settings hub (2026-10-07) | built | [23-settings.md](23-settings.md) |
 | 23a | Settings · Study options | 9 | FE-A3, study speech (2026-10-07), settings hub (2026-10-07), owner compaction (2026-10-07) | built | [23a-study-defaults.md](23a-study-defaults.md) |
 | 23b | Settings · Admin (admin only) | 2 | FE-B8, FE-B11, SQL log switch (2026-10-07), settings hub (2026-10-07) | built | [23b-admin.md](23b-admin.md) |

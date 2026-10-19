@@ -125,6 +125,7 @@ import alias or a local function of the same name changes nothing.
 | UIL04 | `barrierColor`, `modalBarrierColor`, `scrimColor`, `drawerScrimColor`, `surfaceTintColor` arguments | `lib/core/theme/` |
 | UIL05 | Building `ThemeData`, `ColorScheme`, `TextTheme`, `Typography`, `FThemeData`, `FColors`, `FTypography`, `FTypeface`, `FStyle`; anywhere: seed schemes, `ThemeData(platform:)` | `lib/core/theme/` |
 | UIL06 | `package:forui` imported | `lib/core/theme/`, `lib/shared/`, `lib/app/` |
+| UIL07 | `package:fl_chart` imported | `lib/shared/widgets/` |
 
 `dart run tools/ui_lint/ui_lint.dart` lints `lib/` (the gate's `ui_lint` step);
 its fixtures and tests are `tools/ui_lint/fixtures/` and `test/tools/ui_lint_test.dart`.

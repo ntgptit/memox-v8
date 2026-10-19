@@ -13,24 +13,21 @@ void main() {
     MxBarSeries(label: 'Wrong', color: Colors.red),
   ];
 
-  testWidgets('each series shows its label beside a dot of its colour', (
-    tester,
-  ) async {
+  testWidgets('each series shows its label beside an 8-wide dot of its '
+      'colour', (tester) async {
     await pumpMx(tester, const MxChartLegend(series: series));
 
     for (final entry in series) {
       expect(find.text(entry.label), findsOneWidget);
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is Container &&
-              widget.decoration is BoxDecoration &&
-              (widget.decoration! as BoxDecoration).shape == BoxShape.circle &&
-              (widget.decoration! as BoxDecoration).color == entry.color,
-        ),
-        findsOneWidget,
-        reason: entry.label,
+      final dot = find.byWidgetPredicate(
+        (widget) =>
+            widget is Container &&
+            widget.decoration is BoxDecoration &&
+            (widget.decoration! as BoxDecoration).shape == BoxShape.circle &&
+            (widget.decoration! as BoxDecoration).color == entry.color,
       );
+      expect(dot, findsOneWidget, reason: entry.label);
+      expect(tester.getSize(dot), const Size.square(8), reason: entry.label);
     }
   });
 
