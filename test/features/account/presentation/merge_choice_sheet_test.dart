@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -81,12 +82,17 @@ void main() {
     await tester.tap(find.text('go'));
     await _settle(tester);
 
-    expect(find.text(_en.accountTakenEmail('b@example.com')), findsOneWidget);
+    expect(
+      find.text(_en.accountTakenEmail(wrappableEmail('b@example.com'))),
+      findsOneWidget,
+    );
     // The sheet's heading is a heading to TalkBack (audit 2026-10-17).
     final headingProbe = tester.ensureSemantics();
     await tester.pump();
     expect(
-      tester.getSemantics(find.text(_en.accountTakenEmail('b@example.com'))),
+      tester.getSemantics(
+        find.text(_en.accountTakenEmail(wrappableEmail('b@example.com'))),
+      ),
       isSemantics(isHeader: true, namesRoute: true),
     );
     headingProbe.dispose();
@@ -213,7 +219,11 @@ void main() {
     expect(widthOf(_en.commonCancel), widthOf(_en.accountContinue));
     // The title, the rows and the footer share the 16 dp edge.
     expect(
-      tester.getTopLeft(find.text(_en.accountTakenEmail('b@example.com'))).dx,
+      tester
+          .getTopLeft(
+            find.text(_en.accountTakenEmail(wrappableEmail('b@example.com'))),
+          )
+          .dx,
       tester.getTopLeft(find.widgetWithText(MxButton, _en.commonCancel)).dx,
     );
   });

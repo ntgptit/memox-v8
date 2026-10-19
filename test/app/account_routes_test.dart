@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:memox/features/account/presentation/widgets/items/user_row_widget.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/features/account/data/repositories/account_device_repository_impl.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
@@ -147,7 +147,7 @@ void main() {
 
     expect(find.byType(AccountScreen), findsOneWidget);
     expect(find.byType(CodeScreen), findsNothing);
-    expect(find.text('a@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('a@example.com')), findsOneWidget);
   });
 
   accountTest('the attach flow is closed to a device that holds an account', (
@@ -175,7 +175,7 @@ void main() {
     _router(tester).go(AppRoutes.settings);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('a@example.com'));
+    await tester.tap(find.text(wrappableEmail('a@example.com')));
     await tester.pumpAndSettle();
     expect(find.byType(AccountScreen), findsOneWidget);
 
@@ -285,7 +285,7 @@ void main() {
     await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
     _router(tester).go(AppRoutes.settings);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('a@example.com'));
+    await tester.tap(find.text(wrappableEmail('a@example.com')));
     await tester.pumpAndSettle();
     expect(find.byType(AccountScreen), findsOneWidget);
 
@@ -438,7 +438,7 @@ void main() {
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);
-    expect(find.text(userRowTitle('ann@example.com')), findsOneWidget);
+    expect(find.text(wrappableEmail('ann@example.com')), findsOneWidget);
 
     await tester.tap(byControlLabel('Back'));
     await tester.pumpAndSettle();

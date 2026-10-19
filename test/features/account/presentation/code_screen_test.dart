@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
@@ -38,7 +39,7 @@ void main() {
     await pumpCode(tester, env, world, screen());
 
     expect(find.text(_en.accountCodeSentTo), findsOneWidget);
-    expect(find.text('a@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('a@example.com')), findsOneWidget);
     await tester.enterText(find.byType(FTextField), '123456');
     await _settle(tester);
 

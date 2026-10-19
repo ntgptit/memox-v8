@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
@@ -127,7 +128,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    expect(find.text('a@example.com'), findsOneWidget);
+    expect(find.text(wrappableEmail('a@example.com')), findsOneWidget);
     expect(find.text(_en.accountSignedInHint), findsOneWidget);
   });
 
@@ -144,7 +145,7 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    await tester.tap(find.text('a@example.com'));
+    await tester.tap(find.text(wrappableEmail('a@example.com')));
     expect(accounts, 1);
     await tester.pump(const Duration(milliseconds: 200));
   });

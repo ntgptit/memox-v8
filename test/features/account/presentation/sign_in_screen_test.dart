@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -125,7 +126,7 @@ void main() {
       ),
       overrides: accountOverrides(world),
     );
-    expect(find.text('a@example.com'), findsNothing);
+    expect(find.text(wrappableEmail('a@example.com')), findsNothing);
 
     email.value = 'a@example.com';
     await tester.pump();

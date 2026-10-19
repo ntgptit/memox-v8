@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/text/email_text.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -21,9 +22,13 @@ void main() {
     final handle = tester.ensureSemantics();
     await pumpCode(tester, env, world, screen());
 
+    // The address breaks before its domain; TalkBack skips the zero-width
+    // space (audit 2026-10-19, G5).
     expect(
-      tester.getSemantics(find.text('a@example.com')),
-      isSemantics(label: '${_en.accountCodeSentTo}\na@example.com'),
+      tester.getSemantics(find.text(wrappableEmail('a@example.com'))),
+      isSemantics(
+        label: '${_en.accountCodeSentTo}\n${wrappableEmail('a@example.com')}',
+      ),
     );
     handle.dispose();
   });
