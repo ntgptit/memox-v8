@@ -84,6 +84,10 @@ class _MxScrollFadeState extends State<MxScrollFade> {
     final ground = _ground(context);
     final (fadeStart, fadeEnd) = _edges();
     return Stack(
+      // A horizontal fade reaches past the edge as far as a focus ring does:
+      // MxChipRow paints that far, and the fade must cover it (audit
+      // 2026-10-19, G6).
+      clipBehavior: Clip.none,
       children: [
         NotificationListener<ScrollMetricsNotification>(
           onNotification: (notification) => _onMetrics(notification.metrics),
@@ -133,12 +137,15 @@ class _Fade extends StatelessWidget {
       end: isVertical ? Alignment.bottomCenter : Alignment.centerRight,
       colors: isAtEnd ? [clear, ground] : [ground, clear],
     );
+    final overhang = isVertical ? 0.0 : -context.focusOutlineReach;
     return Positioned(
-      left: isVertical || !isAtEnd ? 0 : null,
-      right: isVertical || isAtEnd ? 0 : null,
+      left: isVertical ? 0 : (!isAtEnd ? overhang : null),
+      right: isVertical ? 0 : (isAtEnd ? overhang : null),
       top: !isVertical || !isAtEnd ? 0 : null,
       bottom: !isVertical || isAtEnd ? 0 : null,
-      width: isVertical ? null : context.dimens.space24,
+      width: isVertical
+          ? null
+          : context.dimens.space24 + context.focusOutlineReach,
       height: isVertical ? context.dimens.space24 : null,
       child: IgnorePointer(
         child: ExcludeSemantics(

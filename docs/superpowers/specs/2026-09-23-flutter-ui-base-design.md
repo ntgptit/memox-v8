@@ -569,7 +569,7 @@ item names where it comes from.
 | 154 | 10: the section header and the history's cycle header share one style | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 155 | 14: the session limit is reached only through the unlabeled Study options icon | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 156 | 15: read-only app defaults offer no way to Settings | critique 2026-09-30, deferred by part 3d-2 (E1) |
-| 157 | 22: the streak card nests a tile under two overlines; the deck name shows twice on deck progress (title and breadcrumb, global ruling P2-L4) | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 157 | 22: the streak half is closed by the visual audit G6 (2026-10-19): each streak is a tile beside its figure, no muted box or eyebrow. Open: the deck name shows twice on deck progress (title and breadcrumb, global ruling P2-L4) | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 158 | 24: the denied banner says "turn the reminder on again" beside a "Try again" button | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 159 | 27: the status values (last synced, waiting) sit in the small subtitle line | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 160 | 05: the merge dialog is dense; the tag actions sheet's header differs from other sheets | critique 2026-09-30, deferred by part 3d-2 (E1) |
@@ -577,7 +577,7 @@ item names where it comes from.
 | 162 | 15: a draft edited back to the stored values leaves "Not saved" beside a disabled "Retry save" | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 | 163 | 24: the reminder dialog passes the literal `minDigits: 2` beside its `_digits` constant | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 | 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
-| 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 165 | Closed by the visual audit G6 (2026-10-19): the section note steps aside while the offline note shows. Was: 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 167 | The bottom bar's glass blur blurred nothing (the body ends where the bar starts) — closed by DEV-302 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.1): the bar is the page surface with the ghost edge; `AppEffects.glassOpacity`, `glassBlur` and `MxDerivedColors.chromeGlass` removed | audit 2026-10-08 F-01 |
 | 168 | The empty state's footnote drew as a boxed `MxNote`, a second surface under the card's actions — closed by DEV-303 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.2): the footnote is `MxNote.hint`, the one footnote form | audit 2026-10-08 F-02 |

@@ -68,7 +68,7 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
     return MxBar(
       value: answer.timeSpentMs.toDouble(),
       color: _statusColour(context, status),
-      label: '${answer.questionNo}',
+      label: answer.questionNo.toString(),
       cellKey: ValueKey('topik-chart-cell-${answer.questionNo}'),
       marker: IconTheme(
         data: IconThemeData(

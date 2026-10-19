@@ -146,7 +146,8 @@ The tag filter's frames are rows of the States table (tagFilter*), their goldens
 
 ## Copy
 
-- Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
+- Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "Study this deck · {n} due".
+- Rows: the status label "New" · "Learning" · "Reviewing" · "Mastered", shown upper-case (`cardStatus*`); the flag keeps its slot on every row, so the due chip never moves (audit 2026-10-19, G6).
 - Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Cards" · "Showing {n} of {total}" · "Newest" · "Due first".
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Trash".
 - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".

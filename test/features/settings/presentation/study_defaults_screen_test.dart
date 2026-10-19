@@ -155,6 +155,12 @@ void main() {
       findsOneWidget,
     );
     expect(store.writes, 0);
+    // + steps from the stored limit, so it stays offered past the refused
+    // 250 (Transitions, invalidLimit; audit 2026-10-19, G6).
+    expect(
+      tester.widget<MxStepper>(find.byType(MxStepper)).onIncrement,
+      isNotNull,
+    );
   });
 
   libraryTest('a failed save names the kept value and Retry saves it (E2)', (

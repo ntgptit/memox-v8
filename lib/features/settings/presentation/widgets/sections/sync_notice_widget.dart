@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
@@ -40,7 +39,7 @@ class SyncNoticeWidget extends StatelessWidget {
     final failure = status.lastFailure;
     if (status.rejectedCount == 0 && failure != null) {
       final sentence = syncFailureSentence(l10n, failure.kind);
-      if (failure.kind == SyncFailureKind.network) {
+      if (syncIsOffline(status)) {
         return MxNote(icon: AppIcons.offline, text: sentence);
       }
       return MxInlineBanner(tone: MxBannerTone.warning, message: sentence);

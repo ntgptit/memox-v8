@@ -29,7 +29,7 @@ above both at full width.
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `study_home_loaded_light.png` | `study_home_loaded_dark.png` | The hero's due breakdown (overdue · today) and the primary resume dot (see Rulings). |
-| noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload card and deck list, no Resume card (BR-STUDY-075 A1). |
+| noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload card and deck list, no Resume card (BR-STUDY-075 A1). Scrolled to the end, `study_home_scrolled_light/dark.png` shows the Practice slot under six decks (audit 2026-10-19, G6). |
 | zero | `study_home_zero_light.png` | `study_home_zero_dark.png` | Every root deck holds cards but nothing is due; rows still list every deck with 0/0/0 (BR-STUDY-008, BR-STUDY-077). |
 | noDecks | `study_home_no_decks_light.png` | `study_home_no_decks_dark.png` | "Browse starter decks" opens the Starter Library (screen 03), "Go to Library" the Library root (UC-STUDY-002 A4). |
 | noCards | `study_home_no_cards_light.png` | `study_home_no_cards_dark.png` | Root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |

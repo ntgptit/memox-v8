@@ -23,6 +23,9 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
 }
 
+const String _syncNote =
+    "MemoX syncs on its own when you're online. Your study never waits for it.";
+
 void main() {
   libraryTest('Sync now runs and says Synced', (tester, env) async {
     final commands = FakeSyncCommands();
@@ -195,6 +198,8 @@ void main() {
     await _settle(tester);
 
     expect(find.byType(MxFloatingNotice), findsNothing);
+    // A server failure keeps the standing note; only offline drops it.
+    expect(find.text(_syncNote), findsOneWidget);
     final banner = find.byType(MxInlineBanner);
     expect(banner, findsOneWidget);
     expect(
@@ -207,6 +212,28 @@ void main() {
         tester.getBottomLeft(find.byType(SyncStatusSectionWidget)).dy,
       ),
     );
+  });
+
+  libraryTest('offline: the offline note says it, and the standing note '
+      'steps aside (audit 2026-10-19, G6)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        SyncStatus(
+          pendingCount: 2,
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.network,
+            env.clock.now(),
+          ),
+        ),
+      ),
+    );
+    await _settle(tester);
+
+    expect(find.byIcon(AppIcons.offline), findsOneWidget);
+    expect(find.text(_syncNote), findsNothing);
   });
 
   libraryTest('refused rows: Try again is the one primary; Sync now is '

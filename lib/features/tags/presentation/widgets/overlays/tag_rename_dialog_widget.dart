@@ -241,9 +241,22 @@ class _MergePanel extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               MxTagChip(label: tagWithCount(source.name, source.cardCount)),
-              const Icon(AppIcons.arrowRight),
-              MxTagChip(
-                label: tagWithCount(merge.target.name, merge.mergedCardCount),
+              // The arrow travels with the target, so a wrap never leaves it
+              // pointing at nothing (audit 2026-10-19, G6).
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: context.dimens.space8,
+                children: [
+                  const Icon(AppIcons.arrowRight),
+                  Flexible(
+                    child: MxTagChip(
+                      label: tagWithCount(
+                        merge.target.name,
+                        merge.mergedCardCount,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -157,11 +157,7 @@ void main() {
 
     expect(
       tester.getTopLeft(tray).dy,
-      greaterThan(
-        tester
-            .getBottomLeft(find.text(_en.progressStreakCurrent.toUpperCase()))
-            .dy,
-      ),
+      greaterThan(tester.getBottomLeft(find.byType(ProgressStreakWidget)).dy),
     );
     expect(
       tester.getTopLeft(tray).dy,
@@ -225,6 +221,19 @@ void main() {
     expect(find.text(_en.progressTodayNone), findsOneWidget);
     expect(find.text(_en.progressStreakHeld), findsOneWidget);
     expect(find.text(_en.progressHeldNote(4)), findsOneWidget);
+    // The streak is one figure, as Today's, with no eyebrow over it (audit
+    // 2026-10-19, G6).
+    final streak = find.byType(ProgressStreakWidget);
+    final figure = tester.element(streak).texts.figure.fontSize;
+    expect(
+      tester
+          .widgetList<Text>(
+            find.descendant(of: streak, matching: find.byType(Text)),
+          )
+          .where((text) => text.style?.fontSize == figure),
+      hasLength(1),
+    );
+    expect(find.text(_en.progressStreakCurrent.toUpperCase()), findsNothing);
   });
 
   libraryTest('a lost streak names the day it ended', (tester, env) async {

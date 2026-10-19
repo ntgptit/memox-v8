@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
@@ -194,6 +195,12 @@ void main() {
     );
     expect(find.text('động từ · 46'), findsOneWidget);
     expect(find.text('ngữ pháp · 77'), findsOneWidget);
+    // The arrow sits on the target's line, so a wrap moves them together
+    // (audit 2026-10-19, G6).
+    expect(
+      tester.getCenter(find.byIcon(AppIcons.arrowRight)).dy,
+      closeTo(tester.getCenter(find.text('ngữ pháp · 77')).dy, 1),
+    );
     expect(find.text(metaDots(_en.tagsLengthUnique(8, 50))), findsOneWidget);
     expect(_confirm(tester, _en.tagsMergeConfirm).tone, MxButtonTone.warning);
 

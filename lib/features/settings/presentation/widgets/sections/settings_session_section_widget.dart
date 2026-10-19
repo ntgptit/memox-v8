@@ -30,6 +30,9 @@ class SettingsSessionSectionWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final state = ref.watch(settingsControllerProvider);
     final limit = state.cardLimitDraft ?? stored.cardLimit;
+    // − and + step from where the controller steps: the stored limit while a
+    // typed one is invalid (Transitions, invalidLimit; audit 2026-10-19, G6).
+    final stepBase = state.isCardLimitInvalid ? stored.cardLimit : limit;
     return MxSection(
       title: l10n.settingsSessionSection,
       note: l10n.settingsSessionNote,
@@ -46,10 +49,10 @@ class SettingsSessionSectionWidget extends ConsumerWidget {
             incrementLabel: l10n.settingsMoreCards,
             valueLabel: l10n.settingsCardLimit,
             editHint: l10n.commonEdit,
-            onDecrement: limit > StudyOptions.minCardLimit
+            onDecrement: stepBase > StudyOptions.minCardLimit
                 ? () => _controller(ref).stepCardLimit(-1)
                 : null,
-            onIncrement: limit < StudyOptions.maxCardLimit
+            onIncrement: stepBase < StudyOptions.maxCardLimit
                 ? () => _controller(ref).stepCardLimit(1)
                 : null,
             onValueSubmitted: (text) => _controller(ref).typeCardLimit(text),

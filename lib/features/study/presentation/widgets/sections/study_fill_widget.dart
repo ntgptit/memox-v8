@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -174,7 +175,10 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
         // An instruction takes the info glyph and a wrong answer the repeat
         // one, as in every mode (critique 2026-10-02 F7).
         SessionFooterHintWidget(
-          icon: _isWrong ? AppIcons.repeat : AppIcons.info,
+          // The wrong state's footer states the grading rule, not the
+          // comeback (the tag above says that), so it takes info (audit
+          // 2026-10-19, G6).
+          icon: AppIcons.info,
           text: _isWrong
               ? l10n.studyFillHintWrong
               : isHintShown
@@ -275,19 +279,33 @@ class _Corrected extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tag = l10n.studyFillTagWrong;
+    final colors = context.colors;
+    final struck = context.texts.term.copyWith(
+      color: colors.mutedForeground,
+      decoration: TextDecoration.lineThrough,
+      decorationColor: colors.mutedForeground,
+    );
+    final differing = struck.copyWith(
+      color: colors.error,
+      decorationColor: colors.error,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,
       children: [
-        Text(
-          typed,
+        // Struck through as a whole; only the letters that differ from the
+        // term are in `error`, so the eye finds the slip (V1; audit
+        // 2026-10-19, G6).
+        Text.rich(
+          TextSpan(
+            children: [
+              for (final (grapheme, isMatch) in typedAgainst(typed, term))
+                TextSpan(text: grapheme, style: isMatch ? null : differing),
+            ],
+          ),
           semanticsLabel: l10n.studyFillTyped(typed),
           textAlign: TextAlign.center,
-          style: context.texts.term.copyWith(
-            color: context.colors.error,
-            decoration: TextDecoration.lineThrough,
-            decorationColor: context.colors.error,
-          ),
+          style: struck,
         ),
         Text(
           term,
@@ -306,4 +324,42 @@ class _Corrected extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Each character of [typed] and whether it is one the term also has, in
+/// order (the longest common subsequence, ignoring case): the rest are the
+/// slip a wrong answer shows in `error`.
+List<(String, bool)> typedAgainst(String typed, String term) {
+  final a = typed.characters.toList();
+  final b = term.characters.toList();
+  // lengths[i][j]: the common subsequence of a[i..] and b[j..].
+  final lengths = List.generate(
+    a.length + 1,
+    (_) => List.filled(b.length + 1, 0),
+  );
+  for (var i = a.length - 1; i >= 0; i--) {
+    for (var j = b.length - 1; j >= 0; j--) {
+      lengths[i][j] = a[i].toLowerCase() == b[j].toLowerCase()
+          ? lengths[i + 1][j + 1] + 1
+          : math.max(lengths[i + 1][j], lengths[i][j + 1]);
+    }
+  }
+  final marked = <(String, bool)>[];
+  var i = 0;
+  var j = 0;
+  while (i < a.length) {
+    if (j < b.length && a[i].toLowerCase() == b[j].toLowerCase()) {
+      marked.add((a[i], true));
+      i++;
+      j++;
+      continue;
+    }
+    if (j < b.length && lengths[i][j + 1] >= lengths[i + 1][j]) {
+      j++;
+      continue;
+    }
+    marked.add((a[i], false));
+    i++;
+  }
+  return marked;
 }

@@ -13,6 +13,7 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_due_chip_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
@@ -105,6 +106,20 @@ void main() {
       findsNothing,
     );
     expect(find.byIcon(AppIcons.flagged), findsOneWidget);
+    // The flag never moves the due chip (audit 2026-10-19, G6).
+    double chipOffset(String front) {
+      final row = find.ancestor(
+        of: find.text(front),
+        matching: find.byType(CardRowWidget),
+      );
+      final chip = find.descendant(
+        of: row,
+        matching: find.byType(CardDueChipWidget),
+      );
+      return tester.getTopLeft(chip).dy - tester.getTopLeft(row).dy;
+    }
+
+    expect(chipOffset('mul'), chipOffset('annyeong'));
   });
 
   libraryTest('each chip counts its filter; a chip filters the rows', (

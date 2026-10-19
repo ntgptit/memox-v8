@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_fill_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -98,6 +99,19 @@ void main() {
     expect(find.text('banana'), findsOneWidget);
   });
 
+  test('the typed text against the term: the longest run they share, '
+      'ignoring case, the rest the slip', () {
+    String slip(String typed, String term) => [
+      for (final (grapheme, isMatch) in typedAgainst(typed, term))
+        isMatch ? '.' : grapheme,
+    ].join();
+    expect(slip('term 9', 'term 1'), '.....9');
+    expect(slip('aple', 'apple'), '....');
+    expect(slip('Applle', 'apple'), '....l.');
+    expect(slip('xyz', 'apple'), 'xyz');
+    expect(slip('강아지', '강아지들'), '...');
+  });
+
   libraryTest('a wrong answer is struck through beside the right term, '
       'announced, and waits for Continue (F3, V1, V10, BR-STUDY-059)', (
     tester,
@@ -113,12 +127,22 @@ void main() {
 
     final struck = tester.widget<Text>(find.text('term 9'));
     expect(struck.style!.decoration, TextDecoration.lineThrough);
+    // Only the slip is in the error ink (audit 2026-10-19, G6).
+    final context = tester.element(find.text('term 9'));
+    expect(
+      [
+        for (final span
+            in (struck.textSpan! as TextSpan).children!.cast<TextSpan>())
+          if (span.style?.color == context.colors.error) span.text,
+      ],
+      ['9'],
+    );
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
     expect(find.textContaining(_en.studyFillHintWrong), findsOneWidget);
-    // Wrong takes the repeat glyph, as Recall's timeout and Match's wrong
-    // pair do (critique 2026-10-02 F7; audit 2026-10-17).
-    expect(footerHintIcon(tester), AppIcons.repeat);
+    // The footer states the grading rule, so it takes info; the tag above
+    // says the card comes back (audit 2026-10-19, G6).
+    expect(footerHintIcon(tester), AppIcons.info);
     expect(find.byType(FTextField), findsNothing);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
