@@ -167,7 +167,7 @@ divided section. P3; it needs the owner's approval to grow a shared widget.
 | 20 Fill | the wrong state's footer takes the "comes back" icon | the info icon, matching its text | P2 |
 
 Copy changes (owner's words, P2): drop the repeated lock sentence (02), drop
-the second sentence of the SQL log hint so it fits one line (23b), shorten
+the second sentence of the SQL log hint so it takes three lines, not five, at 360 dp (23b), shorten
 the first Welcome benefit (29), drop the "n · " step prefix the tracker
 already carries (11).
 

@@ -3151,7 +3151,7 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): algorithmLockedTitle."
   },
-  "algorithmLockedBody": "The first card finished learning on {date}. Only a reset opens a new cycle.",
+  "algorithmLockedBody": "The first card finished learning on {date}.",
   "@algorithmLockedBody": {
     "placeholders": {
       "date": {
@@ -4560,15 +4560,15 @@
     },
     "description": "Import step tracker: the accessible label of the current step."
   },
-  "importSectionSource": "1 · Choose a source",
+  "importSectionSource": "Choose a source",
   "@importSectionSource": {
     "description": "Import: the source section header."
   },
-  "importSectionColumns": "2 · Map columns",
+  "importSectionColumns": "Map columns",
   "@importSectionColumns": {
     "description": "Import: the mapping section header."
   },
-  "importSectionPreview": "3 · Preview",
+  "importSectionPreview": "Preview",
   "@importSectionPreview": {
     "description": "Import: the preview section header."
   },
@@ -7723,7 +7723,7 @@
   "@settingsLogSql": {
     "description": "Admin row on screens 23 and 28: the SQL log switch (SQL log switch spec §5)."
   },
-  "settingsLogSqlHint": "Each statement the app runs is logged, for performance checks. Turn off to keep the log small.",
+  "settingsLogSqlHint": "Logs each statement the app runs, for performance checks.",
   "@settingsLogSqlHint": {
     "description": "Subtitle of the SQL log switch row."
   },
@@ -8136,7 +8136,7 @@
   "@welcomeLead": {
     "description": "Screen 29: the line under the app name."
   },
-  "welcomeBenefitReinstall": "Keep your decks when you reinstall",
+  "welcomeBenefitReinstall": "Keep decks across reinstalls",
   "@welcomeBenefitReinstall": {
     "description": "Screen 29: the first benefit."
   },

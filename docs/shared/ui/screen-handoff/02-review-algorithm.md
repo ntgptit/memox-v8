@@ -10,7 +10,7 @@ sheet. UC-DECK-002 (change scheduler), UC-SRS-001 (reset learning progress).
 | Region | Widget | Design |
 |---|---|---|
 | App bar, breadcrumb | `MxAppBar`, `MxBreadcrumb` | Back, "Review algorithm"; Library › root › Review algorithm. |
-| Lock strip | `MxCard` + `MxIconTile` | Unlocked: plain card, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: the warning tint, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
+| Lock strip | `MxCard` + `MxIconTile` | Unlocked: plain card, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: the warning tint, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}." (the reset row below says how to start over; audit 2026-10-19, G7) The lock is named in words, not colour alone. |
 | ALGORITHM | `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s | The current algorithm selected; both disabled when locked. |
 | Note | `MxNote`, above the options (critique 2026-09-30) | Unlocked: "Switching resets every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing." Locked (lock icon): "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle." |
 | START OVER | `MxListSectionHeader`, `MxCard`, `MxButton` (outline) | "Reset learning progress" / "Every card in this tree becomes new and a new cycle begins. You choose the algorithm for it. Decks, cards, tags and past history are kept." / "Reset learning progress…". |
