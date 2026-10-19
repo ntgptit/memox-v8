@@ -96,8 +96,14 @@ class MxChoiceTile extends StatefulWidget {
   State<MxChoiceTile> createState() => _MxChoiceTileState();
 }
 
-/// The look a tile eases from: its previous tone and ground.
+/// A tone and ground.
 typedef _Look = ({MxChoiceTone tone, bool isRecessed});
+
+/// What a tile eases from: a look, or the point [t] of the way from [a] to
+/// [b] when a tone changed mid-ease, so the ease starts from what is on
+/// screen (final review F1). Both looks are read from the theme at each
+/// frame.
+typedef _From = ({_Look a, _Look b, double t});
 
 class _MxChoiceTileState extends State<MxChoiceTile>
     with SingleTickerProviderStateMixin {
@@ -110,7 +116,9 @@ class _MxChoiceTileState extends State<MxChoiceTile>
     parent: _ease,
     curve: Easing.standard,
   );
-  late _Look _from = _look(widget);
+  late _From _from = _still(_look(widget));
+
+  static _From _still(_Look look) => (a: look, b: look, t: 1);
 
   static _Look _look(MxChoiceTile tile) =>
       (tone: tile.tone, isRecessed: tile.isRecessed);
@@ -123,11 +131,19 @@ class _MxChoiceTileState extends State<MxChoiceTile>
     // Only a tone or ground eases. Both ends are read from the theme at each
     // frame, so a theme change follows ForUI's own easing instead of being
     // eased again after it (follow-ups spec T1).
-    _from = old;
     if (MediaQuery.disableAnimationsOf(context)) {
+      _from = _still(old);
       _ease.value = 1;
       return;
     }
+    // Mid-ease, what is on screen is the old target part of the way from
+    // the earlier start; that start collapses to its nearer look, which is
+    // exact after one change and close after more.
+    final from = _from;
+    final start = from.t < 0.5 ? from.a : from.b;
+    _from = _ease.isAnimating
+        ? (a: start, b: old, t: _curve.value)
+        : _still(old);
     _ease.forward(from: 0);
   }
 
@@ -152,21 +168,26 @@ class _MxChoiceTileState extends State<MxChoiceTile>
         builder: (context, _) {
           final t = _curve.value;
           final from = _from;
+          BoxDecoration decorationOf(_Look look) => MxChoiceTile._decoration(
+            context,
+            look.tone,
+            isRecessed: look.isRecessed,
+          );
           final decoration = BoxDecoration.lerp(
-            MxChoiceTile._decoration(
-              context,
-              from.tone,
-              isRecessed: from.isRecessed,
+            BoxDecoration.lerp(
+              decorationOf(from.a),
+              decorationOf(from.b),
+              from.t,
             ),
-            MxChoiceTile._decoration(
-              context,
-              widget.tone,
-              isRecessed: widget.isRecessed,
-            ),
+            decorationOf(_look(widget)),
             t,
           )!;
           final foreground = Color.lerp(
-            MxChoiceTile._foreground(context, from.tone),
+            Color.lerp(
+              MxChoiceTile._foreground(context, from.a.tone),
+              MxChoiceTile._foreground(context, from.b.tone),
+              from.t,
+            ),
             MxChoiceTile._foreground(context, widget.tone),
             t,
           )!;

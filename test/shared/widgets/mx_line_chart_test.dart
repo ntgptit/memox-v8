@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/shared/widgets/mx_line_chart.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -17,13 +18,17 @@ void main() {
       MxLinePoint(value: value, label: '#${index + 1}'),
   ];
 
-  Widget chart(List<MxLinePoint> points, {double width = 320}) => SizedBox(
-    width: width,
+  Widget chart(
+    List<MxLinePoint> points, {
+    MxScrollFadeGround ground = MxScrollFadeGround.page,
+  }) => SizedBox(
+    width: 320,
     child: MxLineChart(
       points: points,
       maxValue: 100,
       maxLabel: '100',
       semanticLabel: 'Scores: 44, 62, 76 of 100',
+      ground: ground,
     ),
   );
 
@@ -37,12 +42,30 @@ void main() {
     final line = data(tester).lineBarsData.single;
     expect([for (final spot in line.spots) spot.y], [44, 62, 76]);
     expect(data(tester).minY, 0);
-    expect(data(tester).maxY, 100);
     expect(line.color, MxStatusColors.light.accentFill);
-    // The scale: a guide at the maximum carries it.
+    // The scale: a guide at the maximum carries it, with a room above it
+    // that keeps a dot at the maximum and the label inside the scroll's
+    // clip (final review F3).
     final guide = data(tester).extraLinesData.horizontalLines.single;
     expect(guide.y, 100);
     expect(guide.label.labelResolver(guide), '100');
+    expect(guide.label.alignment, Alignment.topRight);
+    // In dark the accent fill is not the primary: the override is real.
+    await pumpMx(
+      tester,
+      chart(points([44, 62, 76])),
+      brightness: Brightness.dark,
+    );
+    // Past ForUI's theme easing.
+    await tester.pumpAndSettle();
+    expect(
+      data(tester).lineBarsData.single.color,
+      MxStatusColors.dark.accentFill,
+    );
+    final height = tester.getSize(find.byType(LineChart)).height;
+    final room = height - dimens.sizeControl * 2;
+    expect(room, greaterThan(dimens.space4 + dimens.strokeEmphasis / 2));
+    expect(data(tester).maxY, closeTo(100 * height / (height - room), 0.001));
     // A label's centre is its point's x: the plot spans the cells.
     final plot = tester.getRect(find.byType(LineChart));
     for (final (index, label) in ['#1', '#2', '#3'].indexed) {
@@ -71,6 +94,17 @@ void main() {
       tester.getSize(find.byType(LineChart)).width,
       dimens.sizeControl * 30,
     );
+    // Inside a card the fade dissolves into the card (final review F2).
+    await pumpMx(
+      tester,
+      chart(points([44, 62]), ground: MxScrollFadeGround.raised),
+    );
+    expect(
+      tester.widget<MxScrollFade>(find.byType(MxScrollFade)).ground,
+      MxScrollFadeGround.raised,
+    );
+
+    await pumpMx(tester, chart(points([for (var i = 0; i < 30; i++) 50.0])));
     // The newest point is in view, the oldest past the start.
     final view = tester.getRect(find.byType(MxLineChart));
     expect(

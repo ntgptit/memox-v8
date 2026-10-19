@@ -19,7 +19,9 @@ final class MxLinePoint {
 ///   to the width, more scroll sideways and open at the newest, the edge
 ///   fading while more lies past it;
 /// - the line and its dots in the accent fill, over a `border` baseline,
-///   under a dashed guide at [maxValue] carrying [maxLabel];
+///   under a dashed guide at [maxValue] carrying [maxLabel] at the newest
+///   end, where the scroll opens; a room above the guide keeps a dot at the
+///   maximum and the label inside the scroll's clip;
 /// - the label under each point; no number on a point, which the caller
 ///   says elsewhere (screen 36's one number per element).
 ///
@@ -33,6 +35,7 @@ class MxLineChart extends StatelessWidget {
     required this.maxValue,
     required this.maxLabel,
     required this.semanticLabel,
+    this.ground = MxScrollFadeGround.page,
   }) : assert(maxValue > 0, 'a line needs a range');
 
   final List<MxLinePoint> points;
@@ -43,6 +46,9 @@ class MxLineChart extends StatelessWidget {
   final String maxLabel;
   final String semanticLabel;
 
+  /// What the chart sits on, for the edge fade: `raised` inside a card.
+  final MxScrollFadeGround ground;
+
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
@@ -50,6 +56,9 @@ class MxLineChart extends StatelessWidget {
     final meta = context.texts.meta.copyWith(
       color: context.colors.mutedForeground,
     );
+    // Above the guide: the label's line, which also holds a dot at the
+    // maximum (its radius is less than a line).
+    final room = meta.fontSize! * (meta.height ?? 1);
     return Semantics(
       container: true,
       label: semanticLabel,
@@ -62,6 +71,7 @@ class MxLineChart extends StatelessWidget {
           );
           return MxScrollFade(
             axis: Axis.horizontal,
+            ground: ground,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               // The newest point is the one to see first.
@@ -73,10 +83,16 @@ class MxLineChart extends StatelessWidget {
                   spacing: dimens.space4,
                   children: [
                     SizedBox(
-                      height: plot,
-                      child: LineChart(_data(context), duration: Duration.zero),
+                      height: plot + room,
+                      // fl_chart's x axis does not follow the text direction;
+                      // the labels' row must not either.
+                      child: LineChart(
+                        _data(context, top: maxValue * (plot + room) / plot),
+                        duration: Duration.zero,
+                      ),
                     ),
                     Row(
+                      textDirection: TextDirection.ltr,
                       children: [
                         for (final point in points)
                           SizedBox(
@@ -101,14 +117,15 @@ class MxLineChart extends StatelessWidget {
 
   /// The points centred in their columns: x runs half a column past each
   /// end.
-  LineChartData _data(BuildContext context) {
+  LineChartData _data(BuildContext context, {required double top}) {
     final dimens = context.dimens;
     final ink = context.status.accentFill;
     return LineChartData(
       minX: -0.5,
       maxX: points.length - 0.5,
       minY: 0,
-      maxY: maxValue,
+      // The guide at [maxValue] sits the label's room below the top.
+      maxY: top,
       titlesData: const FlTitlesData(show: false),
       gridData: const FlGridData(show: false),
       borderData: FlBorderData(
@@ -131,8 +148,8 @@ class MxLineChart extends StatelessWidget {
             dashArray: [dimens.space4.toInt(), dimens.space4.toInt()],
             label: HorizontalLineLabel(
               show: true,
-              // At the start, under the line, clear of the newest point.
-              alignment: Alignment.bottomLeft,
+              // Above the line at the newest end, where the scroll opens.
+              alignment: Alignment.topRight,
               padding: EdgeInsets.zero,
               style: context.texts.meta.copyWith(
                 color: context.colors.mutedForeground,

@@ -59,8 +59,8 @@ Execution: native, in the main loop (owner, 2026-10-19: "write the plan in one g
 **Files:** `test/features/settings/presentation/settings_controller_test.dart`, `study_options_controller_test.dart`.
 
 - [ ] Step 1: Prove the race. Temporarily add `sleep`-free busy work of 800 ms after the steps. The test fails as reported.
-- [ ] Step 2: Add `_settledWhen(rig, done)`. It listens to the controller with `fireImmediately` and completes when `done(state)` holds, with a 10 s timeout.
-- [ ] Step 3: Replace each `_settled()` that waits for a write with `_settledWhen` on the state the write produces.
+- [ ] Step 2: Add `untilLanded(landed)` to `test/support/settings_fakes.dart`, shared by both files. It polls `landed()` every 10 ms until it holds, and fails after 10 s on a stopwatch, because the guard bans the wall clock in tests.
+- [ ] Step 3: Replace each `_settled()` that waits for a write with `untilLanded` on what the write produces: the stored row, plus the state's echo where the test asserts it.
   - Keep the `writes == 0` cases on a wait, because they assert that nothing happens. Use `_settled()` there, renamed `_pastSettle()`.
 - [ ] Step 4: Do the same in `study_options_controller_test.dart`.
 - [ ] Step 5: The busy-work probe now passes. Remove it and run both files three times.
@@ -106,7 +106,8 @@ Execution: native, in the main loop (owner, 2026-10-19: "write the plan in one g
 
 **Interfaces:**
 - `MxLinePoint({required double value, required String label})`
-- `MxLineChart({required List<MxLinePoint> points, required double maxValue, required String semanticLabel})`
+- `MxLineChart({required List<MxLinePoint> points, required double maxValue, required String maxLabel, required String semanticLabel, MxScrollFadeGround ground = MxScrollFadeGround.page})`
+- `topikAttemptIsScored(TopikAttempt)` and `topikScoredAttemptsOf(List<TopikNumberedAttempt>)` in `topik_test_progress_model.dart`, one rule shared with Best and Average
 
 - [ ] Step 1: Write the failing widget tests for `MxLineChart`.
   - One semantics node carrying the label.

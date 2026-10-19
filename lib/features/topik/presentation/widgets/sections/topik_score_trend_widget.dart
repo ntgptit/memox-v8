@@ -5,6 +5,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_line_chart.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 /// Score trend of screen 36 (follow-ups spec G8): each submitted attempt's
 /// score, oldest first, as a line from 0 to the test's maximum. Scores count
@@ -17,20 +18,9 @@ class TopikScoreTrendWidget extends StatelessWidget {
   /// The test's attempts, newest first, as the detail holds them.
   final List<TopikNumberedAttempt> attempts;
 
-  /// The scored attempts, oldest first.
-  static List<TopikNumberedAttempt> scoredOf(
-    List<TopikNumberedAttempt> attempts,
-  ) => [
-    for (final numbered in attempts.reversed)
-      if (numbered.attempt.isCompleted &&
-          numbered.attempt.score != null &&
-          numbered.attempt.maxScore > 0)
-        numbered,
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final scored = scoredOf(attempts);
+    final scored = topikScoredAttemptsOf(attempts);
     if (scored.length < 2) return const SizedBox.shrink();
     final l10n = context.l10n;
     final dimens = context.dimens;
@@ -42,6 +32,8 @@ class TopikScoreTrendWidget extends StatelessWidget {
         maxScore = numbered.attempt.maxScore;
       }
     }
+    // A test with no points to score has no scale to draw against.
+    if (maxScore == 0) return const SizedBox.shrink();
     final scores = [
       for (final numbered in scored) numbered.attempt.score!.toString(),
     ].join(', ');
@@ -62,6 +54,7 @@ class TopikScoreTrendWidget extends StatelessWidget {
               ],
               maxValue: maxScore.toDouble(),
               maxLabel: maxScore.toString(),
+              ground: MxScrollFadeGround.raised,
               semanticLabel: l10n.topikScoreTrendSummary(
                 scored.length,
                 scores,

@@ -31,6 +31,11 @@ final class TopikTestProgress {
   bool get isEmpty => sessions == 0;
 }
 
+/// Whether [attempt] counts in the score figures and the score trend: a
+/// submitted attempt with its score (BR-TOPIK-020).
+bool topikAttemptIsScored(TopikAttempt attempt) =>
+    attempt.isCompleted && attempt.score != null;
+
 TopikTestProgress topikTestProgressOf(Iterable<TopikAttempt> attempts) {
   var sessions = 0;
   var totalTimeMs = 0;
@@ -44,9 +49,8 @@ TopikTestProgress topikTestProgressOf(Iterable<TopikAttempt> attempts) {
     if (lastActivityAt == null || attempt.updatedAt.isAfter(lastActivityAt)) {
       lastActivityAt = attempt.updatedAt;
     }
-    final score = attempt.score;
-    if (!attempt.isCompleted || score == null) continue;
-    scores.add(score);
+    if (!topikAttemptIsScored(attempt)) continue;
+    scores.add(attempt.score!);
     correct += attempt.correctCount ?? 0;
     questions += attempt.questionCount;
   }
@@ -88,6 +92,15 @@ List<TopikNumberedAttempt> topikNumberedAttemptsOf(
       TopikNumberedAttempt(attempt: oldestFirst[i], number: i + 1),
   ];
 }
+
+/// The scored attempts of [numbered] (newest first, as the detail holds
+/// them), oldest first: the score trend's points (follow-ups spec G8).
+List<TopikNumberedAttempt> topikScoredAttemptsOf(
+  List<TopikNumberedAttempt> numbered,
+) => [
+  for (final attempt in numbered.reversed)
+    if (topikAttemptIsScored(attempt.attempt)) attempt,
+];
 
 /// [part] of [whole] as a whole percent, rounded half up; null when [whole]
 /// is 0.

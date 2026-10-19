@@ -57,7 +57,21 @@ void main() {
     expect(applied.activeColor.resolve({}), MxStatusColors.light.accentFill);
     expect(applied.inactiveColor.resolve({}), colors.mutedForeground);
     expect(colors.secondary, colors.muted);
+    // ForUI's disabled dimming stays: only the base is replaced.
+    expect(
+      applied.activeColor.resolve({FTappableVariant.disabled}),
+      isNot(MxStatusColors.light.accentFill),
+    );
     handle.dispose();
+
+    // In dark the accent fill is not the primary: the override is real.
+    await pumpMx(tester, seek(onChanged: (_) {}), brightness: Brightness.dark);
+    // Past ForUI's theme easing.
+    await tester.pumpAndSettle();
+    final dark = tester
+        .widget<FSlider>(slider())
+        .style(forUiTheme(tester, slider()).sliderStyles.horizontal);
+    expect(dark.activeColor.resolve({}), MxStatusColors.dark.accentFill);
   });
 
   testWidgets('semanticFormatter: TalkBack reads the value in the '

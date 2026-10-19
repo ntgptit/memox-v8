@@ -144,7 +144,9 @@ void main() {
       ..chooseNewCardOrder(NewCardOrder.random)
       ..typeCardLimit('30');
     await untilLanded(
-      () async => (await _stored(rig)).studyDefaults.cardLimit == 30,
+      () async =>
+          (await _stored(rig)).studyDefaults.cardLimit == 30 &&
+          _state(rig).cardLimitDraft == null,
     );
 
     final stored = await _stored(rig);

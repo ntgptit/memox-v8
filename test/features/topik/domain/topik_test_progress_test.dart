@@ -11,9 +11,10 @@ TopikAttempt _attempt(
   int? score,
   int correct = 0,
   int timeMs = 0,
+  bool? isCompleted,
 }) {
   final started = DateTime.utc(2026, 10, 15, 9, startedMinute);
-  final completed = score != null;
+  final completed = isCompleted ?? score != null;
   return TopikAttempt(
     id: id,
     testId: 'T',
@@ -95,5 +96,23 @@ void main() {
       _attempt('c', startedMinute: 2),
     ]);
     expect([for (final n in numbered) n.number], [2, 1]);
+  });
+
+  test('the score trend takes the scored attempts, oldest first: an attempt '
+      'in progress or submitted without a score is no point, as it is no '
+      'score in Best (follow-ups spec G8, final review F4)', () {
+    final attempts = [
+      _attempt('a', startedMinute: 0, score: 40),
+      _attempt('b', startedMinute: 1, isCompleted: true),
+      _attempt('c', startedMinute: 2, score: 70),
+      _attempt('d', startedMinute: 3),
+    ];
+    final numbered = topikNumberedAttemptsOf(attempts);
+
+    final scored = topikScoredAttemptsOf(numbered);
+    expect([for (final n in scored) n.number], [1, 3]);
+    expect([for (final n in scored) n.attempt.score], [40, 70]);
+    expect(topikTestProgressOf(attempts).bestScore, 70);
+    expect(topikTestProgressOf(attempts).completed, 2);
   });
 }

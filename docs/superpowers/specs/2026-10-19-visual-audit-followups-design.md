@@ -63,9 +63,14 @@ spec left G8, G9 and three open items; this one settles all five.
   section is absent: one point is not a trend (BR-TOPIK-029 also starts at
   two).
 - **Widget.** `MxLineChart` in `lib/shared/widgets` (fl_chart, UIL07):
-  points `MxLinePoint(value, label)`, `maxValue`, `semanticLabel`.
-  - A `space4`-wide line and dots in `accentFill`; the y axis runs from 0 to
-    `maxValue` over `sizeControl * 2`; no grid; a `border` hairline baseline.
+  points `MxLinePoint(value, label)`, `maxValue`, `maxLabel`,
+  `semanticLabel`, `ground` (the fade's ground; `raised` in a card).
+  - A `strokeEmphasis` line and `space4`-radius dots in `accentFill`; the y
+    axis runs from 0 to `maxValue` over `sizeControl * 2`; no grid; a
+    `border` hairline baseline; a dashed `border` guide at `maxValue` with
+    `maxLabel` above it at the newest end, in a room of one `meta` line that
+    also keeps a dot at the maximum inside the scroll's clip (the scale, so
+    a point's height reads; it is not Best or Average).
   - The `#n` label under each point in `meta`, `mutedForeground`; one
     `sizeControl` column per point. More points than fit scroll sideways
     inside `MxScrollFade` and open at the newest.
@@ -89,6 +94,9 @@ Each item has a test that fails before its fix. Goldens move:
   or the slider. Light is unchanged for G9, because `accentFill` is the
   primary in light.
 - G8: screen 36's overview goldens, plus a new one-attempt overview.
-- T1: nine themed component goldens. Their dark images become dark-correct.
+- T1: ten themed component goldens (button, choice tile, list row, option
+  tray, selectable card row, spinner and skeleton, stepper, text field,
+  toggle and checkbox, workload donut). Their dark images become
+  dark-correct.
 
 The golden-compare page goes to the owner before the merge.

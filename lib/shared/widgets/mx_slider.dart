@@ -45,11 +45,12 @@ class MxSlider extends StatelessWidget {
       // it each hold 3:1 on `muted` in both modes (audit 2026-10-19, G2;
       // follow-ups spec S1).
       style: FSliderStyleDelta.delta(
+        // The base only: ForUI's disabled variants stay (final review).
         activeColor: FVariantsValueDelta.delta([
-          FVariantValueDeltaOperation.all(context.status.accentFill),
+          FVariantValueDeltaOperation.base(context.status.accentFill),
         ]),
         inactiveColor: FVariantsValueDelta.delta([
-          FVariantValueDeltaOperation.all(context.colors.mutedForeground),
+          FVariantValueDeltaOperation.base(context.colors.mutedForeground),
         ]),
       ),
       control: FSliderControl.liftedContinuous(
