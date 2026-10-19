@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
@@ -7,6 +8,7 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 
 // The Library's own screens, built for a test with navigation that goes
@@ -95,3 +97,20 @@ DeckAlgorithmScreen deckAlgorithmScreen({
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onOpenTrash: onOpenTrash ?? () {},
 );
+
+/// Opens the reset dialog from screen 02. At large text the button sits
+/// below the fold, so it is scrolled into view first.
+Future<void> openResetDialog(WidgetTester tester) async {
+  final label = lookupAppLocalizations(const Locale('en')).algorithmResetAction;
+  await tester.scrollUntilVisible(
+    find.text(label),
+    200,
+    scrollable: find.byWidgetPredicate(
+      (widget) =>
+          widget is Scrollable && widget.axisDirection == AxisDirection.down,
+    ),
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(label));
+  await tester.pumpAndSettle();
+}

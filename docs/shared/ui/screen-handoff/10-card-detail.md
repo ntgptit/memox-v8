@@ -25,16 +25,15 @@ current schedule), BR-CARD-015/017 (paginated, generation-grouped history).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `card_detail_top_light.png` | `card_detail_top_dark.png` | `card_detail_screen_test.dart::the detail shows the card under its path; Edit asks for it`. |
+| history | `card_detail_history_light.png` | `card_detail_history_dark.png` | The loaded card scrolled to its history: one row per answer with the values its row stored (BR-CARD-016). `card_history_scroll_test.dart::each answer shows the values its row stored (BR-CARD-016)`. |
 | historyLoading | no golden | no golden | The card shows (content, schedule); three skeleton rows stand in for the history while its first page reads. Code read: `card_history_scroll_widget.dart`. |
-| historyError | no golden | no golden | The first history page fails: `MxErrorState` "Couldn't load the history" · "Nothing was lost. Try again in a moment." with Retry, under the content and schedule. Code read: `card_history_scroll_widget.dart`. |
+| historyError | no golden | no golden | The first history page fails: `MxErrorState` "Couldn't load the history" · "Nothing was lost. Try again in a moment." with Retry, under the content and schedule. Code read: `card_history_scroll_widget.dart`. VERIFIED (closing acceptance 2026-10-18): `card/presentation/card_detail_state_coverage_test.dart::historyError: a first history page that fails is an error in plain words with Retry, under the content; Retry shows the history` |
 | loadMore | no golden | no golden | A secondary block `MxButton` "Load older history"; it spins while the page reads, the rows stay. `card_history_scroll_test.dart::Load older history adds the rest, then the history ends (A5)`. |
 | loadMoreFailed | no golden | no golden | "Couldn't load older history." · "What is shown is complete up to here." with Retry under the message (see Rulings); what loaded stays. `card_history_scroll_test.dart::a failed older page keeps the rows and offers Retry (E4)`. |
 | empty | no golden | no golden | `MxEmptyState` (neutral, compact) "Not studied yet"; content and schedule cards still show above it. `card_history_scroll_test.dart::a card never studied says so (BR-CARD-018)`. |
 | loading | no golden | no golden | A single generic `MxSkeletonList` (4 rows) replaces the whole body (see Rulings). |
 | error | no golden | no golden | Full-screen `MxErrorState`, "Couldn't load this card" — the body is the shared "Nothing was lost. Try again in a moment." `card_detail_screen_test.dart::a failed read offers Retry and hides the cause (E3)`. |
 | notFound | no golden | no golden | `CardGoneWidget` (shared with the editor's gone state); both actions live now that Trash exists (§9 row 87, closed by FE-B1 D11). The deck path is hidden here. `card_detail_screen_test.dart::a card deleted while open shows it is gone (E2)`, `::a link to a card that does not exist shows it is gone (E1)`. |
-Other goldens: `card_detail_history_light.png` / `card_detail_history_dark.png` (the history scrolled into view).
-
 
 Every state above is built.
 
@@ -55,6 +54,7 @@ Every state above is built.
 | loaded | tap Load older history | loadMore (spinner), then more rows, then the "Beginning of history" mark | VERIFIED `card_history_scroll_test.dart::Load older history adds the rest, then the history ends (A5)` |
 | loadMore | a second tap | ignored | `UNVERIFIED (code read)`: `card_history_controller.dart` `loadMore()` returns while loading; the button also spins |
 | loadMore | the page fails | loadMoreFailed, the rows kept | VERIFIED `::a failed older page keeps the rows and offers Retry (E4)` |
+| loadMore | the page read dies on a bug (not a `Failure`) | loadMoreFailed, the rows kept, as for a `Failure`: Retry shows, no spinner for good; the bug is reported | VERIFIED `card_held_bug_test.dart::an older history page that dies on a bug offers Retry, not a spinner for good (UC-CARD-002 E4)` |
 | loadMoreFailed | Retry | loadMore at the same cursor | VERIFIED same test |
 | loadMore | a late or duplicate page arrives | dropped | `UNVERIFIED (code read)`: `card_history_controller.dart` compares the cursor (E5) |
 | loaded | the card is edited in the editor and the editor closes | the detail shows the new content | the detail reads the card as a stream; `UNVERIFIED (code read)` for the return path |

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/card_move_target_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
@@ -11,6 +10,7 @@ import 'package:memox/features/card/presentation/widgets/support/card_deck_path_
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -55,26 +55,26 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
   Future<void> _move(CardMoveTarget target) async {
     if (_isMoving) return;
     setState(() => _isMoving = true);
-    try {
-      final outcome = await ref
+    final outcome = await runHeld(
+      () => ref
           .read(cardActionsControllerProvider.notifier)
-          .moveCards(cardIds: widget.cardIds, targetDeckId: target.id);
-      if (!mounted) return;
-      final l10n = context.l10n;
-      final hasMoved = outcome is Ok;
-      showMxSnackbar(
-        context,
-        message: switch (outcome) {
-          Ok() => l10n.cardMovedToast(widget.cardIds.length, target.name),
-          Rejected(:final reason) => l10n.cardRejection(reason),
-        },
-      );
-      Navigator.of(context).pop(hasMoved);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isMoving = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
+          .moveCards(cardIds: widget.cardIds, targetDeckId: target.id),
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isMoving = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop(outcome is Ok);
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: switch (outcome) {
+        Ok() => l10n.cardMovedToast(widget.cardIds.length, target.name),
+        Rejected(:final reason) => l10n.cardRejection(reason),
+      },
+    );
   }
 
   @override

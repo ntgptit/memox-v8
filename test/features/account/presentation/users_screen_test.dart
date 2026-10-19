@@ -105,6 +105,30 @@ void main() {
     expect(find.text(_en.usersRoleUser), findsNothing);
   });
 
+  libraryTest('a second Save in the same frame does not set the role twice', (
+    tester,
+    env,
+  ) async {
+    await pump(tester, env);
+    await tester.tap(find.text('bob@example.com'));
+    await _settle(tester);
+    await tester.tap(find.text(_en.usersRoleAdminHint));
+    await tester.pump();
+
+    // A second tap lands before the frame that draws Save busy, while the
+    // first set still waits on the server.
+    final held = roles.holdSet = Completer<void>();
+    final saveButton = find.widgetWithText(MxButton, _en.usersSave);
+    await tester.tap(saveButton);
+    await tester.tap(saveButton);
+    held.complete();
+    await _settle(tester);
+
+    expect(roles.sets, hasLength(1));
+    expect(find.byType(MxBottomSheet), findsNothing);
+    expect(find.byType(UsersScreen), findsOneWidget);
+  });
+
   libraryTest('the last admin stays, and the sheet says why', (
     tester,
     env,

@@ -41,7 +41,7 @@ The images are the goldens.
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | ready | ![](../../../../test/features/account/presentation/goldens/welcome_ready_light.png) | ![](../../../../test/features/account/presentation/goldens/welcome_ready_dark.png) | Golden `welcome_ready_*`. |
-| starting | — | — | Three buttons, Google and email disabled, no caption (widget test). |
+| starting | — | — | Three buttons, Google and email disabled, no caption (widget test). VERIFIED (closing acceptance 2026-10-18): `account/presentation/welcome_screen_test.dart::while the account starts (Booting), Welcome keeps its three ways, disabled, and never looks offline (audit 2026-10-17 ACC-2)` |
 | offline | ![](../../../../test/features/account/presentation/goldens/welcome_offline_light.png) | ![](../../../../test/features/account/presentation/goldens/welcome_offline_dark.png) | Golden `welcome_offline_*`. |
 | Google running | — | — | After "Continue with Google": a spinner on that button; "Continue with email" and "Continue without an account" are disabled; the footer never shows the offline caption while it runs, since the sign-in takes the account through `Validating` (final review F2). `welcome_screen_test.dart::while Google signs in, Welcome keeps its ways and never looks offline (final review F2)`; no golden. |
 | Google failed | — | — | The three ways again, and a toast with the problem ("No connection. Nothing changed; try again when you're online." or "Couldn't sign in. Nothing changed; try again."); a cancelled pick says nothing. Code read: `welcome_screen.dart` `_google`; no golden. |

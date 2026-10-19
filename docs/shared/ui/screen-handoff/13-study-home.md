@@ -59,6 +59,7 @@ Every state above is built.
 |---|---|---|---|
 | loaded (Resume card shown) | tap Resume | the session route; a refusal keeps 13 with a toast | BR-STUDY-075. VERIFIED `study_home_screen_test.dart::Resume takes today's session up and opens it (H3)`, `::a refused Resume says so and opens nothing (H3, S8)` |
 | loaded (Resume card shown) | tap Resume, and the write fails (a busy database) | 13 stays and opens nothing; the toast "Your answers are kept. Couldn't resume the session, so try again." | VERIFIED `study_home_screen_test.dart::a Resume that cannot be written says so, local-first, and opens nothing (audit 2026-10-17)` |
+| loaded (Resume card shown) | tap Resume, and the write meets a bug (not a `Failure`) | as a `Failure`: 13 stays and opens nothing, with the same toast; Resume is no longer running; the bug is reported | VERIFIED `study_held_bug_test.dart::a Resume that dies on a bug is no longer running and answers ResumeFailed, as a Failure does (resume)` |
 | loaded | tap a deck row | that deck's Study Entry (14); a deck with no card is not a target | BR-STUDY-076. VERIFIED `::a deck with no card is disabled; a deck row opens its entry; Library opens the Library (S4, H3)` |
 | loaded | tap Library | the Library root (01) | E-L3. VERIFIED same test |
 | noDecks | tap Browse starter decks / Go to Library | the Starter Library (03) / the Library root | UC-STUDY-002 A4. VERIFIED `::no root deck: "Browse starter decks" first, then "Go to Library" (UC-STUDY-002 A4, 13 noDecks)` |

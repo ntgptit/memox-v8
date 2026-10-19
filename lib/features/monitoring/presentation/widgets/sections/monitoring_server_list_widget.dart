@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show RefreshIndicator;
 import 'package:flutter/widgets.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +20,7 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_pull_refresh.dart';
 
 /// The Server tab's body: one widget per state of monitoring spec §3.4.
 class MonitoringServerListWidget extends ConsumerWidget {
@@ -58,7 +58,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
         ],
       ),
       final MonitoringListLoaded loaded when loaded.items.isEmpty =>
-        _Refreshable(
+        MxPullRefresh(
           onRefresh: controller.refresh,
           child: MxScreenScroll(
             children: [
@@ -179,7 +179,7 @@ class _Rows extends ConsumerWidget {
         }
         return false;
       },
-      child: _Refreshable(
+      child: MxPullRefresh(
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
@@ -268,31 +268,5 @@ class _End extends StatelessWidget {
       ),
       _ => const SizedBox.shrink(),
     };
-  }
-}
-
-/// Pull to refresh over a list that may be shorter than the screen: the
-/// scroll accepts a drag whatever its length, on top of the platform's own
-/// physics.
-class _Refreshable extends StatelessWidget {
-  const _Refreshable({required this.onRefresh, required this.child});
-
-  final Future<void> Function() onRefresh;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final behavior = ScrollConfiguration.of(context);
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: ScrollConfiguration(
-        behavior: behavior.copyWith(
-          physics: AlwaysScrollableScrollPhysics(
-            parent: behavior.getScrollPhysics(context),
-          ),
-        ),
-        child: child,
-      ),
-    );
   }
 }

@@ -22,7 +22,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 ## Deck action sheet (`⋮`)
 
 Study this deck · Rename · Select cards (enters selection with nothing picked, DEV-307) ·
-Move to another deck · Import cards (screen 11) · Export cards (screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
+Study options (screen 15) · Move to another deck · Import cards (screen 11) · Export cards (screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
 
 ## States
 
@@ -36,7 +36,7 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | loading | no golden | no golden | Four skeleton rows while the first window loads; a later request keeps the rows already shown (ruling P3-L5). Code read: `card_list_section_widget.dart`. Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
 | error | no golden | no golden | `MxErrorState` "Couldn't open this deck" · "Nothing was lost. Try again in a moment." with Retry, even over rows loaded before (spec §5). `card_list_section_test.dart::a load error says so plainly and offers Retry`, `::an error after the rows loaded still says so, with Retry`. Back while selecting ends the selection first (audit 2026-10-17 CARD-14b). |
 | notFound | no golden | no golden | As screen 01 deckNotFound. |
-| deckActions | no golden | no golden | — |
+| deckActions | no golden | no golden | — VERIFIED (closing acceptance 2026-10-18): `card/presentation/card_list_state_coverage_test.dart::deckActions: the ⋮ of a deck of cards lists Study, Rename, Select cards, Move, Import, Export and Move to Trash in that order` |
 | selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020), or Select cards from `⋮` enters selection with nothing picked; Close ends it, unticking the last card does not (DEV-307). Back ends it in every list state, loaded, loading or error. Picks of cards that left the list while picked (deleted, moved elsewhere, or no longer matching the search and filters, the same set Select all reads) drop out when the list changes; a card picked while that read runs stays, so a bulk action is not refused whole for them (audit 2026-10-17 CARD-14a). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | The deck picker, targets named by path; one move at a time. `card_bulk_actions_test.dart::Move sends the cards to another deck of the root`. |
 | moveTargetsLoading | no golden | no golden | `MxDeckPickerLoadingSheet`: title, rule and three skeleton rows. Code read: `card_move_sheet_widget.dart`. |
@@ -47,9 +47,15 @@ Move to another deck · Import cards (screen 11) · Export cards (screen 12) · 
 | tagDialog | no golden | no golden | "Add a tag" with the "Tag name" field, Cancel · Add. A name rule stays under the field; any other refusal closes the dialog with a toast and keeps the selection (IT-ORG-014). `card_bulk_actions_test.dart::Tag adds one tag to every selected card`, `::a blank tag stays in the dialog, under the field`. |
 | tagFilterLoading | no golden | no golden | The tag filter sheet while the tags load: title, "Show cards with any of the chosen tags", three skeleton rows. Code read: `card_tag_filter_sheet_widget.dart`. |
 | tagFilterError | no golden | no golden | The sheet keeps its head; "Couldn't load tags" with Retry, and Close beside it. `card_tag_filter_test.dart::a failed load keeps the sheet head, Retry and a dismiss`. |
+| tagFilterNone | `card_tag_filter_none_light.png` | `card_tag_filter_none_dark.png` | The sheet "Filter by tags" with a row per tag of the library: the name and its cards in this deck, 0 included, in the catalog's order; nothing chosen, Clear off. `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`. |
+| tagFilterOne | `card_tag_filter_one_light.png` | `card_tag_filter_one_dark.png` | One tag chosen: its row checked, the subtitle "1 chosen · cards with any of them", Clear on. `card_tag_filter_test.dart::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`. |
+| tagFilterSeveral | `card_tag_filter_several_light.png` | `card_tag_filter_several_dark.png` | Several chosen: a card passes with any of them (BR-TAG-004); a checked row never moves. Same test as tagFilterOne. |
+| tagFilterNoTags | no golden | no golden | No tag in the library: "No tags yet. Add tags while creating or editing cards." with Close. `card_tag_filter_test.dart::no tag in the library: the sheet says where tags come from and closes`. |
+| tagFilterApplied | `card_tag_filter_applied_light.png` | `card_tag_filter_applied_dark.png` | After Apply: the sheet closed, the list narrowed to the cards with any chosen tag, the Tags chip selected with the count, the selection cleared (BR-TAG-005). `card_tag_filter_test.dart::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`. |
+| tagFilterNoCard | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` | A tag with no card in this deck, applied (A7): "No cards with these tags" with "Clear tag filter". `card_tag_filter_test.dart::a tag with no card here shows none, and offers to clear the tag filter (A7)`. |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
-| delDeck | no golden | no golden | As screen 01 deckDelete. |
+| delDeck | no golden | no golden | As screen 01 deckDelete. VERIFIED (closing acceptance 2026-10-18): `card/presentation/card_list_state_coverage_test.dart::delDeck: Move to Trash from a deck of cards names the deck and its cards, moves it once and offers Undo` |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
@@ -76,15 +82,8 @@ Shaped by Impeccable before the plan (FE-B2 D3,
   (BR-TAG-005). A tag deleted or merged away leaves the applied set (D12).
 - **No card with these tags (A7):** "No cards with these tags" with "Clear tag filter".
 
-| State | Golden (light) | Golden (dark) |
-|---|---|---|
-| none chosen | `card_tag_filter_none_light.png` | `card_tag_filter_none_dark.png` |
-| one chosen | `card_tag_filter_one_light.png` | `card_tag_filter_one_dark.png` |
-| several chosen | `card_tag_filter_several_light.png` | `card_tag_filter_several_dark.png` |
-| applied | `card_tag_filter_applied_light.png` | `card_tag_filter_applied_dark.png` |
-| no card (A7) | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` |
-
-The goldens are in `test/features/card/presentation/goldens/`.
+The tag filter's frames are rows of the States table (tagFilter*), their goldens in
+`test/features/card/presentation/goldens/`.
 
 ## Transitions
 
@@ -96,14 +95,14 @@ The goldens are in `test/features/card/presentation/goldens/`.
 | loaded | tap a filter chip | loaded (narrowed) or filterEmpty; the selection clears | VERIFIED `::each chip counts its filter; a chip filters the rows` |
 | filterEmpty | Show all cards | loaded under All | VERIFIED `::an empty filter names itself and offers every card` |
 | loaded | tap the search action, type | searchResults or searchEmpty; closing the search clears the term | VERIFIED `::search matches the front or the back`, `::a search with no hit names the term`, `::search hides the deck summary and keeps the filters (critique 2026-09-30: results clear the keyboard)` |
-| loaded | TalkBack reaches the sort trigger | named "Sort cards, {order}" | VERIFIED `card_list_section_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
+| loaded | TalkBack reaches the sort trigger | named "Sort cards, {order}" | VERIFIED `card_list_audit_test.dart::the sort trigger is named as a sort for TalkBack, with the order shown (audit 2026-10-17)` |
 | loaded | tap the sort pill | sortSheet; a choice re-orders at once | VERIFIED order only `::due first puts the soonest due first and new cards last`; the sheet `UNVERIFIED (code read)` |
-| loaded | scroll near the end | the window grows once per request, the rows kept | VERIFIED `::the window grows near the end and keeps its rows (RF4)`, `::after a new request the window grows again: a growth is asked once per request, not once per screen` |
-| loaded | tap the Tags chip | tag filter sheet (loading, none chosen / picker, error) | VERIFIED `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`; loading `UNVERIFIED (code read)` |
-| tag filter | Apply | loaded with the tags applied; the selection clears; no card: "No cards with these tags" | VERIFIED `::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`, `::a tag with no card here shows none, and offers to clear the tag filter (A7)` |
-| tag filter | dismissed any other way | what was applied stays | VERIFIED `::closing without Apply keeps what was applied (A5)` |
-| tag filter | a tag is deleted or merged away | it leaves the applied set | VERIFIED `::a tag deleted meanwhile leaves the applied set (D12)` |
-| tag filter error | Retry | loading, then the picker | `UNVERIFIED (code read)`: `card_tag_filter_sheet_widget.dart` invalidates the provider |
+| loaded | scroll near the end | the window grows once per request, the rows kept | VERIFIED `::the window grows near the end and keeps its rows (RF4)`, `card_list_audit_test.dart::after a new request the window grows again: a growth is asked once per request, not once per screen` |
+| loaded | tap the Tags chip | tagFilterLoading, then tagFilterNone, tagFilterNoTags or tagFilterError | VERIFIED `card_tag_filter_test.dart::none chosen: every tag with its cards in this deck, 0 included, in the catalog order; Clear is off`; loading `UNVERIFIED (code read)` |
+| tagFilterOne / tagFilterSeveral | Apply | tagFilterApplied (loaded with the tags applied; the selection clears), or tagFilterNoCard: "No cards with these tags" | VERIFIED `::one, then several: Apply shows the cards with any of them, and the chip says how many are applied (steps 7-8)`, `::a tag with no card here shows none, and offers to clear the tag filter (A7)` |
+| tagFilterNone / tagFilterOne / tagFilterSeveral | dismissed any other way | what was applied stays | VERIFIED `::closing without Apply keeps what was applied (A5)` |
+| tagFilterNone / tagFilterOne / tagFilterSeveral | a tag is deleted or merged away | it leaves the applied set | VERIFIED `::a tag deleted meanwhile leaves the applied set (D12)` |
+| tagFilterError | Retry | tagFilterLoading, then the picker | `UNVERIFIED (code read)`: `card_tag_filter_sheet_widget.dart` invalidates the provider |
 | loaded | tap a row | the card detail (screen 10) | `UNVERIFIED (code read)`: `card_list_section_widget.dart` `onOpenCard`; the row's content is VERIFIED above |
 | loaded | long-press a row, or Select cards from ⋮ | selection | VERIFIED `card_selection_test.dart::a long-press selects that card`; ⋮ path `deck_action_sheet_test.dart::Select cards shows only from an open deck of cards and enters selection with nothing picked (DEV-307)` |
 | selection | tap a row | toggles; unticking the last one keeps the mode | VERIFIED `card_selection_test.dart::a tap toggles; unticking the last one keeps selection` |
@@ -114,10 +113,13 @@ The goldens are in `test/features/card/presentation/goldens/`.
 | selection | Flag, then Flag cards / Remove flag | the flag is set or cleared; the selection clears, a toast says how many | VERIFIED `card_bulk_actions_test.dart::Flag sets the flag on every selected card`, `::Remove flag clears it, never toggles (P3-L4)` |
 | selection | the flag write fails | bulkFailed: the banner above the bar, the selection stays | VERIFIED `card_list_flag_retry_test.dart::while Retry runs the banner stays with a spinning Retry, and neither Retry nor the bulk bar takes a tap (critique 2026-09-30 part 3d-2)` |
 | bulkFailed | Retry | the same cards and choice are written again | VERIFIED same test |
+| held write (Move, Tag, Trash) | a bug (not a `Failure`) | released with the toast "Nothing was lost, but something went wrong. Try again." (`failureUnknown`); the bug is reported. The sheet or dialog is no longer held and Back closes it; the selection stays | VERIFIED `card_held_bug_test.dart::a move that dies on a bug releases the sheet (UC-CARD-001 A5)`, `::a tag that dies on a bug releases the dialog (UC-CARD-001 A8)`, `card_bulk_actions_test.dart::a move that dies on a bug releases the dialog` |
+| Move, Tag, Trash | a bug after the write landed (here its toast) | the sheet or dialog closes as after any landed write; nothing offers the write again; the bug reaches the framework (REG-HELD-SCOPE) | VERIFIED `card_held_scope_test.dart::a move that landed closes its sheet though its toast fails (UC-CARD-001 A5)`, `card_held_scope_test.dart::a tag that landed closes its dialog though its toast fails (UC-CARD-001 A8)`, `card_held_scope_test.dart::a delete that landed closes its dialog though its toast fails (FE-B1)` |
 | bulkFailed | the selection changes | the banner goes (Retry would write other cards) | `UNVERIFIED (code read)`: `card_list_section_widget.dart` listens to the selection |
 | selection | Tag | tagDialog; Add tags every selected card, a toast, the selection clears | VERIFIED `card_bulk_actions_test.dart::Tag adds one tag to every selected card` |
 | tagDialog | Add is tapped, and the write runs | the dialog is held: Cancel is off, Back and the scrim wait, Add spins; the write answers with its toast and the selection clears | VERIFIED `card_bulk_actions_test.dart::Tag holds its dialog while it writes: Cancel in the same instant does nothing, and the write still says so` |
 | tagDialog | a blank or invalid name | the dialog stays, the reason under the field | VERIFIED `::a blank tag stays in the dialog, under the field` |
+| tagDialog | a second tap on Add in the same frame, before it spins | one tag write (REG-DOUBLE-SUBMIT) | VERIFIED `card_held_scope_test.dart::a second tap in the same frame does not tag twice (UC-CARD-001 A8)` |
 | selection | Export | the export sheet over the selection (screen 12); the selection stays | `UNVERIFIED (code read)`: `card_list_section_widget.dart` `onExport`; the router test is in screen 12 |
 | selection | Trash | delCard, Cancel keeps the selection | VERIFIED `card_bulk_actions_test.dart::Trash asks with the count; Cancel keeps the selection; several cards get no Undo (FE-B1 D4)` |
 | delCard | Move | trashed: one card offers Undo; several offer Open Trash | VERIFIED `::one card shows its text; Undo puts it back (UC-TRASH-001 A1)`, `::Move to Trash spins while the cards move (FE-B1 D15)` |

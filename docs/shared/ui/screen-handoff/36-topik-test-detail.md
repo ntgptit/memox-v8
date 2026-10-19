@@ -49,7 +49,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | continueOrNew | Continue | 37 at its current question | BR-TOPIK-011. VERIFIED same test |
 | continueOrNew | dismissed | no change | BR-TOPIK-011. VERIFIED `::the dialog dismissed changes nothing` |
 | continueOrNew | Start new | startNewConfirm | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
-| startNewConfirm | Start new | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED same test |
+| startNewConfirm | Start new | 37 (new attempt); the old one removed in one transaction | BR-TOPIK-011. VERIFIED same test |
 | startNewConfirm | Cancel | no change: the attempt in progress stays | BR-TOPIK-011. VERIFIED `::Start new asks again; Cancel keeps the attempt in progress (BR-TOPIK-011)` |
 | history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
 | deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
@@ -61,7 +61,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | overview / history | FAB, the start refused (the test left, or an attempt in progress appeared) | same state + snackbar naming why | BR-TOPIK-011, BR-TOPIK-019. VERIFIED `::a start refused because the test left says so (BR-TOPIK-019)`, `::a start refused because an attempt in progress appeared says so (BR-TOPIK-011)` |
 | loading / any loaded | the read fails | error: no FAB, the generic title | The Content Gate Rule. VERIFIED `::an error after the test loaded drops the FAB and the title (States: error, The Content Gate Rule)` |
 | error | Retry | error with Retry spinning, then the state the read gives | UC-TOPIK-002 E2. VERIFIED `::error: Retry reads the test again (States: error to loaded)` (no skeleton, as on 38 and 39) |
-| any loaded | a start or a delete finishes after the screen is gone | no navigation; the attempt is created or deleted, and its row appears or leaves | `UNVERIFIED (code read)`: `_command` guards with `mounted`; no test drives it (Impeccable audit 2026-10-17) |
+| any loaded | a start or a delete finishes after the screen is gone | no navigation; the attempt is created or removed, and its row appears or goes from History | `UNVERIFIED (code read)`: `_command` guards with `mounted`; no test drives it (Impeccable audit 2026-10-17) |
 | history | delete confirmed while a start still runs | no change, no message | Q-A-4 (open, low). `UNVERIFIED (code read)`: the busy guard sits after the dialog, so the confirmed delete is dropped silently; see Rulings |
 | history | delete confirmed, the attempt already gone (`notFound`) | history unchanged, no message | `UNVERIFIED (code read)`: a refusal that says nothing on purpose (its row has already left) |
 | loading | test unknown | testMissing | UC-TOPIK-002 E1. VERIFIED `::an unknown test: missing, with Back to tests and no FAB (UC-TOPIK-002 E1)`, `topik_routes_test.dart::deep links: …` |

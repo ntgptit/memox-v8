@@ -1,4 +1,3 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/reminders/domain/failures/reminder_failure.dart';
 import 'package:memox/features/reminders/presentation/providers/change_reminder_time_provider.dart';
@@ -6,6 +5,7 @@ import 'package:memox/features/reminders/presentation/providers/disable_reminder
 import 'package:memox/features/reminders/presentation/providers/enable_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reminder_controller.g.dart';
@@ -64,13 +64,15 @@ class ReminderController extends _$ReminderController {
     state = ReminderActionState(running: operation);
     ReminderProblem? problem;
     ReminderSaveFailed? saveFailed;
-    try {
-      if (await call() case Rejected(:final reason)) {
-        problem = _problemOf(operation, reason);
-      }
-    } on Failure {
-      saveFailed = ReminderSaveFailed(operation);
-    }
+    await runHeld(
+      () async {
+        if (await call() case Rejected(:final reason)) {
+          problem = _problemOf(operation, reason);
+        }
+      },
+      // A bug takes the Failure's way out: a failed save with Try again.
+      onFailed: (_) => saveFailed = ReminderSaveFailed(operation),
+    );
     if (!ref.mounted) return;
     _again = problem != null || saveFailed != null ? again : null;
     state = ReminderActionState(problem: problem, saveFailed: saveFailed);

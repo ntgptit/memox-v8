@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
@@ -16,6 +15,7 @@ import 'package:memox/features/trash/presentation/widgets/support/trash_rejectio
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -64,51 +64,58 @@ class _TrashRestoreSheetWidgetState
     if (_isRestoring) return;
     setState(() => _isRestoring = true);
     final trash = ref.read(trashControllerProvider.notifier);
-    try {
-      final String? refusal;
-      if (_isCards) {
-        final outcome = await trash.restoreCards(
-          batchIds: _batchIds.ids,
-          deckId: target.id!,
-        );
+    // A record, so a restore that landed (no refusal) is not read as failed.
+    final restored = await runHeld(
+      () async => (refusal: await _refusalOf(trash, target)),
+      onFailed: (failure) {
         if (!mounted) return;
-        refusal = switch (outcome) {
-          Ok() => null,
-          Rejected(:final reason) => context.l10n.trashCardRejection(reason),
-        };
-      } else {
-        final outcome = await trash.restoreDecks(
-          batchIds: _batchIds.ids,
-          parentId: target.id,
-        );
-        if (!mounted) return;
-        refusal = switch (outcome) {
-          Ok() => null,
-          Rejected(:final reason) => context.l10n.trashDeckRejection(reason),
-        };
-      }
-      final l10n = context.l10n;
-      showMxSnackbar(
-        context,
-        message:
-            refusal ??
-            switch (widget.entries) {
-              [final entry] => l10n.trashRestoredOne(
-                trashEntryName(entry),
-                target.name,
-              ),
-              final entries => l10n.trashRestoredMany(
-                entries.length,
-                target.name,
-              ),
-            },
+        setState(() => _isRestoring = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (restored == null || !mounted) return;
+    final refusal = restored.refusal;
+    Navigator.of(context).pop(refusal == null);
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message:
+          refusal ??
+          switch (widget.entries) {
+            [final entry] => l10n.trashRestoredOne(
+              trashEntryName(entry),
+              target.name,
+            ),
+            final entries => l10n.trashRestoredMany(
+              entries.length,
+              target.name,
+            ),
+          },
+    );
+  }
+
+  /// Restores the entries into [target]; the refusal's copy, or null once
+  /// they are back.
+  Future<String?> _refusalOf(TrashController trash, _Target target) async {
+    final l10n = context.l10n;
+    if (_isCards) {
+      final outcome = await trash.restoreCards(
+        batchIds: _batchIds.ids,
+        deckId: target.id!,
       );
-      Navigator.of(context).pop(refusal == null);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isRestoring = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      return switch (outcome) {
+        Ok() => null,
+        Rejected(:final reason) => l10n.trashCardRejection(reason),
+      };
     }
+    final outcome = await trash.restoreDecks(
+      batchIds: _batchIds.ids,
+      parentId: target.id,
+    );
+    return switch (outcome) {
+      Ok() => null,
+      Rejected(:final reason) => l10n.trashDeckRejection(reason),
+    };
   }
 
   @override

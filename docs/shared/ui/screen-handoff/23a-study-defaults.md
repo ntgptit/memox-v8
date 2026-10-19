@@ -62,6 +62,7 @@ Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loa
 | saving | the write lands | saved: the draft goes, toast "Saved" | D1. VERIFIED `::steps settle into one save, then "Saved" (D1)` |
 | saving | the write fails | saveFailed: the stepper shows the stored value, toast "Couldn't save cards per session. Still {n}." with Retry | UC E2. VERIFIED `::a failed save names the kept value and Retry saves it (E2)`; `settings_controller_test.dart::a failed write keeps the persisted value, says so, and Retry writes the same change (E2)` |
 | saveFailed | Retry | saving, then saved | UC E2. VERIFIED same tests |
+| saving (any kind) | the write meets a bug (not a `Failure`) | saveFailed, as for a `Failure`: the stored value stays, the same toast with Retry; the row is no longer busy; the bug is reported | VERIFIED for the shared `SettingsController._submit` through the reset kind, `settings_held_bug_test.dart::a submit that dies on a bug is no longer busy and says the save failed, with Retry (_submit)`; the other kinds differ only in the write they pass in, `UNVERIFIED (code read)` |
 | saving | a step or a typed value while the write runs | saving; the new value is written once the first ends | VERIFIED `settings_controller_test.dart::a step while its own write runs is written after it` |
 | loaded | type a number in 1 to 200 | saving at once, then saved | D6. VERIFIED `settings_controller_test.dart::a typed limit outside 1–200 is shown as invalid and not written; a valid one is written at once (E1)` |
 | loaded | type a number outside 1 to 200 | invalidLimit: nothing is written, the message sits under the label and the stepper | UC E1. VERIFIED `::a typed 250 is refused under the stepper and saves nothing (E1)`, `::a typed 250 is refused across the row, under the label (owner 2026-10-07)` |
@@ -83,6 +84,7 @@ Goldens: `test/features/settings/presentation/goldens/study_defaults_{loaded,loa
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **Settings hub spec D3, D9:** two sections with their own notes, so each names its own timing (the limit and order apply from the next session, speech at once); the page says the study rows' toasts, the hub the reset's.
 - **FE-A3 D1, D6 (owner):** save on change, no Save button; the stepper takes −/+, a hold that repeats, and a typed number.
 - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the label and the stepper, and the sub-line stays.

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/logging/app_logger.dart';
-import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/core/logging/sql_log_switch.dart';
 import 'package:memox/core/logging/sql_log_switch_feeder.dart';
 

@@ -28,11 +28,24 @@ class UsersScreen extends ConsumerStatefulWidget {
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
   final _search = TextEditingController();
+  var _isRefreshing = false;
 
   @override
   void dispose() {
     _search.dispose();
     super.dispose();
+  }
+
+  /// The Refresh action stays off until the first page lands, so a tap is
+  /// seen (and heard as disabled) rather than doing nothing visible.
+  Future<void> _refresh(UsersController controller) async {
+    if (_isRefreshing) return;
+    setState(() => _isRefreshing = true);
+    try {
+      await controller.refresh();
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
   }
 
   @override
@@ -60,6 +73,17 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        actions: [
+          // The drag down has no TalkBack or keyboard equivalent (as 28).
+          if (!isRefused)
+            MxIconButton(
+              icon: AppIcons.retry,
+              semanticLabel: l10n.commonRefresh,
+              onPressed: _isRefreshing
+                  ? null
+                  : () => unawaited(_refresh(controller)),
+            ),
+        ],
       ),
       body: isRefused
           ? list

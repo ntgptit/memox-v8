@@ -1,10 +1,10 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/providers/open_learning_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/open_review_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/resume_study_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_entry_controller.g.dart';
@@ -43,33 +43,36 @@ class StudyEntryController extends _$StudyEntryController {
       status: StudyStartStatus.starting,
       lastStart: start,
     );
-    try {
-      final outcome = await _run(start);
-      if (!ref.mounted) return null;
-      switch (outcome) {
-        case Ok(:final value):
-          state = const StudyStartState();
-          return value;
-        case Rejected(:final reason):
-          state = _changedMeanwhile.contains(reason)
-              ? StudyStartState(
-                  status: StudyStartStatus.refused,
-                  refusal: reason,
-                  lastStart: start,
-                )
-              : StudyStartState(
-                  status: StudyStartStatus.failed,
-                  lastStart: start,
-                );
-          return null;
-      }
-    } on Failure {
-      if (!ref.mounted) return null;
-      state = StudyStartState(
-        status: StudyStartStatus.failed,
-        lastStart: start,
-      );
-      return null;
+    final outcome = await runHeld(
+      () => _run(start),
+      // A bug takes the Failure's way out: Try again, never starting for
+      // good.
+      onFailed: (_) {
+        if (ref.mounted) {
+          state = StudyStartState(
+            status: StudyStartStatus.failed,
+            lastStart: start,
+          );
+        }
+      },
+    );
+    if (outcome == null || !ref.mounted) return null;
+    switch (outcome) {
+      case Ok(:final value):
+        state = const StudyStartState();
+        return value;
+      case Rejected(:final reason):
+        state = _changedMeanwhile.contains(reason)
+            ? StudyStartState(
+                status: StudyStartStatus.refused,
+                refusal: reason,
+                lastStart: start,
+              )
+            : StudyStartState(
+                status: StudyStartStatus.failed,
+                lastStart: start,
+              );
+        return null;
     }
   }
 

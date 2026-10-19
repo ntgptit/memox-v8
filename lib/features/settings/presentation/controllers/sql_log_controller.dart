@@ -1,6 +1,6 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/settings/presentation/providers/set_log_sql_statements_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/states/sql_log_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sql_log_controller.g.dart';
@@ -15,14 +15,12 @@ class SqlLogController extends _$SqlLogController {
   Future<void> set({required bool enabled}) async {
     if (state.isSaving) return;
     state = const SqlLogState(isSaving: true);
-    try {
-      await ref.read(setLogSqlStatementsUseCaseProvider)(enabled: enabled);
-      if (!ref.mounted) return;
-      state = const SqlLogState();
-    } on Failure {
-      if (!ref.mounted) return;
-      state = const SqlLogState(hasFailure: true);
-    }
+    final outcome = await runHeld(
+      () => ref.read(setLogSqlStatementsUseCaseProvider)(enabled: enabled),
+      // A bug takes the Failure's way out: the switch is reported once.
+      onFailed: (_) {},
+    );
+    if (ref.mounted) state = SqlLogState(hasFailure: outcome == null);
   }
 
   void dismissFailure() => state = const SqlLogState();

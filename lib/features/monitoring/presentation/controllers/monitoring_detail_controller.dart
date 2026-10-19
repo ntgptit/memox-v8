@@ -46,26 +46,39 @@ class MonitoringDetailController extends _$MonitoringDetailController {
     // reaches the list (final review I1).
     final alive = ref.keepAlive();
     try {
-      final outcome = await ref.read(setLogStatusUseCaseProvider)(
-        id,
-        status,
-        note: note,
-      );
+      final outcome = await _send(status, note);
       if (!ref.mounted) return;
       switch (outcome) {
+        case null:
+          state = MonitoringDetailState(
+            content: current,
+            notice: StatusChangeFailed(status, note),
+          );
         case Ok(:final value):
           _changed(value, status);
         case Rejected(reason: MonitoringRejection.notFound):
           state = const MonitoringDetailState(content: MonitoringDetailGone());
       }
-    } on Object {
-      if (!ref.mounted) return;
-      state = MonitoringDetailState(
-        content: current,
-        notice: StatusChangeFailed(status, note),
-      );
     } finally {
       alive.close();
+    }
+  }
+
+  /// The change alone, or null once it failed. What follows a change that
+  /// landed stays outside: a bug there is not a failed change, which would
+  /// offer it again and write it twice (REG-HELD-SCOPE).
+  Future<Outcome<LogRecordEntity, MonitoringRejection>?> _send(
+    LogStatus status,
+    String? note,
+  ) async {
+    try {
+      return await ref.read(setLogStatusUseCaseProvider)(
+        id,
+        status,
+        note: note,
+      );
+    } on Object {
+      return null;
     }
   }
 

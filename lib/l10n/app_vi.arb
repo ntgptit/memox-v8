@@ -1505,7 +1505,7 @@
   "monitoringCountLogs": "{count, plural, other{{count} nhật ký}}",
   "monitoringCountLogsMore": "{count}+ nhật ký",
   "monitoringNoMore": "Hết nhật ký",
-  "monitoringRefresh": "Làm mới",
+  "commonRefresh": "Làm mới",
   "monitoringRefreshFailed": "Chưa làm mới được. Những gì đang hiện vẫn đúng.",
   "monitoringLoadMoreFailed": "Chưa tải thêm được nhật ký. Những gì đang hiện vẫn đúng.",
   "monitoringEmptyTitle": "Không có vấn đề nào đang mở",

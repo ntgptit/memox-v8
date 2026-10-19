@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
+import 'package:memox/shared/widgets/mx_divider.dart';
 
 /// The footer every dialog and sheet ends with: Cancel and the confirm share
 /// the row 1 : 1, since the title names the object and the confirm is its
@@ -143,13 +143,7 @@ class MxSheetActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FDivider(
-          style: FDividerStyleDelta.delta(
-            color: context.colors.border,
-            padding: const EdgeInsetsGeometryDelta.value(EdgeInsets.zero),
-            width: context.hairline,
-          ),
-        ),
+        const MxDivider(inset: 0),
         Padding(
           // The rule takes its hairline out of the 8 under it.
           padding: EdgeInsets.fromLTRB(

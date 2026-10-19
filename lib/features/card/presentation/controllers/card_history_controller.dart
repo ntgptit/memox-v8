@@ -1,7 +1,7 @@
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_history_controller.g.dart';
@@ -66,24 +66,29 @@ class CardHistoryController extends _$CardHistoryController {
     final cursor = view?.next;
     if (view == null || cursor == null || view.isLoadingMore) return;
     state = AsyncData(view.copyWith(isLoadingMore: true, hasMoreFailed: false));
-    try {
-      final page = await _page(cursor);
-      if (!ref.mounted) return;
-      final current = state.value;
-      if (current == null || !identical(current.next, cursor)) return;
-      state = AsyncData(
-        CardHistoryView(
-          entries: [...current.entries, ...?page?.entries],
-          next: page?.next,
-        ),
-      );
-    } on Failure {
-      if (!ref.mounted) return;
-      final current = state.value;
-      if (current == null) return;
-      state = AsyncData(
-        current.copyWith(isLoadingMore: false, hasMoreFailed: true),
-      );
-    }
+    // A record, so a refused page (null) is not read as a failed load.
+    final loaded = await runHeld(
+      () async => (page: await _page(cursor)),
+      // A bug takes the Failure's way out: the retry row, never a spinner
+      // for good.
+      onFailed: (_) {
+        if (!ref.mounted) return;
+        final current = state.value;
+        if (current == null) return;
+        state = AsyncData(
+          current.copyWith(isLoadingMore: false, hasMoreFailed: true),
+        );
+      },
+    );
+    if (loaded == null || !ref.mounted) return;
+    final current = state.value;
+    if (current == null || !identical(current.next, cursor)) return;
+    final page = loaded.page;
+    state = AsyncData(
+      CardHistoryView(
+        entries: [...current.entries, ...?page?.entries],
+        next: page?.next,
+      ),
+    );
   }
 }

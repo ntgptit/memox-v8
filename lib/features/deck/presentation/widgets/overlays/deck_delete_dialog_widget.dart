@@ -11,6 +11,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_
 import 'package:memox/features/deck/presentation/widgets/support/deck_trashed_snackbar_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -60,37 +61,29 @@ class _DeckDeleteDialogWidgetState
     // is drawn.
     if (_isDeleting) return;
     setState(() => _isDeleting = true);
-    try {
-      final outcome = await ref
+    final outcome = await runHeld(
+      () => ref
           .read(deckActionsControllerProvider.notifier)
-          .deleteDeck(deckId: widget.deck.id);
-      if (!mounted) return;
-      switch (outcome) {
-        case Ok(value: final batchId):
-          showDeckTrashedSnackbar(
-            context,
-            deckName: widget.deck.name,
-            summary: summary,
-            batchId: batchId,
-            onOpenTrash: widget.onOpenTrash,
-          );
-        case Rejected(:final reason):
-          showMxSnackbar(context, message: context.l10n.deckRejection(reason));
-      }
-      Navigator.of(context).pop(outcome is Ok);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      setState(() => _isDeleting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    } on Object catch (error, stackTrace) {
-      // A bug, not a Failure (ADR-016): log it, and never leave the held
-      // dialog without a way out (final review 2026-10-08).
-      FlutterError.reportError(
-        FlutterErrorDetails(exception: error, stack: stackTrace),
-      );
-      if (!mounted) return;
-      setState(() => _isDeleting = false);
-      showMxSnackbar(context, message: context.l10n.failureUnknown);
+          .deleteDeck(deckId: widget.deck.id),
+      onFailed: (failure) {
+        if (!mounted) return;
+        setState(() => _isDeleting = false);
+        showMxSnackbar(context, message: context.l10n.heldFailure(failure));
+      },
+    );
+    if (outcome == null || !mounted) return;
+    Navigator.of(context).pop(outcome is Ok);
+    switch (outcome) {
+      case Ok(value: final batchId):
+        showDeckTrashedSnackbar(
+          context,
+          deckName: widget.deck.name,
+          summary: summary,
+          batchId: batchId,
+          onOpenTrash: widget.onOpenTrash,
+        );
+      case Rejected(:final reason):
+        showMxSnackbar(context, message: context.l10n.deckRejection(reason));
     }
   }
 

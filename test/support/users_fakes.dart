@@ -37,6 +37,9 @@ final class FakeUserRoleRepository implements UserRoleRepository {
   /// The next set waits on it.
   Completer<void>? holdSet;
 
+  /// Every set asked, as (userId, role).
+  final sets = <(String, AccountRole)>[];
+
   @override
   Future<UserPage> list(String query, {String? after}) async {
     lists.add((query, after));
@@ -69,6 +72,7 @@ final class FakeUserRoleRepository implements UserRoleRepository {
 
   @override
   Future<AccountRole?> set(String userId, AccountRole role) async {
+    sets.add((userId, role));
     final hold = holdSet;
     if (hold != null) {
       holdSet = null;

@@ -15,4 +15,9 @@ extension FailureMessage on AppLocalizations {
     MutationBlockedFailure() => failureAccountBusy,
     AuthFailure() => failureAccount,
   };
+
+  /// The copy for a held flow's end ([runHeld]): the [failure]'s, or
+  /// the unknown one for a bug.
+  String heldFailure(Failure? failure) =>
+      failure == null ? failureUnknown : this.failure(failure);
 }
