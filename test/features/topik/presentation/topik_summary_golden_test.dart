@@ -92,10 +92,19 @@ void main() {
         'chart',
         done.id,
         // The chart's header near the top: the bars and the legend in full.
-        before: () => Scrollable.ensureVisible(
-          tester.element(find.byType(MxChartLegend)),
-          alignment: 0.5,
-        ),
+        // By question type sits above it (audit 2026-10-19, G3), so the
+        // legend is built only once scrolled to.
+        before: () async {
+          await tester.scrollUntilVisible(
+            find.byType(MxChartLegend),
+            300,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await Scrollable.ensureVisible(
+            tester.element(find.byType(MxChartLegend)),
+            alignment: 0.5,
+          );
+        },
       );
     });
 
@@ -152,8 +161,17 @@ void main() {
         env,
         'filter_empty',
         done.id,
-        // The chip, not the chart legend's "Wrong".
-        before: () => tester.tap(find.widgetWithText(MxFilterChip, 'Wrong')),
+        // The chip, not the chart legend's "Wrong"; it sits below By
+        // question type (audit 2026-10-19, G3).
+        before: () async {
+          final wrong = find.widgetWithText(MxFilterChip, 'Wrong');
+          await tester.scrollUntilVisible(
+            wrong,
+            300,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.tap(wrong);
+        },
       );
     });
 

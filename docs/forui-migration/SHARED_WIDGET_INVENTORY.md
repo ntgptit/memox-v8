@@ -34,15 +34,15 @@ the file does. It does not guess why ForUI was not used.
 | DIRECT_FORUI | 3 | 0 | 0 | 3 |
 | FORUI_ADAPTER | 24 | 0 | 0 | 24 |
 | FORUI_COMPOSITION | 19 | 0 | 0 | 19 |
-| CUSTOM_FLUTTER | 20 | 0 | 0 | 20 |
+| CUSTOM_FLUTTER | 21 | 0 | 0 | 21 |
 | INFRASTRUCTURE | 5 | 10 | 1 | 16 |
 | REVIEW_REQUIRED | 0 | 0 | 0 | 0 |
-| **Total** | **71** | **10** | **1** | **82** |
+| **Total** | **72** | **10** | **1** | **83** |
 
 Counts were computed from the Class column of the three tables below, after
 the corrections of the ForUI research
 ([FORUI_RESEARCH_LEDGER.md](FORUI_RESEARCH_LEDGER.md)). The
-total (82) equals the number of Dart files listed: 71 from
+total (83) equals the number of Dart files listed: 72 from
 `rg --files lib/shared/widgets`, 10 in `lib/core/theme/`, plus
 `lib/app/app_theme_host.dart`.
 
@@ -64,6 +64,7 @@ total (82) equals the number of Dart files listed: 71 from
 | `lib/shared/widgets/mx_chip_row.dart` | `MxChipRow` | CUSTOM_FLUTTER | none | none | Horizontal scroll that clips at its edges plus 4 dp, so ForUI's focus outline on a chip is not cut. |
 | `lib/shared/widgets/mx_chip_style.dart` | `mxChipStyle` | FORUI_ADAPTER | `FButtonStyle`, `FButtonSizeVariant.xs`, `FTheme` button styles (outline, ghost) | none | Style resolver, no widget: ForUI's extra-small (32) button inside a 48 dp target (`mxTargetStyle`), outline at rest or ghost. |
 | `lib/shared/widgets/mx_chip_trigger.dart` | `MxChipTrigger` | FORUI_ADAPTER | `FButton` | none | A chip that acts on press and never reads as selected: the ghost chip that opens a caller's menu, or with `isGhost: false` the outline chip (the card editor's removable tag). A long label ellipsizes. `semanticLabel` replaces the label; null `onPressed` disables. |
+| `lib/shared/widgets/mx_choice_mark.dart` | `MxChoiceMark` | CUSTOM_FLUTTER | none | none | The check or cross of an answered `MxChoiceTile` in the tile's foreground at `sizeIconInline`, nothing for idle or selected; silent to TalkBack (the tile's label says it). Guess (18) and TOPIK review (39) (audit 2026-10-19, G3). |
 | `lib/shared/widgets/mx_choice_tile.dart` | `MxChoiceTile`, `MxChoiceTone` | FORUI_ADAPTER | `FTappable.static`, `FFocusedOutlineStyleDelta` | `Durations`, `Easing` from `package:flutter/material.dart` | Toned answer surface (idle, selected, right, wrong) on ForUI's tappable; idle is the card (or `muted`) ground inside a `border` hairline, so a tile shows where the card is the page (audit 2026-10-19, G1): Tab reaches it, Enter presses it, ForUI's focus outline sits outside it. Tone eases in; instant under reduced motion. One semantics node with label, state and `sortKey`; at least `sizeControl` tall; null `onTap` makes it inert. |
 | `lib/shared/widgets/mx_code_field.dart` | `MxCodeField` | FORUI_ADAPTER | `FTextField`, `FTextFieldControl.managed` | none | Built by `MxTextField` for the code variant. Six slots are drawn here over one hidden `FTextField`. The comment says `FOtpField` owns its controller type, so this keeps the caller's `TextEditingController`, the paste-replaces-the-code rule and one TalkBack node. |
 | `lib/shared/widgets/mx_dashed_note.dart` | `MxDashedNote` | CUSTOM_FLUTTER | none | none | Muted box with a dashed hairline drawn by a `CustomPainter`. A fact, never an error or an action. |

@@ -7,8 +7,11 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_summary_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_attempt_screen_fixtures.dart';
@@ -90,6 +93,19 @@ void main() {
 
     expect(find.text('${done.score} / 100'), findsOneWidget);
     expect(find.text('3 / 50'), findsOneWidget);
+    // By question type, which names the weakest, comes before the long
+    // list of answers (audit 2026-10-19, G3).
+    final children = tester
+        .widget<MxScreenScroll>(find.byType(MxScreenScroll))
+        .children;
+    expect(
+      children.indexWhere((child) => child is TopikTypeStatsWidget),
+      lessThan(
+        children.indexWhere(
+          (child) => child is MxListSectionHeader && child.label == 'Answers',
+        ),
+      ),
+    );
     await reveal(tester, find.text('Question 1'));
     await tester.tap(find.text('Question 1'));
     await tester.tap(find.text('Review answers'));
@@ -140,8 +156,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('No unanswered questions'), findsNothing);
     await reveal(tester, find.text('Question 1'));
-    // MxSection paints its title upper-case.
-    await reveal(tester, find.text('BY QUESTION TYPE'));
+    // MxSection paints its title upper-case; it sits above the answers.
+    await reveal(tester, find.text('BY QUESTION TYPE'), delta: -300);
     expect(find.text('Weakest'), findsNothing);
   });
 

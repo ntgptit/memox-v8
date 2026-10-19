@@ -9,6 +9,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_mark.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
@@ -239,16 +240,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
               style: context.texts.caption.copyWith(color: foreground),
             ),
           ),
-          if (tone == MxChoiceTone.right || tone == MxChoiceTone.wrong)
-            IconTheme(
-              data: IconThemeData(
-                color: foreground,
-                size: context.dimens.sizeIconInline,
-              ),
-              child: Icon(
-                tone == MxChoiceTone.right ? AppIcons.check : AppIcons.close,
-              ),
-            ),
+          MxChoiceMark(tone: tone, color: foreground),
         ],
       ),
     );
