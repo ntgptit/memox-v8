@@ -1,4 +1,4 @@
-// Symbol-aware ForUI boundary rules (UIL00..UIL06, ADR-026). A symbol counts
+// Symbol-aware ForUI boundary rules (UIL00..UIL07, ADR-026). A symbol counts
 // by the library its element comes from (package:flutter/, package:material_ui/
 // or package:forui/), so an import alias or a local function with a Flutter
 // name changes nothing. The rule table is in docs/forui-migration/FORUI_ARCHITECTURE.md.
@@ -10,6 +10,7 @@
 //   UIL04  a barrier, scrim or surface-tint argument outside lib/core/theme/
 //   UIL05  a theme built outside lib/core/theme/, or a runtime seed scheme
 //   UIL06  package:forui imported outside lib/core/theme/, lib/shared/, lib/app/
+//   UIL07  package:fl_chart imported outside lib/shared/widgets/
 import 'dart:convert';
 import 'dart:io';
 
@@ -24,6 +25,10 @@ import 'package:analyzer/source/line_info.dart';
 const String _flutterUriPrefix = 'package:flutter/';
 const String _materialUiUriPrefix = 'package:material_ui/';
 const String _foruiUriPrefix = 'package:forui/';
+const String _flChartUriPrefix = 'package:fl_chart/';
+
+/// fl_chart draws the charts inside the shared Mx chart widgets only.
+const String _flChartOwnerPrefix = 'lib/shared/widgets/';
 const String _themeOwnerPrefix = 'lib/core/theme/';
 const String _unresolvedUriCode = 'uri_does_not_exist';
 
@@ -139,7 +144,7 @@ const Set<String> _themeClasses = {
   'Typography',
 };
 
-/// One finding. [rule] is UIL00..UIL06; [path] is relative to the lint root.
+/// One finding. [rule] is UIL00..UIL07; [path] is relative to the lint root.
 class UiViolation {
   const UiViolation({
     required this.rule,
@@ -384,6 +389,7 @@ class _UiVisitor extends RecursiveAstVisitor<void> {
     final uri = node.uri.stringValue ?? '';
     _checkMaterialImport(node, uri);
     _checkForuiImport(node, uri);
+    _checkFlChartImport(node, uri);
     super.visitImportDirective(node);
   }
 
@@ -484,6 +490,16 @@ class _UiVisitor extends RecursiveAstVisitor<void> {
       node.offset,
       '$uri outside lib/core/theme, lib/shared and lib/app; '
           'features use the Mx widgets',
+    );
+  }
+
+  void _checkFlChartImport(ImportDirective node, String uri) {
+    if (!uri.startsWith(_flChartUriPrefix)) return;
+    if (relativePath.startsWith(_flChartOwnerPrefix)) return;
+    _report(
+      'UIL07',
+      node.offset,
+      '$uri outside lib/shared/widgets; features use the Mx chart widgets',
     );
   }
 

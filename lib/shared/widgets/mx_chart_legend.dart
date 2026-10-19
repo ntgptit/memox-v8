@@ -18,8 +18,6 @@ class MxChartLegend extends StatelessWidget {
 
   final List<MxBarSeries> series;
 
-  static const double _dot = 6;
-
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
@@ -32,13 +30,15 @@ class MxChartLegend extends StatelessWidget {
     );
   }
 
+  // The dot is `space8` across, large enough to match a bar's colour at a
+  // glance (critique 2026-10-19).
   Widget _entry(BuildContext context, MxBarSeries entry) => Row(
     mainAxisSize: MainAxisSize.min,
     spacing: context.dimens.space4,
     children: [
       Container(
-        width: _dot,
-        height: _dot,
+        width: context.dimens.space8,
+        height: context.dimens.space8,
         decoration: BoxDecoration(color: entry.color, shape: BoxShape.circle),
       ),
       Text(

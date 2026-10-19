@@ -1,4 +1,4 @@
-// Lints lib/ with the ForUI boundary rules (UIL00..UIL06, ui_rules.dart).
+// Lints lib/ with the ForUI boundary rules (UIL00..UIL07, ui_rules.dart).
 // Exit 0 when clean, 1 on violations, 2 on a malformed allowlist or when the
 // code could not be analyzed.
 //
