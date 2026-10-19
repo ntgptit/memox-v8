@@ -71,10 +71,6 @@ Future<StudyOptionsForm> _form(_Rig rig) async => StudyOptionsForm.of(
   appDefaults: StudyOptions.defaults,
 );
 
-/// Past the write and the stream's echo.
-Future<void> _settled() =>
-    Future<void>.delayed(const Duration(milliseconds: 150));
-
 const _override = '{"card_limit":50,"new_card_order":"random"}';
 
 void _optionsTest(
@@ -111,7 +107,7 @@ void main() {
     expect((await _form(rig)).canSave, isTrue);
 
     await _controller(rig).save();
-    await _settled();
+    await untilLanded(() async => _state(rig).timesSaved == 1);
 
     final stored = await _stored(rig);
     expect(stored.source, StudyOptionsSource.rootOverride);
@@ -127,7 +123,7 @@ void main() {
     expect((await _form(rig)).isUsingAppDefaults, isFalse);
     _controller(rig).useAppDefaults(isOn: true);
     await _controller(rig).save();
-    await _settled();
+    await untilLanded(() async => _state(rig).timesSaved == 1);
 
     expect((await _stored(rig)).source, StudyOptionsSource.appDefaults);
   }, rootConfig: _override);
@@ -152,7 +148,7 @@ void main() {
     expect(form.canSave, isTrue);
 
     await _controller(rig).save();
-    await _settled();
+    await untilLanded(() async => _state(rig).timesSaved == 1);
     expect((await _stored(rig)).source, StudyOptionsSource.rootOverride);
   }, rootConfig: '{not json');
 
@@ -190,7 +186,7 @@ void main() {
 
     rig.store.isFailing = false;
     await _controller(rig).save();
-    await _settled();
+    await untilLanded(() async => _state(rig).save == StudyOptionsSave.idle);
     expect((await _stored(rig)).options.cardLimit, 22);
     expect(_state(rig).save, StudyOptionsSave.idle);
   });
@@ -220,7 +216,7 @@ void main() {
     expect(form.options.speechLanguage, SpeechLanguage.koKr);
 
     await _controller(rig).save();
-    await _settled();
+    await untilLanded(() async => _state(rig).timesSaved == 1);
 
     final stored = await _stored(rig);
     expect(stored.options.speechLanguage, SpeechLanguage.koKr);

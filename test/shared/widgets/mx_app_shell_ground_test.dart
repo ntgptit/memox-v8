@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
+import '../../support/theme_harness.dart';
 import '../../support/widget_harness.dart';
 
 const _barKey = Key('bar');
@@ -170,6 +173,26 @@ void main() {
       expect(midway, isNot(clear));
       expect(midway, isNot(appLightColors.border));
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('a theme change is followed at the theme\'s pace, not eased '
+        'again after it (follow-ups spec T1)', (tester) async {
+      Widget app(FThemeData theme) => MaterialApp(
+        theme: materialHostTheme(theme),
+        builder: mxThemeBuilder(theme),
+        home: shell(),
+      );
+      await tester.pumpWidget(app(buildLightTheme()));
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pumpAndSettle();
+
+      // ForUI eases the theme over 200 ms; an edge that eased its own
+      // colour on top would still be on its way here.
+      await tester.pumpWidget(app(buildDarkTheme()));
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(edge(tester), buildDarkTheme().colors.border);
     });
 
     testWidgets('reduced motion changes the colour at once', (tester) async {

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
@@ -218,6 +219,75 @@ void main() {
     await tester.pumpWidget(host(still: true, tone: MxChoiceTone.selected));
     await tester.pump();
     expect(_decoration(tester).color, colors.primary);
+  });
+
+  testWidgets('a theme change is followed at the theme\'s pace, not eased '
+      'again after it (follow-ups spec T1)', (tester) async {
+    final dark = buildDarkTheme().colors;
+    await tester.pumpWidget(_host(_tile()));
+    await tester.pumpAndSettle();
+
+    // ForUI eases the theme over 200 ms; a tile that eased its own colours
+    // on top would still be on its way here.
+    await tester.pumpWidget(_host(_tile(), brightness: Brightness.dark));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(_decoration(tester).color, dark.card);
+    expect(
+      tester.widget<Text>(find.text('① 보기 1')).style?.color,
+      dark.foreground,
+    );
+  });
+
+  testWidgets('a theme change while a tone eases lands on the new theme\'s '
+      'colour of the new tone (follow-ups plan, Review Focus 1)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_host(_tile()));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_host(_tile(tone: MxChoiceTone.right)));
+    await tester.pump(const Duration(milliseconds: 60));
+
+    await tester.pumpWidget(
+      _host(_tile(tone: MxChoiceTone.right), brightness: Brightness.dark),
+    );
+    // Past the tone's ease and ForUI's theme easing, both begun earlier.
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 50));
+    final surface = _decoration(tester).color;
+    final ink = tester.widget<Text>(find.text('① 보기 1')).style?.color;
+
+    final dark = tester.element(find.byType(MxChoiceTile));
+    expect(ink, dark.status.success);
+    expect(surface, dark.status.success.tintOver(MxTintBase.of(dark)));
+    expect(ink, isNot(MxStatusColors.light.success));
+  });
+
+  testWidgets('a tone changed while one eases starts from what is on screen, '
+      'not from the earlier target (final review F1)', (tester) async {
+    final colors = buildLightTheme().colors;
+    await tester.pumpWidget(_host(_tile()));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_host(_tile(tone: MxChoiceTone.selected)));
+    await tester.pump(const Duration(milliseconds: 60));
+    final onScreen = _decoration(tester).color!;
+
+    await tester.pumpWidget(_host(_tile(tone: MxChoiceTone.right)));
+    await tester.pump(const Duration(milliseconds: 16));
+    final next = _decoration(tester).color!;
+
+    // One frame later the surface is near where it was, not a jump to the
+    // full primary fill.
+    expect(next, isNot(colors.primary));
+    for (final (a, b) in [
+      (onScreen.r, next.r),
+      (onScreen.g, next.g),
+      (onScreen.b, next.b),
+    ]) {
+      expect((a - b).abs(), lessThan(0.05));
+    }
+    await tester.pumpAndSettle();
   });
 
   testWidgets('the sort key reaches the node TalkBack reads', (tester) async {

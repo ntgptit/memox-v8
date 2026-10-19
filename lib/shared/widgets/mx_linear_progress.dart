@@ -86,11 +86,11 @@ class _MxLinearProgressState extends State<MxLinearProgress> {
     final colors = context.colors;
     final status = context.status;
     if (widget.isMastery) {
-      return MasteryRamp.fill(status, colors.primary, widget.value);
+      return MasteryRamp.fill(status, widget.value);
     }
     return switch (widget.tone) {
       MxProgressTone.success => status.successFill,
-      MxProgressTone.primary => colors.primary,
+      MxProgressTone.primary => status.accentFill,
       MxProgressTone.neutral => colors.mutedForeground,
       MxProgressTone.warning => status.warningFill,
     };

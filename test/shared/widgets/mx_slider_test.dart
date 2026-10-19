@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_slider.dart';
@@ -48,14 +49,29 @@ void main() {
     expect(bare.getSemanticsData().value, isNotEmpty);
     final style = forUiTheme(tester, slider()).sliderStyles.horizontal;
     expect(style.activeColor.resolve({}), colors.primary);
-    // The track after the thumb takes `border`, not the theme's `secondary`,
-    // which equals the `muted` pane the TOPIK player sits on (audit
-    // 2026-10-19, G2).
+    // The track after the thumb takes `mutedForeground`, not the theme's
+    // `secondary`, which equals the `muted` pane the TOPIK player sits on;
+    // the played part is the accent fill. Both hold 3:1 on `muted` in both
+    // modes (audit 2026-10-19, G2; follow-ups spec S1).
     final applied = tester.widget<FSlider>(slider()).style(style);
-    expect(applied.activeColor.resolve({}), colors.primary);
-    expect(applied.inactiveColor.resolve({}), colors.border);
+    expect(applied.activeColor.resolve({}), MxStatusColors.light.accentFill);
+    expect(applied.inactiveColor.resolve({}), colors.mutedForeground);
     expect(colors.secondary, colors.muted);
+    // ForUI's disabled dimming stays: only the base is replaced.
+    expect(
+      applied.activeColor.resolve({FTappableVariant.disabled}),
+      isNot(MxStatusColors.light.accentFill),
+    );
     handle.dispose();
+
+    // In dark the accent fill is not the primary: the override is real.
+    await pumpMx(tester, seek(onChanged: (_) {}), brightness: Brightness.dark);
+    // Past ForUI's theme easing.
+    await tester.pumpAndSettle();
+    final dark = tester
+        .widget<FSlider>(slider())
+        .style(forUiTheme(tester, slider()).sliderStyles.horizontal);
+    expect(dark.activeColor.resolve({}), MxStatusColors.dark.accentFill);
   });
 
   testWidgets('semanticFormatter: TalkBack reads the value in the '

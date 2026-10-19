@@ -18,6 +18,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | App bar | `MxAppBar` | The Korean title, one line, with "{Level} · {Section}" as subtitle. |
 | Switch | `MxSegmentedTray` | Overview · History. |
 | Overall Progress | `MxListSectionHeader` + `MxCard` | A 3×2 grid of boxed `MxStatTile`s: Accuracy · Completion, Best · Average, Sessions · Completed (six of BR-TOPIK-020's eight numbers); a meta line "Last activity {ago} · {total time}" (the other two); under the card `MxNote.hint` "Scores use completed tests only". No attempt: the card becomes an `MxEmptyState` (primary) "No attempts yet" with "Start" (BR-TOPIK-020). |
+| Score trend | `MxListSectionHeader` + `MxCard` of an `MxLineChart` | From two submitted attempts (BR-TOPIK-020 counts only those): each one's score, oldest first, as a line in `accentFill` from 0 to the test's maximum, a dashed guide at the maximum labelled with it, "#{n}" under each point. No number on a point (one number per element); a few points stretch to the card, many scroll sideways and open at the newest. One TalkBack node: "Scores of {count} submitted attempts, oldest first: {scores}, out of {max}". Absent under two (follow-ups spec G8, owner 2026-10-19). |
 | Recent attempts | `MxListSectionHeader` + `MxCard` of `MxListRow`s | At most five: "#{n}", date and time, "{score} / {max}", "{correct} / {count} correct" and duration (BR-TOPIK-021); an in-progress row reads "In progress" and continues the attempt. |
 | History | `MxListSectionHeader` "{n} attempts" + `MxCard` of `MxListRow`s | Every attempt, newest first: "#{n}" · `MxBadge` Completed or In progress · date and time · (completed only) "{score} / {max}" · "{correct} / {count} correct" · duration (BR-TOPIK-021); actions small `MxButton`s "Summary" and "Review" (completed) or "Continue" (in progress); a trailing delete `MxIconButton` → `showMxConfirm`. Every action is named with its attempt number for TalkBack ("Summary of attempt 3", "Delete attempt 3"), since each row shows the same labels. |
 | Start | `MxFab` "+" | Starts an attempt; with one in progress, an `MxDialog`: "Continue" (primary) or "Start new", which asks once more before it deletes the attempt in progress (BR-TOPIK-011). Absent while loading and on error (The Content Gate Rule). |
@@ -26,7 +27,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| overview | `topik_detail_overview_light.png` | `topik_detail_overview_dark.png` | Attempts in both statuses; Overall Progress filled. |
+| overview | `topik_detail_overview_light.png` | `topik_detail_overview_dark.png` | Attempts in both statuses; Overall Progress filled. Scrolled to the score trend: `topik_detail_overview_trend_light/dark.png`; one submitted attempt, no trend: `topik_detail_overview_one_light/dark.png` (follow-ups spec G8). |
 | overviewEmpty | `topik_detail_overview_empty_light.png` | `topik_detail_overview_empty_dark.png` | No attempt: the empty card with Start. |
 | history | `topik_detail_history_light.png` | `topik_detail_history_dark.png` | Every attempt with its actions. |
 | historyEmpty | `topik_detail_history_empty_light.png` | `topik_detail_history_empty_dark.png` | "No attempts yet". |
@@ -54,6 +55,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (deletes the middle of three: the old #3 reads #2, Sessions and Completed go 3 → 2, the History header "3 attempts" → "2 attempts") |
 | deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
 | history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `topik_test_detail_history_test.dart::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
+| overview | a submitted attempt deleted, or a second one submitted | the score trend's points follow the write; under two the section leaves | Follow-ups spec G8. VERIFIED `topik_test_detail_history_test.dart::History: delete asks, then removes the row, renumbers the later ones and recomputes the progress (BR-TOPIK-018, -021)` (3 points, then 2 after the delete); the threshold by `::Score trend, one submitted attempt: no trend; an attempt in progress is no point`. A second submission arriving while the screen is open is `UNVERIFIED (code read)`: the section reads `detail.attempts`, the stream the figures read |
 | any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3. VERIFIED at the stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); the screen re-renders from it (the delete test above) |
 | any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`, `test/core/database/local_data_reset_test.dart`) and the stream re-emits empty; no screen test drives an account switch |
 | history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3. VERIFIED `topik_test_detail_history_test.dart::History: Summary, Review and Continue open their screens` (the routes of 37–39 come with plans 6b, 6c) |
@@ -70,6 +72,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 
 - **Brief 2026-10-15:** Overview and History are an `MxSegmentedTray`, not bottom tabs; Words (Phase B) joins the tray.
 - **Brief 2026-10-15:** the carousel of the reference app is dropped while there is one card (Overall Progress); Score Trend and Needs Review (Phase B) bring it back as stacked cards first.
+- **Owner 2026-10-19 (follow-ups spec G8):** Score Trend leaves Phase B as its own section under Overall Progress, a line of the submitted scores, not a card in a carousel; the six tiles stay. Its Improving / Declining label (BR-TOPIK-029) stays Phase B.
 - One number per element: Best and Average are tiles; the row repeats a score only as that attempt's own. A completed row still shows both its score and its correct answers (BR-TOPIK-021, spec §6.2), the second spelled "{correct} / {count} correct" so the two never read as the same figure (final review I1).
 - **Plan 6a (2026-10-15):** a History row is three lines: "#n" with its status badge (Completed in `success`, In progress neutral), then when · "{score} / {max}" · "{correct} / {count} correct" · how long, then its actions as small outline buttons and the delete button at the end (critique F1).
 - **Plan 6a:** on an empty Overview the empty state's Start is the one action; the FAB is absent there and present on History, empty or not (critique F2).
@@ -88,6 +91,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - Tray: "Overview" · "History".
 - Overall Progress: "Accuracy" · "Completion" · "Best" · "Average" · "Sessions" · "Completed" · "Last activity {ago} · {duration}" · "Scores use completed tests only"; TalkBack "None yet" for a dash.
 - Empty: "No attempts yet" · "Start" · "Each attempt is saved as you answer."
+- Score trend: "Score trend" · "#{n}" · the maximum; TalkBack "Scores of {count} submitted attempts, oldest first: {scores}, out of {max}".
 - Recent: "Recent attempts" · "#{n}" · "In progress" · "{score} / {max}" · "{correct} / {count} correct".
 - History: "{n} attempts" · "Completed" · "In progress" · "Summary" · "Review" · "Continue" · "Delete attempt"; TalkBack "Summary of attempt {n}" · "Review of attempt {n}" · "Continue attempt {n}" · "Delete attempt {n}".
 - Delete confirm: "Delete this attempt?" · "Its answers are deleted too. This can't be undone." · "Delete" · "Cancel".

@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_recent_attempt_row_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_progress_card_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_score_trend_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -51,6 +52,7 @@ class TopikOverviewWidget extends StatelessWidget {
         TopikProgressCardWidget(progress: progress, now: now),
         SizedBox(height: dimens.space8),
         MxNote.hint(text: l10n.topikScoresNote),
+        TopikScoreTrendWidget(attempts: detail.attempts),
         SizedBox(height: dimens.space24),
         MxListSectionHeader(label: l10n.topikRecentAttempts),
         MxCard(

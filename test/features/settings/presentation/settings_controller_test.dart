@@ -45,8 +45,9 @@ SettingsState _state(_Rig rig) =>
 Future<AppSettingsEntity> _stored(_Rig rig) =>
     rig.container.read(watchAppSettingsUseCaseProvider)().first;
 
-/// Past the settle, with the write and the stream's echo done.
-Future<void> _settled() =>
+/// Past the settle, for a check that nothing was written: there is no
+/// event to wait for when nothing happens.
+Future<void> _pastSettle() =>
     Future<void>.delayed(cardLimitSettle + const Duration(milliseconds: 150));
 
 /// A plain test over a fresh [LibraryEnv]: drift's streams need the real
@@ -73,7 +74,11 @@ void main() {
     expect(_state(rig).cardLimitDraft, 23);
     expect((await _stored(rig)).studyDefaults.cardLimit, 20);
 
-    await _settled();
+    await untilLanded(
+      () async =>
+          _state(rig).notice is SettingsSaved &&
+          _state(rig).cardLimitDraft == null,
+    );
     expect((await _stored(rig)).studyDefaults.cardLimit, 23);
     expect(rig.store.writes, 1);
     expect(_state(rig).cardLimitDraft, isNull);
@@ -92,7 +97,7 @@ void main() {
     _controller(rig).typeCardLimit('250');
     expect(_state(rig).isCardLimitInvalid, isTrue);
     expect(_state(rig).cardLimitDraft, 250);
-    await _settled();
+    await _pastSettle();
     expect(rig.store.writes, 0);
 
     _controller(rig).typeCardLimit('');
@@ -138,7 +143,11 @@ void main() {
     _controller(rig)
       ..chooseNewCardOrder(NewCardOrder.random)
       ..typeCardLimit('30');
-    await _settled();
+    await untilLanded(
+      () async =>
+          (await _stored(rig)).studyDefaults.cardLimit == 30 &&
+          _state(rig).cardLimitDraft == null,
+    );
 
     final stored = await _stored(rig);
     expect(stored.studyDefaults.newCardOrder, NewCardOrder.random);
@@ -156,7 +165,11 @@ void main() {
     _controller(rig).chooseNewCardOrder(NewCardOrder.random);
     rig.store.hold = null;
     gate.complete();
-    await _settled();
+    await untilLanded(
+      () async =>
+          (await _stored(rig)).studyDefaults.newCardOrder ==
+          NewCardOrder.random,
+    );
 
     final stored = await _stored(rig);
     expect(stored.studyDefaults.cardLimit, 30);
@@ -174,7 +187,11 @@ void main() {
     await pumpEventQueue();
     rig.store.hold = null;
     gate.complete();
-    await _settled();
+    await untilLanded(
+      () async => (await _stored(rig)).studyDefaults.cardLimit == 30,
+    );
+    // The order picked back to the stored one would be a second write.
+    await _pastSettle();
 
     expect(
       (await _stored(rig)).studyDefaults.newCardOrder,
@@ -190,10 +207,12 @@ void main() {
     _controller(rig).typeCardLimit('30');
     _controller(rig).stepCardLimit(1);
     // The step settles while the first write still runs.
-    await _settled();
+    await _pastSettle();
     rig.store.hold = null;
     gate.complete();
-    await _settled();
+    await untilLanded(
+      () async => (await _stored(rig)).studyDefaults.cardLimit == 31,
+    );
 
     expect((await _stored(rig)).studyDefaults.cardLimit, 31);
     expect(rig.store.writes, 2);
@@ -203,7 +222,11 @@ void main() {
       'Retry writes the same change (E2)', (rig) async {
     rig.store.isFailing = true;
     _controller(rig).stepCardLimit(5);
-    await _settled();
+    await untilLanded(
+      () async =>
+          _state(rig).notice is SettingsSaveFailed &&
+          _state(rig).cardLimitDraft == null,
+    );
 
     expect(_state(rig).notice, isA<SettingsSaveFailed>());
     expect(_state(rig).notice!.kind, SettingsSubmit.cardLimit);
@@ -270,7 +293,7 @@ void main() {
   _settingsTest('chooseSpeechLanguage writes the language alone '
       '(BR-SETTINGS-007, BR-SETTINGS-009)', (rig) async {
     _controller(rig).chooseSpeechLanguage(SpeechLanguage.jaJp);
-    await _settled();
+    await untilLanded(() async => _state(rig).notice is SettingsSaved);
 
     final stored = await _stored(rig);
     expect(stored.studyDefaults.speechLanguage, SpeechLanguage.jaJp);
@@ -287,7 +310,7 @@ void main() {
 
   _settingsTest('the same language again writes nothing', (rig) async {
     _controller(rig).chooseSpeechLanguage(SpeechLanguage.enUs);
-    await _settled();
+    await _pastSettle();
 
     expect(rig.store.writes, 0);
   });
@@ -296,7 +319,7 @@ void main() {
     rig,
   ) async {
     _controller(rig).setSpeechAutoPlay(isOn: false);
-    await _settled();
+    await untilLanded(() async => !(await _stored(rig)).isSpeechAutoPlay);
 
     expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
   });
@@ -306,12 +329,12 @@ void main() {
   ) async {
     rig.store.isFailing = true;
     _controller(rig).setSpeechAutoPlay(isOn: false);
-    await _settled();
+    await untilLanded(() async => _state(rig).notice is SettingsSaveFailed);
     expect(_state(rig).notice, isA<SettingsSaveFailed>());
 
     rig.store.isFailing = false;
     await _controller(rig).retry(SettingsSubmit.speechAutoPlay);
-    await _settled();
+    await untilLanded(() async => !(await _stored(rig)).isSpeechAutoPlay);
 
     expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
   });

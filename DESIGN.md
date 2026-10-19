@@ -6,6 +6,7 @@ colors:
   foreground: "#0A0A0A"
   primary: "#564BCB"
   primary-foreground: "#FFFFFF"
+  accent-fill: "#564BCB"
   secondary: "#F5F5F5"
   secondary-foreground: "#171717"
   muted: "#F5F5F5"
@@ -173,7 +174,7 @@ MemoX should feel like a quiet, focused study space. The app is drawn with ForUI
 **Key Characteristics:**
 - One sans family (Be Vietnam Pro, with Noto Sans KR for Korean), twelve text roles on ForUI's type scale.
 - Neutral grounds: `background` for the page, `card` for cards, `muted` for recessed grounds, each edge a `border` hairline.
-- One accent: `primary`, the brand indigo in both modes, for the primary fill, the selected control and accent text. Dark keeps it on the MemoX navy page as before the ForUI migration (owner ruling 2026-10-17); as dark text it sits below 4.5:1, a recorded exception. Accent icons and the label on an accent tint are the accent mark, which in dark is as bright as text.
+- One accent: `primary`, the brand indigo in both modes, for the primary fill, the selected control and accent text. Dark keeps it on the MemoX navy page as before the ForUI migration (owner ruling 2026-10-17); as dark text it sits below 4.5:1, a recorded exception. Accent icons and the label on an accent tint are the accent mark, which in dark is as bright as text. A data fill in the accent (a bar, the ramp's reviewing band, a chart line, a slider's played track) is `accent-fill`: the indigo in light, a lighter indigo in dark that holds 3:1 on the card (owner 2026-10-19).
 - Phone first, `context.screenMargin` at the screen edge, `sizeControl` touch targets everywhere.
 - Every text and edge pair of the palette is contrast-tested in both modes; the only exceptions are dark `primary` as text, by owner ruling.
 
@@ -182,7 +183,7 @@ MemoX should feel like a quiet, focused study space. The app is drawn with ForUI
 An indigo accent on ForUI's neutral field, a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both modes. ForUI's roles are `context.colors` (`FColors`); the status colours are `context.status` (`MxStatusColors`).
 
 ### Primary
-- **Accent** (`primary`): the primary button, the FAB, the selected tab's label, chip, the selected radio's ring and the checkbox, progress, the focus outline, and accent text. It is the same indigo in light and dark; in dark it sits on the MemoX navy page, and every other dark value is computed from those two colours.
+- **Accent** (`primary`): the primary button, the FAB, the selected tab's label, chip, the selected radio's ring and the checkbox, the focus outline, and accent text. Progress and chart fills take `accent-fill`. It is the same indigo in light and dark; in dark it sits on the MemoX navy page, and every other dark value is computed from those two colours.
 - **Accent Mark** (`context.status.accentMark`): an accent icon or glyph (an icon tile's glyph, a dot, a check, the selected tab's icon, the selected radio's dot, a spinner) and the label on the Accent Tint (a badge, the study mode chip, an answered TOPIK cell). It is `primary` in light and the dark `foreground` in dark, where the indigo is too dark to read on the navy page (owner ruling 2026-10-17).
 - **On Accent** (`primaryForeground`): text and glyphs on an accent fill.
 - **Accent Tint** (`primary.tintOver(MxTintBase.of(context))`): the hero card and the accent's tinted grounds.

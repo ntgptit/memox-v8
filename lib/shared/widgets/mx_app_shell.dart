@@ -252,21 +252,25 @@ class _AppBarGround extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return TweenAnimationBuilder<Color?>(
-      tween: ColorTween(
-        end: isScrolledUnder
-            ? colors.border
-            : colors.border.withValues(alpha: 0),
-      ),
+    // Only the edge's presence eases; its colour is read from the theme at
+    // each frame, so a theme change follows ForUI's own easing instead of
+    // being eased again after it (follow-ups spec T1).
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: isScrolledUnder ? 1 : 0),
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : Durations.short4,
       curve: Easing.standard,
-      builder: (_, edge, child) => DecoratedBox(
+      builder: (_, presence, child) => DecoratedBox(
         decoration: BoxDecoration(
           color: colors.background,
           border: Border(
-            bottom: BorderSide(color: edge!, width: context.hairline),
+            bottom: BorderSide(
+              color: colors.border.withValues(
+                alpha: colors.border.a * presence,
+              ),
+              width: context.hairline,
+            ),
           ),
         ),
         child: child,

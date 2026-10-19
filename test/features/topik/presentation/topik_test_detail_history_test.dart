@@ -7,6 +7,7 @@ import 'package:memox/features/topik/presentation/providers/delete_topik_attempt
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_line_chart.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
@@ -48,6 +49,12 @@ void main() {
     await pumpTopikTestDetail(tester, env, test, taps);
     expect(topikDetailFigure(tester, 'Sessions'), '3');
     expect(topikDetailFigure(tester, 'Completed'), '3');
+    // The score trend follows the same stream (follow-ups spec G8).
+    int trendPoints() => tester
+        .widget<MxLineChart>(find.byType(MxLineChart, skipOffstage: false))
+        .points
+        .length;
+    expect(trendPoints(), 3);
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
     expect(find.text('#3'), findsOneWidget);
@@ -82,6 +89,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(topikDetailFigure(tester, 'Sessions'), '2');
     expect(topikDetailFigure(tester, 'Completed'), '2');
+    expect(trendPoints(), 2);
   });
 
   libraryTest('History: Summary, Review and Continue open their screens', (

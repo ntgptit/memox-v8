@@ -17,6 +17,8 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_line_chart.dart';
+import 'package:memox/features/topik/presentation/widgets/items/topik_recent_attempt_row_widget.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
@@ -62,10 +64,68 @@ void main() {
     expect(find.text('ACCURACY'), findsOneWidget);
     expect(topikDetailFigure(tester, 'Sessions'), '2');
     expect(topikDetailFigure(tester, 'Completed'), '2');
-    expect(find.text('#2'), findsOneWidget);
-    expect(find.text('#1'), findsOneWidget);
+    for (final number in ['#2', '#1']) {
+      expect(
+        find.descendant(
+          of: find.byType(TopikRecentAttemptRowWidget),
+          matching: find.text(number),
+        ),
+        findsOneWidget,
+      );
+    }
     expect(find.byType(MxFab), findsOneWidget);
   });
+
+  // Follow-ups spec G8: submitted attempts only, from two; scores 44, 62
+  // and 76 are 22, 31 and 38 right of 50 at two points each.
+  for (final (name, corrects, summary) in [
+    ('one submitted attempt: no trend', [22], null),
+    (
+      'three submitted attempts: the trend, read as one summary',
+      [22, 31, 38],
+      'Scores of 3 submitted attempts, oldest first: 44, 62, 76, out of 100',
+    ),
+  ]) {
+    libraryTest('Score trend, $name; an attempt in progress is no point', (
+      tester,
+      env,
+    ) async {
+      final handle = tester.ensureSemantics();
+      for (final (day, correct) in corrects.indexed) {
+        await topikSeedCompleted(
+          env,
+          test,
+          startedAt: libraryToday.add(Duration(days: day)),
+          correct: correct,
+        );
+      }
+      await topikSeedInProgress(
+        env,
+        test,
+        startedAt: libraryToday.add(const Duration(days: 9)),
+      );
+      await pumpTopikTestDetail(tester, env, test, TopikDetailTaps());
+
+      if (summary == null) {
+        expect(find.byType(MxLineChart), findsNothing);
+        expect(find.text('SCORE TREND'), findsNothing);
+        handle.dispose();
+        return;
+      }
+      await tester.scrollUntilVisible(
+        find.byType(MxLineChart),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('SCORE TREND'), findsOneWidget);
+      expect(
+        tester.widget<MxLineChart>(find.byType(MxLineChart)).points.length,
+        3,
+      );
+      expect(find.bySemanticsLabel(summary), findsOneWidget);
+      handle.dispose();
+    });
+  }
 
   libraryTest('the FAB with an attempt in progress asks; Continue opens it '
       '(BR-TOPIK-011)', (tester, env) async {
@@ -286,11 +346,17 @@ void main() {
     await pumpTopikTestDetail(tester, env, test, TopikDetailTaps());
 
     expect(topikDetailFigure(tester, 'Sessions'), '7');
+    // The score trend above names every submitted attempt; the rows are
+    // the five newest.
+    Finder row(String number) => find.descendant(
+      of: find.byType(TopikRecentAttemptRowWidget),
+      matching: find.text(number),
+    );
     for (final number in ['#7', '#6', '#5', '#4', '#3']) {
-      expect(find.text(number), findsOneWidget);
+      expect(row(number), findsOneWidget);
     }
-    expect(find.text('#2'), findsNothing);
-    expect(find.text('#1'), findsNothing);
+    expect(row('#2'), findsNothing);
+    expect(row('#1'), findsNothing);
   });
 
   libraryTest('Total time sums every attempt and reads to the second: '

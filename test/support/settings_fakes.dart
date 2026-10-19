@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/speech/speech_language.dart';
@@ -13,6 +14,19 @@ import 'package:memox/features/settings/domain/models/speech_settings_model.dart
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
+
+/// Until [landed] holds: a settings write and the stream's echo are waited
+/// for, not timed, so a starved test process cannot read the row before the
+/// write commits (follow-ups spec T2). Fails after ten seconds.
+Future<void> untilLanded(Future<bool> Function() landed) async {
+  final waited = Stopwatch()..start();
+  while (!await landed()) {
+    if (waited.elapsed > const Duration(seconds: 10)) {
+      fail('the write did not land within ten seconds');
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
+}
 
 /// The real settings store, counting its writes, with every write failing
 /// while [isFailing] is on (UC-SETTINGS-001 E2).

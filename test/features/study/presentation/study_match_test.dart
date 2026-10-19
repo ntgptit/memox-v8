@@ -397,27 +397,8 @@ void main() {
     expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
 
-  libraryTest('a tile eases into its tone (Impeccable after P3)', (
-    tester,
-    env,
-  ) async {
-    final id = await _match(env);
-    await pumpLibraryScreen(tester, env, studySessionScreen(id));
-
-    final box = tester.widget<TweenAnimationBuilder<Decoration>>(
-      find.descendant(
-        of: find.ancestor(
-          of: find.text('term 1'),
-          matching: find.byType(MxChoiceTile),
-        ),
-        matching: find.byType(TweenAnimationBuilder<Decoration>),
-      ),
-    );
-    expect(box.duration, Durations.short4);
-  });
-
-  libraryTest('a tile keeps its content in place as its tone changes, and '
-      'its foreground eases with its surface (Impeccable after P3)', (
+  libraryTest('a tile eases into its tone, its foreground with its surface, '
+      'and keeps its content in place (Impeccable after P3)', (
     tester,
     env,
   ) async {
@@ -426,15 +407,35 @@ void main() {
     final before = tester.getRect(find.text('term 1'));
     Color foregroundOf() =>
         tester.widget<Text>(find.text('term 1')).style!.color!;
+    Color? surfaceOf() =>
+        (tester
+                    .widget<DecoratedBox>(
+                      find
+                          .descendant(
+                            of: find.ancestor(
+                              of: find.text('term 1'),
+                              matching: find.byType(MxChoiceTile),
+                            ),
+                            matching: find.byType(DecoratedBox),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration)
+            .color;
     final idleForeground = foregroundOf();
+    final idleSurface = surfaceOf();
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
     await tester.pump(Durations.short4 ~/ 2);
     final midForeground = foregroundOf();
+    final midSurface = surfaceOf();
     await tester.pumpAndSettle();
 
     expect(tester.getRect(find.text('term 1')), before);
     expect(midForeground, isNot(anyOf(idleForeground, foregroundOf())));
+    expect(midSurface, isNot(anyOf(idleSurface, surfaceOf())));
+    expect(surfaceOf(), tester.element(find.text('term 1')).colors.primary);
   });
 }

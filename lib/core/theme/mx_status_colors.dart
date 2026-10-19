@@ -14,6 +14,7 @@ import 'package:material_ui/material_ui.dart' show ThemeExtension;
 class MxStatusColors extends ThemeExtension<MxStatusColors> {
   const MxStatusColors({
     required this.accentMark,
+    required this.accentFill,
     required this.success,
     required this.successFill,
     required this.onSuccessFill,
@@ -26,6 +27,7 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
 
   static const MxStatusColors light = MxStatusColors(
     accentMark: Color(0xFF564BCB),
+    accentFill: Color(0xFF564BCB),
     success: Color(0xFF006C49),
     successFill: Color(0xFF17AE79),
     onSuccessFill: Color(0xFF003925),
@@ -38,6 +40,7 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
 
   static const MxStatusColors dark = MxStatusColors(
     accentMark: Color(0xFFE6E6EA),
+    accentFill: Color(0xFF776EE0),
     success: Color(0xFF5ADDA4),
     successFill: Color(0xFF17AE79),
     onSuccessFill: Color(0xFF003925),
@@ -52,8 +55,16 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
   /// the selected tab's icon) and the label on an accent tint (a badge, an
   /// answered TOPIK cell). The brand indigo in light; in dark the text
   /// colour, because the indigo is too dark to read on the navy page (owner
-  /// rulings 2026-10-17). Other accent text and every fill stay `primary`.
+  /// rulings 2026-10-17). Other accent text stays `primary`; a data fill is
+  /// [accentFill].
   final Color accentMark;
+
+  /// The accent as a data fill: a bar, a ramp band, a chart line, a filled
+  /// track. The brand indigo in light; in dark a lighter indigo, because the
+  /// indigo is 2.7:1 on the dark card and a graphic needs 3:1 (follow-ups
+  /// spec G9, owner 2026-10-19). Never text: text keeps `primary` or
+  /// [accentMark].
+  final Color accentFill;
 
   /// A right answer, a finished session, mastered text.
   final Color success;
@@ -76,6 +87,7 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
   @override
   MxStatusColors copyWith({
     Color? accentMark,
+    Color? accentFill,
     Color? success,
     Color? successFill,
     Color? onSuccessFill,
@@ -86,6 +98,7 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
     Color? infoFill,
   }) => MxStatusColors(
     accentMark: accentMark ?? this.accentMark,
+    accentFill: accentFill ?? this.accentFill,
     success: success ?? this.success,
     successFill: successFill ?? this.successFill,
     onSuccessFill: onSuccessFill ?? this.onSuccessFill,
@@ -101,6 +114,7 @@ class MxStatusColors extends ThemeExtension<MxStatusColors> {
     if (other is! MxStatusColors) return this;
     return MxStatusColors(
       accentMark: Color.lerp(accentMark, other.accentMark, t)!,
+      accentFill: Color.lerp(accentFill, other.accentFill, t)!,
       success: Color.lerp(success, other.success, t)!,
       successFill: Color.lerp(successFill, other.successFill, t)!,
       onSuccessFill: Color.lerp(onSuccessFill, other.onSuccessFill, t)!,

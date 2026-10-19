@@ -85,6 +85,9 @@ List<_Pair> _pairs(FColors colors) {
     ('muted', colors.muted),
   ]) {
     add('accentMark glyph on $where', status.accentMark, ground, _nonText);
+    // The accent as a data fill: a bar, a band, a line, a track
+    // (follow-ups spec G9).
+    add('accentFill on $where', status.accentFill, ground, _nonText);
   }
   // A control's resting edge or a supporting glyph.
   add(
