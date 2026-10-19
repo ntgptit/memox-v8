@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_dimens.dart';
-import 'package:memox/core/theme/mx_status_colors.dart';
+import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/shared/widgets/mx_line_chart.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
@@ -35,14 +35,14 @@ void main() {
   LineChartData data(WidgetTester tester) =>
       tester.widget<LineChart>(find.byType(LineChart)).data;
 
-  testWidgets('one point per value, from 0 to the maximum, in the accent '
-      'fill, each point centred over its label', (tester) async {
+  testWidgets('one point per value, from 0 to the maximum, in the primary, '
+      'each point centred over its label', (tester) async {
     await pumpMx(tester, chart(points([44, 62, 76])));
 
     final line = data(tester).lineBarsData.single;
     expect([for (final spot in line.spots) spot.y], [44, 62, 76]);
     expect(data(tester).minY, 0);
-    expect(line.color, MxStatusColors.light.accentFill);
+    expect(line.color, appLightColors.primary);
     // The scale: a guide at the maximum carries it, with a room above it
     // that keeps a dot at the maximum and the label inside the scroll's
     // clip (final review F3).
@@ -50,18 +50,6 @@ void main() {
     expect(guide.y, 100);
     expect(guide.label.labelResolver(guide), '100');
     expect(guide.label.alignment, Alignment.topRight);
-    // In dark the accent fill is not the primary: the override is real.
-    await pumpMx(
-      tester,
-      chart(points([44, 62, 76])),
-      brightness: Brightness.dark,
-    );
-    // Past ForUI's theme easing.
-    await tester.pumpAndSettle();
-    expect(
-      data(tester).lineBarsData.single.color,
-      MxStatusColors.dark.accentFill,
-    );
     final height = tester.getSize(find.byType(LineChart)).height;
     final room = height - dimens.sizeControl * 2;
     expect(room, greaterThan(dimens.space4 + dimens.strokeEmphasis / 2));

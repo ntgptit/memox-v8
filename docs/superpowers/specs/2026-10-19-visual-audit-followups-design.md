@@ -54,6 +54,7 @@ spec left G8, G9 and three open items; this one settles all five.
 | O7 | S1: the inactive track is `mutedForeground` (5.68:1 light, 6.04:1 dark on `muted`); the active track is `accentFill`. |
 | O8 | G8: a section "Score trend" under Overall Progress on screen 36, shown from two submitted attempts. The six tiles stay. Score Trend leaves Phase B. |
 | O9 | T1: a tile eases a tone change only; a theme change follows ForUI's own animation. The same for the app bar's edge. The harness tears the tree down between themes. |
+| O10 | **O6 reverted (owner, 2026-10-19, after the merge):** the lighter dark fill read as an invented colour on the progress bars. `accentFill` is removed (`tools/design/removed_symbols.json`); every bar, ramp band, chart line and slider track is `primary` again, as before G9. The dark 2.7:1 of `primary` as a fill on the card stays, as it was before this spec. S1's inactive track stays. |
 
 ## 4. G8 design
 

@@ -85,7 +85,8 @@
     "re:\\bdimens\\.opacity(?:Disabled\\w*|Dragged|Focus|Hover|Pressed|Scrim)\\b": "context.colors.disabledOpacity, or the ForUI control's own states",
     "re:\\bdimens\\.size(?:Avatar|Badge|Button|ButtonSmall|Chip|Dot|DotSmall|IconButton|Input|NavIndicator\\w+|RadioDot|Search|SelectionControl|Tile)\\b": "the ForUI control's own size (FButtonSizeVariant, FTextField), or context.dimens.sizeControl for the 48 target",
     "re:\\btexts\\.(?:display|headline|title|body|label)(?:Large|Medium|Small)\\b": "an MxTextRoles role: figure, term, termCompact, screenTitle, sectionTitle, itemTitle, content, body, caption, button, label, meta",
-    "re:\\bcolors\\.(?:onSurface|onSurfaceVariant|surfaceContainer\\w*|surfaceDim|surfaceBright|outlineVariant|outline|onPrimary|primaryContainer|onPrimaryContainer|secondaryContainer|onSecondaryContainer|onSecondary|tertiary\\w*|onTertiary\\w*|errorContainer|onErrorContainer|onError|inverseSurface|onInverseSurface|inversePrimary|surfaceTint|scrim|shadow|surface)\\b": "an FColors role: background, foreground, primary, primaryForeground, secondary, secondaryForeground, muted, mutedForeground, error, errorForeground, card, border, barrier"
+    "re:\\bcolors\\.(?:onSurface|onSurfaceVariant|surfaceContainer\\w*|surfaceDim|surfaceBright|outlineVariant|outline|onPrimary|primaryContainer|onPrimaryContainer|secondaryContainer|onSecondaryContainer|onSecondary|tertiary\\w*|onTertiary\\w*|errorContainer|onErrorContainer|onError|inverseSurface|onInverseSurface|inversePrimary|surfaceTint|scrim|shadow|surface)\\b": "an FColors role: background, foreground, primary, primaryForeground, secondary, secondaryForeground, muted, mutedForeground, error, errorForeground, card, border, barrier",
+    "accentFill": "context.colors.primary (owner 2026-10-19: the progress bars and charts keep the brand indigo; the lighter dark fill was reverted)"
   },
   "files": [
     "lib/core/theme/mx_text_styles.dart",

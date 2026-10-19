@@ -8,26 +8,22 @@ void main() {
   final accent = appLightColors.primary;
 
   test('0% paints no fill, only the track', () {
-    expect(MasteryRamp.fill(status, 0), isNull);
+    expect(MasteryRamp.fill(status, accent, 0), isNull);
   });
 
   test('below 34% is the warning fill (deck mastery spec R4)', () {
-    expect(MasteryRamp.fill(status, 0.01), status.warningFill);
-    expect(MasteryRamp.fill(status, 0.3399), status.warningFill);
+    expect(MasteryRamp.fill(status, accent, 0.01), status.warningFill);
+    expect(MasteryRamp.fill(status, accent, 0.3399), status.warningFill);
   });
 
-  test('34% up to 67% is the accent fill, which in dark is not the primary '
-      '(follow-ups spec G9)', () {
-    for (final status in [MxStatusColors.light, MxStatusColors.dark]) {
-      expect(MasteryRamp.fill(status, 0.34), status.accentFill);
-      expect(MasteryRamp.fill(status, 0.6699), status.accentFill);
-    }
-    expect(MxStatusColors.dark.accentFill, isNot(appDarkColors.primary));
+  test('34% up to 67% is the primary colour', () {
+    expect(MasteryRamp.fill(status, accent, 0.34), accent);
+    expect(MasteryRamp.fill(status, accent, 0.6699), accent);
   });
 
   test('67% and above is the success fill', () {
-    expect(MasteryRamp.fill(status, 0.67), status.successFill);
-    expect(MasteryRamp.fill(status, 1), status.successFill);
+    expect(MasteryRamp.fill(status, accent, 0.67), status.successFill);
+    expect(MasteryRamp.fill(status, accent, 1), status.successFill);
   });
 
   test("the text foreground is the band's own ink, never the fill "
@@ -40,7 +36,7 @@ void main() {
 
   test('a fraction outside [0, 1] or NaN is rejected, not painted', () {
     for (final bad in [-0.01, 1.01, double.nan]) {
-      expect(() => MasteryRamp.fill(status, bad), throwsArgumentError);
+      expect(() => MasteryRamp.fill(status, accent, bad), throwsArgumentError);
       expect(
         () => MasteryRamp.foreground(status, accent, bad),
         throwsArgumentError,

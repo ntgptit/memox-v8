@@ -13,15 +13,15 @@ abstract final class MasteryRamp {
   static const double _masteredFrom = 0.67;
 
   /// The flat fill for [fraction] in `[0, 1]`, or null at 0, where only the
-  /// track is painted. Never a gradient. The reviewing band is the accent
-  /// fill, which holds 3:1 on every ground (follow-ups spec G9).
-  static Color? fill(MxStatusColors status, double fraction) {
+  /// track is painted. Never a gradient. [accent] is the primary colour
+  /// of the reviewing band.
+  static Color? fill(MxStatusColors status, Color accent, double fraction) {
     if (fraction.isNaN || fraction < 0 || fraction > 1) {
       throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
     }
     if (fraction == 0) return null;
     if (fraction < _reviewingFrom) return status.warningFill;
-    if (fraction < _masteredFrom) return status.accentFill;
+    if (fraction < _masteredFrom) return accent;
     return status.successFill;
   }
 

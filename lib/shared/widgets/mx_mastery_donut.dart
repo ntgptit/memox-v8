@@ -36,7 +36,8 @@ class MxMasteryDonut extends StatelessWidget {
     // text colour (SW-REV-001). Ruling S10: 0% falls in the lowest band.
     final status = context.status;
     final accent = context.colors.primary;
-    final fill = MasteryRamp.fill(status, fraction) ?? status.warningFill;
+    final fill =
+        MasteryRamp.fill(status, accent, fraction) ?? status.warningFill;
     final foreground = MasteryRamp.foreground(status, accent, fraction);
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
