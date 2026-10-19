@@ -47,7 +47,8 @@ keyboard neither offers the term nor corrects what was typed (BR-STUDY-026).
 `MxTextField`'s bare `study` variant in the study term role (P4 ruling F1); it has focus
 when the turn opens, Check waits for a non-empty answer, and IME Done checks
 (BR-STUDY-029). A right answer lets the next turn follow at once; a wrong one is held
-until Continue, the typed text struck through in the error colour beside the right term
+until Continue, the typed text struck through beside the right term, the letters that
+differ in the error colour
 (BR-STUDY-059, BR-STUDY-064). Show hint appears only for a card with a hint not yet shown
 (BR-STUDY-028). The typed text is never kept (BR-STUDY-027). Goldens:
 `test/features/study/presentation/goldens/study_fill_{input,hint,wrong}_*`.
@@ -63,7 +64,7 @@ until Continue, the typed text struck through in the error colour beside the rig
 | input / hint | the footer hint shows | the info glyph with the instruction | VERIFIED `study_fill_test.dart::the input hint takes the info glyph, as every mode's instruction does (critique 2026-10-02 F7; audit 2026-10-17)` |
 | input | IME Done on an empty answer | nothing | VERIFIED `::the meaning asks, the field takes the term, and Check waits for text; Done on nothing does nothing (20 input, F2, V7)` |
 | answering | the answer is right | the next turn follows at once, with no feedback frame | VERIFIED `::a right answer moves on at once, with no feedback frame (F3, BR-STUDY-064; case and outer spaces ignored)` |
-| answering | the answer is wrong | wrong: the typed text struck through beside the right term, only the letters that differ in `error` (audit 2026-10-19, G6), "Wrong · comes back next round", announced, focus leaves the field and the keyboard closes; held | VERIFIED `::a wrong answer is struck through beside the right term, announced, and waits for Continue (F3, V1, V10, BR-STUDY-059)`; the footer glyph is repeat, asserted in the same test |
+| answering | the answer is wrong | wrong: the typed text struck through beside the right term, only the letters that differ in `error` (audit 2026-10-19, G6), "Wrong · comes back next round", announced, focus leaves the field and the keyboard closes; held | VERIFIED `::a wrong answer is struck through beside the right term, announced, and waits for Continue (F3, V1, V10, BR-STUDY-059)`; the footer glyph is info, asserted in the same test |
 | wrong | tap Continue | the next turn; the wrong card is asked again in the next round (BR-STUDY-059) | VERIFIED in the test above for the hold; the next-round enrolment is the domain's |
 | wrong | a double tap on Check | Continue settles for 400 ms, so the wrong answer is not skipped | VERIFIED `::a double tap on Check does not skip the wrong answer: Continue settles first (critique 2026-09-30 part 3c-2, R1)` |
 | input | tap Show hint (a card with a hint) | hint: the hint row appears in its reserved line, what was typed is kept, Show hint is gone, Check remains; the hint is noted and changes no result | VERIFIED `::Show hint shows the card's hint once and keeps what was typed (F4, BR-STUDY-028)`, `::Show hint moves nothing: the hint line is reserved, at the study detail role (critique 2026-09-30 part 3c-2, R4)`, `::a hint that wraps is reserved whole too (R4)` |
@@ -76,7 +77,7 @@ until Continue, the typed text struck through in the error colour beside the rig
 
 ## Rulings
 
-- **P4 ruling V1:** the struck-through wrong answer uses `error`, as Guess's wrong option; one wrong colour across the round modes.
+- **P4 ruling V1:** the struck-through wrong answer marks its slip in `error`, as Guess's wrong option; one wrong colour across the round modes. Since the visual audit (2026-10-19, G6) only the letters that differ from the term take it, the rest muted; a missing letter, which has no letter to mark, makes the whole answer the slip.
 - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read "Wrong · comes back next round": a wrong `fill` row leaves the current round and is enrolled exactly once in the next one.
 - **P4:** the prompt uses the study passage role at 16, and both faces carry their "Meaning" and "Term" labels in flow.
 - No card can be edited mid-session, so the prompt face has no edit button.

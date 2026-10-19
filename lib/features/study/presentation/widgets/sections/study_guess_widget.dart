@@ -144,42 +144,24 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                 horizontal: context.screenMargin,
                 vertical: context.focusOutlineReach,
               ),
+              // One word does not need half the screen: the prompt takes the
+              // room up to four controls tall, and only what is left goes
+              // between it and the options, which stay near the thumb (audit
+              // 2026-10-19, G5). A spacer would split the room in half.
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: context.dimens.space8,
                 children: [
-                  // One word does not need half the screen: the prompt is at
-                  // most four controls tall, and the room left goes between
-                  // it and the options, which stay near the thumb (audit
-                  // 2026-10-19, G5).
-                  Flexible(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight:
-                            context.dimens.sizeControl * _promptMaxControls,
-                      ),
-                      child: StudyFaceCardWidget(
-                        label: l10n.studyGuessPrompt,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: context.dimens.space8,
-                          children: [
-                            StudyWholeWordTextWidget(
-                              widget.item.front,
-                              style: context.texts.term,
-                            ),
-                            StudySpeakButtonWidget(
-                              text: widget.item.front,
-                              language: widget.speechLanguage,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  _prompt(context),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: context.dimens.space8,
+                    children: [
+                      for (final (index, option) in question.options.indexed)
+                        _option(context, index, option),
+                    ],
                   ),
-                  const Spacer(),
-                  for (final (index, option) in question.options.indexed)
-                    _option(context, index, option),
                 ],
               ),
             ),
@@ -259,6 +241,32 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
       ),
     );
   }
+
+  /// The asked term, at most four controls tall (audit 2026-10-19, G5).
+  Widget _prompt(BuildContext context) => Flexible(
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: context.dimens.sizeControl * _promptMaxControls,
+      ),
+      child: StudyFaceCardWidget(
+        label: context.l10n.studyGuessPrompt,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: context.dimens.space8,
+          children: [
+            StudyWholeWordTextWidget(
+              widget.item.front,
+              style: context.texts.term,
+            ),
+            StudySpeakButtonWidget(
+              text: widget.item.front,
+              language: widget.speechLanguage,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 
   MxChoiceTone _toneOf(GuessOption option) {
     if (!_isAnswered) return MxChoiceTone.idle;

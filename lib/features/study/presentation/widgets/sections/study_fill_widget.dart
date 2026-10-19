@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -267,8 +268,9 @@ class _HintRow extends StatelessWidget {
   );
 }
 
-/// A wrong answer: what was typed, struck through in the error foreground, the
-/// right term below it, and when it comes back (F3, V1, V10).
+/// A wrong answer: what was typed, struck through with its slip in the error
+/// foreground ([typedAgainst]), the right term below it, and when it comes
+/// back (F3, V1, V10).
 class _Corrected extends StatelessWidget {
   const _Corrected({required this.typed, required this.term});
 
@@ -327,11 +329,23 @@ class _Corrected extends StatelessWidget {
 }
 
 /// Each character of [typed] and whether it is one the term also has, in
-/// order (the longest common subsequence, ignoring case): the rest are the
-/// slip a wrong answer shows in `error`.
+/// order (the longest common subsequence, compared as grading folds them:
+/// case and NFC ignored); the rest are the slip a wrong answer shows in
+/// `error`. Spaces at either end, which grading trims, are never the slip.
+/// When every character is in the term, the slip is a missing letter, which
+/// has no character to mark, so the whole answer is the slip.
 List<(String, bool)> typedAgainst(String typed, String term) {
-  final a = typed.characters.toList();
-  final b = term.characters.toList();
+  final all = typed.characters.toList();
+  var start = 0;
+  var end = all.length;
+  while (start < end && all[start].trim().isEmpty) {
+    start++;
+  }
+  while (end > start && all[end - 1].trim().isEmpty) {
+    end--;
+  }
+  final a = [for (final g in all.sublist(start, end)) foldText(g)];
+  final b = [for (final g in term.characters) foldText(g)];
   // lengths[i][j]: the common subsequence of a[i..] and b[j..].
   final lengths = List.generate(
     a.length + 1,
@@ -339,17 +353,17 @@ List<(String, bool)> typedAgainst(String typed, String term) {
   );
   for (var i = a.length - 1; i >= 0; i--) {
     for (var j = b.length - 1; j >= 0; j--) {
-      lengths[i][j] = a[i].toLowerCase() == b[j].toLowerCase()
+      lengths[i][j] = a[i] == b[j]
           ? lengths[i + 1][j + 1] + 1
           : math.max(lengths[i + 1][j], lengths[i][j + 1]);
     }
   }
-  final marked = <(String, bool)>[];
+  final isMatch = List.filled(a.length, false);
   var i = 0;
   var j = 0;
   while (i < a.length) {
-    if (j < b.length && a[i].toLowerCase() == b[j].toLowerCase()) {
-      marked.add((a[i], true));
+    if (j < b.length && a[i] == b[j]) {
+      isMatch[i] = true;
       i++;
       j++;
       continue;
@@ -358,8 +372,13 @@ List<(String, bool)> typedAgainst(String typed, String term) {
       j++;
       continue;
     }
-    marked.add((a[i], false));
     i++;
   }
-  return marked;
+  final isOmission = !isMatch.contains(false);
+  return [
+    for (final g in all.sublist(0, start)) (g, true),
+    for (final (k, g) in all.sublist(start, end).indexed)
+      (g, isMatch[k] && !isOmission),
+    for (final g in all.sublist(end)) (g, true),
+  ];
 }

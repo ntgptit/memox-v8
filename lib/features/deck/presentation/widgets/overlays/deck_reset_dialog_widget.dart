@@ -155,7 +155,8 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   }
 }
 
-/// Kept and Lost side by side (BR-SRS-030, spec A10).
+/// Kept above Lost, each at the dialog's full width (BR-SRS-030, spec A10;
+/// stacked by the visual audit 2026-10-19, G5).
 class _Consequences extends StatelessWidget {
   const _Consequences({required this.summary, required this.cycle});
 

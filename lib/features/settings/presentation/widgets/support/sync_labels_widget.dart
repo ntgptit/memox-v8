@@ -45,13 +45,6 @@ String syncStatusLine(AppLocalizations l10n, SyncStatus status, DateTime now) {
 /// was refused and the last run did not fail. Screen 27 ends its waiting row
 /// with a success check and screen 23 turns its Sync tile success
 /// (critique 2026-09-30 tone pass, T3 and T4).
-/// The last run failed for want of a network, with nothing refused: the
-/// offline note says so, so the standing note steps aside (audit
-/// 2026-10-19, G6).
-bool syncIsOffline(SyncStatus status) =>
-    status.rejectedCount == 0 &&
-    status.lastFailure?.kind == SyncFailureKind.network;
-
 bool syncIsSettled(SyncStatus status) =>
     status.lastSuccessAt != null &&
     status.pendingCount == 0 &&
@@ -72,3 +65,10 @@ String syncFailureSentence(AppLocalizations l10n, SyncFailureKind kind) =>
       SyncFailureKind.server => l10n.syncFailedServer,
       SyncFailureKind.unknown => l10n.syncFailedUnknown,
     };
+
+/// The last run failed for want of a network, with nothing refused: the
+/// offline note says so, so the standing note steps aside (audit
+/// 2026-10-19, G6).
+bool syncIsOffline(SyncStatus status) =>
+    status.rejectedCount == 0 &&
+    status.lastFailure?.kind == SyncFailureKind.network;

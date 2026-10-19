@@ -130,6 +130,10 @@ void main() {
       ('StateError: no row', 'StateError', 'no row'),
       ('Bad state: no row', 'StateError', 'Bad state: no row'),
       ('PostgrestExceptionX', 'PostgrestException', 'PostgrestExceptionX'),
+      // Two groups: the first ')' does not close the message (final review
+      // F8); a nested one does.
+      ('Foo(a) at (b)', 'Foo', 'Foo(a) at (b)'),
+      ('Foo(a (b))', 'Foo', 'a (b)'),
       ('only text', '', 'only text'),
     ]) {
       expect(withoutType(message, type), shown, reason: message);

@@ -42,6 +42,9 @@ class CardEditSummaryWidget extends StatelessWidget {
         isFullBleed: true,
         child: MxListRow(
           title: parts.join(_separator),
+          // Beside the badge, the due date takes the second line rather than
+          // an ellipsis at 360 dp (final review F6).
+          titleMaxLines: 2,
           leading: MxStatusBadge(
             status: mxCardStatus(status),
             label: l10n.cardStatus(status),

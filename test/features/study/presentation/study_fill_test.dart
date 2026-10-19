@@ -100,16 +100,20 @@ void main() {
   });
 
   test('the typed text against the term: the longest run they share, '
-      'ignoring case, the rest the slip', () {
+      'folded as grading folds, the rest the slip; a missing letter makes '
+      'the whole answer the slip (final review F3)', () {
     String slip(String typed, String term) => [
       for (final (grapheme, isMatch) in typedAgainst(typed, term))
         isMatch ? '.' : grapheme,
     ].join();
     expect(slip('term 9', 'term 1'), '.....9');
-    expect(slip('aple', 'apple'), '....');
+    expect(slip('aple', 'apple'), 'aple');
+    expect(slip(' term 9 ', 'term 1'), '......9.');
+    // An accent typed decomposed is the same letter (NFC).
+    expect(slip('Cafe\u0301 9', 'café 1'), '.....9');
     expect(slip('Applle', 'apple'), '....l.');
     expect(slip('xyz', 'apple'), 'xyz');
-    expect(slip('강아지', '강아지들'), '...');
+    expect(slip('강아지', '강아지들'), '강아지');
   });
 
   libraryTest('a wrong answer is struck through beside the right term, '

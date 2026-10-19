@@ -10,7 +10,10 @@ enum MxScrollFadeGround { page, raised, recessed }
 /// FE-A6 P3 C4; breadcrumb and chip rows, audit 2026-10-08 F-05, DEV-306).
 /// Vertical, it fades the bottom; horizontal, each edge that still has
 /// content, in the scroll's own direction, so a reversed view fades the
-/// right side. Decorative: it takes no taps and says nothing to TalkBack.
+/// right side. A horizontal fade reaches `focusOutlineReach` past each side
+/// edge, over the focus ring a chip row lets overhang (audit 2026-10-19,
+/// G6), so what lies within that reach must be on [ground]. Decorative: it
+/// takes no taps and says nothing to TalkBack.
 class MxScrollFade extends StatefulWidget {
   const MxScrollFade({
     super.key,

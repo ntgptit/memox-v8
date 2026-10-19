@@ -68,13 +68,28 @@ void main() {
 
     expect(find.text(_en.studyGuessPrompt.toUpperCase()), findsOneWidget);
     expect(find.text('term 1'), findsOneWidget);
-    // The prompt is at most four controls tall, the room left between it
-    // and the options (audit 2026-10-19, G5).
+    // The prompt takes up to four controls; only the room left goes between
+    // it and the options, so a short phone does not scroll (audit
+    // 2026-10-19, G5; a spacer split the room in half, final review F1).
     final prompt = find.byType(StudyFaceCardWidget);
-    expect(
-      tester.getSize(prompt).height,
-      lessThanOrEqualTo(const AppDimens().sizeControl * 4),
+    final scroll = find.descendant(
+      of: find.byType(MxScrollFade),
+      matching: find.byType(Scrollable),
     );
+    for (final height in [800.0, 640.0]) {
+      tester.view.physicalSize = Size(360, height);
+      await tester.pumpAndSettle();
+      expect(
+        tester.getSize(prompt).height,
+        const AppDimens().sizeControl * 4,
+        reason: '$height',
+      );
+      expect(
+        tester.state<ScrollableState>(scroll.first).position.maxScrollExtent,
+        0,
+        reason: '$height',
+      );
+    }
     expect(
       tester.getTopLeft(find.text('apple')).dy -
           tester.getBottomLeft(prompt).dy,

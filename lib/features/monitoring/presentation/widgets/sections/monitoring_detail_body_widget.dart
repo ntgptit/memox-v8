@@ -94,9 +94,21 @@ class _MonitoringDetailBodyWidgetState
 String withoutType(String message, String type) {
   if (type.isEmpty || !message.startsWith(type)) return message;
   final rest = message.substring(type.length).trim();
-  if (rest.startsWith('(') && rest.endsWith(')')) {
+  if (rest.startsWith('(') && _closingParen(rest) == rest.length - 1) {
     return rest.substring(1, rest.length - 1).trim();
   }
   if (rest.startsWith(':')) return rest.substring(1).trim();
   return message;
+}
+
+/// The index of the ')' that closes the '(' [text] opens with, or -1.
+int _closingParen(String text) {
+  var depth = 0;
+  for (var i = 0; i < text.length; i++) {
+    if (text[i] == '(') depth++;
+    if (text[i] != ')') continue;
+    depth--;
+    if (depth == 0) return i;
+  }
+  return -1;
 }

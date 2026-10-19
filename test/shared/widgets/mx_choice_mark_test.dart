@@ -33,6 +33,13 @@ void main() {
         expect(theme.color, ink);
         expect(theme.size, const AppDimens().sizeIconInline);
       }
+      // An unmarked tone keeps the room, so the text beside it holds still
+      // (final review F7).
+      expect(
+        tester.getSize(find.byType(MxChoiceMark)),
+        Size.square(const AppDimens().sizeIconInline),
+      );
+      expect(MxChoiceMark.isMarked(tone), glyph != null);
       // The tile's label already says right or wrong.
       expect(tester.getSemantics(find.byType(MxChoiceMark)).label, isEmpty);
       handle.dispose();
