@@ -41,10 +41,15 @@ class MxSlider extends StatelessWidget {
     final slider = FSlider(
       // ForUI's inactive track is `secondary`, which equals the `muted` pane
       // the TOPIK player sits on, so the track after the thumb vanished
-      // there; `border` shows on every ground (audit 2026-10-19, G2).
+      // there. `mutedForeground` after the thumb and the accent fill before
+      // it each hold 3:1 on `muted` in both modes (audit 2026-10-19, G2;
+      // follow-ups spec S1).
       style: FSliderStyleDelta.delta(
+        activeColor: FVariantsValueDelta.delta([
+          FVariantValueDeltaOperation.all(context.status.accentFill),
+        ]),
         inactiveColor: FVariantsValueDelta.delta([
-          FVariantValueDeltaOperation.all(context.colors.border),
+          FVariantValueDeltaOperation.all(context.colors.mutedForeground),
         ]),
       ),
       control: FSliderControl.liftedContinuous(

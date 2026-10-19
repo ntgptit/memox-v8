@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -136,8 +137,9 @@ void main() {
     final colors = appDarkColors;
 
     expect(colors.card, isNot(MasteryRamp.track(colors)));
-    // Boxes 1-3 are filled; 4-8 are the track.
-    expect(bars(colors.primary), 3);
+    // Boxes 1-3 are filled, in the accent fill that holds 3:1 on the dark
+    // card (follow-ups spec G9); 4-8 are the track.
+    expect(bars(MxStatusColors.dark.accentFill), 3);
     expect(bars(MasteryRamp.track(colors)), 5);
   });
 

@@ -47,6 +47,17 @@
         ],
         "usage": "Text and glyphs on primary."
       },
+      "accent-fill": {
+        "role": "primary",
+        "displayName": "Accent Fill",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#776EE0",
+        "tonalRamp": [
+          "#564BCB"
+        ],
+        "usage": "The accent as a data fill: a bar, the reviewing band of the mastery ramp, a chart line, a slider's played track; never text."
+      },
       "secondary": {
         "role": "neutral",
         "displayName": "Secondary",
