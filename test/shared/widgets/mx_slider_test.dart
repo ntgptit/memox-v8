@@ -48,7 +48,13 @@ void main() {
     expect(bare.getSemanticsData().value, isNotEmpty);
     final style = forUiTheme(tester, slider()).sliderStyles.horizontal;
     expect(style.activeColor.resolve({}), colors.primary);
-    expect(style.inactiveColor.resolve({}), colors.secondary);
+    // The track after the thumb takes `border`, not the theme's `secondary`,
+    // which equals the `muted` pane the TOPIK player sits on (audit
+    // 2026-10-19, G2).
+    final applied = tester.widget<FSlider>(slider()).style(style);
+    expect(applied.activeColor.resolve({}), colors.primary);
+    expect(applied.inactiveColor.resolve({}), colors.border);
+    expect(colors.secondary, colors.muted);
     handle.dispose();
   });
 

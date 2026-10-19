@@ -39,6 +39,14 @@ class MxSlider extends StatelessWidget {
     // the fraction times [max].
     final fraction = hasRange ? (value / max).clamp(0.0, 1.0) : 0.0;
     final slider = FSlider(
+      // ForUI's inactive track is `secondary`, which equals the `muted` pane
+      // the TOPIK player sits on, so the track after the thumb vanished
+      // there; `border` shows on every ground (audit 2026-10-19, G2).
+      style: FSliderStyleDelta.delta(
+        inactiveColor: FVariantsValueDelta.delta([
+          FVariantValueDeltaOperation.all(context.colors.border),
+        ]),
+      ),
       control: FSliderControl.liftedContinuous(
         value: FSliderValue(max: fraction),
         onChange: (next) {
