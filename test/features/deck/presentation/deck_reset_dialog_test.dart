@@ -89,21 +89,6 @@ final class _GatedReset implements ScheduleRepository {
 MxOptionRow _option(WidgetTester tester, String title) =>
     tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, title));
 
-Future<void> _openReset(WidgetTester tester) async {
-  // At large text the button sits below the fold.
-  await tester.scrollUntilVisible(
-    find.text(_en.algorithmResetAction),
-    200,
-    scrollable: find.byWidgetPredicate(
-      (widget) =>
-          widget is Scrollable && widget.axisDirection == AxisDirection.down,
-    ),
-  );
-  await tester.pumpAndSettle();
-  await tester.tap(find.text(_en.algorithmResetAction));
-  await tester.pumpAndSettle();
-}
-
 void main() {
   libraryTest('with progress: cycle, Kept and Lost; keeping the algorithm '
       'resets it (UC-SRS-001)', (tester, env) async {
@@ -123,7 +108,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     expect(find.text(_en.resetDialogIntro(2, 'Korean', 2)), findsOneWidget);
     expect(find.text(_en.resetKeptBody(1)), findsOneWidget);
@@ -150,7 +135,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     await tester.tap(find.text(_en.resetSwitchTo(_en.deckSchedulerEightBox)));
     await tester.pump();
@@ -171,7 +156,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     expect(find.text(_en.resetNothingToLose), findsOneWidget);
     expect(find.byType(MxOutcomeTile), findsNothing);
@@ -187,7 +172,7 @@ void main() {
   ) async {
     final (rootId, _, _) = await insertStudyTree(env.db, 'r');
     await pumpLibraryScreen(tester, env, deckAlgorithmScreen(deckId: rootId));
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     expect(find.text(_en.resetLostBodyWithSession(1)), findsOneWidget);
     expect(find.text(_en.resetLostBody(1)), findsNothing);
@@ -204,7 +189,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     await tester.tap(find.text(_en.commonCancel));
     await tester.pumpAndSettle();
@@ -222,7 +207,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     await ScheduleRepositoryImpl(env.db).resetLearning(rootDeckId: korean.id);
     await tester.pumpAndSettle();
@@ -246,7 +231,7 @@ void main() {
       deckAlgorithmScreen(deckId: korean.id),
       overrides: [scheduleRepositoryProvider.overrideWithValue(schedules)],
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     await tester.tap(find.text(_en.resetConfirm));
     await tester.pump();
@@ -286,7 +271,7 @@ void main() {
       deckAlgorithmScreen(deckId: korean.id),
       overrides: [scheduleRepositoryProvider.overrideWithValue(schedules)],
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
@@ -322,7 +307,7 @@ void main() {
       env,
       deckAlgorithmScreen(deckId: korean.id),
     );
-    await _openReset(tester);
+    await openResetDialog(tester);
 
     final actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
     expect(actions.isWarning, isTrue);

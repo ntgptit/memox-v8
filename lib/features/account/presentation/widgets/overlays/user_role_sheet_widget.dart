@@ -51,6 +51,9 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
   }
 
   Future<void> _save() async {
+    // A second tap in the same frame reaches here before the busy Save is
+    // drawn.
+    if (_isSaving) return;
     setState(() => _isSaving = true);
     final change = await ref
         .read(usersControllerProvider.notifier)

@@ -45,13 +45,13 @@ with the prompt, and no grade should ever be committed by accident.
 
 | State | V8 |
 |---|---|
-| prompt | Prompt card and "Show answer"; the answer is hidden. |
-| revealed | Both cards and the grade row; previews on a scheduled turn. |
-| relearning | As revealed, without previews. |
+| prompt | Prompt card and "Show answer"; the answer is hidden. Goldens `study_self_assess_prompt_light.png` / `study_self_assess_prompt_dark.png`. |
+| meaningFirst | A `meaning_to_korean` row (BR-MODE-014): the meaning is the prompt; the term and the example wait for the reveal. Goldens `study_self_assess_meaning_first_light.png` / `study_self_assess_meaning_first_dark.png`; `study_self_assess_test.dart::a meaning-first card prompts with the meaning; the term and the example wait for the reveal (BR-MODE-014)`. |
+| revealed | Both cards and the grade row; previews on a scheduled turn. Goldens `study_self_assess_revealed_light.png` / `study_self_assess_revealed_dark.png`. |
+| relearning | As revealed, without previews. Goldens `study_self_assess_relearning_light.png` / `study_self_assess_relearning_dark.png`. |
 | saving | The grade row takes no tap and draws no change (plan R3); a local write is well under 300 ms. |
-| saveFailed | A `DatabaseLockedFailure` keeps the answer: the card stays and the unsaved-answer banner with Retry shows (UC-STUDY-001 E2; [Session route states](16-study-browse.md#session-route-states)). Any other `Failure` resets the turn (`study_session_controller.dart`); the use case has already closed the session as `failed`, and the summary (21, Save error) opens (BR-STUDY-018). |
+| saveFailed | A `DatabaseLockedFailure` keeps the answer: the card stays and the unsaved-answer banner with Retry shows (UC-STUDY-001 E2; [Session route states](16-study-browse.md#session-route-states)). Any other `Failure` resets the turn (`study_session_controller.dart`); the use case has already closed the session as `failed`, and the summary (21, Save error) opens (BR-STUDY-018). VERIFIED (closing acceptance 2026-10-18): `study/presentation/study_self_assess_state_coverage_test.dart::saveFailed: a grade met by a busy database keeps the card and the answer and shows the unsaved-answer banner; Retry saves it (UC-STUDY-001 E2)`; `::saveFailed: any other Failure resets the turn, closes the session as failed and opens the summary with its save error (BR-STUDY-018)` |
 | stale | A reset or algorithm change elsewhere invalidates the session on the next write, and the summary (21) opens with its reason (BR-STUDY-015, BR-STUDY-016, BR-STUDY-017). |
-Other goldens: `study_self_assess_prompt_light.png` / `study_self_assess_prompt_dark.png` (the prompt before the reveal); `study_self_assess_revealed_light.png` / `study_self_assess_revealed_dark.png` (revealed, with the grades); `study_self_assess_meaning_first_light.png` / `study_self_assess_meaning_first_dark.png` (a meaning-first row); `study_self_assess_relearning_light.png` / `study_self_assess_relearning_dark.png` (a relearning card).
 
 The goldens `study_self_assess_*` in `test/features/study/presentation/goldens/` are its
 record.
@@ -79,7 +79,7 @@ node TalkBack reads. Goldens:
 | prompt | tap Show answer, or the prompt card | revealed; nothing is written | VERIFIED `study_self_assess_test.dart::the prompt shows first, the answer waits for Show answer, and revealing writes nothing (IT-MODE-012, BR-MODE-006)`, `::tapping the prompt card reveals, as Show answer does` |
 | prompt | tap Show answer, with TalkBack on | the reveal is announced: "The answer is {answer}." (the meaning when the card is term-first, the term when meaning-first), since Show answer takes the focus with it | VERIFIED `study_self_assess_test.dart::the reveal is announced: the answer is read, term-first and meaning-first alike (TalkBack)`, `::a meaning-first reveal announces the term` |
 | prompt | a double tap on Show answer | revealed only; the grades take no tap for 400 ms | VERIFIED `::a double tap on Show answer grades nothing: the grades settle first (critique 2026-09-30 part 3c-2, R1)` |
-| prompt | the card is meaning-first | the meaning is the prompt; the term and the example wait for the reveal | VERIFIED `::a meaning-first card prompts with the meaning; the term and the example wait for the reveal (BR-MODE-014)` |
+| prompt | the card is meaning-first | meaningFirst: the meaning is the prompt; the term and the example wait for the reveal | VERIFIED `::a meaning-first card prompts with the meaning; the term and the example wait for the reveal (BR-MODE-014)` |
 | revealed | tap a grade (scheduled turn) | saving, then the next card, unrevealed | VERIFIED `::Good records one scheduled turn and the next card follows, unrevealed`; the previews and label: `::a scheduled turn shows each grade with its interval, and reads "Good, next in 6 days" (16a)` |
 | revealed | a double tap on a grade | one turn recorded (BR-STUDY-004) | VERIFIED `::a double tap on a grade records one turn (IT-MODE-012, BR-STUDY-004)` |
 | revealed | tap Again | the card returns later as relearning, with no interval and never "0d" | VERIFIED `::after Again the card comes back as a relearning turn, with no interval and never "0d" (BR-STUDY-005, 16a)` |

@@ -40,10 +40,8 @@ keyboard neither offers the term nor corrects what was typed (BR-STUDY-026).
 |---|---|---|---|
 | input | `study_fill_input_light.png` | `study_fill_input_dark.png` | No edit button (see Rulings). |
 | hint | `study_fill_hint_light.png` | `study_fill_hint_dark.png` | "Show hint" is gone once used, "Check" remains. |
+| answering | none | none | The typed answer is being written (Check or IME Done): the controls are locked while the write runs. A right answer has no frame of its own, the next turn follows at once (BR-STUDY-063, BR-STUDY-064); a wrong one becomes `wrong`. `study_fill_test.dart::a right answer moves on at once, with no feedback frame (F3, BR-STUDY-064; case and outer spaces ignored)`. |
 | wrong | `study_fill_wrong_light.png` | `study_fill_wrong_dark.png` | With the corrected footer copy. |
-
-Not captured: the correct-answer path has no dedicated visual — the turn
-commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).
 
 **Built (FE-A6 P4):** `StudyFillWidget` in the session route's mode switch. The field is
 `MxTextField`'s bare `study` variant in the study term role (P4 ruling F1); it has focus
@@ -71,6 +69,7 @@ until Continue, the typed text struck through in the error colour beside the rig
 | input | tap Show hint (a card with a hint) | hint: the hint row appears in its reserved line, what was typed is kept, Show hint is gone, Check remains; the hint is noted and changes no result | VERIFIED `::Show hint shows the card's hint once and keeps what was typed (F4, BR-STUDY-028)`, `::Show hint moves nothing: the hint line is reserved, at the study detail role (critique 2026-09-30 part 3c-2, R4)`, `::a hint that wraps is reserved whole too (R4)` |
 | input | the card has no hint | no Show hint button | VERIFIED `::a card with no hint offers no Show hint (F4)` |
 | input | a double tap on Show hint | the hint only; Check settles first so a half-typed answer is not checked | VERIFIED `::a double tap on Show hint does not check a half-typed answer: Check settles first (critique 2026-09-30 part 3c-2, final review)` |
+| input | tap Show hint, and the write meets a bug (not a `Failure`) | the turn is as it was and no longer busy; the bug is reported | VERIFIED `study_held_bug_test.dart::a fill hint that dies on a bug is no longer busy (_write)` |
 | answering | the busy database refuses the answer | the unsaved-answer banner; the controls are locked while it waits for Retry (`isLocked`); on Retry the wrong answer shows what was typed | VERIFIED `::a wrong answer the busy database refused shows what was typed once Retry commits it (UC-STUDY-001 E2; P4 final review)` |
 | input / hint | ✕ or Back with the keyboard open | the exit dialog of [16](16-study-browse.md#session-route-states); the typed text is dropped, never persisted (BR-STUDY-027) | `UNVERIFIED (code read)`: the controller is the widget's own and is disposed with it |
 | any | deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |

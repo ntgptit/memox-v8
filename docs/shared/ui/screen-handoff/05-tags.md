@@ -44,9 +44,7 @@ not to Tags (plan C4).
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
 | opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). The toast outlives the screen, so Retry runs from the app's container and the root navigator, not the screen's `ref`; after leaving Tags it still writes and says how it ended (audit 2026-10-17 LIB-1). |
 | tagGone | `tags_tag_gone_light.png` | `tags_tag_gone_dark.png` | The gone state (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
-| read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. |
-Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag list could not be read).
-
+| read error | `tags_read_error_light.png` | `tags_read_error_dark.png` | (E1, D10) `MxErrorState` "Couldn't load tags" · "Nothing was lost. Try again in a moment." with Retry; the search field stays above it. `tags_screen_test.dart::a failed read shows the error with Retry (E1, D10)`. |
 
 Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,search_empty,sheet,rename,rename_merge,name_too_long,del,busy,op_error,tag_gone,read_error}_{light,dark}.png`.
 
@@ -71,7 +69,7 @@ Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea
 | sheet | Delete tag | del | VERIFIED `::del: the dialog says no card is deleted; the tag goes and every card stays (A3)` |
 | del | Delete | busy on the row, then the tag leaves the catalog and every card stays | VERIFIED same test; `tag_actions_controller_test.dart::delete removes the tag and keeps every card (A3)` |
 | sheet | TalkBack opens the sheet | the chip "{tag} · {n}" is read as the sheet's heading and names the route | VERIFIED `tags_screen_test.dart::sheet: the tag with its count and three commands; Find cards hands over the name (D11)` (it asserts `isHeader` and `namesRoute`) |
-| busy | TalkBack reads the row | "Saving this tag" for the spinner (`MxListRow.busyLabel`) | the shared mechanism is VERIFIED `test/shared/widgets/mx_list_row_test.dart::a busy row says it is busy to TalkBack with the caller's label (audit 2026-10-17)`; the tag row passing `tagsRowBusy` is `UNVERIFIED (code read)`: `tag_row_widget.dart` |
+| busy | TalkBack reads the row | "Saving this tag" for the spinner (`MxListRow.busyLabel`) | the shared mechanism is VERIFIED `test/shared/widgets/mx_list_row_busy_test.dart::a busy row says it is busy to TalkBack with the caller's label (audit 2026-10-17)`; the tag row passing `tagsRowBusy` is `UNVERIFIED (code read)`: `tag_row_widget.dart` |
 | busy | tap the row or ⋮ | ignored (the row is not tappable) | `UNVERIFIED (code read)`: `tag_row_widget.dart` `onTap: isBusy ? null : …`; the spinner is VERIFIED `::busy: the row spins instead of ⋮ while its write runs` |
 | busy | the write fails | opError: a toast, nothing changed, with Retry | VERIFIED `::opError: a failed delete changes nothing and offers Retry, which deletes (E5)`; `tag_actions_controller_test.dart::a failed write changes nothing and says so (E4, E5)` |
 | opError | Retry | busy again with the same write | VERIFIED same screen test (delete); the rename path shares `_write`: `UNVERIFIED (code read)` |

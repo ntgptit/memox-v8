@@ -2,6 +2,7 @@ import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sign_in_controller.g.dart';
@@ -53,24 +54,36 @@ class SignInController extends _$SignInController {
     SignInProblem? problem;
     var unsent = 0;
     var outcome = done;
-    try {
-      await command(accounts);
-    } on IdentityTakenFailure {
-      outcome = SignInOutcome.identityTaken;
-    } on UnsentChangesFailure catch (error) {
-      unsent = error.count;
-      outcome = SignInOutcome.unsentChanges;
-    } on GoogleCancelledFailure {
-      outcome = SignInOutcome.none;
-    } on Failure catch (error) {
-      problem = signInProblemOf(error);
-      outcome = SignInOutcome.failed;
-    } on StateError {
-      // The account moved on meanwhile: P2 takes a sign-in only in Ready
-      // (plan ruling 6).
-      problem = SignInProblem.failed;
+    void fail(Failure? failure) {
+      problem = signInProblemOf(failure);
       outcome = SignInOutcome.failed;
     }
+
+    await runHeld(
+      () async {
+        try {
+          await command(accounts);
+        } on StateError {
+          // The account moved on meanwhile: P2 takes a sign-in only in Ready
+          // (plan ruling 6).
+          fail(null);
+        }
+      },
+      // A bug fails the command, as any other failure does.
+      onFailed: (failure) {
+        switch (failure) {
+          case IdentityTakenFailure():
+            outcome = SignInOutcome.identityTaken;
+          case UnsentChangesFailure(:final count):
+            unsent = count;
+            outcome = SignInOutcome.unsentChanges;
+          case GoogleCancelledFailure():
+            outcome = SignInOutcome.none;
+          case _:
+            fail(failure);
+        }
+      },
+    );
     if (ref.mounted) {
       state = SignInState(
         problem: problem,

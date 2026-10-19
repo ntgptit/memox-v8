@@ -54,6 +54,7 @@ admin; only Reset falls below the fold (spec §5.1, measured on the goldens).
 | account, signed in | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_dark.png) | (FE-B10) the account row and its chevron. |
 | account, re-auth | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_dark.png) | (FE-B10) the banner leads the section. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
+| gallery (debug build) | `app_gallery_light.png` | `app_gallery_dark.png` | The component gallery opened from the app bar's gallery icon (D11); the dark golden is taken after the gallery's own theme switch. A developer surface, exempt from the screen audits. `test/app/app_golden_test.dart::Gallery, ${brightness.name}`; `test/app/gallery_test.dart::the theme switch flips the gallery to dark`. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,admin_row,reset_confirm,reset_done,sync_synced,sync_failed,sync_rejected}_{light,dark}.png`.
 
@@ -80,12 +81,14 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,a
 | resetting | a second tap on Reset | resetting (ignored) | `UNVERIFIED (code read)`: `_isResetting` in the dialog and `state.isBusy(reset)` in `SettingsController._submit` |
 | resetting | the write lands | loaded with the defaults; the dialog closes; toast "App options reset to defaults" | UC A3. VERIFIED `::Reset asks first, then puts the defaults back (A3)`; `settings_controller_test.dart::reset returns every option to its default in one write (A3)` |
 | resetting | the write fails | resetFailed; the dialog closes either way (`Navigator.pop` after `reset` returns) | UC E2. VERIFIED `::reset runs the reset app/ composed; a failure says so and the next confirm runs it again` (the toast; the dialog closing after a failure is a code read), `settings_controller_test.dart::a failed reset changes nothing and says so` |
+| resetting | the write meets a bug (not a `Failure`) | resetFailed, as for a `Failure`: the dialog closes and the same failed toast offers Retry; the row is no longer busy; the bug is reported | VERIFIED for the shared `SettingsController._submit` through this reset, `settings_held_bug_test.dart::a submit that dies on a bug is no longer busy and says the save failed, with Retry (_submit)`; the other kinds differ only in the write they pass in, `UNVERIFIED (code read)` |
 | resetFailed | Retry on the toast | the reset runs again with no dialog; the toast then says the result | `UNVERIFIED (code read)`: `SettingsController.reset` registers `retry`; the screen test confirms again from the dialog instead of tapping Retry |
 | resetFailed | tap Reset app options, confirm | resetting, then loaded | UC E2. VERIFIED `::reset runs the reset app/ composed; a failure says so and the next confirm runs it again` |
 | resetting | the screen is left | not reachable: the held dialog refuses Back; the tab bar sits under the scrim | N/A, `UNVERIFIED (code read)` |
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **Settings hub spec 2026-10-07, D1–D11:** the tab is a hub of navigation rows; the study rows are on 23a and the admin rows on 23b; the account feature supplies a row and a banner, not a section; leaf paths do not move; the pattern is in `DESIGN.md`, Components, "Settings pattern".
 - **D2 (owner), UI-base row 124:** Theme is a row naming the choice and opens screen 25.
 - **UI-base row 125, UC E3:** loading is section-shaped skeleton cards (part 3d-2); a read error is `MxErrorState` with Retry.

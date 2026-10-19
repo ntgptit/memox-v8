@@ -4,6 +4,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'account_manage_controller.g.dart';
@@ -67,16 +68,20 @@ class AccountManageController extends _$AccountManageController {
     if (accounts == null || state) return AccountCommandResult.none;
     state = true;
     var result = AccountCommandResult.done;
-    try {
-      await command(accounts);
-    } on OfflineFailure {
-      result = AccountCommandResult.offline;
-    } on Failure {
-      result = AccountCommandResult.failed;
-    } on StateError {
-      // The account moved on meanwhile: P2 runs these only in Ready.
-      result = AccountCommandResult.failed;
-    }
+    await runHeld(
+      () async {
+        try {
+          await command(accounts);
+        } on StateError {
+          // The account moved on meanwhile: P2 runs these only in Ready.
+          result = AccountCommandResult.failed;
+        }
+      },
+      // A bug fails the command, as any other failure does.
+      onFailed: (failure) => result = failure is OfflineFailure
+          ? AccountCommandResult.offline
+          : AccountCommandResult.failed,
+    );
     if (ref.mounted) state = false;
     return result;
   }

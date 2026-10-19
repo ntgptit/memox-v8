@@ -1,5 +1,4 @@
 import 'package:memox/core/clock/di/day_clock_provider.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/export_artifact_model.dart';
@@ -7,6 +6,7 @@ import 'package:memox/features/transfer/domain/models/transfer_format_model.dart
 import 'package:memox/features/transfer/presentation/providers/build_export_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/share_export_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_export_controller.g.dart';
@@ -47,7 +47,13 @@ class CardExportController extends _$CardExportController {
     final artifact = await _build(format);
     if (artifact == null) return;
 
-    final shared = await ref.read(shareExportUseCaseProvider)(artifact);
+    final shared =
+        await runHeld(
+          () => ref.read(shareExportUseCaseProvider)(artifact),
+          onFailed: (_) {},
+        ) ??
+        // A Failure or a bug from the share sheet reads as a failed share.
+        const Rejected(TransferRejection.shareFailed);
     if (!ref.mounted) return;
     state = switch (shared) {
       Ok(value: ExportShareResult.shared) => CardExportState(
@@ -70,19 +76,18 @@ class CardExportController extends _$CardExportController {
   /// Steps 4–5, E3–E6: the file, or null once the state says why not or
   /// the sheet has closed meanwhile.
   Future<ExportArtifact?> _build(TransferFormat format) async {
-    final Outcome<ExportArtifact, TransferRejection> built;
-    try {
-      built = await ref.read(buildExportUseCaseProvider)(
+    final built = await runHeld(
+      () => ref.read(buildExportUseCaseProvider)(
         deckId: scope.deckId,
         format: format,
         today: ref.read(dayClockProvider).now(),
         cardIds: scope.cardIds,
-      );
-    } on Failure {
-      if (!_isGone) _fail(format, CardExportProblem.prepareFailed);
-      return null;
-    }
-    if (_isGone) return null;
+      ),
+      onFailed: (_) {
+        if (!_isGone) _fail(format, CardExportProblem.prepareFailed);
+      },
+    );
+    if (built == null || _isGone) return null;
     switch (built) {
       case Ok(:final value):
         return value;

@@ -98,6 +98,9 @@ class _MxToastHostState extends State<MxToastHost> {
 /// - The toast is a live region, so TalkBack reads it when it appears. It is
 ///   not shown through ForUI's toaster, whose tap-to-pause gesture lands on
 ///   the screen's root semantics node as an unlabelled action.
+/// - A toast with an action leaves with the route of [context]: its action
+///   acts on that screen, which is gone. One shown from above the routes
+///   (the root navigator's context), as Undo is, outlives them.
 MxSnackbarController showMxSnackbar(
   BuildContext context, {
   required String message,
@@ -134,6 +137,9 @@ MxSnackbarController showMxSnackbar(
     controller,
     _ToastView(controller: controller, message: message, action: action),
   );
+  if (onAction != null) {
+    unawaited(ModalRoute.of(context)?.popped.then((_) => controller.close()));
+  }
   final persists =
       onAction != null && MediaQuery.accessibleNavigationOf(context);
   if (!persists) controller._timer = Timer(duration, controller.close);

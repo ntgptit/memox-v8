@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
@@ -14,6 +13,7 @@ import 'package:memox/features/settings/presentation/providers/set_language_use_
 import 'package:memox/features/settings/presentation/providers/set_speech_auto_play_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_theme_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings_controller.g.dart';
@@ -261,11 +261,11 @@ class SettingsController extends _$SettingsController {
     if (state.isBusy(kind)) return false;
     state = state.withBusy(kind, isBusy: true);
     var hasWritten = false;
-    try {
-      hasWritten = await write() is Ok;
-    } on Failure {
-      hasWritten = false;
-    }
+    await runHeld(
+      () async => hasWritten = await write() is Ok,
+      // A bug takes the Failure's way out: the value stays, with Retry (E2).
+      onFailed: (_) => hasWritten = false,
+    );
     if (!ref.mounted) return hasWritten;
     state = state.withBusy(kind, isBusy: false);
     if (hasWritten) {

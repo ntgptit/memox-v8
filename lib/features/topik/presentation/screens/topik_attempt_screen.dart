@@ -109,26 +109,34 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
   /// Starts the question clock when a question comes on screen and stops it
   /// when one goes (BR-TOPIK-015); a repeat of the same answer does nothing.
   void _syncClock() {
-    final isAnswering = _isAnswering(
-      ref.read(topikAttemptProvider(widget.attemptId)),
-      ref.read(topikAttemptControllerProvider(widget.attemptId)),
-    );
+    final isAnswering =
+        _phaseOf(
+          ref.read(topikAttemptProvider(widget.attemptId)),
+          ref.read(topikAttemptControllerProvider(widget.attemptId)),
+        ) ==
+        _AttemptPhase.answering;
     if (isAnswering == _isQuestionShown) return;
     _isQuestionShown = isAnswering;
     if (isAnswering) return _controller.showQuestion();
     unawaited(_controller.hideQuestion());
   }
 
-  /// Whether [build] shows a question: its last branch, in the order of the
-  /// switch there (an error shows its state even over a previous value).
-  bool _isAnswering(AsyncValue<TopikAttemptView?> async, bool isSubmitting) =>
-      switch (async) {
-        AsyncError() => false,
-        AsyncValue(:final value?) =>
-          !(value.detail.attempt.isCompleted && !isSubmitting) &&
-              !value.isContentMissing,
-        _ => false,
-      };
+  /// What [build] shows, in one order for the screen and the clock: an error
+  /// shows its state even over a previous value (FR-N1).
+  _AttemptPhase _phaseOf(
+    AsyncValue<TopikAttemptView?> async,
+    bool isSubmitting,
+  ) => switch (async) {
+    AsyncError() => _AttemptPhase.error,
+    AsyncData(value: null) => _AttemptPhase.gone,
+    AsyncValue(:final value?)
+        when value.detail.attempt.isCompleted && !isSubmitting =>
+      _AttemptPhase.submitted,
+    AsyncValue(:final value?) when value.isContentMissing =>
+      _AttemptPhase.contentChanged,
+    AsyncValue(value: _?) => _AttemptPhase.answering,
+    _ => _AttemptPhase.loading,
+  };
 
   void _onLifecycle(AppLifecycleState state) {
     switch (state) {
@@ -151,17 +159,18 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
     final isSubmitting = ref.watch(
       topikAttemptControllerProvider(widget.attemptId),
     );
-    return switch (async) {
-      AsyncError(:final error, :final isLoading) => _plain(
+    final error = async.error;
+    return switch (_phaseOf(async, isSubmitting)) {
+      _AttemptPhase.error => _plain(
         MxErrorState(
           title: l10n.topikAttemptErrorTitle,
           body: error is Failure ? l10n.failure(error) : l10n.topikErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(attemptProvider),
-          isRetrying: isLoading,
+          isRetrying: async.isLoading,
         ),
       ),
-      AsyncData(value: null) => _plain(
+      _AttemptPhase.gone => _plain(
         // Deleted elsewhere or the account changed (UC-TOPIK-003 E2): a gone
         // item, not an error.
         MxEmptyState(
@@ -172,18 +181,16 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
           onAction: widget.onClose,
         ),
       ),
-      AsyncValue(:final value?)
-          when value.detail.attempt.isCompleted && !isSubmitting =>
-        _plain(
-          MxEmptyState(
-            icon: AppIcons.check,
-            title: l10n.topikSubmittedTitle,
-            tone: MxEmptyStateTone.neutral,
-            actionLabel: l10n.topikSeeSummary,
-            onAction: () => widget.onSubmitted(widget.attemptId),
-          ),
+      _AttemptPhase.submitted => _plain(
+        MxEmptyState(
+          icon: AppIcons.check,
+          title: l10n.topikSubmittedTitle,
+          tone: MxEmptyStateTone.neutral,
+          actionLabel: l10n.topikSeeSummary,
+          onAction: () => widget.onSubmitted(widget.attemptId),
         ),
-      AsyncValue(:final value?) when value.isContentMissing => _plain(
+      ),
+      _AttemptPhase.contentChanged => _plain(
         MxEmptyState(
           icon: AppIcons.alert,
           title: l10n.topikContentChangedTitle,
@@ -192,8 +199,8 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
           onAction: () => unawaited(_delete()),
         ),
       ),
-      AsyncValue(:final value?) => _answering(value, isSubmitting),
-      _ => _plain(
+      _AttemptPhase.answering => _answering(async.requireValue!, isSubmitting),
+      _AttemptPhase.loading => _plain(
         MxCard(
           isFullBleed: true,
           child: MxSkeletonList(semanticLabel: l10n.topikLoadingAttempt),
@@ -376,4 +383,14 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
       );
     }
   }
+}
+
+/// The screen's states, one per branch of its build.
+enum _AttemptPhase {
+  error,
+  gone,
+  submitted,
+  contentChanged,
+  answering,
+  loading,
 }

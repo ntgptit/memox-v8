@@ -7,7 +7,7 @@ import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
-import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
+import 'package:memox/features/account/presentation/providers/is_account_starting_provider.dart';
 import 'package:memox/features/account/presentation/providers/switch_code_request_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';

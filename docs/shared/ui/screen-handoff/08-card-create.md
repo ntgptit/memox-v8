@@ -26,6 +26,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | emptyForm | `card_editor_create_light.png` | `card_editor_create_dark.png` | Blank fields, Save disabled, caption "Front and back are required to save." |
+| keyboard | `card_editor_create_keyboard_light.png` | `card_editor_create_keyboard_dark.png` | The form with 300 dp of keyboard open: the deck path steps aside while typing and returns after. `card_editor_golden_test.dart::card editor, create, keyboard, $theme`; `card_editor_keyboard_test.dart::the deck path steps aside while typing and comes back after (audit P1)`. |
 | valid | no golden | no golden | Front and back filled: Save is enabled, caption "You can keep adding cards after saving." `card_editor_screen_test.dart::Save waits for a front and a back`. |
 | details | no golden | no golden | The opened example, hint and pronunciation are live `MxTextField`s. |
 | validationErr | `card_editor_errors_light.png` | `card_editor_errors_dark.png` | The message shows only once the back field has been touched (ruling P4a-L2). |
@@ -38,7 +39,6 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | pendingTag | no golden | no golden | A tag typed but not added is part of the card: Save adds it first (a refused tag stops the save, takes the focus and shows its error), and leaving asks first. `card_tag_input_test.dart::create: Save adds the pending tag, and the next card starts with none and an empty field (Review Focus 2)`, `::create: a refused tag stops Save and takes the focus, so its error is in view (final review)`. |
 | discardNew | no golden | no golden | Back, Close or Cancel on a changed form: "Discard this card?" · "What you typed is not saved." · Keep editing / Discard; an unchanged form closes at once. `card_editor_screen_test.dart::Back on a changed form asks; Keep editing keeps it (RF2)`, `card_editor_blocks_test.dart::the discard dialog answers Discard or Keep editing`. |
 | deckGone | no golden | no golden | Save finds the deck gone: `CardGoneWidget` "This deck is no longer here" (nothing was saved), Back to deck + Open Trash; no footer. Reached on a save, not while typing. Code read: `card_editor_form_widget.dart` (`_afterSave`). |
-Other goldens: `card_editor_create_keyboard_light.png` / `card_editor_create_keyboard_dark.png` (the form with the keyboard open).
 
 Two further states, both built as
 extensions of ruling P4a-L1…L5 (§9 row 79, "gone state" + discard confirm) from
@@ -59,6 +59,8 @@ card?") when leaving a dirty new-card form without saving.
 | saving | the fields while the write runs | read-only (`isReadOnly: _isSaving`) | `UNVERIFIED (code read)`: `card_editor_form_widget.dart`, `card_field_widget.dart`, `card_optional_fields_widget.dart` |
 | saving | a second tap on Save | one card | VERIFIED `::a double tap on Save adds one card` |
 | saving | the write fails | saveFailed, the typed content kept | VERIFIED `::a failed save keeps the form and offers Retry save (RF4)` |
+| held write (saving) | a bug (not a `Failure`) | saveFailed, the same banner and "Retry save" as a `Failure`; the bug is reported | The create and edit saves share `_save`; VERIFIED for the edit save `card_held_bug_test.dart::a save that dies on a bug leaves the editor saying so, with its controls back (Ruling P4a-L3)`; the create call itself `UNVERIFIED (code read)` |
+| saving | a bug after the write landed (here its toast) | the form is cleared for the next card; no saveFailed and no Retry save; the bug reaches the framework (REG-HELD-SCOPE) | VERIFIED `card_held_scope_test.dart::a new card that landed clears the form for the next and offers no Retry though its toast fails (UC-CARD-001 A4)` |
 | saveFailed | Retry save | saving, then saved | `UNVERIFIED (code read)`: `card_editor_form_widget.dart` (`_save` clears `_hasFailed`) |
 | saving | the deck now holds sub-decks | deckRejects: warning banner, Save off, nothing written | VERIFIED `::a deck that now holds decks refuses with a warning banner` |
 | saving | the deck is gone | deckGone | `UNVERIFIED (code read)`: `card_editor_form_widget.dart` (`_afterSave`); the edit-side twin is VERIFIED `::a card deleted while editing shows it is gone (RF3)` |

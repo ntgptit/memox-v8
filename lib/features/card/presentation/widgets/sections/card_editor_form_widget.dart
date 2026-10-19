@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -22,6 +21,7 @@ import 'package:memox/features/card/presentation/widgets/support/card_rejection_
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -221,20 +221,22 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       _hasFailed = false;
     });
     final actions = ref.read(cardActionsControllerProvider.notifier);
-    try {
-      final Outcome<Object?, CardRejection> outcome = _isCreating
-          ? await actions.createCard(deckId: widget.deckId, draft: draft)
-          : await _edit(draft);
-      if (!mounted) return;
-      _afterSave(outcome, draft);
-    } on Failure {
-      // Ruling P4a-L3: said in the form, with the typed content kept.
-      if (!mounted) return;
-      setState(() {
-        _isSaving = false;
-        _hasFailed = true;
-      });
-    }
+    final outcome = await runHeld<Outcome<Object?, CardRejection>>(
+      () => _isCreating
+          ? actions.createCard(deckId: widget.deckId, draft: draft)
+          : _edit(draft),
+      // Ruling P4a-L3: said in the form, with the typed content kept. A bug
+      // takes the same way out.
+      onFailed: (_) {
+        if (!mounted) return;
+        setState(() {
+          _isSaving = false;
+          _hasFailed = true;
+        });
+      },
+    );
+    if (outcome == null || !mounted) return;
+    _afterSave(outcome, draft);
   }
 
   /// The content, then the flag only when the person toggled it here: the

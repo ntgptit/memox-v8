@@ -23,11 +23,10 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_match_board_light.png` | `study_match_board_dark.png` | — |
-Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the wrong-pair flash).
-
-Not captured: the tile's `idle`/`selected`/`matched` micro-states and the
-wrong-pair flash are interactions inside `default`, not separate screen
-states.
+| selected | no golden | no golden | A term or a meaning tapped: that tile is `selected` and the other side waits; a tap on another tile of the same side moves the selection. `study_match_test.dart::a second meaning moves the selection (R3)`, `::a second term moves the selection (M1, R3)`. |
+| answering | no golden | no golden | The pair is answered on the term's card through the session controller; the selection is already cleared and the tiles take no tap while the write runs (`_canTap` is false while `isBusy`, `UNVERIFIED (code read)`). |
+| matched | no golden | no golden | A right pair: both tiles in the success tone with a check, "Matched" announced, the hold released at once. `study_match_test.dart::a term, then its meaning: both are matched, in the success tone, and the match is announced (M1, C1, C3)`. |
+| wrong flash | `study_match_wrong_light.png` | `study_match_wrong_dark.png` | A wrong pair: both tiles flash the error tone for 600 ms and the footer hint reads "Not a match — it returns next round"; then both are idle and still pending. `study_match_test.dart::a wrong pair flashes wrong with the hint swapped, then both go back to idle and stay unmatched (M2, C7, BR-STUDY-062)`. |
 
 **Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the board's
 terms on the left and its meanings on the right, in their stored order, as
@@ -48,7 +47,7 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 | answering | a tap while the write runs | dropped | `UNVERIFIED (code read)`: `_canTap` is false while `isBusy` |
 | default | the last right pair of a board | the next board, whose tiles take taps | VERIFIED `::the last right pair of a board leads to the next board, whose tiles take taps (Review Focus 4; final review, critical)` |
 | default | five right pairs finish the round | the review ends with nothing selected (summary) | VERIFIED `::five right pairs finish the board, and the review ends with nothing selected` |
-| round n | a pair was wrong | asked again in the next round (BR-STUDY-060, BR-STUDY-062) | VERIFIED `::a wrong pair carried into round 2 is asked there, and the round answers (BR-STUDY-060, BR-STUDY-062)` |
+| (next round) | a pair was wrong | asked again in the next round (BR-STUDY-060, BR-STUDY-062) | VERIFIED `::a wrong pair carried into round 2 is asked there, and the round answers (BR-STUDY-060, BR-STUDY-062)` |
 | answering | the busy database refuses the write | the unsaved-answer banner; the selection is already cleared, the pair is kept for Retry | the banner path is VERIFIED from Browse (16); the controller resends the same pair `study_session_controller_test.dart::Retry resends the same pair the busy database refused (E2)`; this screen's frame in that state is `UNVERIFIED (code read)` |
 | wrong flash | leave the screen (✕, Back) before the 600 ms end | the timer is cancelled with the widget; nothing settles late | `UNVERIFIED (code read)`: `dispose` cancels `_timer` |
 | default | ✕, system Back, deck deleted, stale write | the route states of [16](16-study-browse.md#session-route-states) | see 16 |

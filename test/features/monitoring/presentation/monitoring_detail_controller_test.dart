@@ -163,6 +163,38 @@ void main() {
     expect(container.exists(monitoringListControllerProvider), isFalse);
   });
 
+  // REG-HELD-SCOPE: a bug in what follows a landed change is not a failed
+  // change; offering it again would write it twice.
+  test('a bug after a landed change surfaces as itself and offers nothing '
+      'again', () async {
+    repository.servers['a'] = record('a');
+    repository.autoPage = LogPage(items: [summary('a')]);
+    final broken = ProviderContainer(
+      overrides: [
+        monitoringRepositoryProvider.overrideWithValue(repository),
+        monitoringListControllerProvider.overrideWith(_BrokenList.new),
+      ],
+    );
+    addTearDown(broken.dispose);
+    broken
+      ..listen(monitoringListControllerProvider, (_, _) {})
+      ..listen(server, (_, _) {});
+    await pumpEventQueue();
+
+    await expectLater(
+      broken.read(server.notifier).setStatus(LogStatus.fixed),
+      throwsStateError,
+    );
+
+    final state = broken.read(server);
+    expect(state.notice, isA<StatusChanged>());
+    expect(
+      (state.content as MonitoringDetailLoaded).record.status,
+      LogStatus.fixed,
+    );
+    expect(repository.statusChanges, hasLength(1));
+  });
+
   // Review focus: a status change failing offline.
   test('a change that fails changes nothing and offers the same change '
       'again', () async {
@@ -228,4 +260,11 @@ void main() {
     final row = (state.content as MonitoringDetailLoaded).record;
     expect((row.context['args']! as String).length, 256 * 1024);
   });
+}
+
+/// A list whose update after a landed change has a bug.
+final class _BrokenList extends MonitoringListController {
+  @override
+  void statusChanged(String id, LogStatus status) =>
+      throw StateError('a bug after the write');
 }

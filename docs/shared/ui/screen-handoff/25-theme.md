@@ -28,6 +28,7 @@ once, and the page stays open. UC-SETTINGS-001 step 4, BR-SETTINGS-005; spec
 | system | `settings_theme_system_light.png` | `settings_theme_system_dark.png` | Titled "Theme", with plain descriptors (D7); no "THEME" overline. |
 | light | `settings_theme_light_light.png` | `settings_theme_light_dark.png` | As system. |
 | dark | `settings_theme_dark_light.png` | `settings_theme_dark_dark.png` | As system. |
+| loading | — | — | Before the `app_settings` stream emits: `MxSkeletonList`, two rows (`theme_screen.dart:119`, `_skeletonRows = 2`). `UNVERIFIED (code read)`: no test or golden pins it. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with Retry. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,light,dark}_{light,dark}.png`.
@@ -44,6 +45,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig
 | system / light / dark | tap the selected card | no change, nothing written | VERIFIED `settings_controller_test.dart::theme and language are each one write; choosing the persisted value writes nothing` |
 | any | a second tap while the write runs | ignored | UC A4. VERIFIED `settings_controller_test.dart::a second submit of a kind in flight is ignored (A4)` |
 | any | the write fails | the stored card stays selected, toast "Couldn't change the theme." with Retry | UC E2. VERIFIED `theme_screen_test.dart::a failed save keeps the stored theme and offers Retry, which saves it (E2)` |
+| any | the write meets a bug (not a `Failure`) | as the write failing: the stored card stays selected, the same toast with Retry; the page is no longer busy; the bug is reported | VERIFIED for the shared `SettingsController._submit` through the reset kind, `settings_held_bug_test.dart::a submit that dies on a bug is no longer busy and says the save failed, with Retry (_submit)`; the other kinds differ only in the write they pass in, `UNVERIFIED (code read)` |
 | any | Retry on the toast | the write runs again, then the card is selected | UC E2. VERIFIED same test |
 | any | the toast's Retry after leaving the page | the write runs; the page is gone, so no result shows | `UNVERIFIED (code read)`: the snackbar's action closes over the page's `ref` |
 | any | TalkBack activates a card | the same as a tap | VERIFIED `::TalkBack can choose a theme: the card keeps its tap` |
@@ -52,6 +54,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig
 
 ## Rulings
 
+- **Owner 2026-10-18 (closing acceptance NEW-1):** a failed-save toast's Retry acts on this screen's controller, so the toast leaves when the screen does (`showMxSnackbar` closes a toast with an action when its route goes). Before, a Retry tapped after leaving threw "Using ref when a widget is unmounted" and wrote nothing. `settings_toast_leave_test.dart`, `mx_snackbar_route_test.dart`.
 - **D7 (owner):** the screen is titled "Theme" with no overline; the choices are "System", "Always light", "Always dark".
 - **Build audit 2026-09-26, UI-base row 127:** the three cards go one per line when a word of a name or hint would not fit its third (large text, Vietnamese).
 

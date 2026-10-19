@@ -41,14 +41,12 @@ UC-REMINDER-001; spec
 | turningOff | — | — | The toggle is a spinner while Disable cancels and saves; nothing else can start. Code read: `isTurning` covers `turnOff`; the golden `reminder_turning_on_*` shows the same spinner for Enable. |
 | unavailable | `reminder_unavailable_light.png` | `reminder_unavailable_dark.png` | One row, no toggle, no time, no preview (BR-REMINDER-012). Golden `reminder_unavailable_*`. |
 | loading | `reminder_loading_light.png` | `reminder_loading_dark.png` | `MxSkeletonList` rows. |
+| read error | `reminder_read_error_light.png` | `reminder_read_error_dark.png` | (UC-REMINDER-001 E7) `MxErrorState` "Couldn't read the reminder setting" / "Nothing was changed. Try reading it again." with Retry, in place of every row. `reminder_screen_test.dart::E7: a failed read replaces the body, Retry reads again`. |
 
 Built from UC-REMINDER-001:
 
 - **E4, a save that failed:** snackbar "Couldn't save the reminder. Nothing changed." with
   Retry; the rows keep the stored values. The toast leaves with the screen, as its Retry acts on the screen's controller (audit 2026-10-17 LIB-1).
-- **E7, a read that failed:** `MxErrorState` "Couldn't read the reminder setting" /
-  "Nothing was changed. Try reading it again." / Retry, in place of every row. Golden
-  `reminder_read_error_*`.
 
 **Built (FE-B5):** `ReminderScreen` over `reminderStatusProvider` (the stream of
 `WatchReminderUseCase`) and `ReminderController` (Enable, Disable and Change time, each
@@ -95,13 +93,14 @@ turns the reminder on.
 | savingTime | the schedule is refused | couldNotChangeTime | E3. VERIFIED `::couldNotChangeTime: the old time stands, the banner names it (E3)`; `reminder_controller_test.dart::couldNotSchedule is couldNotTurnOn on Enable and couldNotChangeTime on a change` |
 | couldNotChangeTime | Retry | savingTime with the same minute | E3. `UNVERIFIED (code read)`: `ReminderController.changeTime` keeps `again` |
 | savingTime | the save fails | on at the stored time, toast with Retry | E4. `UNVERIFIED (code read)` |
+| turningOn / turningOff / savingTime | the call meets a bug (not a `Failure`) | as the save failing (E4): the stored state stands, the toast "Couldn't save the reminder. Nothing changed." with Retry; the operation is no longer running; the bug is reported | VERIFIED for turningOff and savingTime, Retry included, `reminder_held_bug_test.dart::a turn off that dies on a bug is no longer busy and fails the save (E4)`, `::a change of time that dies on a bug fails the save, and Try again repeats it`; turningOn shares `_run`, `UNVERIFIED (code read)` |
 | any busy state | a second toggle, time or banner action | ignored | spec D4. VERIFIED `reminder_controller_test.dart::a second operation is ignored while one runs`; the controls are disabled while busy (`isBusy`), `UNVERIFIED (code read)` |
 | any | a stream re-emission while a problem shows | the problem stays | VERIFIED `reminder_controller_test.dart::the outcome survives a stream re-emission` |
 | any | the next operation starts | the old banner is cleared | `UNVERIFIED (code read)`: `_run` replaces the state with `running` |
 | turningOn | the screen is left before the platform answers | the operation ends with no state written | `UNVERIFIED (code read)`: `_run` returns on `!ref.mounted`; the schedule itself is the gate's (`reminderOperationGateProvider`) |
-| loaded (off or on) | the preview read lands | the notification's sentence, or "Nothing is due right now, so today's reminder would stay silent." | VERIFIED `reminder_preview_section_test.dart::the preview says what the notification would say now (critique 2026-09-30 part 1)`, `::nothing due: the preview says the reminder stays silent` |
-| loaded (off or on) | the preview read fails | the neutral "nothing due" line, no error | VERIFIED `reminder_preview_section_test.dart::a failed read shows the neutral line` |
-| loaded (off or on) | the preview read is running | the row keeps its place, no error | VERIFIED `reminder_preview_section_test.dart::while the preview loads the row keeps its place and shows no error` |
+| off / on | the preview read lands | the notification's sentence, or "Nothing is due right now, so today's reminder would stay silent." | VERIFIED `reminder_preview_section_test.dart::the preview says what the notification would say now (critique 2026-09-30 part 1)`, `::nothing due: the preview says the reminder stays silent` |
+| off / on | the preview read fails | the neutral "nothing due" line, no error | VERIFIED `reminder_preview_section_test.dart::a failed read shows the neutral line` |
+| off / on | the preview read is running | the row keeps its place, no error | VERIFIED `reminder_preview_section_test.dart::while the preview loads the row keeps its place and shows no error` |
 
 ## Rulings
 
@@ -113,6 +112,7 @@ turns the reminder on.
 - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`.
 - The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a small `MxButton`.
 - "What it says" is built from the notification's own strings, in en and vi, so it matches what is shown.
+- **Owner ruling (2026-10-19, REG-REMINDER-TAP):** a tap on the reminder runs `_router.go(AppRoutes.study)` (`lib/app/app.dart:154-156`) whatever route is open, so it replaces the whole stack: an unsaved card-editor draft or any other in-memory form is dropped without asking. The owner kept this behaviour, and it is now an edge case of BR-REMINDER-008. No code changed. `app/reminder_tap_test.dart` covers the destination only.
 - **Q-C-1 (owner, 2026-10-16):** the reminder hints keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Accessibility

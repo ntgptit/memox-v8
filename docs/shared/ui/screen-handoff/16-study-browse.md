@@ -111,6 +111,8 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
 | unsavedAnswer | a second pick or tap on the mode's controls | ignored; the refused answer stays the turn's answer (`isLocked`), and Retry saves it | VERIFIED for Guess `study_guess_test.dart::an answer a busy database kept stays the first pick: the options wait for Retry, which saves it (BR-STUDY-041 first pick; audit 2026-10-17)`; the other modes `UNVERIFIED (code read)`: `study_session_controller.dart` `answer` |
 | unsavedAnswer | any other failure on Retry | the turn resets with no banner; the stream shows the session failed (summary `saveError`) | `UNVERIFIED (code read)`: `StudySessionController.answer` catches `Failure` |
 | any open mode | a second command while a write runs | dropped (BR-STUDY-004) | VERIFIED `study_session_controller_test.dart::a second command while a write runs is dropped (BR-STUDY-004)` |
+| any open mode | an answer meets a bug (not a `Failure`) | the turn resets with no banner, as for any `Failure` other than a busy database: it is no longer busy and nothing is held; the bug is reported | VERIFIED `study_held_bug_test.dart::an answer that dies on a bug is no longer busy and keeps nothing held (_answer)` |
+| any open mode | settling a stalled round meets a bug | the session is no longer busy, so it can settle again; the bug is reported | VERIFIED `study_held_bug_test.dart::a settle that dies on a bug is no longer busy, so the stalled round can settle again (settle)` |
 | any open mode | tap ✕ or system Back | exitDialog | VERIFIED `study_session_screen_test.dart::✕ asks first; Stop abandons …`, `::system Back mid-session keeps the ✕ contract …` |
 | exitDialog | Keep going | the same card, nothing written | VERIFIED `::Keep studying in the exit dialog changes nothing: the session stays open on the same card (IT-CONT-004)` |
 | exitDialog | Stop | summary `leftEarly`; the turns taken stay and the entry offers no Continue | VERIFIED `::✕ asks first; Stop abandons and the same screen shows "You left early"; …`; `study_session_controller_test.dart::abandon ends the session as user_exit and keeps its turns (UC-STUDY-001 A3)` |
@@ -138,11 +140,7 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_browse_light.png` | `study_browse_dark.png` | — |
-Other goldens: `study_browse_looking_back_light.png` / `study_browse_looking_back_dark.png` (after swiping back to an earlier card).
-
-
-Not captured: the swipe-back preview of an earlier card in the round
-(BR-STUDY-048) is an interaction inside `default`, not a separate state.
+| lookingBack | `study_browse_looking_back_light.png` | `study_browse_looking_back_dark.png` | After a right swipe (or TalkBack "Previous card") the earlier card of the round with a neutral "Looking back" badge (BR-STUDY-048); nothing is written and the counter does not move. `study_browse_test.dart::left advances one stop; right looks back without writing; left from a look-back returns and does not answer twice (IT-MODE-002 steps 4–6, BR-STUDY-048)`. |
 
 **Built (FE-A6 P1c):** `StudyBrowseWidget` inside `StudySessionScreen`. Looking back shows a neutral
 "Looking back" badge on the card (BR-STUDY-048: the screen says it is looking back) and reads the

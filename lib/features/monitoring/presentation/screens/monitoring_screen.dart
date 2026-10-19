@@ -98,7 +98,7 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
           if (_tab == MonitoringTab.server)
             MxIconButton(
               icon: AppIcons.retry,
-              semanticLabel: l10n.monitoringRefresh,
+              semanticLabel: l10n.commonRefresh,
               onPressed: _isRefreshing
                   ? null
                   : () => unawaited(_refresh(listController)),

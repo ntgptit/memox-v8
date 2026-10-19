@@ -47,18 +47,8 @@ class _MonitoringDetailScreenState
     extends ConsumerState<MonitoringDetailScreen> {
   static const int _skeletonRows = 6;
 
-  /// The failed-change toast while it shows. Its Retry acts on this page, so
-  /// it leaves with the page (final review I1).
-  MxSnackbarController? _failureToast;
-
   String get logId => widget.logId;
   bool get isLocal => widget.isLocal;
-
-  @override
-  void dispose() {
-    _failureToast?.close();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +208,9 @@ class _MonitoringDetailScreenState
               : l10n.monitoringReopened,
         );
       case StatusChangeFailed(:final status, :final note):
-        final toast = showMxSnackbar(
+        // Its Retry acts on this page: the toast leaves with the page
+        // (final review I1; showMxSnackbar).
+        showMxSnackbar(
           context,
           message: l10n.monitoringStatusChangeFailed,
           actionLabel: l10n.commonRetry,
@@ -229,12 +221,6 @@ class _MonitoringDetailScreenState
                 )
                 .setStatus(status, note: note),
           ),
-        );
-        _failureToast = toast;
-        unawaited(
-          toast.closed.then((_) {
-            if (identical(_failureToast, toast)) _failureToast = null;
-          }),
         );
     }
   }

@@ -25,7 +25,7 @@ coming back. Paths are relative to the repository root; the baseline is
 | `ThemeContext.mxColors`, `ThemeRules.accentColor`, `onAccentColor`, `deckIconColor` | `context.status`, `colors.primary`, `colors.primaryForeground`, `status.info` | `removed_symbols.json`; `check.py` checks the getter list |
 | Material 3 roles read on `context.colors` (`onSurfaceVariant`, `surfaceContainer*`, `outlineVariant`, …) and Material text roles on `context.texts` (`titleSmall`, `bodyMedium`, …) | FColors roles and `MxTextRoles` | `removed_symbols.json` (regex entries), guard |
 | `AppDimens` radius, stroke, opacity and component size fields | `context.radii`, `context.hairline`, `colors.disabledOpacity`, ForUI sizes | `removed_symbols.json` (regex entries) |
-| Whole-library `package:flutter/material.dart` imports (290 files at baseline) | `show` lists of infrastructure names (17 files) | `tools/ui_lint` UIL03, guard `material_imported_by_name` |
+| Whole-library `package:flutter/material.dart` imports (290 files at baseline) | `show` lists of infrastructure names: 17 files import `flutter/material.dart` and 6 import ForUI's `material_ui`, 22 distinct files (recounted 2026-10-18, closing acceptance AV-19) | `tools/ui_lint` UIL03, guard `material_imported_by_name` |
 
 No alias, typedef, re-export or forwarding getter was left for any removed name.
 
