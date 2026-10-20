@@ -94,7 +94,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
           // Only while a card is due: new cards alone are no review. 16 above
           // it with the column's 4 (spacing spec L8).
           if (priority != null) ...[
-            SizedBox(height: context.dimens.space16),
+            SizedBox(height: context.dimens.space12),
             MxButton(
               label: l10n.studyHomeReviewDeck(priority.name),
               tone: hasResume ? MxButtonTone.outline : MxButtonTone.primary,
