@@ -1,6 +1,6 @@
 # One spacing per layout level
 
-Status: draft for the owner's review (2026-10-20). Decisions S1–S2 below are
+Status: approved by the owner on 2026-10-20. Decisions S1–S2 below are
 the owner's. Follows `2026-10-20-type-scale-and-hierarchy-design.md`.
 Tier 1 at least: it changes `lib/shared/` and reaches most screens.
 

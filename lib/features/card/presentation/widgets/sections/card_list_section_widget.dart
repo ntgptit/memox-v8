@@ -435,7 +435,6 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     final isSelecting = selection.isSelecting;
     final total = view.counts.of(request.filter);
     return [
-      SizedBox(height: context.dimens.space8),
       // Selecting hides the field; its term stays and comes back with it.
       if (isSearchOpen && !isSelecting)
         Padding(

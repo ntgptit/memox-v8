@@ -42,7 +42,6 @@ class SearchBodyWidget extends ConsumerWidget {
       // never upper-cased (critique 2026-09-30 part 2, P4).
       SearchScreenLoading() => MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           MxListSectionHeader(label: l10n.searchSearching),
           for (var group = 0; group < _skeletonGroups; group++) ...[
             // The group header's place: a short bar, as the kit draws it.
@@ -69,7 +68,6 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenNoResults(:final term) => MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           MxEmptyState(
             icon: AppIcons.searchOff,
             title: l10n.searchNoMatchesTitle(term),
@@ -81,7 +79,6 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenFailed() => MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           MxErrorState(
             title: l10n.searchErrorTitle,
             body: l10n.searchErrorBody,

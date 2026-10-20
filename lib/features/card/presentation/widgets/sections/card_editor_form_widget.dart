@@ -29,7 +29,6 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
 
@@ -409,7 +408,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   );
 
   List<Widget> _fields(AppLocalizations l10n, Map<_Field, String?> errors) => [
-    SizedBox(height: context.dimens.space8),
     if (_deckRejects)
       MxInlineBanner(
         tone: MxBannerTone.warning,

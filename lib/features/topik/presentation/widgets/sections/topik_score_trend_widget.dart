@@ -38,7 +38,7 @@ class TopikScoreTrendWidget extends StatelessWidget {
       for (final numbered in scored) numbered.attempt.score!.toString(),
     ].join(', ');
     return Padding(
-      padding: EdgeInsets.only(top: dimens.space24),
+      padding: EdgeInsets.only(top: dimens.space16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

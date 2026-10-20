@@ -51,7 +51,6 @@ class UsersListWidget extends ConsumerWidget {
       ),
       UsersFailed(:final failure) => MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           switch (failure) {
             UsersLoadFailure.notAdmin => MxEmptyState(
               icon: AppIcons.lock,
@@ -81,7 +80,6 @@ class UsersListWidget extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             MxEmptyState(
               icon: AppIcons.searchOff,
               title: state.query.trim().isEmpty
@@ -137,7 +135,6 @@ class _Rows extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             MxListSectionHeader(label: context.l10n.usersSection),
             // Lazy, as the list grows with every load-more.
             ...MxDividedColumn.divided([

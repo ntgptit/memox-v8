@@ -178,10 +178,9 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
         Expanded(
           child: MxScreenScroll(
             children: [
-              SizedBox(height: context.dimens.space4),
               DeckLockStripWidget(view: view),
               if (failedFrom != null && retryTarget != null) ...[
-                SizedBox(height: context.dimens.space12),
+                SizedBox(height: context.dimens.space16),
                 MxInlineBanner(
                   tone: MxBannerTone.danger,
                   title: l10n.algorithmSwitchFailedTitle,
@@ -197,7 +196,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                   ],
                 ),
               ],
-              SizedBox(height: context.dimens.space12),
+              SizedBox(height: context.dimens.space16),
               MxListSectionHeader(label: l10n.algorithmHeader),
               // The consequence is read before the choice (critique
               // 2026-09-30).
@@ -214,7 +213,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                 switchingTo: _switchingTo,
                 onSelected: (type) => unawaited(_onSelected(view, type)),
               ),
-              SizedBox(height: context.dimens.space12),
+              SizedBox(height: context.dimens.space16),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),
               DeckStartOverWidget(
                 onReset: _switchingTo == null

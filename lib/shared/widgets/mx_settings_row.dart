@@ -125,7 +125,9 @@ class MxSettingsRow extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: context.dimens.space16),
+                  // A tile leads its text by 12, as in MxListRow (spacing
+                  // spec 2026-10-20, L7).
+                  SizedBox(width: context.dimens.space12),
                 ],
                 // As in MxListRow, only the text carries the 12/12 inset, so a
                 // 48 toggle target sits inside the row instead of growing it.
@@ -188,7 +190,7 @@ class MxSettingsRow extends StatelessWidget {
     if (line == null) return row;
     final labelStart = icon == null
         ? 0.0
-        : _leadColumn + context.dimens.space16;
+        : _leadColumn + context.dimens.space12;
     // The message starts on the label's start, so its glyph lines up with
     // the label (audit 2026-10-07).
     final indent = labelStart;

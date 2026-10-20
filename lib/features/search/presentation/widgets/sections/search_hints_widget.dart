@@ -20,7 +20,6 @@ class SearchHintsWidget extends StatelessWidget {
     final l10n = context.l10n;
     return MxScreenScroll(
       children: [
-        SizedBox(height: context.dimens.space8),
         MxListSectionHeader(label: l10n.searchFinds),
         MxCard(
           isFullBleed: true,

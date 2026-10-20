@@ -52,17 +52,13 @@ class MonitoringServerListWidget extends ConsumerWidget {
         ],
       ),
       MonitoringListFailed(:final failure) => MxScreenScroll(
-        children: [
-          SizedBox(height: context.dimens.space8),
-          _failure(context, failure, controller),
-        ],
+        children: [_failure(context, failure, controller)],
       ),
       final MonitoringListLoaded loaded when loaded.items.isEmpty =>
         MxPullRefresh(
           onRefresh: controller.refresh,
           child: MxScreenScroll(
             children: [
-              SizedBox(height: context.dimens.space8),
               if (loaded.hasRefreshFailed)
                 _RefreshFailed(onRetry: controller.refresh),
               if (state.filter.isDefault)
@@ -183,7 +179,6 @@ class _Rows extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             if (loaded.hasRefreshFailed)
               _RefreshFailed(onRetry: controller.refresh),
             MxListSectionHeader(label: header),

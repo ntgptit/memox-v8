@@ -6,8 +6,8 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
-/// An inline load failure with a Retry. It has EmptyState's anatomy at a
-/// smaller scale and a danger tone. The body says first that nothing was
+/// An inline load failure with a Retry. It has the compact EmptyState's
+/// anatomy and spacing in a danger tone. The body says first that nothing was
 /// lost, then offers the retry. A gone item is not a failure: it is an
 /// MxEmptyState in the neutral tone (owner 2026-10-08). [actionIcon] swaps
 /// Retry's glyph when the action is not a retry, such as Close where
@@ -43,18 +43,19 @@ class MxErrorState extends StatelessWidget {
   /// retried (study Guess, BR-STUDY-040).
   final IconData? actionIcon;
 
-  static const double _verticalPadding = 40;
   static const double _tileSize = 52;
-  static const double _titleGap = 4;
 
   @override
   Widget build(BuildContext context) {
     return MxCard(
       isFullBleed: true,
       child: Padding(
+        // The compact empty state's insides, whose 52 tile this shares
+        // (spacing spec 2026-10-20, L9): 32 above and below, 16 to the
+        // title, 8 to the body, 24 to the action.
         padding: EdgeInsets.symmetric(
           horizontal: context.dimens.space24,
-          vertical: _verticalPadding,
+          vertical: context.dimens.space32,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,7 +92,7 @@ class MxErrorState extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: context.texts.sectionTitle,
                     ),
-                    const SizedBox(height: _titleGap),
+                    SizedBox(height: context.dimens.space8),
                     Text(
                       body,
                       textAlign: TextAlign.center,
@@ -107,7 +108,7 @@ class MxErrorState extends StatelessWidget {
               final label?,
               final onPressed?,
             )) ...[
-              SizedBox(height: context.dimens.space16),
+              SizedBox(height: context.dimens.space24),
               MxButton(
                 label: label,
                 icon: actionIcon,

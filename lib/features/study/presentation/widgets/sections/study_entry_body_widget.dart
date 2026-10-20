@@ -180,7 +180,6 @@ class _LoadingEntry extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: context.dimens.space4),
             MxCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

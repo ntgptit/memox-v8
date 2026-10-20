@@ -30,8 +30,9 @@ class TopikQuestionPaneWidget extends StatelessWidget {
     final dimens = context.dimens;
     return MxScrollFade(
       child: MxScreenScroll(
+        // A question pane keeps the session layout's 16 (spacing spec).
+        top: dimens.space16,
         children: [
-          SizedBox(height: dimens.space16),
           Text(
             l10n.topikQuestionStem(question.no, question.stemKo),
             style: context.texts.content,

@@ -42,7 +42,6 @@ class SearchResultsWidget extends StatelessWidget {
         isMore ? l10n.searchGroupCountMore(rows) : l10n.searchGroupCount(rows);
     return MxScreenScroll(
       children: [
-        SizedBox(height: context.dimens.space8),
         if (decks.isNotEmpty) ...[
           MxListSectionHeader(
             label: l10n.searchDecksGroup,
@@ -66,7 +65,7 @@ class SearchResultsWidget extends StatelessWidget {
           ),
         ],
         if (cards.isNotEmpty) ...[
-          if (decks.isNotEmpty) SizedBox(height: context.dimens.space12),
+          if (decks.isNotEmpty) SizedBox(height: context.dimens.space16),
           MxListSectionHeader(
             label: l10n.searchCardsGroup,
             trailing: MxBadge(

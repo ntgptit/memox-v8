@@ -296,7 +296,7 @@ class _StoppedActions extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: context.dimens.space12,
+    spacing: context.dimens.space8,
     children: [
       MxButton(
         label: context.l10n.commonRetry,

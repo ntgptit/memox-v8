@@ -98,6 +98,8 @@ class DeckLevelBodyWidget extends ConsumerWidget {
               ),
         loading: () => MxScreenScroll(
           clearance: MxScrollClearance.fabAboveNav,
+          // Where the list starts, close under the search field (screen 01).
+          top: 0,
           children: [
             MxSkeletonList(
               semanticLabel: context.l10n.commonLoading,
@@ -107,6 +109,8 @@ class DeckLevelBodyWidget extends ConsumerWidget {
         ),
         error: (_, _) => MxScreenScroll(
           clearance: MxScrollClearance.fabAboveNav,
+          // Where the list starts, close under the search field (screen 01).
+          top: 0,
           children: [
             MxErrorState(
               title: l10n.libraryLoadErrorTitle,

@@ -95,17 +95,16 @@ class DeckLevelListWidget extends ConsumerWidget {
     if (!level.hasDecks) {
       return MxScreenScroll(
         clearance: MxScrollClearance.fabAboveNav,
-        children: [
-          SizedBox(height: context.dimens.space16),
-          emptyState,
-        ],
+        top: context.dimens.space16,
+        children: [emptyState],
       );
     }
     return MxScreenScroll(
       clearance: MxScrollClearance.fabAboveNav,
+      // Screen 01: the strip or the summary sits close under the search
+      // field or the breadcrumb, whose own inset is the gap.
+      top: 0,
       children: [
-        // Screen 01: the strip or the summary sits close under the search
-        // field or the breadcrumb, whose own inset is the gap.
         if ((parentId, schedulerType) case (
           final deckId?,
           final algorithm?,
@@ -115,10 +114,10 @@ class DeckLevelListWidget extends ConsumerWidget {
             schedulerType: algorithm,
             onStudy: () => onOpenStudy(deckId),
           ),
-          SizedBox(height: context.dimens.space12),
+          SizedBox(height: context.dimens.space16),
         ] else if (_hasCards) ...[
           DeckDueStripWidget(level: level, onOpen: onOpenStudyHome),
-          SizedBox(height: context.dimens.space12),
+          SizedBox(height: context.dimens.space16),
         ],
         DeckLevelHeaderWidget(
           parentId: parentId,

@@ -3,7 +3,6 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 /// The editor or the detail once its card or deck is gone (ruling P4a-L4):
 /// it says why, and leads back to the deck or to the Trash (FE-B1 D11).
@@ -26,7 +25,6 @@ class CardGoneWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MxScreenScroll(
     children: [
-      SizedBox(height: context.dimens.space16),
       MxEmptyState(
         icon: AppIcons.searchOff,
         title: title,
