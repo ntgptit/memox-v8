@@ -53,6 +53,12 @@ cannot be reviewed, because the change is invisible without the before.
 7. **Hand over** the link in the reply, together with the owner's approve or
    request-changes popup. Say the page is private until they share it.
 
+Each image on the page has a **Sao chép** button beside its Trước, Sau or
+Diff label: it puts that image on the clipboard as a PNG (the published
+480 px copy), so it can be pasted straight into another agent's chat. A
+browser without the async Clipboard API shows no button; a refused write
+says "Không chép được".
+
 ## Writing `why`
 
 One or two sentences, in Vietnamese (the owner's language):
