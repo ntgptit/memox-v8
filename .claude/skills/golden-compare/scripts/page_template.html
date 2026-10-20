@@ -68,6 +68,10 @@ dialog::backdrop{background:rgba(8,10,20,.78)}
 .lb figure{flex:1 1 0;min-width:240px}
 .lb img{width:100%;height:auto;border-radius:8px;display:block}
 .lb figcaption{color:#fff}
+.note{margin:14px 0 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--muted);font-size:13px}
+.bare{border-radius:8px;overflow:hidden;-webkit-touch-callout:default;user-select:auto}
+.lb-hint{display:none;color:#fff;font-size:13px;margin:0 0 8px}
+@media (pointer:coarse){.lb-hint{display:block}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .close{position:fixed;top:14px;right:18px;font:inherit;background:#fff;color:#111;border:none;border-radius:999px;padding:6px 14px;cursor:pointer}
 @media (max-width:640px){.shots,.shots.two{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.card{padding:12px}.pct{margin-left:0}.copy{padding:3px 6px}.copy span{display:none}}
@@ -88,11 +92,12 @@ dialog::backdrop{background:rgba(8,10,20,.78)}
     <div class="group" id="fam"></div>
   </div>
 
+  <p class="note" id="out-note" role="status" hidden></p>
   <div id="list"></div>
 </div>
 
 <p class="sr" id="live" aria-live="polite"></p>
-<dialog id="lb" aria-label="Phóng to"><button class="close" id="lb-close">Đóng</button><div class="lb" id="lb-body"></div></dialog>
+<dialog id="lb" aria-label="Phóng to"><button class="close" id="lb-close">Đóng</button><p class="lb-hint">Nhấn giữ một ảnh để sao chép hoặc lưu.</p><div class="lb" id="lb-body"></div></dialog>
 
 <script>
 const NOTES = __NOTES__;
@@ -110,11 +115,32 @@ if (THEMES.length < 2) { $("#theme").hidden = true; $("#theme-lbl").hidden = tru
 $("#theme").innerHTML = THEMES.map(t => `<button class="chip" id="th-${t}" data-v="${t}" aria-pressed="${t===theme}">${t==="default"?"Mặc định":t[0].toUpperCase()+t.slice(1)}</button>`).join("");
 $("#fam").innerHTML = [{key:"all",title:"Tất cả"}, ...NOTES.families].map(f => `<button class="chip" id="fm-${esc(f.key)}" data-v="${esc(f.key)}" aria-pressed="${f.key===fam}">${esc(f.short || f.title)}</button>`).join("");
 
-// Copying an image needs the async Clipboard API; without it no copy button is drawn.
+// An image goes out in one of two ways. Copy: the async Clipboard API, as a
+// PNG. Save: the viewer's `downloads` capability (a browser download, or the
+// Claude iOS app's share sheet), where the artifact's frame blocks the
+// clipboard (the frame's permissions policy, as the Claude mobile app showed
+// with a NotAllowedError). The lightbox shows each image bare, so a long
+// press opens the system's own "Copy image" too.
 const CAN_COPY = !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem);
 const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`;
-const COPY_TEXT = {idle:"Sao chép", ok:"Đã chép", fail:"Không chép được"};
-function cell(s, kind, label, cls){
+const SAVE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>`;
+const TEXT = {
+  copy: {idle:"Sao chép", ok:"Đã chép", fail:"Không chép được", aria:"Sao chép ảnh", done:"Đã chép", failed:"Không chép được"},
+  save: {idle:"Lưu ảnh", ok:"Đã lưu", fail:"Không lưu được", aria:"Lưu ảnh", done:"Đã lưu", failed:"Không lưu được"},
+};
+// The frame may say up front that it blocks clipboard writes (Chromium).
+function isClipboardPolicyBlocked(){
+  const policy = document.permissionsPolicy || document.featurePolicy;
+  return !!(policy && policy.allowsFeature && !policy.allowsFeature("clipboard-write"));
+}
+let isCopyBlocked = !CAN_COPY || isClipboardPolicyBlocked();
+let downloads = null;
+/** "copy", "save", or null when neither can run here (no button). */
+function outMode(){
+  if (!isCopyBlocked) return "copy";
+  return downloads ? "save" : null;
+}
+function cell(s, kind, label, cls, isBare){
   const info = s.themes[theme];
   const has = info && (kind==="after" ? info.status!=="deleted" : kind==="before" ? info.status!=="added" : info.pct!=null);
   const tag = `<span class="tag ${cls}">${label}</span>`;
@@ -124,8 +150,14 @@ function cell(s, kind, label, cls){
   }
   const src = `img/${esc(s.name)}_${theme}_${kind}.webp`;
   const what = `${label}: ${esc(s.name)} (${theme})`;
-  const copy = CAN_COPY ? `<button class="copy" data-src="${src}" data-what="${what}" aria-label="Sao chép ảnh ${what}">${COPY_ICON}<span>${COPY_TEXT.idle}</span></button>` : "";
-  return `<figure><figcaption>${tag}${copy}</figcaption><button class="zoom" data-name="${esc(s.name)}" aria-label="Phóng to ${esc(s.name)}"><img loading="lazy" src="${src}" alt="${what}" width="480" height="1067"></button></figure>`;
+  const file = `${esc(s.name)}_${theme}_${kind}.png`;
+  const out = outMode();
+  const text = out && TEXT[out];
+  const button = out ? `<button class="copy" data-src="${src}" data-file="${file}" data-what="${what}" aria-label="${text.aria} ${what}">${out === "copy" ? COPY_ICON : SAVE_ICON}<span>${text.idle}</span></button>` : "";
+  const img = `<img loading="lazy" src="${src}" alt="${what}" width="480" height="1067">`;
+  // Bare in the lightbox: a long press reaches the image itself.
+  const body = isBare ? `<div class="bare">${img}</div>` : `<button class="zoom" data-name="${esc(s.name)}" aria-label="Phóng to ${esc(s.name)}">${img}</button>`;
+  return `<figure><figcaption>${tag}${button}</figcaption>${body}</figure>`;
 }
 // Browsers take only image/png on the clipboard, so the WebP is redrawn as a PNG.
 async function pngBlob(src){
@@ -138,27 +170,68 @@ async function pngBlob(src){
   canvas.getContext("2d").drawImage(img, 0, 0);
   return new Promise((ok, fail) => canvas.toBlob(b => b ? ok(b) : fail(new Error("PNG encode failed")), "image/png"));
 }
-function flash(btn, state){
+function flash(btn, out, state){
+  const text = TEXT[out];
   btn.dataset.state = state;
-  btn.querySelector("span").textContent = COPY_TEXT[state];
-  $("#live").textContent = state === "ok" ? `Đã chép ${btn.dataset.what}` : `Không chép được ${btn.dataset.what}`;
+  btn.querySelector("span").textContent = text[state];
+  $("#live").textContent = `${state === "ok" ? text.done : text.failed} ${btn.dataset.what}`;
   clearTimeout(btn._reset);
-  btn._reset = setTimeout(() => { delete btn.dataset.state; btn.querySelector("span").textContent = COPY_TEXT.idle; }, 1800);
+  btn._reset = setTimeout(() => { delete btn.dataset.state; btn.querySelector("span").textContent = text.idle; }, 1800);
+}
+/** Says once, above the list, why the buttons save instead of copying. */
+function tellBlocked(reason){
+  const note = $("#out-note");
+  const next = downloads ? "Nút đổi thành Lưu ảnh" : "Trang này không lưu được ảnh";
+  note.textContent = `Khung xem này chặn chép ảnh vào clipboard${reason ? ` (${reason})` : ""}. ${next}; hoặc phóng to ảnh rồi nhấn giữ để sao chép.`;
+  note.hidden = false;
 }
 async function copyImage(btn){
   try {
     // The item takes the pending blob, so Safari still sees the write inside the click.
     await navigator.clipboard.write([new ClipboardItem({"image/png": pngBlob(btn.dataset.src)})]);
-    flash(btn, "ok");
+    flash(btn, "copy", "ok");
   } catch (err) {
     console.warn("copy failed", btn.dataset.src, err);
-    flash(btn, "fail");
+    flash(btn, "copy", "fail");
+    // A refusal is the frame's, not this image's: every button moves on.
+    if (err && (err.name === "NotAllowedError" || err.name === "SecurityError")) {
+      isCopyBlocked = true;
+      tellBlocked(err.name);
+      setTimeout(refreshButtons, 1800);
+    }
+  }
+}
+async function saveImage(btn){
+  try {
+    await downloads.save({filename: btn.dataset.file, data: await pngBlob(btn.dataset.src)});
+    flash(btn, "save", "ok");
+  } catch (err) {
+    console.warn("save failed", btn.dataset.src, err);
+    // The viewer said no: nothing to report.
+    if (err && err.code === "declined") return;
+    flash(btn, "save", "fail");
   }
 }
 document.addEventListener("click", e => {
   const b = e.target.closest(".copy"); if(!b) return;
+  if (outMode() === "save") { saveImage(b); return; }
   copyImage(b);
 });
+/** Redraws the cards and an open lightbox with the current way out. */
+function refreshButtons(){
+  render();
+  if (lb.open && lbShot) openLightbox(lbShot);
+}
+if (isCopyBlocked && CAN_COPY) tellBlocked("permissions policy");
+// The capability arrives later, or never (null outside a claude.ai viewer).
+if (window.claude && window.claude.use) {
+  window.claude.use("downloads").then(found => {
+    downloads = found;
+    if (!downloads || !isCopyBlocked) return;
+    if (!$("#out-note").hidden) tellBlocked("");
+    refreshButtons();
+  }, () => {});
+}
 function render(){
   const out = [];
   for (const f of NOTES.families){
@@ -187,11 +260,15 @@ function bind(id, set){
 bind("#theme", v => theme = v); bind("#mode", v => mode = v); bind("#fam", v => fam = v);
 render();
 const lb = $("#lb");
+let lbShot = null;
+function openLightbox(shot){
+  lbShot = shot;
+  $("#lb-body").innerHTML = [["before","Trước"],["after","Sau"],["diff","Diff"]].map(([k,l]) => cell(shot,k,l,"",true)).join("");
+  if (!lb.open && lb.showModal) lb.showModal();
+}
 $("#list").addEventListener("click", e => {
   const b = e.target.closest(".zoom"); if(!b) return;
-  const s = SHOTS.find(x => x.name === b.dataset.name);
-  $("#lb-body").innerHTML = [["before","Trước"],["after","Sau"],["diff","Diff"]].map(([k,l]) => cell(s,k,l,"")).join("").replaceAll('class="zoom"','class="zoom" tabindex="-1"');
-  if (lb.showModal) lb.showModal();
+  openLightbox(SHOTS.find(x => x.name === b.dataset.name));
 });
 $("#lb-close").addEventListener("click", () => lb.close());
 lb.addEventListener("click", e => { if (e.target === lb) lb.close(); });

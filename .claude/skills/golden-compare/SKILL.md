@@ -47,7 +47,7 @@ cannot be reviewed, because the change is invisible without the before.
 5. **Render**: `golden_compare.py render --out <dir>`. The command refuses to
    run while any shot has no family or an empty `why`.
 6. **Publish** with the Artifact tool: `file_path=<dir>/index.html`,
-   `root=<dir>`, `icon="compare"`, and `files=` batch 0 of
+   `root=<dir>`, `icon="compare"`, `capabilities={"downloads": true}`, and `files=` batch 0 of
    `publish_batches.json`. Republish the same `file_path` once for each
    further batch; each call takes at most 255 files.
 7. **Hand over** the link in the reply, together with the owner's approve or
@@ -55,9 +55,13 @@ cannot be reviewed, because the change is invisible without the before.
 
 Each image on the page has a **Sao chép** button beside its Trước, Sau or
 Diff label: it puts that image on the clipboard as a PNG (the published
-480 px copy), so it can be pasted straight into another agent's chat. A
-browser without the async Clipboard API shows no button; a refused write
-says "Không chép được".
+480 px copy), so it can be pasted straight into another agent's chat.
+Where the viewer's frame blocks the clipboard (the Claude mobile app: a
+`NotAllowedError` from the frame's permissions policy), a note says so and
+the buttons become **Lưu ảnh**, which saves the PNG through the
+`downloads` capability (the share sheet in the Claude iOS app); without that
+capability there is no button. The lightbox shows each image bare, so a
+long press opens the system's own copy and save.
 
 ## Writing `why`
 
