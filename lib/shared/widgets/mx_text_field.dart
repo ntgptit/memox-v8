@@ -139,64 +139,69 @@ class MxTextField extends StatelessWidget {
     final hasError = errorText != null;
     final name = label;
     final isBare = variant == MxTextFieldVariant.study;
-    final field = FTextField(
-      // The name goes on the input itself, the node TalkBack focuses, so the
-      // field reads as its name with its value; ForUI's own label sits
-      // outside the input's node.
-      builder: (context, style, variants, input) =>
-          name == null ? input : Semantics(label: name, child: input),
-      // Autofocus is read once, on mount: a field that was disabled when
-      // first built takes the focus when it is enabled, so the flip remounts.
+    // Autofocus is read once, on mount: a field that was disabled when first
+    // built takes the focus when it is enabled, so the flip remounts, with
+    // states of its own.
+    final field = _SeededStates(
       key: ValueKey(isEnabled),
-      control: FTextFieldControl.managed(
-        controller: controller,
-        onChange: edits.onChange,
+      hasError: hasError,
+      builder: (states) => FTextField(
+        // The name goes on the input itself, the node TalkBack focuses, so the
+        // field reads as its name with its value; ForUI's own label sits
+        // outside the input's node.
+        builder: (context, style, variants, input) =>
+            name == null ? input : Semantics(label: name, child: input),
+        control: FTextFieldControl.managed(
+          controller: controller,
+          onChange: edits.onChange,
+        ),
+        size: FTextFieldSizeVariant.lg,
+        style: isBare
+            ? _bareStyle(context)
+            : const FTextFieldStyleDelta.context(),
+        label: isBare ? null : _paintedLabel(context, hasError),
+        // Only while empty: the decorator keeps an unseen hint's room, so a
+        // hint that wraps would hold a filled box open.
+        hint: isEmpty ? hintText : null,
+        description: hasError || isBare ? null : _supportingRow(context, null),
+        error: hasError ? _supportingRow(context, errorText) : null,
+        statesController: states,
+        focusNode: focusNode,
+        autofocus: isAutofocused,
+        enabled: isEnabled,
+        readOnly: isReadOnly,
+        onSubmit: onSubmitted,
+        textInputAction: textInputAction,
+        // A typed study answer is the answer: the keyboard neither suggests
+        // the term nor corrects what was typed (BR-STUDY-026).
+        autocorrect: !isBare,
+        enableSuggestions: !isBare,
+        inputFormatters: [edits.formatter],
+        maxLines: _isMultiline ? null : 1,
+        // A term wraps but is one line of meaning: Enter fires the action.
+        keyboardType: variant == MxTextFieldVariant.detail
+            ? TextInputType.multiline
+            : TextInputType.text,
+        textAlign: isBare ? TextAlign.center : TextAlign.start,
+        prefixBuilder: leading == null
+            ? null
+            : (context, _, _) => Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: context.dimens.space12,
+                  end: context.dimens.space8,
+                ),
+                child: leading,
+              ),
+        suffixBuilder: trailing == null
+            ? null
+            : (context, _, _) => Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: context.dimens.space8,
+                  end: context.dimens.space12,
+                ),
+                child: trailing,
+              ),
       ),
-      size: FTextFieldSizeVariant.lg,
-      style: isBare
-          ? _bareStyle(context)
-          : const FTextFieldStyleDelta.context(),
-      label: isBare ? null : _paintedLabel(context, hasError),
-      // Only while empty: the decorator keeps an unseen hint's room, so a
-      // hint that wraps would hold a filled box open.
-      hint: isEmpty ? hintText : null,
-      description: hasError || isBare ? null : _supportingRow(context, null),
-      error: hasError ? _supportingRow(context, errorText) : null,
-      focusNode: focusNode,
-      autofocus: isAutofocused,
-      enabled: isEnabled,
-      readOnly: isReadOnly,
-      onSubmit: onSubmitted,
-      textInputAction: textInputAction,
-      // A typed study answer is the answer: the keyboard neither suggests
-      // the term nor corrects what was typed (BR-STUDY-026).
-      autocorrect: !isBare,
-      enableSuggestions: !isBare,
-      inputFormatters: [edits.formatter],
-      maxLines: _isMultiline ? null : 1,
-      // A term wraps but is one line of meaning: Enter fires the action.
-      keyboardType: variant == MxTextFieldVariant.detail
-          ? TextInputType.multiline
-          : TextInputType.text,
-      textAlign: isBare ? TextAlign.center : TextAlign.start,
-      prefixBuilder: leading == null
-          ? null
-          : (context, _, _) => Padding(
-              padding: EdgeInsetsDirectional.only(
-                start: context.dimens.space12,
-                end: context.dimens.space8,
-              ),
-              child: leading,
-            ),
-      suffixBuilder: trailing == null
-          ? null
-          : (context, _, _) => Padding(
-              padding: EdgeInsetsDirectional.only(
-                start: context.dimens.space8,
-                end: context.dimens.space12,
-              ),
-              child: trailing,
-            ),
     );
     // A bare field has no box to reach its 48 target with: the floor holds
     // it around its one line.
@@ -341,4 +346,39 @@ class _HintWhileEmptyState extends State<_HintWhileEmpty> {
   @override
   Widget build(BuildContext context) =>
       widget.builder(context, _controller, _isEmpty);
+}
+
+/// The field's states, seeded with the error it mounts with, one set per
+/// mount of the field. ForUI reads the error from these states, which
+/// Flutter's TextField only fills after the first build, so an error there
+/// from the start would slide in a frame late, as if it had just appeared.
+/// Flutter's TextField keeps them current from then on, so a later error
+/// still eases in.
+class _SeededStates extends StatefulWidget {
+  const _SeededStates({
+    super.key,
+    required this.hasError,
+    required this.builder,
+  });
+
+  final bool hasError;
+  final Widget Function(WidgetStatesController states) builder;
+
+  @override
+  State<_SeededStates> createState() => _SeededStatesState();
+}
+
+class _SeededStatesState extends State<_SeededStates> {
+  late final WidgetStatesController _states = WidgetStatesController({
+    if (widget.hasError) WidgetState.error,
+  });
+
+  @override
+  void dispose() {
+    _states.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_states);
 }

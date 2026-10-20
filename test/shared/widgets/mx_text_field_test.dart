@@ -112,6 +112,39 @@ void main() {
     expect(_boxHeight(tester), _style(tester).constraints.minHeight);
   });
 
+  testWidgets('an error there from the start is whole on the first frame; '
+      'one that arrives later eases in', (tester) async {
+    double line() => tester
+        .widget<Align>(
+          find
+              .ancestor(
+                of: find.text('Name is required'),
+                matching: find.byType(Align),
+              )
+              .first,
+        )
+        .heightFactor!;
+    Widget field({String? error}) => SizedBox(
+      width: 300,
+      child: MxTextField(hintText: 'Deck name', errorText: error),
+    );
+
+    // ForUI reads the error from the field's states, which Flutter's
+    // TextField fills a frame after the mount; seeded, the line does not
+    // slide in when a screen opens on an error.
+    await pumpMx(tester, field(error: 'Name is required'));
+    expect(line(), 1);
+
+    await pumpMx(tester, field());
+    await tester.pumpAndSettle();
+    await pumpMx(tester, field(error: 'Name is required'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    expect(line(), lessThan(1));
+    await tester.pumpAndSettle();
+    expect(line(), 1);
+  });
+
   testWidgets('typing reports the value', (tester) async {
     String? typed;
     await pumpMx(
