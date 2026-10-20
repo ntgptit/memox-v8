@@ -134,11 +134,15 @@ function isClipboardPolicyBlocked(){
   return !!(policy && policy.allowsFeature && !policy.allowsFeature("clipboard-write"));
 }
 let isCopyBlocked = !CAN_COPY || isClipboardPolicyBlocked();
+// Android's web view resolves an image write but leaves the system clipboard
+// without the image (owner's Claude Android app, 2026-10-20): a "done" there
+// would be false, so Android saves instead whenever it can.
+const IS_ANDROID = /Android/i.test(navigator.userAgent);
 let downloads = null;
 /** "copy", "save", or null when neither can run here (no button). */
 function outMode(){
-  if (!isCopyBlocked) return "copy";
-  return downloads ? "save" : null;
+  if (downloads && (isCopyBlocked || IS_ANDROID)) return "save";
+  return isCopyBlocked ? null : "copy";
 }
 function cell(s, kind, label, cls, isBare){
   const info = s.themes[theme];
@@ -185,6 +189,11 @@ function tellBlocked(reason){
   note.textContent = `Khung xem này chặn chép ảnh vào clipboard${reason ? ` (${reason})` : ""}. ${next}; hoặc phóng to ảnh rồi nhấn giữ để sao chép.`;
   note.hidden = false;
 }
+function tellAndroid(){
+  const note = $("#out-note");
+  note.textContent = "Trên Android, trang web không đưa được ảnh vào clipboard. Nút Lưu ảnh lưu PNG vào máy; đính kèm file đó vào chat của agent khác.";
+  note.hidden = false;
+}
 async function copyImage(btn){
   try {
     // The item takes the pending blob, so Safari still sees the write inside the click.
@@ -227,7 +236,13 @@ if (isCopyBlocked && CAN_COPY) tellBlocked("permissions policy");
 if (window.claude && window.claude.use) {
   window.claude.use("downloads").then(found => {
     downloads = found;
-    if (!downloads || !isCopyBlocked) return;
+    if (!downloads) return;
+    if (IS_ANDROID && !isCopyBlocked) {
+      tellAndroid();
+      refreshButtons();
+      return;
+    }
+    if (!isCopyBlocked) return;
     if (!$("#out-note").hidden) tellBlocked("");
     refreshButtons();
   }, () => {});
