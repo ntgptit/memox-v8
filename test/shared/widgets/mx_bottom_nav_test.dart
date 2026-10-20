@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../../support/focus_ring_expect.dart';
@@ -101,7 +102,8 @@ void main() {
     await pumpMx(tester, _nav(selected: 1));
 
     // The selected glyph is the resting one: selection shows in colour and
-    // weight, not in a second glyph.
+    // the glyph's weight, not in a second glyph. The label changes colour
+    // only: both are meta, so the label's width holds.
     expect(AppIcons.studySelected, AppIcons.study);
     expect(find.byIcon(AppIcons.study), findsOneWidget);
     expect(iconColor(tester, find.byIcon(AppIcons.study)), colors.primary);
@@ -115,10 +117,15 @@ void main() {
     );
     expect(textColor(tester, find.text('Study')), colors.primary);
     expect(textColor(tester, find.text('Library')), colors.mutedForeground);
-    expect(
-      DefaultTextStyle.of(tester.element(find.text('Study'))).style.fontWeight,
-      FontWeight.bold,
-    );
+    final meta = tester.element(find.text('Study')).texts.meta;
+    for (final label in ['Study', 'Library']) {
+      final style = DefaultTextStyle.of(tester.element(find.text(label))).style;
+      expect(
+        (style.fontSize, style.fontWeight, style.height),
+        (meta.fontSize, meta.fontWeight, meta.height),
+        reason: label,
+      );
+    }
   });
 
   testWidgets('moving the selection moves the primary colour', (tester) async {

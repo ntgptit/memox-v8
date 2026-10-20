@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:material_ui/material_ui.dart' as mu;
 import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/forui_expect.dart';
@@ -164,7 +165,9 @@ void main() {
   });
 
   testWidgets('supporting text sits under the field in ForUI\'s description '
-      'style; an error takes its place', (tester) async {
+      'style, a caption as the error is; an error takes its place', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -179,6 +182,14 @@ void main() {
     expect(
       DefaultTextStyle.of(tester.element(text)).style.fontSize,
       style.descriptionTextStyle.resolve({}).fontSize,
+    );
+    final caption = tester.element(text).texts.caption;
+    expect(
+      (
+        style.descriptionTextStyle.resolve({}).fontSize,
+        style.descriptionTextStyle.resolve({}).fontWeight,
+      ),
+      (caption.fontSize, caption.fontWeight),
     );
     expect(tester.getTopLeft(text).dx, tester.getTopLeft(fieldBox(_field)).dx);
     expect(
@@ -229,6 +240,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Too long'), findsOneWidget);
+    // In error the counter stays a caption, the message's size.
+    expect(
+      DefaultTextStyle.of(tester.element(find.text('61 / 60'))).style.fontSize,
+      tester.element(find.text('Too long')).texts.caption.fontSize,
+    );
     expect(
       tester.getTopRight(find.text('61 / 60')).dx,
       tester.getTopRight(fieldBox(_field)).dx,
