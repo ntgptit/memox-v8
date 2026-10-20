@@ -118,7 +118,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         body: switch (entries) {
           AsyncData(:final value) when value.isEmpty => MxScreenScroll(
             children: [
-              SizedBox(height: context.dimens.space8),
               MxEmptyState(
                 icon: AppIcons.delete,
                 title: l10n.trashEmptyTitle,
@@ -131,7 +130,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           ),
           AsyncError(:final isLoading) => MxScreenScroll(
             children: [
-              SizedBox(height: context.dimens.space8),
               MxErrorState(
                 title: l10n.trashLoadErrorTitle,
                 body: l10n.libraryLoadErrorBody,
@@ -230,7 +228,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         MxInlineBanner(tone: MxBannerTone.warning, message: note),
     ];
     return [
-      SizedBox(height: context.dimens.space8),
       // Read before selecting; the selection gives the list the room.
       // Critique 2026-09-30: a note the person hid stays hidden.
       if (!state.isSelecting && _showsNote(NoteKeys.trashRetention)) ...[
@@ -240,13 +237,13 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           dismissLabel: l10n.commonDismissNote,
           onDismiss: () => _dismissNote(NoteKeys.trashRetention),
         ),
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
       ],
       // Why the other kind waits and what a purge skipped, above the rows
       // they are about (critique 2026-09-30 part 3d-1, D4).
       for (final notice in notices) ...[
         notice,
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
       ],
       if (!state.isSelecting)
         _Filters(

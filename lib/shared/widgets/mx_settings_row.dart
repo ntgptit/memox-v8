@@ -72,11 +72,6 @@ class MxSettingsRow extends StatelessWidget {
   /// The painted square of a stepper's step button inside its 48 target.
   static const double _stepPainted = 32;
 
-  /// As MxListRow's: with the 12/12 text inset, a label and a subtitle on
-  /// ForUI's type scale fill the two-line row's `sizeListRowTwoLine` exactly
-  /// at 2, where 4 made it a pixel taller.
-  static const double _subtitleGap = 2;
-
   @override
   Widget build(BuildContext context) {
     final isNavigable =
@@ -125,7 +120,9 @@ class MxSettingsRow extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: context.dimens.space16),
+                  // A tile leads its text by 12, as in MxListRow (spacing
+                  // spec 2026-10-20, L7).
+                  SizedBox(width: context.dimens.space12),
                 ],
                 // As in MxListRow, only the text carries the 12/12 inset, so a
                 // 48 toggle target sits inside the row instead of growing it.
@@ -143,7 +140,7 @@ class MxSettingsRow extends StatelessWidget {
                           Text(label, style: context.texts.itemTitle),
                         ),
                         if (subtitle case final text?) ...[
-                          const SizedBox(height: _subtitleGap),
+                          SizedBox(height: context.dimens.spaceRowLine),
                           Text(
                             text,
                             style: context.texts.body.copyWith(
@@ -188,7 +185,7 @@ class MxSettingsRow extends StatelessWidget {
     if (line == null) return row;
     final labelStart = icon == null
         ? 0.0
-        : _leadColumn + context.dimens.space16;
+        : _leadColumn + context.dimens.space12;
     // The message starts on the label's start, so its glyph lines up with
     // the label (audit 2026-10-07).
     final indent = labelStart;

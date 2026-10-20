@@ -55,7 +55,7 @@ class MonitoringServerTabWidget extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(
             context.screenMargin,
-            context.dimens.space12,
+            context.dimens.space8,
             context.screenMargin,
             context.dimens.space8,
           ),

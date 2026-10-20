@@ -69,7 +69,7 @@ class StudyEntryResumeWidget extends StatelessWidget {
               color: context.colors.mutedForeground,
             ),
           ),
-          SizedBox(height: context.dimens.space12),
+          SizedBox(height: context.dimens.space16),
           MxButton(
             label: l10n.studyEntryContinue,
             icon: AppIcons.play,

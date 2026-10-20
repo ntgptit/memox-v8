@@ -73,7 +73,7 @@ class MonitoringDetailRowWidget extends StatelessWidget {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: context.dimens.space4,
+                    spacing: context.dimens.spaceRowLine,
                     children: [
                       labelText,
                       if (copy == null)

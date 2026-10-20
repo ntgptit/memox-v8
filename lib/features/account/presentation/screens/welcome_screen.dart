@@ -105,8 +105,9 @@ class WelcomeScreen extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: MxScreenScroll(
+          // The hero starts lower than a screen's body (deliberate).
+          top: context.dimens.space32,
           children: [
-            SizedBox(height: context.dimens.space32),
             // Plan U5: a tile until MemoX has its own icon (UI-base debt).
             const Align(
               alignment: AlignmentDirectional.centerStart,
@@ -149,7 +150,7 @@ class WelcomeScreen extends ConsumerWidget {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: context.dimens.space12,
+                spacing: context.dimens.space8,
                 children: [
                   MxButton(
                     label: l10n.accountContinueGoogle,

@@ -39,7 +39,6 @@ class MxOptionRow extends StatelessWidget {
   final Widget? trailing;
 
   static const double _radioColumn = 22;
-  static const double _descriptionGap = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +91,7 @@ class MxOptionRow extends StatelessWidget {
                           Text(title, style: context.texts.itemTitle),
                         ),
                         if (description case final text?) ...[
-                          const SizedBox(height: _descriptionGap),
+                          SizedBox(height: context.dimens.spaceRowLine),
                           Text(
                             text,
                             style: context.texts.body.copyWith(

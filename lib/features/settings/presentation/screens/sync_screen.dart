@@ -63,7 +63,6 @@ class SyncScreen extends ConsumerWidget {
       body: switch (status) {
         AsyncData(:final value?) => MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             SyncStatusSectionWidget(
               status: value,
               now: ref.watch(dayClockProvider).now(),
@@ -99,7 +98,6 @@ class SyncScreen extends ConsumerWidget {
         // Retry could fix.
         AsyncData() => MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             MxEmptyState(
               icon: AppIcons.sync,
               title: l10n.syncUnavailableTitle,

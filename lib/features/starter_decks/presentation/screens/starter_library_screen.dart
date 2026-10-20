@@ -123,10 +123,14 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
             ),
           ],
           AsyncData(:final value) => [
-            SizedBox(height: context.dimens.space8),
             if (_showsNote) _fixtureNote(l10n),
-            for (final entry in value) ...[
-              SizedBox(height: context.dimens.space12),
+            // Sibling cards 8 apart (DEV-304, spacing spec L4).
+            for (final (index, entry) in value.indexed) ...[
+              // The note is a block above the list (16); cards are 8 apart.
+              if (index > 0)
+                SizedBox(height: context.dimens.space8)
+              else if (_showsNote)
+                SizedBox(height: context.dimens.space16),
               StarterTemplateCardWidget(
                 key: ValueKey(entry.templateId),
                 entry: entry,
@@ -146,9 +150,10 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           // The note is the screen's own copy: it shows while the templates
           // are read (kit 03 `loading`).
           _ => [
-            SizedBox(height: context.dimens.space8),
-            if (_showsNote) _fixtureNote(l10n),
-            SizedBox(height: context.dimens.space12),
+            if (_showsNote) ...[
+              _fixtureNote(l10n),
+              SizedBox(height: context.dimens.space16),
+            ],
             MxSkeletonList(
               semanticLabel: l10n.commonLoading,
               rows: _skeletonRows,

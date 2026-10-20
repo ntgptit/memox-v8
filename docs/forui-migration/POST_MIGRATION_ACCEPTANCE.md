@@ -162,7 +162,7 @@ is High, P2 is Medium, P3 is Low, and docs-only is Low.
 | SHARED-7 | `MxDeckPickerSheet` | Held sheet kept its rows tappable | Low | `mx_deck_picker_sheet.dart:108` | none | `isEnabled && !isHeld` | `test/shared/widgets/mx_deck_picker_sheet_test.dart::isHeld holds its sheet` | code+test | FIXED-VERIFIED |
 | SHARED-8 | Route not found | No scroll in a short window | Low | `route_not_found_screen.dart:19-31` | none | `MxScreenScroll` | `test/app/route_not_found_screen_test.dart::in a phone held sideways it scrolls instead of overflowing, and the way back stays reachable` | code+test | FIXED-VERIFIED |
 | SHARED-9 | `MxDialog` title style vs DESIGN.md | DESIGN.md:227 says a dialog title uses `termCompact`; the dialog draws ForUI's `titleTextStyle` | Low | `lib/shared/widgets/mx_dialog.dart:147` vs `DESIGN.md:227`; `termCompact` has one use (`study_match_widget.dart:288`) | none | See "Open items" (doc line or shared widget; owner) | none | traced | DEFERRED-OWNER |
-| SHARED-10 | `MxErrorState` vs `MxEmptyState` spacing | Title to body gap 4 vs 8 | Low | `mx_error_state.dart:48,94` (`_titleGap = 4`) vs `mx_empty_state.dart` (`space8` between title and body) | `mx_error_state_test.dart::section-title title, as an empty state's, 4 above a body-role body; no Retry by default` pins 4 on purpose | Not the title roles any more: both are `sectionTitle` since the type scale spec 2026-10-20; see "Open items" | pinned as is | traced | DEFERRED-OWNER |
+| SHARED-10 | `MxErrorState` vs `MxEmptyState` spacing | Title to body gap 4 vs 8 | Low | `mx_error_state.dart:48,94` (`_titleGap = 4`) vs `mx_empty_state.dart` (`space8` between title and body) | `mx_error_state_test.dart::section-title title, as an empty state's, 8 above a body-role body; no Retry by default` pins 8 | The error state takes the compact empty state's insides (spacing spec 2026-10-20, L9): 32 vertical, title to body 8, to the action 24 | fixed | code+test | FIXED-VERIFIED |
 | SHARED-11 | Docs inventory, architecture | Toast overlay drift | Low | docs only | ACC-D | `FORUI_ARCHITECTURE.md`, `SHARED_WIDGET_INVENTORY.md` updated | none (prose) | docs | FIXED-VERIFIED |
 | SHARED-12 | `MxStudyTopBar` | Comment said 56, code uses `sizeAppBar` (64) | Low | `mx_study_top_bar.dart:72` | none | Comment corrected | none (comment) | code only | FIXED-CODE-ONLY |
 | STUDYA-1 | Study options (15) | App-settings stream error showed a skeleton for ever | Medium | `study_options_screen.dart:97-114` | Same shape as other loads | Error state with Retry (invalidates both providers) | `test/features/settings/presentation/study_options_screen_test.dart::the app defaults that cannot be read show the error with Retry, never an endless skeleton (audit 2026-10-17)` | code+test | FIXED-VERIFIED |
@@ -331,7 +331,7 @@ Each was checked in the ForUI 0.27.6 source.
 | `mx_segmented_tray.dart` | ForUI-foundation custom component | FTappable.static :150, FFocusedOutlineStyleDelta :155 | ForUI has no segmented control; FTabs requires a content pane per entry (tabs/tabs.dart:22-35,108): verified. Tray surface BoxDecoration :68,:159. |
 | `mx_selectable_card_row.dart` | ForUI composition | via MxCard, MxRowInk, MxSelectionCheckbox (FCheckbox) | Clean. |
 | `mx_selection_checkbox.dart` | Native ForUI component | FCheckbox :15 (painted only) | Clean. |
-| `mx_settings_row.dart` | ForUI composition | MxRowInk; hosts MxToggle/MxButton/MxStepper; MxIconTile | `_subtitleGap = 2` :78 (AV-8). |
+| `mx_settings_row.dart` | ForUI composition | MxRowInk; hosts MxToggle/MxButton/MxStepper; MxIconTile | `context.dimens.spaceRowLine` (2) under the label (AV-8; spacing spec 2026-10-20). |
 | `mx_sheet_actions.dart` | ForUI composition | FDivider :146, FDividerStyleDelta :147; via MxButton, MxActionPair | Clean. |
 | `mx_skeleton.dart` | Justified Flutter primitive | none | No ForUI skeleton/shimmer (rg over forui lib: no hit). Own pulse controller; literal opacities :27-29. |
 | `mx_slider.dart` | Native ForUI component | FSlider :41, FSliderControl.liftedContinuous :42, FSliderValue :43 | Adds a GestureDetector (:106) over the margins to extend the 48dp target; duplicates ForUI tap/drag mapping (justified: no hit-area knob). Clean otherwise. |
@@ -557,8 +557,9 @@ See [REGRESSION_FINDINGS.md](REGRESSION_FINDINGS.md):
 - **Decided by the owner (2026-10-19):** REG-REMINDER-TAP (kept, written
   into BR-REMINDER-008) and REG-CA-6 (accepted limitation until ForUI).
 - **Fixed on 2026-10-19:** REG-HELD-SCOPE (§12).
+- **Fixed on 2026-10-20:** SHARED-10 (spacing spec, L9).
 - **Owner-deferred in the ledger:** STUDYB-7, STUDYB-9, SET-9, ACC-7,
-  SHARED-9, SHARED-10, SET-7, STUDYB-12 and STUDYB-15.
+  SHARED-9, SET-7, STUDYB-12 and STUDYB-15.
 - **Blocked by the environment:**
   - the APK debug and release builds;
   - the 11 device phases;

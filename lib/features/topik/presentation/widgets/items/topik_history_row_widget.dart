@@ -61,7 +61,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
           MergeSemantics(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: dimens.space4,
+              spacing: dimens.spaceRowLine,
               children: [
                 Row(
                   spacing: dimens.space8,

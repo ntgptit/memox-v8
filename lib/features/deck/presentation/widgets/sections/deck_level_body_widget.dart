@@ -98,6 +98,9 @@ class DeckLevelBodyWidget extends ConsumerWidget {
               ),
         loading: () => MxScreenScroll(
           clearance: MxScrollClearance.fabAboveNav,
+          // Under a breadcrumb its inset is the gap (screen 01); the root
+          // hides its search field until it has decks, so it takes 8.
+          top: parentId == null ? null : 0,
           children: [
             MxSkeletonList(
               semanticLabel: context.l10n.commonLoading,
@@ -107,6 +110,9 @@ class DeckLevelBodyWidget extends ConsumerWidget {
         ),
         error: (_, _) => MxScreenScroll(
           clearance: MxScrollClearance.fabAboveNav,
+          // Under a breadcrumb its inset is the gap (screen 01); the root
+          // hides its search field until it has decks, so it takes 8.
+          top: parentId == null ? null : 0,
           children: [
             MxErrorState(
               title: l10n.libraryLoadErrorTitle,

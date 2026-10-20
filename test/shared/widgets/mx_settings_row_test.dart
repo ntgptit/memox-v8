@@ -21,7 +21,8 @@ MxToggle _toggle() =>
 
 void main() {
   testWidgets(
-    'a 36 tile centred in the 40 column; item-title label; sub 2 below',
+    'a 36 tile centred in the 40 column, its text 12 after the column, as '
+    'MxListRow\'s; item-title label; sub 2 below',
     (tester) async {
       await pumpMx(
         tester,
@@ -37,7 +38,7 @@ void main() {
 
       expect(tester.getSize(find.byType(MxIconTile)), const Size.square(36));
       expect(tester.getTopLeft(find.byType(MxIconTile)).dx - row.dx, 18);
-      expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 72);
+      expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 68);
       expect(
         tester.widget<Text>(find.text('Daily reminder')).style,
         tester.element(find.text('Daily reminder')).texts.itemTitle,

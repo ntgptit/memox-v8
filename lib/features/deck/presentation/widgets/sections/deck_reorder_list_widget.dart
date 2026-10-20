@@ -97,7 +97,8 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
     buildDefaultDragHandles: false,
     padding: EdgeInsets.fromLTRB(
       context.screenMargin,
-      context.dimens.space16,
+      // A screen body's top (spacing spec L1).
+      context.dimens.space8,
       context.screenMargin,
       context.dimens.space24 + MediaQuery.paddingOf(context).bottom,
     ),

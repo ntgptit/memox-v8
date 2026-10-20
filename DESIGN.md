@@ -116,6 +116,7 @@ spacing:
   space-24: "24px"
   space-32: "32px"
   space-48: "48px"
+  space-row-line: "2px"
   margin-screen: "16px"
   margin-screen-medium: "24px"
 components:
@@ -248,6 +249,20 @@ A state changes a text's colour, never its role: a muted line and its warning fo
 ## Layout
 
 Phone first. The screen edge is `context.screenMargin` (`marginScreen` on a compact window, `marginScreenMedium` from `breakpointMedium`); the vertical rhythm is the spacing scale (`space4` … `space48`).
+
+### Spacing levels
+One level, one gap: the same level never sits closer or looser on another screen (owner 2026-10-20).
+- **Body top:** `space8` under the app bar, owned by `MxScreenScroll`; Library's list sits at 0, close under its search field.
+- **Blocks:** `space16` between top-level blocks and before a section header; `MxSection` ends with it.
+- **Section header to content:** `space8`, owned by `MxListSectionHeader`.
+- **Sibling cards:** `space8` apart.
+- **Card padding:** `space24`; `space16` (`isCompact`) only for cards side by side.
+- **Row lines:** a row's title to its subtitle or metadata line is `spaceRowLine`; a card's title to its line is `space4`; a card's heading to its body is `space12`.
+- **Leading:** an icon tile leads its text by `space12`; an inline glyph its words by `space8`.
+- **Actions:** buttons side by side or stacked are `space8` apart; a card's content is `space16` above its closing action.
+- **States:** the error state has the compact empty state's insides.
+- **Overlays:** a dialog's content items are `space12` apart; a sheet's head is `MxBottomSheet`'s; a banner in a sheet is 16 in and `space12` below what it follows.
+- **Wraps:** a wrap of chips or badges sets its run spacing; wrapped lines never touch.
 
 Every screen is a column in `MxAppShell`: top chrome, one scroll body, an in-flow footer, the FAB above (never over a footer). System insets are the platform's, never hard-coded.
 

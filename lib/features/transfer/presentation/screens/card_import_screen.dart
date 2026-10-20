@@ -138,7 +138,6 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
     final step = draft.step;
     return MxScreenScroll(
       children: [
-        SizedBox(height: context.dimens.space4),
         ImportSourceSectionWidget(
           // A new source or a fresh start rebuilds the pasted text field.
           key: ValueKey(draft.sourceKind),

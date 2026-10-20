@@ -277,6 +277,7 @@ Map<String, double> _spacing(AppDimens dimens) => {
   'space-24': dimens.space24,
   'space-32': dimens.space32,
   'space-48': dimens.space48,
+  'space-row-line': dimens.spaceRowLine,
   'margin-screen': dimens.marginScreen,
   'margin-screen-medium': dimens.marginScreenMedium,
 };

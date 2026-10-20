@@ -117,7 +117,6 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
       final isBufferEmpty = logs.total == 0;
       return MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           MxEmptyState(
             icon: isBufferEmpty ? AppIcons.learned : AppIcons.searchOff,
             title: isBufferEmpty
@@ -137,7 +136,6 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     final now = ref.watch(dayClockProvider).now();
     return MxScreenScroll(
       children: [
-        SizedBox(height: context.dimens.space8),
         // The tab states the buffer's count; the list counts what it shows
         // at the chosen levels (critique 2026-09-30 part 3b).
         MxListSectionHeader(

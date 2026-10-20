@@ -29,7 +29,6 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
 
@@ -371,7 +370,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                       _isCreating ? l10n.cardAddTitle : l10n.cardEditCrumb,
                     ),
                   Expanded(
-                    child: MxScreenScroll(children: _fields(l10n, errors)),
+                    // Under the path its inset is the gap (screen 01); while
+                    // typing the path waits and the body takes its 8.
+                    child: MxScreenScroll(
+                      top: isTyping ? null : 0,
+                      children: _fields(l10n, errors),
+                    ),
                   ),
                 ],
               ),
@@ -409,7 +413,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   );
 
   List<Widget> _fields(AppLocalizations l10n, Map<_Field, String?> errors) => [
-    SizedBox(height: context.dimens.space8),
     if (_deckRejects)
       MxInlineBanner(
         tone: MxBannerTone.warning,

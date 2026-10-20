@@ -62,7 +62,6 @@ class _MonitoringDetailBodyWidgetState
     final trace = record.stackTrace?.trim() ?? '';
     return MxScreenScroll(
       children: [
-        SizedBox(height: context.dimens.space8),
         MonitoringDetailHeaderWidget(record: record),
         for (final card in [
           if (message.isNotEmpty)

@@ -37,7 +37,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
     final overline = l10n.cardDeckProgress(algorithm);
     final due = workload.overdue + workload.today;
     return Padding(
-      padding: EdgeInsets.only(bottom: context.dimens.space12),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: MxCard(
         isHero: true,
         child: Column(

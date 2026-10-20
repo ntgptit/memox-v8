@@ -203,12 +203,10 @@ class _Problem extends StatelessWidget {
   Widget build(BuildContext context) {
     final copy = context.l10n.exportProblem(problem);
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        context.dimens.space12,
-        0,
-        context.dimens.space12,
-        context.dimens.space12,
-      ),
+      // In line with the overline and the note (the body's 8, then 12); the
+      // head's own 12 is the gap above, the banner's margin the gap below
+      // (spacing spec L9).
+      padding: EdgeInsets.symmetric(horizontal: context.dimens.space12),
       child: MxInlineBanner(
         tone: problem == CardExportProblem.prepareFailed
             ? MxBannerTone.danger

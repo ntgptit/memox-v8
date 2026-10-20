@@ -38,9 +38,6 @@ class MxActionSheetCommandRow extends StatelessWidget {
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
 
-  /// Ruling S7: UNSPECIFIED; the ListRow gap.
-  static const double _subtitleGap = 2;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -108,7 +105,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                       ),
                     ),
                     if (subtitle case final text?) ...[
-                      const SizedBox(height: _subtitleGap),
+                      SizedBox(height: context.dimens.spaceRowLine),
                       // Two lines: a consequence (a merge, a loss) must not be
                       // cut (audit 2026-09-29, screen 05).
                       Text(

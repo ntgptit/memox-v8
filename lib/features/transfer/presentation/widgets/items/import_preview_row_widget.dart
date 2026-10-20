@@ -44,7 +44,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: context.dimens.space4,
+                spacing: context.dimens.spaceRowLine,
                 children: [
                   if (draft != null) ...[
                     Text(

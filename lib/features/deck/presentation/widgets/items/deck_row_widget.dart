@@ -38,7 +38,7 @@ class DeckRowWidget extends StatelessWidget {
         onPressed: onMore,
       ),
       child: Row(
-        spacing: context.dimens.space16,
+        spacing: context.dimens.space12,
         children: [
           MxIconTile(icon: deckTileGlyph(tile), size: MxIconTileSize.large),
           Expanded(
@@ -48,7 +48,7 @@ class DeckRowWidget extends StatelessWidget {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: context.dimens.space4,
+                  spacing: context.dimens.spaceRowLine,
                   children: [
                     Row(
                       spacing: context.dimens.space8,

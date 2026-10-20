@@ -19,7 +19,6 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 26, the language (UC-SETTINGS-001 step 5): a tap saves the choice
 /// and the whole app switches at once (BR-SETTINGS-006). "Follow the
@@ -107,7 +106,6 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             MxSection(
               note: l10n.settingsLanguageNote,
               children: _rows(l10n, value.language),

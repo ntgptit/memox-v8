@@ -139,14 +139,14 @@ class _TopikSummaryScreenState extends ConsumerState<TopikSummaryScreen> {
       body: MxScreenScroll(
         children: [
           TopikSummaryHeroWidget(attempt: view.attempt, summary: summary),
-          SizedBox(height: dimens.space24),
+          SizedBox(height: dimens.space16),
           TopikSummaryFiguresWidget(summary: summary),
-          SizedBox(height: dimens.space24),
+          SizedBox(height: dimens.space16),
           // The weakest type says what to study next, so it comes before the
           // long list of answers (audit 2026-10-19, G3).
           if (summary.typeStats.isNotEmpty) ...[
             TopikTypeStatsWidget(summary: summary),
-            SizedBox(height: dimens.space24),
+            SizedBox(height: dimens.space16),
           ],
           MxListSectionHeader(label: l10n.topikAnswers),
           TopikAnswerFilterChipsWidget(

@@ -82,7 +82,10 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         breadcrumb,
-        Expanded(child: MxScreenScroll(children: content)),
+        Expanded(
+          // The breadcrumb's inset is the gap (screen 01), in every branch.
+          child: MxScreenScroll(top: 0, children: content),
+        ),
       ],
     );
   }
@@ -97,11 +100,10 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final offer = studyEntryOfferOf(entry, picked: picked);
     final resumable = entry.resumable;
     return [
-      SizedBox(height: context.dimens.space4),
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
       if (resumable != null && offer.canContinue) ...[
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
         StudyEntryResumeWidget(
           session: resumable,
           isLocked: start.isStarting,
@@ -113,15 +115,15 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       // it could sit past the fold (audit 2026-10-17).
       if (start.status == StudyStartStatus.refused ||
           start.status == StudyStartStatus.failed) ...[
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
         StudyEntryBannerWidget(start: start),
       ],
       if (offer.isNothingDue) ...[
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
         const _NothingDue(),
       ],
       if (entry.newCardCount > 0) ...[
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
         StudyEntryLearnWidget(
           entry: entry,
           offer: offer,
@@ -131,7 +133,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       // A review needs due cards (kit onlyNew, nothing).
       if (entry.dueCardCount > 0 &&
           offer.reviews.length >= _minModesToChoose) ...[
-        SizedBox(height: context.dimens.space12),
+        SizedBox(height: context.dimens.space16),
         StudyEntryReviewWidget(
           reviews: offer.reviews,
           target: offer.reviewTarget,
@@ -180,7 +182,6 @@ class _LoadingEntry extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: context.dimens.space4),
             MxCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +192,7 @@ class _LoadingEntry extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: context.dimens.space12),
+            SizedBox(height: context.dimens.space16),
             MxCard(
               child: Column(
                 spacing: context.dimens.space12,

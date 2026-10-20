@@ -16,9 +16,8 @@ const _body = 'Nothing was lost. Try again in a moment.';
 void main() {
   final colors = appLightColors;
 
-  testWidgets('a 52 danger-soft tile with a 24 error glyph, 40 from the top', (
-    tester,
-  ) async {
+  testWidgets('a 52 danger-soft tile with a 24 error glyph, 32 from the top, '
+      'as the compact empty state\'s', (tester) async {
     await pumpMx(tester, const MxErrorState(title: _title, body: _body));
     final tile = find.descendant(
       of: find.byType(MxErrorState),
@@ -41,12 +40,12 @@ void main() {
     expect((glyph.size, glyph.color), (24, colors.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
-      40,
+      32,
     );
   });
 
   testWidgets(
-    'section-title title, as an empty state\'s, 4 above a body-role body; '
+    'section-title title, as an empty state\'s, 8 above a body-role body; '
     'no Retry by default',
     (tester) async {
       await pumpMx(tester, const MxErrorState(title: _title, body: _body));
@@ -67,15 +66,14 @@ void main() {
       expect(
         tester.getTopLeft(find.text(_body)).dy -
             tester.getBottomLeft(find.text(_title)).dy,
-        4,
+        8,
       );
       expect(find.byType(MxButton), findsNothing);
     },
   );
 
-  testWidgets('a primary Retry with the refresh glyph, 16 below the body', (
-    tester,
-  ) async {
+  testWidgets('a primary Retry with the refresh glyph, 24 below the body, '
+      'as the empty state\'s action', (tester) async {
     var retries = 0;
     await pumpMx(
       tester,
@@ -92,7 +90,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxButton)).dy -
           tester.getBottomLeft(find.text(_body)).dy,
-      16,
+      24,
     );
     await tester.tap(find.byType(MxButton));
     await tester.pumpAndSettle();

@@ -163,7 +163,6 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
       ),
       body: MxScreenScroll(
         children: [
-          SizedBox(height: context.dimens.space8),
           // Nothing to search in a catalog with no tags (critique 2026-09-30
           // part 3d-2).
           if (catalog case AsyncData(:final value) when value.isEmpty)
@@ -175,7 +174,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
               clearLabel: l10n.tagsSearchClear,
               onChanged: (_) => setState(() {}),
             ),
-            SizedBox(height: context.dimens.space12),
+            SizedBox(height: context.dimens.space8),
             ...switch (catalog) {
               AsyncData(:final value) => _catalog(l10n, value),
               AsyncError(:final isLoading) => [

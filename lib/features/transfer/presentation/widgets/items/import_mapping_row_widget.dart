@@ -45,7 +45,7 @@ class ImportMappingRowWidget extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: context.dimens.space4,
+              spacing: context.dimens.spaceRowLine,
               children: [
                 Text(
                   l10n.importColumnName(letter),

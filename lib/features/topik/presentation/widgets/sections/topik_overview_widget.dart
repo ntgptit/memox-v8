@@ -53,7 +53,7 @@ class TopikOverviewWidget extends StatelessWidget {
         SizedBox(height: dimens.space8),
         MxNote.hint(text: l10n.topikScoresNote),
         TopikScoreTrendWidget(attempts: detail.attempts),
-        SizedBox(height: dimens.space24),
+        SizedBox(height: dimens.space16),
         MxListSectionHeader(label: l10n.topikRecentAttempts),
         MxCard(
           isFullBleed: true,

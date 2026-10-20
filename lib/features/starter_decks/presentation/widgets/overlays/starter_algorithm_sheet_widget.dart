@@ -74,11 +74,12 @@ class _StarterAlgorithmSheetWidgetState
     return MxBottomSheet(
       isHeld: isAdding,
       header: Padding(
+        // MxBottomSheet's own head padding (spacing spec L9).
         padding: EdgeInsets.fromLTRB(
           context.dimens.space24,
           context.dimens.space4,
           context.dimens.space24,
-          context.dimens.space8,
+          context.dimens.space12,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,11 +151,13 @@ class _StarterAlgorithmSheetWidgetState
           ),
           if (state.hasFailed)
             Padding(
+              // A banner in a sheet: 16 in, 12 below what it follows; its
+              // own margin is the gap under it (spacing spec L9).
               padding: EdgeInsets.fromLTRB(
                 context.dimens.space16,
-                context.dimens.space8,
+                context.dimens.space12,
                 context.dimens.space16,
-                context.dimens.space8,
+                0,
               ),
               child: MxInlineBanner(
                 tone: MxBannerTone.danger,

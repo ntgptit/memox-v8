@@ -255,7 +255,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           builder: (footerContext) => Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: context.dimens.space12,
+            spacing: context.dimens.space8,
             children: [
               MxButton(
                 label: l10n.accountSendCode,

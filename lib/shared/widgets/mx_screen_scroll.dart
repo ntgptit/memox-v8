@@ -7,17 +7,25 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// in-flow.
 enum MxScrollClearance { base, fab, fabAboveNav }
 
-/// The single scrollable region of a screen: the screen margin and a tail
-/// clearance derived from the pinned chrome, plus the gesture inset.
+/// The single scrollable region of a screen: the screen margin, the body's
+/// gap under the app bar and a tail clearance derived from the pinned chrome,
+/// plus the gesture inset. The gap is the scroll's, so no screen picks its
+/// own (spacing spec 2026-10-20, L1).
 class MxScreenScroll extends StatelessWidget {
   const MxScreenScroll({
     super.key,
     required this.children,
     this.clearance = MxScrollClearance.base,
+    this.top,
   });
 
   final List<Widget> children;
   final MxScrollClearance clearance;
+
+  /// The gap above the first child; `space8` when null. A screen that sits
+  /// close under its own chrome (Library under its search field) or a pane
+  /// with its own layout passes its value.
+  final double? top;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +41,7 @@ class MxScreenScroll extends StatelessWidget {
     return ListView(
       padding: EdgeInsetsDirectional.only(
         start: context.screenMargin,
+        top: top ?? context.dimens.space8,
         end: context.screenMargin,
         bottom: tail + MediaQuery.paddingOf(context).bottom,
       ),

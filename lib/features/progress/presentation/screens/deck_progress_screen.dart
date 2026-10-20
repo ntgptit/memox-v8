@@ -65,6 +65,8 @@ class DeckProgressScreen extends ConsumerWidget {
         ],
       ),
       _ when level != null => MxScreenScroll(
+        // Under the breadcrumb its inset is the gap (screen 01).
+        top: 0,
         children: [
           const ProgressRangeWidget(),
           SizedBox(height: context.dimens.space16),

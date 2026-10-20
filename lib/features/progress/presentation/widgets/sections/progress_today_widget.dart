@@ -64,7 +64,7 @@ class ProgressTodayWidget extends StatelessWidget {
           SizedBox(height: context.dimens.space12),
           if (isNever) ...[
             MxDashedNote(text: l10n.progressNeverChart),
-            SizedBox(height: context.dimens.space12),
+            SizedBox(height: context.dimens.space16),
             MxButton(
               label: l10n.progressStartStudying,
               icon: AppIcons.play,

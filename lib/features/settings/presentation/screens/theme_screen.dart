@@ -60,7 +60,6 @@ class ThemeScreen extends ConsumerWidget {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
-            SizedBox(height: context.dimens.space8),
             LayoutBuilder(
               builder: (context, constraints) {
                 final cards = [
