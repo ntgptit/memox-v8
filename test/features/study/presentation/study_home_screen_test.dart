@@ -21,6 +21,7 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/l10n/meta_line.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/card_fixtures.dart';
@@ -140,7 +141,7 @@ void main() {
     );
     // The deck in context, under its root (Study home spec H3).
     expect(
-      find.text(_en.studyHomeResumeTitle('Korean', 'Lesson')),
+      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
       findsOneWidget,
     );
     expect(find.byType(MxLinearProgress), findsOneWidget);

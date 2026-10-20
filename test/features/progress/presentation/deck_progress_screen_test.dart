@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
@@ -18,6 +17,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/progress_screen_fixtures.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 // Screen 22 at a deck's level: UC-PROGRESS-002 (steps 1, 5; A1; E1; E2),
 // FE-A9 D2, D5.
@@ -63,7 +63,7 @@ void main() {
       tester,
       find.descendant(
         of: whole,
-        matching: find.text(metaLine(_en.progressRowCardsDays(3, 1))),
+        matching: findTermLine(_en.progressRowCardsDays(3, 1)),
       ),
     );
     // A child opens its level; the total does not (critique 2026-09-30 part

@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// An open deck of decks at a glance (screen 01): its mastery donut
 /// (BR-DECK-026) beside its algorithm, what it holds, today's work with what
@@ -61,13 +62,14 @@ class DeckSummaryCardWidget extends StatelessWidget {
                         color: context.colors.mutedForeground,
                       ),
                     ),
-                    Text(
+                    MxTermLine.text(
                       deckStructureLine(
                         l10n,
                         subDecks: level.deckCount,
                         cards: cards,
                       ),
-                      style: context.texts.sectionTitle,
+                      role: MxTermLineRole.sectionTitle,
+                      tone: MxTermTone.foreground,
                     ),
                     MxWorkloadBreakdownLine(
                       overdueCount: level.overdueCount,

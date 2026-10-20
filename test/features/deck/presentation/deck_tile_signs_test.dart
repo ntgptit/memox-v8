@@ -26,22 +26,22 @@ DeckTile _tile({required int subDecks, required int cards}) => DeckTile(
   startOfToday: libraryToday,
 );
 
-// Screen 01's structure line wraps only between whole terms (The Wrap Rule;
-// owner, Q-P6-4): "1248 cards" never splits from its number.
+// Screen 01's structure line: a line of terms the row lays out whole (The
+// Wrap Rule, spec W1).
 void main() {
-  test('sub-decks and cards: two whole terms', () {
+  test('sub-decks and cards: two terms', () {
     expect(
       deckTileMeta(_tile(subDecks: 4, cards: 1248), _en),
-      '4\u00A0sub-decks\u00A0· 1248\u00A0cards',
+      '4 sub-decks · 1248 cards',
     );
   });
 
-  test('a deck of cards: one whole term', () {
-    expect(deckTileMeta(_tile(subDecks: 0, cards: 420), _en), '420\u00A0cards');
+  test('a deck of cards: one term', () {
+    expect(deckTileMeta(_tile(subDecks: 0, cards: 420), _en), '420 cards');
   });
 
-  // metaLine splits at " · ": a translation that joined the two counts any
-  // other way would glue the whole line into one unbreakable term.
+  // MxTermLine splits at " · ": a translation that joined the two counts any
+  // other way would make the whole line one term.
   test('every language joins the two counts with " · "', () {
     for (final locale in AppLocalizations.supportedLocales) {
       expect(

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_model.dart';
@@ -11,6 +10,7 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 39's question (detail file 39, critique V2–V4):
 /// - the banner when the content changed after the attempt (BR-TOPIK-019);
@@ -82,11 +82,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
       selected: answer.selectedIdx,
       right: _right,
     );
-    return Text(
-      meta.shown,
-      semanticsLabel: meta.spoken,
-      style: context.texts.body.copyWith(color: context.colors.mutedForeground),
-    );
+    return MxTermLine.of(meta.shown, semanticsLabel: meta.spoken);
   }
 
   Widget _option(BuildContext context, TopikOption option) {
@@ -145,6 +141,12 @@ class TopikReviewQuestionWidget extends StatelessWidget {
       padding: EdgeInsets.all(dimens.space16),
       child: Text(text, style: context.texts.body),
     );
+    // The word or pattern stays whole; its meaning is prose, which wraps on
+    // its own line when it does not fit after it (Q-C-2, The Wrap Rule).
+    Widget terms(List<String> terms) => Padding(
+      padding: EdgeInsets.all(dimens.space16),
+      child: MxTermLine.of(terms, tone: MxTermTone.foreground),
+    );
     final sections = [
       if (question.explanation case final text?)
         MxSection(
@@ -161,11 +163,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           title: l10n.topikTagWords,
           children: [
             for (final word in question.words)
-              line(
-                // The word stays whole; its meaning is prose (Q-C-2).
-                '${metaTerms([word.ko, ?word.pos])}'
-                '$metaTermSeparator${l10n.topikText(word.meaning)}',
-              ),
+              terms([word.ko, ?word.pos, l10n.topikText(word.meaning)]),
           ],
         ),
       if (question.grammars.isNotEmpty)
@@ -173,10 +171,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
           title: l10n.topikTagGrammar,
           children: [
             for (final grammar in question.grammars)
-              line(
-                '${wholeTerm(grammar.pattern)}'
-                '$metaTermSeparator${l10n.topikText(grammar.meaning)}',
-              ),
+              terms([grammar.pattern, l10n.topikText(grammar.meaning)]),
           ],
         ),
     ];

@@ -16,8 +16,8 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/library_harness.dart';
 import 'support/import_screen_helpers.dart';
 import 'support/words_deck.dart';
-import '../../../support/wrap_rule.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
 
 // The import screen over the real backend and a fake picker (UC-TRANSFER-001,
 // IT-NAV-012, IT-CARD-014).
@@ -43,19 +43,12 @@ void main() {
     expect(find.text(metaDots(_en.importSourceFileHint)), findsOneWidget);
     await tapImportLabel(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.importFileReady('CSV'))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.importFileReady('CSV')));
 
     await tapImportLabel(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
-    // The file's own column names keep their spaces; each dot stays with the
-    // name before it (The Wrap Rule).
-    expect(
-      find.text('front${metaTermSeparator}back${metaTermSeparator}tags'),
-      findsOneWidget,
-    );
+    // The file's own column names, laid out as whole terms (The Wrap Rule).
+    expect(findTermLine('front · back · tags'), findsOneWidget);
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await tapImportLabel(tester, _en.importPreviewAction);
@@ -373,15 +366,9 @@ void main() {
     );
     await tapImportLabel(tester, _en.importSourceFile);
     await tapImportLabel(tester, _en.importReadAction);
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.importFileRead('CSV', 2, 2)));
 
     await tapImportLabel(tester, _en.importHeaderToggle);
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.importFileRead('CSV', 3, 2)));
   });
 }

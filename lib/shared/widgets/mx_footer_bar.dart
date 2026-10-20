@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// The in-flow commit bar (Save, Done, bulk actions): a sibling of the
 /// scroll, so it never overlaps content. It owns the gesture inset below
@@ -50,12 +51,12 @@ class MxFooterBar extends StatelessWidget {
           children: [
             child,
             if (caption case final caption? when !isTyping)
-              Text(
+              // A line of terms wraps between whole terms, with no dot at a
+              // line edge (The Wrap Rule).
+              MxTermLine.text(
                 caption,
-                textAlign: TextAlign.center,
-                style: context.texts.meta.copyWith(
-                  color: context.colors.mutedForeground,
-                ),
+                role: MxTermLineRole.meta,
+                align: MxTermLineAlign.center,
               ),
           ],
         ),

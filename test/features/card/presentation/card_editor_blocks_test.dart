@@ -10,7 +10,6 @@ import 'package:memox/features/card/presentation/widgets/sections/card_field_wid
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -18,7 +17,7 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
-import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 import 'package:forui/forui.dart';
 
@@ -146,10 +145,7 @@ void main() {
       await add('Verb');
       await add('verb');
       expect(find.bySemanticsLabel(_en.cardTagRemove('Verb')), findsOneWidget);
-      expectBreaksOnlyBetweenWords(
-        tester,
-        find.text(metaLine(_en.cardTagsMeta(1, 10))),
-      );
+      expectTermLineRule(tester, findTermLine(_en.cardTagsMeta(1, 10)));
 
       for (var i = 0; i < 9; i++) {
         await add('tag $i');
@@ -279,7 +275,7 @@ void main() {
 
     expect(find.textContaining(_en.cardAddDetails), findsOneWidget);
     expect(
-      find.textContaining(metaLine(_en.cardAddDetailsFields)),
+      findTermLine(_en.cardAddDetailsFields, isContaining: true),
       findsOneWidget,
     );
     // A plus, not the sparkle, which implies AI (critique 2026-09-30 3a).
@@ -297,7 +293,7 @@ void main() {
       find.bySemanticsLabel(
         RegExp(
           '${RegExp.escape(_en.cardAddDetails)}.*'
-          '${RegExp.escape(metaLine(_en.cardAddDetailsFields))}',
+          '${RegExp.escape((_en.cardAddDetailsFields))}',
           dotAll: true,
         ),
       ),

@@ -182,11 +182,11 @@ Transitions added by the audit of 2026-10-17:
 - **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart, as in
   browse mode.
 - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at large text, between whole terms; only the deck name keeps one line.
-- **Owner 2026-10-16 (Q-P6-4):** the row's structure line ("4 sub-decks · 1,248 cards") is glued by the shared `lib/l10n/meta_line.dart`, as the breakdown line is, so it breaks only between its terms.
+- **Owner 2026-10-16 (Q-P6-4):** the row's structure line ("4 sub-decks · 1,248 cards") is laid out by the shared `MxTermLine`, as the breakdown line is, so it breaks only between its terms and no dot ends a line (spec W1, 2026-10-20).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow (12/600 muted); the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the recent sort is labelled "Date added" (vi "Ngày tạo") with the hint "Newest first"; the search field is hidden while decks are reordered, as the summary, the due strip and the sort pill are, and returns with Done.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due strip's breakdown is overdue · today, the two halves of its total; New stays on each deck row (BR-STUDY-068).
-- **Owner 2026-10-16 (Q-P6-4):** the summary card's "N sub-decks · N cards" uses the same `deckStructureLine` as the rows, and the breakdown's fallback ("N cards · nothing due") is glued when it wraps, so neither splits a count from its noun; the empty row line keeps its words breakable with each dot on the word before it (`metaDots`).
+- **Owner 2026-10-16 (Q-P6-4):** the summary card's "N sub-decks · N cards" uses the same `deckStructureLine` as the rows, and the breakdown's fallback ("N cards · nothing due") is split into terms when it wraps, so neither splits a count from its noun; the empty row line keeps its words breakable with each dot on the word before it (`metaDots`).
 - **Q-C-1 (owner, 2026-10-16):** the action sheet's hints (Study options, a locked Review algorithm) keep each dot on the phrase before it and wrap as words (`metaDots`); they are capped at two lines, where `metaDots`, never `metaLine`, is allowed (06) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Pending

@@ -8,8 +8,10 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations_en.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
+import 'package:memox/l10n/meta_line.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = AppLocalizationsEn();
 
@@ -86,7 +88,7 @@ void main() {
   ) async {
     await _pump(tester, env, _session());
     expect(
-      find.text(_en.studyHomeResumeTitle('Korean', 'Words')),
+      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Words'))),
       findsOneWidget,
     );
     // The session line holds the kind and the mode, not the count.
@@ -111,9 +113,32 @@ void main() {
     await _pump(tester, env, _session(deck: long.trim()));
 
     final title = tester.widget<Text>(
-      find.text(_en.studyHomeResumeTitle('Korean', long.trim())),
+      find.text(
+        breadcrumbLine(_en.studyHomeResumeTitle('Korean', long.trim())),
+      ),
     );
     expect((title.maxLines, title.overflow), (2, TextOverflow.ellipsis));
     expect(tester.takeException(), isNull);
   });
+
+  // Spec B1: "›" stays with the deck after it, so the title never ends a
+  // line on it, on a 360 dp phone or at a 1.3 text scale.
+  for (final textScale in [1.0, 1.3]) {
+    libraryTest('the title never ends a line on "›" (scale $textScale)', (
+      tester,
+      env,
+    ) async {
+      await _pump(
+        tester,
+        env,
+        _session(root: 'IELTS Academic Word List'),
+        textScale: textScale,
+      );
+      expectNoLineEndsOn(
+        tester,
+        find.textContaining('IELTS Academic Word List'),
+        '›',
+      );
+    });
+  }
 }

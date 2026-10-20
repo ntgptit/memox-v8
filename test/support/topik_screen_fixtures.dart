@@ -7,6 +7,7 @@ import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_model.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 import 'library_harness.dart';
 import 'topik_attempt_fixtures.dart';
@@ -72,18 +73,22 @@ Future<TopikAttempt> topikSeedInProgress(
   await TopikAttemptRepositoryImpl(env.db).start(test, now: startedAt),
 );
 
-/// A [Text] that reads [text] once its non-breaking spaces are plain ones:
-/// the TOPIK meta lines glue their terms (The Wrap Rule).
-Finder findPlainText(String text) => find.byWidgetPredicate(
-  (widget) =>
-      widget is Text &&
-      widget.data?.replaceAll('\u00A0', ' ').replaceAll('\u2060', '') == text,
-);
+/// A [Text] that reads [text], or an [MxTermLine] that reads it as a whole
+/// line (the TOPIK meta lines are lines of terms, The Wrap Rule); a term's
+/// own text inside a line is not counted again.
+Finder findPlainText(String text) => _plainLine((line) => line == text);
 
-/// [findPlainText] for a [Text] whose plain reading contains [text].
-Finder findPlainTextContaining(String text) => find.byWidgetPredicate(
-  (widget) =>
-      widget is Text &&
-      (widget.data?.replaceAll('\u00A0', ' ').replaceAll('\u2060', '') ?? '')
-          .contains(text),
-);
+/// [findPlainText] for a line that contains [text].
+Finder findPlainTextContaining(String text) =>
+    _plainLine((line) => line.contains(text));
+
+Finder _plainLine(bool Function(String line) reads) =>
+    find.byElementPredicate((element) {
+      final widget = element.widget;
+      if (widget is MxTermLine) return reads(widget.spoken);
+      if (widget is! Text) return false;
+      if (element.findAncestorWidgetOfExactType<MxTermLine>() != null) {
+        return false;
+      }
+      return reads(widget.data ?? '');
+    });

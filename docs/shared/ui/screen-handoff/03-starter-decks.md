@@ -78,7 +78,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the algorithm sheet labels its choice "Review algorithm" as a field label with a Required caption, not one all-caps line.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the algorithm sheet's body is the lock line (`deckSchedulerNote`: "The scheduler locks after the first review. Changing it later resets learning progress."), replacing the counts sentence; the card's facts line keeps the counts.
-- **Owner 2026-10-16 (Q-P6-4):** a template's facts line ("Korean · English · 120 cards · 3 sub-decks · source") wraps only between its terms (`lib/l10n/meta_line.dart`).
+- **Owner 2026-10-16 (Q-P6-4):** a template's facts line ("Korean · English · 120 cards · 3 sub-decks · source") wraps only between its terms (`MxTermLine`: no dot at a line edge since spec W1, 2026-10-20).
 - **Q-C-1 (owner, 2026-10-16):** the algorithm sheet's descriptions, suggested or not, keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy

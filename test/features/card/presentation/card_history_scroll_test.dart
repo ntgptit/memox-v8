@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
@@ -24,6 +23,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/wrap_rule.dart';
 import 'support/flaky_card_history.dart';
+import '../../../support/term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _addedAt = DateTime(2026, 8, 1);
@@ -68,18 +68,14 @@ Future<void> _answers(LibraryEnv env, int count) async {
 /// Scrolls to the end-of-history line, which follows the oldest answer.
 Future<void> _scrollToEnd(WidgetTester tester) async {
   await tester.scrollUntilVisible(
-    find.text(
-      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
-    ),
+    findTermLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
     500,
     scrollable: _scrollable,
   );
   await tester.pumpAndSettle();
-  expectBreaksOnlyBetweenWords(
+  expectTermLineRule(
     tester,
-    find.text(
-      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
-    ),
+    findTermLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
   );
 }
 
@@ -196,12 +192,10 @@ void main() {
     await pumpLibraryScreen(tester, env, _section());
     await tester.pumpAndSettle();
 
-    final current = find.text(
-      metaLine(_en.cardHistoryCycle(2, _en.cardSchedulerEightBox)),
+    final current = findTermLine(
+      _en.cardHistoryCycle(2, _en.cardSchedulerEightBox),
     );
-    final earlier = find.text(
-      metaLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2)),
-    );
+    final earlier = findTermLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2));
     expectBreaksOnlyBetweenWords(tester, current);
     expect(earlier, findsOneWidget);
     expect(

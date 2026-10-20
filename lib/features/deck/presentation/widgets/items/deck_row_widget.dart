@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One deck of a level (screen 01): a card with the deck's tile, its name,
 /// "N due" when cards wait, what it holds, its mastery bar (BR-DECK-026),
@@ -65,12 +66,7 @@ class DeckRowWidget extends StatelessWidget {
                           MxBadge(label: l10n.deckDueBadge(tile.dueCount)),
                       ],
                     ),
-                    Text(
-                      deckTileMeta(tile, l10n),
-                      style: context.texts.body.copyWith(
-                        color: context.colors.mutedForeground,
-                      ),
-                    ),
+                    MxTermLine.text(deckTileMeta(tile, l10n)),
                   ],
                 ),
                 _MasteryBar(fraction: tile.masteryFraction),

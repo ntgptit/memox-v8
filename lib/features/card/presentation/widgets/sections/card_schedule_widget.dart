@@ -6,9 +6,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Where the card stands now (kit 10, BR-CARD-014): the eight-box ramp or
 /// the SM-2 title, then the facts of the scheduler the card is under.
@@ -118,11 +118,9 @@ class CardScheduleWidget extends StatelessWidget {
     return _Fact(
       icon: AppIcons.scheduler,
       label: l10n.cardFactScheduler,
-      value: metaLine(
-        l10n.cardFactSchedulerValue(
-          l10n.cardScheduler(detail.schedulerType),
-          detail.schedule.generation,
-        ),
+      value: l10n.cardFactSchedulerValue(
+        l10n.cardScheduler(detail.schedulerType),
+        detail.schedule.generation,
       ),
     );
   }
@@ -264,7 +262,12 @@ class _Fact extends StatelessWidget {
                   color: context.colors.mutedForeground,
                 ),
               ),
-              Text(value, style: context.texts.itemTitle),
+              // A value of terms wraps between whole terms (The Wrap Rule).
+              MxTermLine.text(
+                value,
+                role: MxTermLineRole.itemTitle,
+                tone: MxTermTone.foreground,
+              ),
             ],
           ),
         ),

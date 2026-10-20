@@ -5,7 +5,6 @@ import 'package:memox/features/settings/domain/entities/app_settings_entity.dart
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 
@@ -48,9 +47,7 @@ class SettingsAppSectionWidget extends StatelessWidget {
         MxSettingsRow(
           label: l10n.settingsLanguage,
           subtitle: switch (stored.language) {
-            LanguageChoice.system => metaLine(
-              l10n.settingsLanguageSystemHint(shown),
-            ),
+            LanguageChoice.system => l10n.settingsLanguageSystemHint(shown),
             LanguageChoice.en => l10n.languageEnglish,
             LanguageChoice.vi => l10n.languageVietnamese,
           },
@@ -60,10 +57,8 @@ class SettingsAppSectionWidget extends StatelessWidget {
         MxSettingsRow(
           label: l10n.settingsReminder,
           subtitle: stored.reminder.isEnabled
-              ? metaLine(
-                  l10n.settingsReminderOn(
-                    _timeOf(context, stored.reminder.minuteOfDay),
-                  ),
+              ? l10n.settingsReminderOn(
+                  _timeOf(context, stored.reminder.minuteOfDay),
                 )
               : l10n.settingsReminderOff,
           icon: AppIcons.reminder,

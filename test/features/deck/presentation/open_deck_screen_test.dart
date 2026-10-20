@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
@@ -15,6 +14,7 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -23,7 +23,7 @@ import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
-import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 import 'package:forui/forui.dart';
 
@@ -310,12 +310,10 @@ void main() {
     );
 
     expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
-        ),
+      findTermLine(
+        _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
       ),
     );
     // The summary card states the count; the header names the list
@@ -362,18 +360,17 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
 
-    final line = tester.widget<Text>(
-      find
-          .descendant(
-            of: find.descendant(
-              of: find.byType(DeckSummaryCardWidget),
-              matching: find.byType(MxWorkloadBreakdownLine),
-            ),
-            matching: find.byType(Text),
-          )
-          .first,
+    final line = find.descendant(
+      of: find.descendant(
+        of: find.byType(DeckSummaryCardWidget),
+        matching: find.byType(MxWorkloadBreakdownLine),
+      ),
+      matching: find.byType(MxTermLine),
     );
-    expect(line.textSpan!.toPlainText(), contains('1\u00A0scheduled'));
+    expect([
+      for (final term in tester.widget<MxTermLine>(line).terms) term.text,
+    ], contains('1 scheduled'));
+    expectTermLineRule(tester, line);
   });
 
   libraryTest('the summary shows the level mastery donut beside "Mastered · '
@@ -434,12 +431,10 @@ void main() {
     await tester.tap(find.text(_en.commonDone));
     await tester.pumpAndSettle();
 
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
-        ),
+      findTermLine(
+        _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
       ),
     );
     expect(find.text(_en.libraryDueDecksHeader.toUpperCase()), findsOneWidget);

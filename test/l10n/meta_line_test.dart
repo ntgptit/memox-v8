@@ -1,36 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/l10n/meta_line.dart';
 
-// DESIGN.md, The Wrap Rule: a meta line that wraps does so only between
-// whole terms (owner, Q-P6-4).
+// DESIGN.md, The Wrap Rule: the glue a plain text keeps. Lines of terms are
+// MxTermLine's (spec W1).
 void main() {
-  test('a term keeps its spaces and its range dash from breaking', () {
-    expect(wholeTerm('Levels 3–6'), 'Levels\u00A03\u2060–\u20606');
-  });
-
-  test('terms join with the dot glued to the term before it', () {
-    expect(
-      metaTerms(['4 sub-decks', '1,248 cards']),
-      '4\u00A0sub-decks\u00A0· 1,248\u00A0cards',
-    );
-  });
-
-  test('a line already joined with " · " is split there and glued', () {
-    expect(
-      metaLine('Sep 24 09:00 · 1h 27m 00s'),
-      'Sep\u00A024\u00A009:00\u00A0· 1h\u00A027m\u00A000s',
-    );
-  });
-
-  test('one term is glued, with no separator', () {
-    expect(metaLine('420 cards'), '420\u00A0cards');
-  });
-
   test('a line of phrases keeps its words breakable, each dot glued to the '
-      'phrase before it', () {
+      'phrase before it (spec W2)', () {
     expect(
       metaDots('Empty · add cards or a sub-deck'),
-      'Empty\u00A0· add cards or a sub-deck',
+      'Empty · add cards or a sub-deck',
     );
+  });
+
+  test('a breadcrumb glues each "›" to the word after it, so no line ends '
+      'on one (spec B1)', () {
+    expect(
+      breadcrumbLine('IELTS Academic Word List › Words'),
+      'IELTS Academic Word List › Words',
+    );
+    expect(breadcrumbLine('A › B › C'), 'A › B › C');
+    expect(breadcrumbLine('Words'), 'Words');
   });
 }

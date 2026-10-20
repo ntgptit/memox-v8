@@ -3,10 +3,10 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
 import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Overall Progress of screen 36 (BR-TOPIK-020): accuracy and completion,
 /// best and average, sessions and completed as six figures, then when and
@@ -77,15 +77,10 @@ class TopikProgressCardWidget extends StatelessWidget {
               children: [for (final cell in pair) Expanded(child: cell)],
             ),
           if (lastActivity != null)
-            Text(
-              metaLine(
-                l10n.topikLastActivity(
-                  l10n.ago(lastActivity, now),
-                  l10n.duration(progress.totalTimeMs),
-                ),
-              ),
-              style: context.texts.body.copyWith(
-                color: context.colors.mutedForeground,
+            MxTermLine.text(
+              l10n.topikLastActivity(
+                l10n.ago(lastActivity, now),
+                l10n.duration(progress.totalTimeMs),
               ),
             ),
         ],

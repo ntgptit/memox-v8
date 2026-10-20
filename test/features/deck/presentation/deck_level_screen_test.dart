@@ -26,17 +26,10 @@ import '../../../support/library_harness.dart';
 import '../../../support/deck_screen_harness.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));
-
-/// A rich line as read, with the wrap glue (non-breaking spaces) read as
-/// spaces.
-Finder _rich(String text) => find.byWidgetPredicate(
-  (widget) =>
-      widget is RichText &&
-      widget.text.toPlainText().replaceAll(' ', ' ') == text,
-);
 
 /// Korean holds one overdue, one due-today and one new card; Kanji is empty.
 Future<void> _seed(LibraryEnv env) async {
@@ -71,8 +64,8 @@ void main() {
     expect(find.text(_en.libraryDueTitle(2)), findsOneWidget);
     // The strip states its total's two halves; New is not due
     // (BR-STUDY-068; critique 2026-10-02).
-    expect(_rich('1 overdue · 1 today'), findsOneWidget);
-    expect(_rich('1 overdue · 1 today · 1 new'), findsNothing);
+    expect(findTermLine('1 overdue · 1 today'), findsOneWidget);
+    expect(findTermLine('1 overdue · 1 today · 1 new'), findsNothing);
     expect(find.widgetWithText(MxBadge, _en.deckDueBadge(2)), findsOneWidget);
     expect(
       tester.getTopLeft(find.text(_en.libraryDueTitle(2))).dy,
@@ -156,7 +149,7 @@ void main() {
     await tester.pump();
 
     // The strip leaves New out (BR-STUDY-068; critique 2026-10-02).
-    expect(_rich('2 overdue'), findsOneWidget);
+    expect(findTermLine('2 overdue'), findsOneWidget);
   });
 
   libraryTest('loading shows skeleton rows', (tester, env) async {

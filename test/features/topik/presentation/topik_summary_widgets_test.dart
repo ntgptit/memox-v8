@@ -21,6 +21,7 @@ import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_summary_parts.dart';
@@ -276,8 +277,8 @@ void main() {
     // TalkBack gets plain digits, not "circled digit three" (owner
     // 2026-10-17); the glyphs stay on screen.
     final spoken = tester
-        .widgetList<Text>(find.byType(Text))
-        .map((t) => t.semanticsLabel)
+        .widgetList<MxTermLine>(find.byType(MxTermLine))
+        .map((line) => line.semanticsLabel)
         .whereType<String>()
         .toList();
     expect(spoken, [

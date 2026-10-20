@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -7,6 +6,7 @@ import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One answer of screen 38 (critique S5):
 /// - "Question {no}";
@@ -41,13 +41,7 @@ class TopikAnswerRowWidget extends StatelessWidget {
     );
     return MxListRow(
       title: l10n.topikQuestionTitle(answer.questionNo),
-      meta: Text(
-        meta.shown,
-        semanticsLabel: meta.spoken,
-        style: context.texts.body.copyWith(
-          color: context.colors.mutedForeground,
-        ),
-      ),
+      meta: MxTermLine.of(meta.shown, semanticsLabel: meta.spoken),
       trailing: MxBadge(
         label: l10n.topikAnswerStatusName(status),
         tone: switch (status) {

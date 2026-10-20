@@ -1,4 +1,3 @@
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -39,13 +38,15 @@ String starterSchedulerDescription(AppLocalizations l10n, SchedulerType type) =>
       SchedulerType.eightBox => l10n.starterEightBoxDescription,
     };
 
-/// "{front} · {back} · {n} cards · {m} sub-decks · {source}" (kit 03).
-/// Short terms, so it breaks only between them (The Wrap Rule).
-String starterEntryFacts(AppLocalizations l10n, StarterLibraryEntry entry) =>
-    metaTerms([
-      starterLanguageName(l10n, entry.frontLanguage),
-      starterLanguageName(l10n, entry.backLanguage),
-      l10n.starterCardCount(entry.cardCount),
-      l10n.starterSubDeckCount(entry.subDeckCount),
-      starterSourceName(l10n, entry.contentSource),
-    ]);
+/// "{front} · {back} · {n} cards · {m} sub-decks · {source}" (kit 03):
+/// short terms, laid out whole (The Wrap Rule).
+List<String> starterEntryFacts(
+  AppLocalizations l10n,
+  StarterLibraryEntry entry,
+) => [
+  starterLanguageName(l10n, entry.frontLanguage),
+  starterLanguageName(l10n, entry.backLanguage),
+  l10n.starterCardCount(entry.cardCount),
+  l10n.starterSubDeckCount(entry.subDeckCount),
+  starterSourceName(l10n, entry.contentSource),
+];

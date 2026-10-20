@@ -18,6 +18,8 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -117,6 +119,15 @@ class StudyEntryBodyWidget extends ConsumerWidget {
           start.status == StudyStartStatus.failed) ...[
         SizedBox(height: context.dimens.space16),
         StudyEntryBannerWidget(start: start),
+      ],
+      // Beside a session that can be continued, every other start ends it:
+      // the choices sit under a section that says so (spec E1, BR-STUDY-072).
+      if (resumable != null &&
+          offer.canContinue &&
+          entryFooterActionOf(offer) != null) ...[
+        SizedBox(height: context.dimens.space16),
+        MxListSectionHeader(label: context.l10n.studyEntryOtherSessionHeader),
+        MxNote(text: context.l10n.studyEntryOtherSessionNote),
       ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),

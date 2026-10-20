@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// A level on screen 34: its name, what it covers and its test count. A
 /// level without a valid test keeps its row as information, not as a
@@ -33,16 +32,11 @@ class TopikLevelRowWidget extends StatelessWidget {
         : l10n.topikNoTestsYet;
     return MxListRow(
       title: l10n.topikLevelName(level),
-      meta: Text(
-        metaTerms([
-          l10n.topikLevelGrades(level),
-          l10n.topikBothSections,
-          count,
-        ]),
-        style: context.texts.body.copyWith(
-          color: context.colors.mutedForeground,
-        ),
-      ),
+      meta: MxTermLine.of([
+        l10n.topikLevelGrades(level),
+        l10n.topikBothSections,
+        count,
+      ]),
       leading: const MxIconTile(icon: AppIcons.fileText),
       hasChevron: hasTests,
       onTap: hasTests ? onOpen : null,

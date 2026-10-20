@@ -18,8 +18,8 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/starter_screen_fixtures.dart';
-import '../../../support/wrap_rule.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
 
 // Screen 03 (FE-B4, UC-STARTER-001): the ten kit states.
 
@@ -69,21 +69,17 @@ void main() {
 
     expect(find.text(_en.starterNote), findsOneWidget);
     expect(find.text(everydayTemplate.title), findsOneWidget);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
-        ),
+      findTermLine(
+        'Korean · Latin · 60 cards · 2 sub-decks · Development fixture',
       ),
     );
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          'English · Vietnamese · 120 cards · 4 sub-decks · '
-          'Development fixture',
-        ),
+      findTermLine(
+        'English · Vietnamese · 120 cards · 4 sub-decks · '
+        'Development fixture',
       ),
     );
     expect(_cardButton(_en.starterAddToLibrary), findsNWidgets(2));
@@ -105,10 +101,10 @@ void main() {
       overrides: [StarterLibraryFake(env).asOverride],
     );
 
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
+      findTermLine(
+        'Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu',
       ),
     );
     // \s also matches the no-break spaces of a glued line.

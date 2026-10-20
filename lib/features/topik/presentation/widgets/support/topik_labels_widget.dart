@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -11,6 +10,7 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// The TOPIK screens' words for domain values (spec §8).
 extension TopikLabels on AppLocalizations {
@@ -56,7 +56,9 @@ extension TopikLabels on AppLocalizations {
         topikAttemptCount(status.completedCount),
       ],
     ];
-    return parts.isEmpty ? topikStatusNotStarted : metaTerms(parts);
+    return parts.isEmpty
+        ? topikStatusNotStarted
+        : parts.join(MxTermLine.separator);
   }
 
   String topikRejectionMessage(TopikRejection reason) => switch (reason) {
@@ -145,11 +147,11 @@ extension TopikLabels on AppLocalizations {
 
 /// An answer's meta line on screens 38 and 39: what the person chose, the
 /// right option unless [right] is null, and the [time] when given.
-/// [shown] writes the options as ①–④ and glues its terms (The Wrap Rule);
+/// [shown] writes the options as ①–④, as whole terms (The Wrap Rule);
 /// [spoken] writes them as plain digits for a screen reader, which reads
 /// "③" as a symbol name (owner 2026-10-17).
 extension TopikAnswerMeta on AppLocalizations {
-  ({String shown, String spoken}) topikAnswerMeta({
+  ({List<String> shown, String spoken}) topikAnswerMeta({
     required int? selected,
     required int? right,
     String? time,
@@ -163,7 +165,7 @@ extension TopikAnswerMeta on AppLocalizations {
       ?time,
     ];
     return (
-      shown: metaTerms(terms(topikCircled)),
+      shown: terms(topikCircled),
       spoken: terms((idx) => '$idx').join(', '),
     );
   }

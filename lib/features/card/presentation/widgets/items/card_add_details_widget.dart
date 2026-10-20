@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// The card editor's "Add details" disclosure (kit 08): a plus, the label
 /// and the fields it opens, and a chevron, in an outlined box. The kit's
@@ -48,26 +48,15 @@ class CardAddDetailsWidget extends StatelessWidget {
               children: [
                 const Icon(AppIcons.add),
                 Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: l10n.cardAddDetails,
-                          style: context.texts.label.copyWith(
-                            color: context.colors.primary,
-                          ),
-                        ),
-                        WidgetSpan(
-                          child: SizedBox(width: context.dimens.space8),
-                        ),
-                        TextSpan(
-                          text: metaLine(l10n.cardAddDetailsFields),
-                          style: context.texts.body.copyWith(
-                            color: context.colors.mutedForeground,
-                          ),
-                        ),
-                      ],
-                    ),
+                  // The link, then its fields as whole terms (The Wrap Rule).
+                  child: MxTermLine(
+                    lead: MxTermLead.label(l10n.cardAddDetails),
+                    terms: [
+                      for (final field in l10n.cardAddDetailsFields.split(
+                        MxTermLine.separator,
+                      ))
+                        MxTerm(field),
+                    ],
                   ),
                 ),
                 const Icon(AppIcons.chevronDown),

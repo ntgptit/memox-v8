@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
@@ -9,6 +8,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One attempt in History (critique F1, BR-TOPIK-021): "#n" with its status
 /// badge, then when, "{score} / {max}", "{correct} / {count} correct" and how
@@ -38,7 +38,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
     final dimens = context.dimens;
     final attempt = numbered.attempt;
     final isCompleted = attempt.isCompleted;
-    final meta = metaTerms([
+    final meta = [
       l10n.topikDateTime(attempt.startedAt),
       if (isCompleted) ...[
         l10n.topikOfTotal(attempt.score ?? 0, attempt.maxScore),
@@ -48,7 +48,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
         ),
       ],
       l10n.duration(attempt.totalTimeMs),
-    ]);
+    ];
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: dimens.space16,
@@ -80,12 +80,7 @@ class TopikHistoryRowWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text(
-                  meta,
-                  style: context.texts.body.copyWith(
-                    color: context.colors.mutedForeground,
-                  ),
-                ),
+                MxTermLine.of(meta),
               ],
             ),
           ),

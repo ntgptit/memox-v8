@@ -98,7 +98,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,a
 - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the admin rows show only while the account is an admin; on the hub as one row to 23b.
 - **Critique 2026-09-30 tone pass, T4; part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the Sync row's tile is success when sync is settled; warning when the last run failed or a change was refused; tinted otherwise (D5).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows section-shaped skeleton cards of `MxSkeletonRow`s, not a generic list.
-- **Q-C-1 (owner, 2026-10-16):** the Study summary, the reminder time and the system language wrap only between whole terms (`metaLine`); the Sync row's failure hint keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
+- **Q-C-1 (owner, 2026-10-16):** the Study summary, the reminder time and the system language wrap only between whole terms, with no dot at a line edge (`MxTermLine`; spec W1, 2026-10-20); the Sync row's failure hint keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

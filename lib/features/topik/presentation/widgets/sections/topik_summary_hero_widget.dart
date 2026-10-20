@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -8,6 +7,7 @@ import 'package:memox/features/topik/presentation/widgets/support/topik_labels_w
 import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 38's hero (detail file 38, critique S2, S3): which test, when and
 /// how long, then the score in the stat role beside the donut of correct
@@ -37,23 +37,19 @@ class TopikSummaryHeroWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: dimens.space4,
             children: [
-              Text(
-                metaTerms([
+              MxTermLine.of(
+                [
                   l10n.topikRoundNumber(attempt.round),
                   l10n.topikLevelName(attempt.level),
                   l10n.topikSectionName(attempt.section),
-                ]),
-                style: context.texts.sectionTitle,
+                ],
+                role: MxTermLineRole.sectionTitle,
+                tone: MxTermTone.foreground,
               ),
-              Text(
-                metaTerms([
-                  l10n.topikDateTime(attempt.startedAt),
-                  l10n.duration(attempt.totalTimeMs),
-                ]),
-                style: context.texts.body.copyWith(
-                  color: context.colors.mutedForeground,
-                ),
-              ),
+              MxTermLine.of([
+                l10n.topikDateTime(attempt.startedAt),
+                l10n.duration(attempt.totalTimeMs),
+              ]),
             ],
           ),
           Semantics(

@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One row of a Progress level (kit 22): a deck, or the level's total
 /// (FE-A9 D2), with the four numbers of the range (BR-PROGRESS-001). A deck
@@ -40,41 +40,28 @@ class ProgressDeckRowWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Two lines of short terms: they break only between terms
-                // (The Wrap Rule).
-                Text(
-                  metaLine(
-                    l10n.progressRowCardsDays(
-                      numbers.activeCards,
-                      numbers.activeDays,
-                    ),
+                // Two lines of short terms: they break only between whole
+                // terms (The Wrap Rule).
+                MxTermLine.text(
+                  l10n.progressRowCardsDays(
+                    numbers.activeCards,
+                    numbers.activeDays,
                   ),
-                  style: caption,
                 ),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(text: l10n.progressRowCardDaysLead),
-                      TextSpan(
-                        text: wholeTerm(
-                          l10n.progressRowLearning(numbers.learningCardDays),
-                        ),
-                        style: context.texts.body.copyWith(
-                          color: context.status.warning,
-                        ),
-                      ),
-                      const TextSpan(text: metaTermSeparator),
-                      TextSpan(
-                        text: wholeTerm(
-                          l10n.progressRowReviewing(numbers.reviewingCardDays),
-                        ),
-                        style: context.texts.body.copyWith(
-                          color: context.colors.primary,
-                        ),
-                      ),
-                    ],
+                MxTermLine(
+                  lead: MxTermLead.plain(
+                    l10n.progressRowCardDaysLead.trimRight(),
                   ),
-                  style: caption,
+                  terms: [
+                    MxTerm(
+                      l10n.progressRowLearning(numbers.learningCardDays),
+                      tone: MxTermTone.warning,
+                    ),
+                    MxTerm(
+                      l10n.progressRowReviewing(numbers.reviewingCardDays),
+                      tone: MxTermTone.primary,
+                    ),
+                  ],
                 ),
               ],
             )

@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// A test on screen 35: its round, its Korean title (content, so it may end
 /// in an ellipsis, critique F7), its content tags (BR-TOPIK-009) and the
@@ -25,9 +24,6 @@ class TopikTestRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final test = entry.test;
-    final metaStyle = context.texts.body.copyWith(
-      color: context.colors.mutedForeground,
-    );
     final tags = [
       for (final tag in TopikContentTagOrder.ordered(test.contentTags))
         l10n.topikTagName(tag),
@@ -43,8 +39,8 @@ class TopikTestRowWidget extends StatelessWidget {
       meta: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (tags.isNotEmpty) Text(metaTerms(tags), style: metaStyle),
-          Text(l10n.topikTestStatusLine(entry.status), style: metaStyle),
+          if (tags.isNotEmpty) MxTermLine.of(tags),
+          MxTermLine.text(l10n.topikTestStatusLine(entry.status)),
         ],
       ),
       hasChevron: true,

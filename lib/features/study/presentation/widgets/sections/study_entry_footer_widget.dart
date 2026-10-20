@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_labels_w
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 14's footer: one block action with its caption (kit), or nothing
 /// when the entry offers no start. While a session opens the button spins
@@ -57,6 +58,9 @@ class StudyEntryFooterWidget extends ConsumerWidget {
       picked: ref.watch(reviewModePickControllerProvider(deckId)),
     );
     final target = offer.reviewTarget;
+    // Beside today's open session a start ends it, and the caption leads
+    // with that (spec E1, BR-STUDY-072).
+    final ends = entry.resumable == null ? null : l10n.studyEntryEndsSession;
     final (label, icon, caption, onPressed) = switch (entryFooterActionOf(
       offer,
     )) {
@@ -65,20 +69,24 @@ class StudyEntryFooterWidget extends ConsumerWidget {
             ? l10n.studyEntryReviewCta(target.cardCount)
             : l10n.studyEntryReviewInstead,
         AppIcons.play,
-        // SM-2 asks its direction next; Eight boxes names the mode (E1).
-        target.isDirectionRequired
-            ? l10n.studyEntryReviewCaptionLine(
-                target.cardCount,
-                entry.dueCardCount,
-              )
-            // The button states the count (critique 2026-09-30 part 3b).
-            : l10n.studyEntryModeCaptionLine(target.mode),
+        [
+          ?ends,
+          // SM-2 asks its direction next; Eight boxes names the mode (E1).
+          target.isDirectionRequired
+              ? l10n.studyEntryReviewCaptionLine(
+                  target.cardCount,
+                  entry.dueCardCount,
+                )
+              // The button states the count (critique 2026-09-30 part 3b).
+              : l10n.studyEntryModeCaptionLine(target.mode),
+        ].join(MxTermLine.separator),
         onReview,
       ),
       EntryFooterAction.learn => (
         l10n.studyEntryLearnCta(offer.learnShown),
         AppIcons.starterDecks,
-        entry.dueCardCount == 0 ? l10n.studyEntryNothingDueCaption : null,
+        ends ??
+            (entry.dueCardCount == 0 ? l10n.studyEntryNothingDueCaption : null),
         onLearn,
       ),
       EntryFooterAction.review || null => (null, null, null, null),

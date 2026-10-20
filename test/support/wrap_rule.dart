@@ -47,3 +47,36 @@ void expectBreaksOnlyBetweenWords(WidgetTester tester, Finder finder) {
     );
   }
 }
+
+/// Expects no line of the one [Text] found by [finder] to end on [mark]
+/// once its trailing spaces are dropped (a breadcrumb's "›", spec B1).
+void expectNoLineEndsOn(WidgetTester tester, Finder finder, String mark) {
+  expect(finder, findsOneWidget);
+  final paragraph = tester.renderObject<RenderParagraph>(
+    find.descendant(of: finder, matching: find.byType(RichText)).first,
+  );
+  final painter = TextPainter(
+    text: paragraph.text,
+    textDirection: paragraph.textDirection,
+    textScaler: paragraph.textScaler,
+    locale: paragraph.locale,
+  )..layout(maxWidth: paragraph.size.width);
+  addTearDown(painter.dispose);
+  final text = paragraph.text.toPlainText();
+  var lines = 0;
+  for (final metrics in painter.computeLineMetrics()) {
+    final range = painter.getLineBoundary(
+      painter.getPositionForOffset(
+        Offset(0, metrics.baseline - metrics.ascent / 2),
+      ),
+    );
+    lines++;
+    expect(
+      text.substring(range.start, range.end).trimRight().endsWith(mark),
+      isFalse,
+      reason:
+          'line $lines ends on "$mark": "${text.substring(range.start, range.end)}"',
+    );
+  }
+  expect(lines, greaterThan(1), reason: 'the line must wrap to be checked');
+}
