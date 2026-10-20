@@ -197,7 +197,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.sectionTitle,
+          style: context.texts.screenTitle,
         ),
       ),
       leading: MxIconButton(

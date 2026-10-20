@@ -61,7 +61,7 @@ the whole page.
 
 | Region | Widget | Design |
 |---|---|---|
-| Title | `texts.itemTitle` (the sheet's title), marked as the sheet's heading (`header` and `namesRoute`, as `MxBottomSheet`'s own title is) | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
+| Title | `texts.sectionTitle` (the sheet's title), marked as the sheet's heading (`header` and `namesRoute`, as `MxBottomSheet`'s own title is) | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
 | Choices | `MxOptionRow` × 2 | "Merge into the account" (selected) · "Your {n} decks and {m} cards join it." (or "This phone's decks and cards join it." when the count failed); "Discard this phone's data" · "They're removed from this phone. The account's decks come down instead." |
 | Warning | `MxInlineBanner` (danger) | "This phone's decks and progress go for good." Only while Discard is chosen (plan ruling 14). |
 | Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Footer Pair Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |

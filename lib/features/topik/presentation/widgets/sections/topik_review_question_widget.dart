@@ -84,9 +84,7 @@ class TopikReviewQuestionWidget extends StatelessWidget {
     return Text(
       meta.shown,
       semanticsLabel: meta.spoken,
-      style: context.texts.label.copyWith(
-        color: context.colors.mutedForeground,
-      ),
+      style: context.texts.body.copyWith(color: context.colors.mutedForeground),
     );
   }
 

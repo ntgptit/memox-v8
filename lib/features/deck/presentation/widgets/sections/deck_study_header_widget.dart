@@ -43,7 +43,7 @@ class DeckStudyHeaderWidget extends ConsumerWidget {
           view.deck.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.sectionTitle,
+          style: context.texts.screenTitle,
         ),
       ),
       DeckStudyHeaderPart.breadcrumb => MxBreadcrumb(

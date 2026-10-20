@@ -54,7 +54,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                         runSpacing: context.dimens.space4,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Text(entry.title, style: context.texts.sectionTitle),
+                          Text(entry.title, style: context.texts.itemTitle),
                           if (entry.isInLibrary)
                             MxBadge(
                               label: l10n.starterInLibrary,
@@ -69,7 +69,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                   padding: EdgeInsetsDirectional.only(start: _indent(context)),
                   child: Text(
                     starterEntryFacts(l10n, entry),
-                    style: context.texts.meta.copyWith(
+                    style: context.texts.body.copyWith(
                       color: context.colors.mutedForeground,
                     ),
                   ),
@@ -92,7 +92,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                   l10n.starterSuggests(
                     starterSchedulerName(l10n, entry.suggestedScheduler),
                   ),
-                  style: context.texts.meta.copyWith(
+                  style: context.texts.body.copyWith(
                     color: context.colors.mutedForeground,
                   ),
                 ),

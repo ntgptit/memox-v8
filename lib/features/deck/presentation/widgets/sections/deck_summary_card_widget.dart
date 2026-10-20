@@ -67,7 +67,7 @@ class DeckSummaryCardWidget extends StatelessWidget {
                         subDecks: level.deckCount,
                         cards: cards,
                       ),
-                      style: context.texts.itemTitle,
+                      style: context.texts.sectionTitle,
                     ),
                     MxWorkloadBreakdownLine(
                       overdueCount: level.overdueCount,

@@ -89,7 +89,7 @@ class MxErrorState extends StatelessWidget {
                     Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: context.texts.itemTitle,
+                      style: context.texts.sectionTitle,
                     ),
                     const SizedBox(height: _titleGap),
                     Text(

@@ -53,7 +53,10 @@ class CardTrashSectionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: context.dimens.space4,
               children: [
-                Text(l10n.cardEditTrashTitle, style: context.texts.itemTitle),
+                Text(
+                  l10n.cardEditTrashTitle,
+                  style: context.texts.sectionTitle,
+                ),
                 Text(
                   l10n.cardEditTrashBody,
                   style: context.texts.body.copyWith(

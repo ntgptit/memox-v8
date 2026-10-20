@@ -34,11 +34,10 @@ void main() {
     scale.body.xl2,
   ];
 
-  test("the scale is ForUI's touch sizes in Be Vietnam Pro, Noto Sans KR "
-      'behind it', () {
+  test('the scale is scale A in Be Vietnam Pro, Noto Sans KR behind it', () {
     expect(
       [for (final step in steps) step.fontSize],
-      [10, 12, 14, 16, 18, 20, 22, 30],
+      [10, 12, 13, 15, 16, 18, 20, 26],
     );
     for (final step in steps) {
       expect(step.fontFamily, 'BeVietnamPro');
@@ -50,7 +49,7 @@ void main() {
   test('a text step keeps a line height that does not clip stacked '
       'Vietnamese diacritics', () {
     for (final step in steps) {
-      final minimum = step.fontSize! <= 18 ? 1.5 : 1.3;
+      final minimum = step.fontSize! <= 16 ? 1.5 : 1.3;
       expect(step.height, greaterThanOrEqualTo(minimum), reason: '$step');
     }
   });

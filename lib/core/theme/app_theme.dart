@@ -24,15 +24,38 @@ FThemeData themeFor(sdk.Brightness brightness) => switch (brightness) {
 };
 
 FThemeData _build(FColors colors, String label) {
+  final typography = AppTypography.build(colors);
+  final roles = MxTextRoles(typography);
+  // A field's supporting line, its error and its counter are captions: the
+  // line under the box keeps its size when an error replaces it.
+  final caption = _sizedAs(roles.caption);
+  final style =
+      FStyle.inherit(
+        colors: colors,
+        typography: typography,
+        touch: true,
+      ).copyWith(
+        formFieldStyle: FFormFieldStyleDelta.delta(
+          descriptionTextStyle: FVariantsDelta.delta([
+            FVariantOperation.all(caption),
+          ]),
+          errorTextStyle: FVariantsDelta.delta([
+            FVariantOperation.all(caption),
+          ]),
+        ),
+      );
   final theme = FThemeData(
     debugLabel: label,
     colors: colors,
     touch: true,
-    typography: AppTypography.build(colors),
+    typography: typography,
+    style: style,
     extensions: const [AppDimens()],
   );
   // The selected tab's icon and the selected radio's dot are accent marks;
-  // the tab's label and the radio's ring keep their colours.
+  // the tab's label and the radio's ring keep their colours. A tab's label is
+  // meta; selecting it changes its colour, not its weight, so its width
+  // holds. A dialog's title is a sheet's: the section title.
   final accentMark = colors.extension<MxStatusColors>().accentMark;
   return theme.copyWith(
     radioStyle: FRadioStyleDelta.delta(
@@ -50,10 +73,25 @@ FThemeData _build(FColors colors, String label) {
             FTappableVariant.selected,
           }, IconThemeDataDelta.delta(color: accentMark)),
         ]),
+        textStyle: FVariantsDelta.delta([
+          FVariantOperation.all(_sizedAs(roles.meta)),
+        ]),
       ),
+    ),
+    dialogStyle: FDialogStyleDelta.delta(
+      titleTextStyle: _sizedAs(roles.sectionTitle),
     ),
   );
 }
+
+/// A ForUI slot set in [role]'s size, line height and weight; the slot keeps
+/// its colours, state by state.
+TextStyleDelta _sizedAs(sdk.TextStyle role) => TextStyleDelta.delta(
+  fontSize: role.fontSize,
+  height: role.height,
+  fontWeight: role.fontWeight,
+  fontVariations: role.fontVariations,
+);
 
 /// The SDK Material theme the app's infrastructure host reads, derived one
 /// way from [theme] (ADR-026): `MaterialApp.router` (go_router's page

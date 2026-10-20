@@ -212,7 +212,7 @@ void main() {
       [for (final c in chips) c.onSelected == null],
       [false, true, true, false],
     );
-    // The chip row scrolls sideways at 360 dp.
+    // The chip row scrolls sideways when it is cut.
     await tester.ensureVisible(find.text('Correct'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Correct'));
@@ -220,15 +220,22 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  libraryTest('the chip row fades its cut edge at 360 dp instead of '
-      'clipping "Correct" (audit 2026-10-17 TOPIK-2)', (tester, env) async {
+  libraryTest('a chip row narrower than its chips fades its cut edge '
+      'instead of clipping "Correct" (audit 2026-10-17 TOPIK-2)', (
+    tester,
+    env,
+  ) async {
+    // At scale A the four chips fit 360 dp in English; a narrower row is cut.
     await pumpSummaryPart(
       tester,
       env,
-      TopikAnswerFilterChipsWidget(
-        summary: _summary([topikSummaryAnswer(31, selected: 1)]),
-        selected: TopikAnswerFilter.all,
-        onSelected: (_) {},
+      SizedBox(
+        width: 240,
+        child: TopikAnswerFilterChipsWidget(
+          summary: _summary([topikSummaryAnswer(31, selected: 1)]),
+          selected: TopikAnswerFilter.all,
+          onSelected: (_) {},
+        ),
       ),
     );
     await tester.pump();

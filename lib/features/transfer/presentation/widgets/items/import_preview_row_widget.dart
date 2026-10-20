@@ -53,7 +53,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
                           : draft.front.trim(),
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: context.texts.sectionTitle,
+                      style: context.texts.itemTitle,
                     ),
                     Text(
                       back.isEmpty ? l10n.importRowEmptyCell : back,
@@ -67,13 +67,13 @@ class ImportPreviewRowWidget extends StatelessWidget {
                   if (note != null)
                     Text(
                       note,
-                      style: row.kind == ImportRowKind.invalid
-                          ? context.texts.meta.copyWith(
-                              color: context.status.warning,
-                            )
-                          : context.texts.body.copyWith(
-                              color: context.colors.mutedForeground,
-                            ),
+                      // An invalid row's note is a warning: its colour,
+                      // the same role.
+                      style: context.texts.body.copyWith(
+                        color: row.kind == ImportRowKind.invalid
+                            ? context.status.warning
+                            : context.colors.mutedForeground,
+                      ),
                     ),
                 ],
               ),

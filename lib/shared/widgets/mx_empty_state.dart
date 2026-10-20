@@ -121,9 +121,9 @@ class MxEmptyState extends StatelessWidget {
                       Text(
                         title,
                         textAlign: TextAlign.center,
-                        style: isCompact
-                            ? context.texts.itemTitle
-                            : context.texts.sectionTitle,
+                        // One title role, compact or not, as the error
+                        // state's (type scale spec 2026-10-20).
+                        style: context.texts.sectionTitle,
                       ),
                       if (body case final body?) ...[
                         SizedBox(height: context.dimens.space8),

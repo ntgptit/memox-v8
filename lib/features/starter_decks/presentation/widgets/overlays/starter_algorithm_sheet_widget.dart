@@ -90,14 +90,14 @@ class _StarterAlgorithmSheetWidgetState
               namesRoute: true,
               child: Text(
                 l10n.starterSheetTitle(widget.entry.title),
-                style: context.texts.itemTitle,
+                style: context.texts.sectionTitle,
               ),
             ),
             // The lock, before the choice (BR-SRS-003; critique 2026-09-30
             // part 3d-2, E6). The card above states the counts.
             Text(
               l10n.deckSchedulerNote,
-              style: context.texts.meta.copyWith(
+              style: context.texts.body.copyWith(
                 color: context.colors.mutedForeground,
               ),
             ),

@@ -88,7 +88,7 @@ class _Content extends StatelessWidget {
           item.front,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.sectionTitle,
+          style: context.texts.itemTitle,
         ),
         Text(
           item.back,

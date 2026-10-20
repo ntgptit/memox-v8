@@ -171,7 +171,7 @@ class _Meta extends StatelessWidget {
     final icon = this.icon;
     final style = foreground == null
         ? context.texts.body.copyWith(color: context.colors.mutedForeground)
-        : context.texts.label.copyWith(color: foreground);
+        : context.texts.body.copyWith(color: foreground);
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,

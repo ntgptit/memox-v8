@@ -257,7 +257,7 @@ class _ToastViewState extends State<_ToastView>
                     child: ConstrainedBox(
                       constraints: style.toastStyles.primary.constraints,
                       // The message reads as a banner message, below
-                      // ForUI's 16 title (owner ruling 2026-10-17).
+                      // ForUI's 15 title (owner ruling 2026-10-17).
                       child: FToast(
                         style: FToastStyleDelta.delta(
                           titleTextStyle: TextStyleDelta.value(

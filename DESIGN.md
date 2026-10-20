@@ -28,51 +28,51 @@ colors:
 typography:
   figure:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "30px"
+    fontSize: "26px"
     fontWeight: 600
-    lineHeight: "39px"
+    lineHeight: "33.8px"
     letterSpacing: "0px"
   term:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "22px"
+    fontSize: "20px"
     fontWeight: 500
-    lineHeight: "30.8px"
+    lineHeight: "28px"
     letterSpacing: "0px"
   term-compact:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "20px"
+    fontSize: "18px"
     fontWeight: 400
-    lineHeight: "28px"
+    lineHeight: "25.2px"
     letterSpacing: "0px"
   screen-title:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "20px"
+    fontSize: "18px"
     fontWeight: 600
-    lineHeight: "28px"
+    lineHeight: "25.2px"
     letterSpacing: "0px"
   section-title:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "18px"
+    fontSize: "16px"
     fontWeight: 600
-    lineHeight: "27px"
+    lineHeight: "24px"
     letterSpacing: "0px"
   item-title:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "16px"
+    fontSize: "15px"
     fontWeight: 500
-    lineHeight: "24px"
+    lineHeight: "22.5px"
     letterSpacing: "0px"
   content:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "16px"
+    fontSize: "15px"
     fontWeight: 400
-    lineHeight: "24px"
+    lineHeight: "22.5px"
     letterSpacing: "0px"
   body:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "14px"
+    fontSize: "13px"
     fontWeight: 400
-    lineHeight: "21px"
+    lineHeight: "19.5px"
     letterSpacing: "0px"
   caption:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
@@ -82,15 +82,15 @@ typography:
     letterSpacing: "0px"
   button:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "16px"
+    fontSize: "15px"
     fontWeight: 500
-    lineHeight: "24px"
+    lineHeight: "22.5px"
     letterSpacing: "0px"
   label:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
-    fontSize: "14px"
+    fontSize: "13px"
     fontWeight: 500
-    lineHeight: "21px"
+    lineHeight: "19.5px"
     letterSpacing: "0px"
   meta:
     fontFamily: "Be Vietnam Pro, Noto Sans KR, system-ui, sans-serif"
@@ -222,18 +222,21 @@ An indigo accent on ForUI's neutral field, a green that only ever means progress
 **Character:** One friendly, open sans throughout, at the weights the roles declare. Sizes, weights and line heights are the roles' own, on ForUI's type scale; a widget picks a role and changes only its colour, or switches to the mono face.
 
 ### Hierarchy
+One level, one role: the same level never reads larger, smaller, bolder or lighter on another screen (owner 2026-10-20).
 - **Figure** (`texts.figure`, tabular figures): key numbers that replace a sentence.
 - **Term** (`texts.term`): the word being studied on a flashcard.
-- **Compact term** (`texts.termCompact`): a word inside a match tile, a dialog title.
-- **Screen title** (`texts.screenTitle`): screen and section headings, the app bar title.
-- **Section title** (`texts.sectionTitle`): card titles and compact stats.
-- **Item title** (`texts.itemTitle`): list and settings rows, sheet titles.
+- **Compact term** (`texts.termCompact`): a word inside a match tile.
+- **Screen title** (`texts.screenTitle`): the app bar's title, a selection's count ("3 selected").
+- **Section title** (`texts.sectionTitle`): a card's or a frame's heading, a dialog's and a sheet's title, an empty or error state's title, compact stats.
+- **Item title** (`texts.itemTitle`): a row's title in a list, the settings or a sheet, a choice or source tile, a fact's value.
 - **Content** (`texts.content`): a card's meaning, a study passage, the text typed in a field and its hint.
-- **Body** (`texts.body`): default running text, notes, a row's subtitle.
-- **Caption** (`texts.caption`): a field's message and counter, a tile's meaning, captions.
+- **Body** (`texts.body`): running text, a bare note, a row's subtitle and its metadata line, a fact's label, a dialog's body.
+- **Caption** (`texts.caption`): a field's supporting line, its error and its counter, a tile's meaning.
 - **Button** (`texts.button`): every button label.
-- **Label** (`texts.label`): field labels, chips, metadata, the search field.
-- **Meta** (`texts.meta`): navigation labels, counts, overlines.
+- **Label** (`texts.label`): a field's label, chips, a banner's and a toast's message, the search field.
+- **Meta** (`texts.meta`): overlines, a badge and what stands beside one, a chart's labels, counts, a list's footer, a tab's label.
+
+A state changes a text's colour, never its role: a muted line and its warning form, a tab and the selected tab, share one role.
 
 ### Named Rules
 **The Twelve Roles Rule.** Screens use the twelve roles. `context.texts.<role>` may take `copyWith(color: …)` or `copyWith(fontFamily: AppTypography.monoFamily)` and nothing else; a size the roles cannot express is a Design System change.
@@ -302,12 +305,12 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 - **MxStudyTopBar** (its close glyph and its counter sit on `context.screenMargin`; its progress track is `sizeTrack` tall), **MxBreadcrumb**.
 
 ### Feedback and Status
-- **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action, its message in the `label` role rather than ForUI's 16 title; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
+- **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action, its message in the `label` role rather than ForUI's 15 title; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
 - **MxBadge**, **MxStatusBadge**, **MxTagChip**: ForUI's badge in a tone (`MxToneBadge`).
 - **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
 
 ### Study-specific
-- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `meta` role, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
+- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `body` role, a row's metadata line, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
 
 ### Data Display
 - **MxSelectableCardRow** (a card that is one item of a list: the press layer over all of it, the checkbox while selecting, one TalkBack node with its checked state), **MxListRow** and **MxSettingsRow** (`sizeListRow` for one line, `sizeListRowTwoLine` with a subtitle), **MxRowInk** (ForUI's tappable: the `secondary` press layer and ForUI's focus outline across a row).

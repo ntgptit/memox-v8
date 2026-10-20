@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -80,6 +81,20 @@ void main() {
       expect(
         tester.widget<Text>(find.text('Delete deck?')).style,
         style.titleTextStyle,
+      );
+      // The title is a sheet's: the section title, at its line height.
+      final section = tester.element(find.text('Delete deck?')).texts;
+      expect(
+        (
+          style.titleTextStyle.fontSize,
+          style.titleTextStyle.fontWeight,
+          style.titleTextStyle.height,
+        ),
+        (
+          section.sectionTitle.fontSize,
+          section.sectionTitle.fontWeight,
+          section.sectionTitle.height,
+        ),
       );
       expect(
         tester.widget<Text>(find.text('Its cards move to Trash.')).style,

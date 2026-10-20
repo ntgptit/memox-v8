@@ -123,7 +123,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
           l10n.cardSelectedCount(count),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.texts.itemTitle,
+          style: context.texts.screenTitle,
         ),
       ),
       isLastActionText: true,

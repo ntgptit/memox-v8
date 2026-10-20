@@ -28,7 +28,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final caption = context.texts.meta.copyWith(
+    final caption = context.texts.body.copyWith(
       color: context.colors.mutedForeground,
     );
     final isActive = numbers.hasActivity;
@@ -59,7 +59,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: wholeTerm(
                           l10n.progressRowLearning(numbers.learningCardDays),
                         ),
-                        style: context.texts.meta.copyWith(
+                        style: context.texts.body.copyWith(
                           color: context.status.warning,
                         ),
                       ),
@@ -68,7 +68,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: wholeTerm(
                           l10n.progressRowReviewing(numbers.reviewingCardDays),
                         ),
-                        style: context.texts.meta.copyWith(
+                        style: context.texts.body.copyWith(
                           color: context.colors.primary,
                         ),
                       ),
