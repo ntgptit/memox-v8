@@ -22,6 +22,11 @@ class AppDimens extends ThemeExtension<AppDimens> {
   double get space32 => 32;
   double get space48 => 48;
 
+  /// A row's title to its subtitle or metadata line, tighter than the
+  /// scale's steps: the two lines read as one item (spacing spec
+  /// 2026-10-20, owner).
+  double get spaceRowLine => 2;
+
   /// Left and right screen margin on a compact window.
   double get marginScreen => 16;
 

@@ -145,7 +145,7 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: context.dimens.space8,
+        spacing: context.dimens.space12,
         children: [
           MxTextField(
             controller: _name,

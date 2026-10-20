@@ -82,7 +82,7 @@ class _Content extends StatelessWidget {
     final tags = item.tags;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: context.dimens.space4,
+      spacing: context.dimens.spaceRowLine,
       children: [
         Text(
           item.front,

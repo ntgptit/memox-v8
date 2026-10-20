@@ -103,7 +103,7 @@ class _CardDeleteDialogWidgetState
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: context.dimens.space8,
+        spacing: context.dimens.space12,
         children: [
           if (widget.preview case final preview?) _Preview(preview: preview),
           MxNote(icon: AppIcons.history, text: l10n.cardDeleteNote(count)),

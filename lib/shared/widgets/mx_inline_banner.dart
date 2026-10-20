@@ -43,8 +43,6 @@ class MxInlineBanner extends StatelessWidget {
   /// usual gap (the sign-in confirms, 2026-10-05 L3).
   final bool hasBottomMargin;
 
-  static const double _titleGap = 2;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -124,7 +122,7 @@ class MxInlineBanner extends StatelessWidget {
                           lead,
                           style: context.texts.label.copyWith(color: titleInk),
                         ),
-                        const SizedBox(height: _titleGap),
+                        SizedBox(height: context.dimens.spaceRowLine),
                       ],
                       Text(message, style: messageStyle),
                       if (actions.isNotEmpty) ...[

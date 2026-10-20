@@ -49,6 +49,7 @@ class CardScheduleWidget extends StatelessWidget {
               Wrap(
                 alignment: WrapAlignment.spaceBetween,
                 spacing: context.dimens.space8,
+                runSpacing: context.dimens.space8,
                 children: [
                   Text(
                     l10n.cardBoxRampStart,

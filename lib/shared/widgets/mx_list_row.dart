@@ -77,8 +77,6 @@ class MxListRow extends StatelessWidget {
   /// 2026-09-29, pattern 2).
   final int titleMaxLines;
 
-  static const double _subtitleGap = 2;
-
   TextSpan _titleSpan(TextStyle matchStyle) {
     final match = titleMatch;
     if (match == null) return TextSpan(text: title);
@@ -153,7 +151,7 @@ class MxListRow extends StatelessWidget {
                         ),
                       ),
                       if (subtitle case final text?) ...[
-                        const SizedBox(height: _subtitleGap),
+                        SizedBox(height: context.dimens.spaceRowLine),
                         Text(
                           text,
                           maxLines: 1,
@@ -165,7 +163,7 @@ class MxListRow extends StatelessWidget {
                         ),
                       ],
                       if (meta case final slot?) ...[
-                        const SizedBox(height: _subtitleGap),
+                        SizedBox(height: context.dimens.spaceRowLine),
                         slot,
                       ],
                     ],

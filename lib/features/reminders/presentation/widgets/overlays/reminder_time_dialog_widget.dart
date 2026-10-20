@@ -69,7 +69,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
       title: l10n.reminderTimeDialogTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: context.dimens.space8,
+        spacing: context.dimens.space12,
         children: [
           _labelled(
             context,

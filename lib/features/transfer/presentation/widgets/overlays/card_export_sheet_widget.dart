@@ -203,11 +203,13 @@ class _Problem extends StatelessWidget {
   Widget build(BuildContext context) {
     final copy = context.l10n.exportProblem(problem);
     return Padding(
+      // A banner in a sheet: 16 in, 12 below what it follows; its own
+      // margin is the gap under it (spacing spec L9).
       padding: EdgeInsets.fromLTRB(
+        context.dimens.space16,
         context.dimens.space12,
+        context.dimens.space16,
         0,
-        context.dimens.space12,
-        context.dimens.space12,
       ),
       child: MxInlineBanner(
         tone: problem == CardExportProblem.prepareFailed

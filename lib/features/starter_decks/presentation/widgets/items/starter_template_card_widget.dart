@@ -77,7 +77,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: context.dimens.space12),
+          SizedBox(height: context.dimens.space16),
           // The suggestion drops below the button, whole, when both do not
           // fit on one line (critique P2a).
           Padding(

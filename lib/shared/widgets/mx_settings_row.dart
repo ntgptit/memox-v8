@@ -72,11 +72,6 @@ class MxSettingsRow extends StatelessWidget {
   /// The painted square of a stepper's step button inside its 48 target.
   static const double _stepPainted = 32;
 
-  /// As MxListRow's: with the 12/12 text inset, a label and a subtitle on
-  /// ForUI's type scale fill the two-line row's `sizeListRowTwoLine` exactly
-  /// at 2, where 4 made it a pixel taller.
-  static const double _subtitleGap = 2;
-
   @override
   Widget build(BuildContext context) {
     final isNavigable =
@@ -145,7 +140,7 @@ class MxSettingsRow extends StatelessWidget {
                           Text(label, style: context.texts.itemTitle),
                         ),
                         if (subtitle case final text?) ...[
-                          const SizedBox(height: _subtitleGap),
+                          SizedBox(height: context.dimens.spaceRowLine),
                           Text(
                             text,
                             style: context.texts.body.copyWith(

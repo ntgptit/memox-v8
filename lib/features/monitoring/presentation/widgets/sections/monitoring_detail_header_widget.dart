@@ -22,7 +22,7 @@ class MonitoringDetailHeaderWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Row(
-        spacing: context.dimens.space16,
+        spacing: context.dimens.space12,
         children: [
           MxIconTile(
             icon: monitoringLevelIcon(record.level),

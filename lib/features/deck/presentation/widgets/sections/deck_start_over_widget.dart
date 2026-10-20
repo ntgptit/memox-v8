@@ -28,7 +28,7 @@ class DeckStartOverWidget extends StatelessWidget {
               color: context.colors.mutedForeground,
             ),
           ),
-          SizedBox(height: context.dimens.space8),
+          SizedBox(height: context.dimens.space16),
           MxButton(
             label: l10n.algorithmResetAction,
             tone: MxButtonTone.outline,

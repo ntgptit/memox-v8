@@ -43,8 +43,9 @@ class StudyHomeResumeWidget extends StatelessWidget {
       spacing: context.dimens.space8,
       children: [
         MxDotOverline(label: l10n.studyHomeResumeOverline),
+        // A full-width card takes the default padding; compact is for cards
+        // side by side (spacing spec L5).
         MxCard(
-          isCompact: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: context.dimens.space12,
