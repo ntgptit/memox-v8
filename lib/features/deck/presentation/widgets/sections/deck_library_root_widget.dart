@@ -106,9 +106,11 @@ class DeckLibraryRootWidget extends ConsumerWidget {
           // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
           if (hasDecks && !isReordering)
             Padding(
+              // A search field under the app bar: 8 above, 8 to the content
+              // (spacing spec L1).
               padding: EdgeInsets.fromLTRB(
                 context.screenMargin,
-                context.dimens.space4,
+                context.dimens.space8,
                 context.screenMargin,
                 context.dimens.space8,
               ),

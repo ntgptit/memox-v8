@@ -74,7 +74,8 @@ class CardHistoryScrollWidget extends ConsumerWidget {
         ),
       ],
     };
-    return MxScreenScroll(children: [...leading, ...history]);
+    // Under the deck path: its inset is the gap (screen 01).
+    return MxScreenScroll(top: 0, children: [...leading, ...history]);
   }
 
   List<Widget> _history(

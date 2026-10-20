@@ -71,6 +71,8 @@ class StudyOptionsFormWidget extends ConsumerWidget {
     final isEditable = !form.isUsingAppDefaults;
     final options = form.options;
     return MxScreenScroll(
+      // Under the deck path: its inset is the gap (screen 01).
+      top: 0,
       children: [
         MxNote(
           icon: AppIcons.library,

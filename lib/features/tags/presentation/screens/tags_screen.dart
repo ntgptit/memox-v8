@@ -174,7 +174,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
               clearLabel: l10n.tagsSearchClear,
               onChanged: (_) => setState(() {}),
             ),
-            SizedBox(height: context.dimens.space12),
+            SizedBox(height: context.dimens.space8),
             ...switch (catalog) {
               AsyncData(:final value) => _catalog(l10n, value),
               AsyncError(:final isLoading) => [

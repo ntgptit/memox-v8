@@ -97,6 +97,7 @@ class StudyOptionsScreen extends ConsumerWidget {
                 // Retry instead of a skeleton that never ends.
                 _ when options.hasError || appSettings.hasError =>
                   MxScreenScroll(
+                    top: 0,
                     children: [
                       MxErrorState(
                         title: l10n.studyOptionsLoadErrorTitle,
@@ -112,6 +113,7 @@ class StudyOptionsScreen extends ConsumerWidget {
                     ],
                   ),
                 _ => MxScreenScroll(
+                  top: 0,
                   children: [
                     MxSkeletonList(
                       semanticLabel: l10n.commonLoading,
@@ -151,7 +153,9 @@ class StudyOptionsScreen extends ConsumerWidget {
   /// The deck went to the Trash or no longer exists (spec §6).
   Widget _gone(BuildContext context) {
     final l10n = context.l10n;
+    // Under the deck path, as every branch here (screen 01).
     return MxScreenScroll(
+      top: 0,
       children: [
         MxEmptyState(
           icon: AppIcons.searchOff,

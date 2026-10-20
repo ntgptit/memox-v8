@@ -177,6 +177,8 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
         ),
         Expanded(
           child: MxScreenScroll(
+            // The breadcrumb's inset is the gap (screen 01).
+            top: 0,
             children: [
               DeckLockStripWidget(view: view),
               if (failedFrom != null && retryTarget != null) ...[

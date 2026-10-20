@@ -36,7 +36,7 @@ class TopikTestListHeaderWidget extends StatelessWidget {
         spacing: context.dimens.space12,
         children: [
           Row(
-            spacing: context.dimens.space16,
+            spacing: context.dimens.space12,
             children: [
               MxIconTile(
                 icon: section == TopikSection.reading

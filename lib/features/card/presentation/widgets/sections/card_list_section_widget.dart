@@ -305,6 +305,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     final selection = ref.watch(cardSelectionProvider(widget.deckId));
     final selected = selection.ids;
     final isSelecting = selection.isSelecting;
+    // Under the breadcrumb its inset is the gap (screen 01); a selection
+    // hides it, and the list then starts a body's 8 under the app bar.
+    final double? top = isSelecting ? null : 0;
     final isSearchOpen = ref.watch(cardSearchOpenProvider(widget.deckId));
     // The FAB shows unless cards are selected; the list's end clears it.
     final clearance = isSelecting
@@ -338,6 +341,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       return leavingSelectionFirst(
         MxScreenScroll(
           clearance: clearance,
+          top: top,
           children: [
             MxErrorState(
               title: l10n.cardLoadErrorTitle,
@@ -355,6 +359,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       return leavingSelectionFirst(
         MxScreenScroll(
           clearance: clearance,
+          top: top,
           children: [
             MxSkeletonList(
               semanticLabel: context.l10n.commonLoading,
@@ -382,6 +387,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               // E-L5: each row is its own child, built only in view.
               child: MxScreenScroll(
                 clearance: clearance,
+                top: top,
                 children: _children(view, request, selection, isSearchOpen),
               ),
             ),
@@ -438,7 +444,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       // Selecting hides the field; its term stays and comes back with it.
       if (isSearchOpen && !isSelecting)
         Padding(
-          padding: EdgeInsets.only(bottom: context.dimens.space12),
+          padding: EdgeInsets.only(bottom: context.dimens.space8),
           child: MxSearchField(
             controller: _query,
             hintText: l10n.cardSearchHint,

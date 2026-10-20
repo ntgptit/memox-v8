@@ -51,8 +51,9 @@ và làm luôn").
 **Files:**
 - `lib/shared/widgets/mx_screen_scroll.dart`: `top`, default `space8`, in
   the `ListView`'s padding.
-- `lib/shared/widgets/mx_error_state.dart`: padding 44/32, tile→title 16,
-  title→body 8, body→retry 24, as `MxEmptyState`'s regular layout.
+- `lib/shared/widgets/mx_error_state.dart`: padding 32/32, tile→title 16,
+  title→body 8, body→retry 24, as `MxEmptyState`'s compact layout (the
+  same 52 tile).
 - `lib/shared/widgets/mx_settings_row.dart`: tile→text 12.
 - Tests: `mx_screen_scroll_test.dart`, `mx_error_state_test.dart`,
   `mx_settings_row_test.dart`.

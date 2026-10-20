@@ -370,7 +370,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                       _isCreating ? l10n.cardAddTitle : l10n.cardEditCrumb,
                     ),
                   Expanded(
-                    child: MxScreenScroll(children: _fields(l10n, errors)),
+                    // Under the path its inset is the gap (screen 01); while
+                    // typing the path waits and the body takes its 8.
+                    child: MxScreenScroll(
+                      top: isTyping ? null : 0,
+                      children: _fields(l10n, errors),
+                    ),
                   ),
                 ],
               ),

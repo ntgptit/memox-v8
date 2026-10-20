@@ -107,7 +107,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
         isCompact: true,
       ),
       MonitoringLoadFailure.offline => Column(
-        spacing: context.dimens.space12,
+        spacing: context.dimens.space16,
         children: [
           MxErrorState(
             icon: AppIcons.offline,
