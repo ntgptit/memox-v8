@@ -252,7 +252,7 @@ class _ImportingCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: context.texts.itemTitle,
+            style: context.texts.sectionTitle,
           ),
           Text(
             l10n.importImportingBody,

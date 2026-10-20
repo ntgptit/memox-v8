@@ -179,7 +179,7 @@ class _Header extends StatelessWidget {
               deckName == null
                   ? l10n.exportTitleSelection(scope.cardCount)
                   : l10n.exportTitleDeck(scope.cardCount),
-              style: context.texts.itemTitle,
+              style: context.texts.sectionTitle,
             ),
           ),
           Text(

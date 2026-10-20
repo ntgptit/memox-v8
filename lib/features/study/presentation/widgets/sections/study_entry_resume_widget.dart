@@ -56,7 +56,7 @@ class StudyEntryResumeWidget extends StatelessWidget {
                       progress.total,
                     ),
             ),
-            style: context.texts.itemTitle,
+            style: context.texts.sectionTitle,
           ),
           if (progress != null && progress.total > 0) ...[
             SizedBox(height: context.dimens.space8),

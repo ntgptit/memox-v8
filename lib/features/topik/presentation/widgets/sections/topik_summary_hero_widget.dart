@@ -50,7 +50,7 @@ class TopikSummaryHeroWidget extends StatelessWidget {
                   l10n.topikDateTime(attempt.startedAt),
                   l10n.duration(attempt.totalTimeMs),
                 ]),
-                style: context.texts.label.copyWith(
+                style: context.texts.body.copyWith(
                   color: context.colors.mutedForeground,
                 ),
               ),

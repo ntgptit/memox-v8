@@ -226,7 +226,7 @@ class _SheetHead extends StatelessWidget {
               title,
               maxLines: _titleMaxLines,
               overflow: TextOverflow.ellipsis,
-              style: context.texts.itemTitle,
+              style: context.texts.sectionTitle,
             ),
           ),
           if (subtitle case final text?)

@@ -44,7 +44,7 @@ class DeckDueStripWidget extends StatelessWidget {
                   children: [
                     Text(
                       l10n.libraryDueTitle(due),
-                      style: context.texts.itemTitle,
+                      style: context.texts.sectionTitle,
                     ),
                     DeckWorkloadLineWidget(
                       overdueCount: level.overdueCount,

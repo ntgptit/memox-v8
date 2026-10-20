@@ -73,8 +73,8 @@ void main() {
     expect(box.decoration, style.decoration);
   });
 
-  testWidgets('the message reads at the banner message size, 14 at 500, '
-      "below ForUI's 16 title (owner ruling 2026-10-17)", (tester) async {
+  testWidgets('the message reads at the banner message size, 13 at 500, '
+      "below ForUI's 15 title (owner ruling 2026-10-17)", (tester) async {
     await pumpMx(tester, trigger(actionLabel: null));
     await show(tester);
 
@@ -82,7 +82,7 @@ void main() {
         .renderObject<RenderParagraph>(find.text('Moved to Trash'))
         .text
         .style!;
-    expect(style.fontSize, 14);
+    expect(style.fontSize, 13);
     expect(style.fontWeight, FontWeight.w500);
   });
 

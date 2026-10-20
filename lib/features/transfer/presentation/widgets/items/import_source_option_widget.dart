@@ -42,7 +42,7 @@ class ImportSourceOptionWidget extends StatelessWidget {
             children: [
               MxIconTile(icon: icon),
               SizedBox(height: context.dimens.space4),
-              Text(label, style: context.texts.sectionTitle),
+              Text(label, style: context.texts.itemTitle),
               Text(
                 hint,
                 style: context.texts.body.copyWith(

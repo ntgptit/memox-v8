@@ -46,7 +46,8 @@ void main() {
   });
 
   testWidgets(
-    'item-title title, 4 above a body-role body; no Retry by default',
+    'section-title title, as an empty state\'s, 4 above a body-role body; '
+    'no Retry by default',
     (tester) async {
       await pumpMx(tester, const MxErrorState(title: _title, body: _body));
       final title = tester.widget<Text>(find.text(_title)).style!;
@@ -55,7 +56,7 @@ void main() {
       final texts = tester.element(find.text(_title)).texts;
       expect(
         (title.fontSize, title.fontWeight),
-        (texts.itemTitle.fontSize, texts.itemTitle.fontWeight),
+        (texts.sectionTitle.fontSize, texts.sectionTitle.fontWeight),
       );
       expect(title.color, colors.foreground);
       expect(

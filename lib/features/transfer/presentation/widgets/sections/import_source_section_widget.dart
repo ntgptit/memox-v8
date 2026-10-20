@@ -277,7 +277,7 @@ class _SourceChip extends StatelessWidget {
                       isFile ? draft.fileName ?? '' : l10n.importSourcePaste,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: context.texts.sectionTitle,
+                      style: context.texts.itemTitle,
                     ),
                     Text(
                       meta,

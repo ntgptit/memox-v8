@@ -167,7 +167,7 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
             email == null
                 ? l10n.accountTakenGoogle
                 : l10n.accountTakenEmail(wrappableEmail(email)),
-            style: context.texts.itemTitle,
+            style: context.texts.sectionTitle,
           ),
         ),
       ),

@@ -27,7 +27,8 @@ MxDeckPickerSheet _picker(
 
 void main() {
   testWidgets(
-    'head: an item-title title and a body rule, space24 in and 52 down',
+    'head: a section-title title, as every sheet\'s, and a body rule, space24 '
+    'in and 52 down',
     (tester) async {
       await pumpMx(
         tester,
@@ -38,7 +39,7 @@ void main() {
       final texts = tester.element(find.text('Move to deck')).texts;
       expect(
         tester.widget<Text>(find.text('Move to deck')).style!.fontSize,
-        texts.itemTitle.fontSize,
+        texts.sectionTitle.fontSize,
       );
       expect(
         tester

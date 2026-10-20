@@ -326,7 +326,7 @@ void main() {
         find.text('Cards keep their progress.'),
       );
 
-      expect(title.style, texts.itemTitle);
+      expect(title.style, texts.sectionTitle);
       expect(
         subtitle.style,
         texts.body.copyWith(color: colors.mutedForeground),

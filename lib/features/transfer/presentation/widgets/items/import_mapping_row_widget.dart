@@ -58,7 +58,7 @@ class ImportMappingRowWidget extends StatelessWidget {
                     text,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: context.texts.sectionTitle,
+                    style: context.texts.itemTitle,
                   ),
                 if (sample case final text?)
                   Text(

@@ -166,7 +166,7 @@ class _Marker extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = isEnd
         ? context.texts.body.copyWith(color: context.colors.mutedForeground)
-        : context.texts.label;
+        : context.texts.body;
     // A cycle mark keeps a section's space from the answer above; the end
     // mark sits close under the last answer, as the kit's does.
     final above = switch ((isFirst, isEnd)) {

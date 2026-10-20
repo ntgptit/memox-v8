@@ -28,8 +28,6 @@ An audit of every `context.texts.<role>` and every ForUI text slot found:
   - a field's supporting text and counter are ForUI's 14/400 while its error
     is `caption` 12/400;
   - the tab bar's labels are ForUI's 10/400, bold when selected: no role;
-  - a label/value pair is `label`/`body` on the card detail and `body`
-    muted/`itemTitle` on the schedule;
   - a state change moves the weight as well as the colour: card history's
     moves and cycle marks (`body` ↔ `label`), the import preview's note
     (`body` ↔ `meta`), TOPIK's metadata lines in `label` where every other
@@ -87,7 +85,7 @@ The roles after T1:
 | F8 | six card headings (deck summary, due strip, lock strip, start over, card trash, study resume) and the importing card | `itemTitle` → `sectionTitle` |
 | F9 | Trash's and a deck's "N selected" | `screenTitle` |
 | F10 | row metadata: progress deck row, starter template facts and suggestion, the starter sheet's note | `meta` → `body` |
-| F11 | card detail's facts | label `body` muted, value `itemTitle` (the schedule's pair) |
+| F11 | card detail's fields | none: on reading, they are read-only fields (an example, a note: long text), not facts, so `label` over `body` stays; the schedule's short facts keep `body` muted over `itemTitle` |
 | F12 | colour-only states: card history's moves and cycle marks, the import preview's note, TOPIK's attempt and answer metadata | one role, the colour changes |
 | F13 | `DESIGN.md` Hierarchy prose; its frontmatter regenerated | conventions 1–5 |
 
