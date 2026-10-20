@@ -44,6 +44,9 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     // (critique 2026-09-30 part 2, P2).
     final foreground = context.colors.mutedForeground;
     final priority = workload.priorityDueDeck;
+    // New cards alone wait: nothing is due, so the card says so and leaves
+    // the counts to the deck rows (Study home spec §4, owner 2026-10-20).
+    final isNothingDue = workload.dueCount == 0;
     return MxCard(
       isCompact: true,
       child: Column(
@@ -72,25 +75,28 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
             ],
           ),
           Text(
-            l10n.studyHomeDueTitle(workload.dueCount),
+            isNothingDue
+                ? l10n.studyHomeCaughtUpTitle
+                : l10n.studyHomeDueTitle(workload.dueCount),
             style: context.texts.sectionTitle,
           ),
           // The hero states what is due, in its two halves; new and
           // scheduled cards are in the deck rows (BR-STUDY-068, critique
           // 2026-09-30). A zero term drops out.
-          MxWorkloadBreakdownLine(
-            overdueCount: workload.overdueCount,
-            todayCount: workload.dueTodayCount,
-            // The hero names only what is due (BR-STUDY-068); a zero
-            // count drops the new term.
-            newCount: 0,
-            overdueLabel: l10n.workloadOverdue,
-            todayLabel: l10n.workloadToday,
-            newLabel: l10n.workloadNew,
-            fallback: l10n.studyHomeCaughtUpTitle,
-            suffix: l10n.studyHomeAcrossDecks(workload.workloadDeckCount),
-            canWrap: true,
-          ),
+          if (!isNothingDue)
+            MxWorkloadBreakdownLine(
+              overdueCount: workload.overdueCount,
+              todayCount: workload.dueTodayCount,
+              // The hero names only what is due (BR-STUDY-068); a zero
+              // count drops the new term.
+              newCount: 0,
+              overdueLabel: l10n.workloadOverdue,
+              todayLabel: l10n.workloadToday,
+              newLabel: l10n.workloadNew,
+              fallback: l10n.studyHomeCaughtUpTitle,
+              suffix: l10n.studyHomeAcrossDecks(workload.dueDeckCount),
+              canWrap: true,
+            ),
           // Only while a card is due: new cards alone are no review. 16 above
           // it with the column's 4 (spacing spec L8).
           if (priority != null) ...[

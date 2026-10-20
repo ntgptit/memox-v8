@@ -99,11 +99,13 @@ final class RootDeckWorkload extends StudyHomeContent {
     return null;
   }
 
-  /// The decks with any workload: "across K decks".
-  int get workloadDeckCount => decks.where((deck) => deck.hasWorkload).length;
+  /// The decks with a due card: the hero's "across K decks" counts what it
+  /// states, the due cards (BR-STUDY-068), not new cards alone.
+  int get dueDeckCount =>
+      decks.where((deck) => deck.overdueCount + deck.dueTodayCount > 0).length;
 
   /// No deck has any workload (A3, BR-STUDY-008).
-  bool get isCaughtUp => workloadDeckCount == 0;
+  bool get isCaughtUp => !decks.any((deck) => deck.hasWorkload);
 
   int _sum(int Function(StudyHomeDeck deck) count) =>
       decks.fold(0, (total, deck) => total + count(deck));

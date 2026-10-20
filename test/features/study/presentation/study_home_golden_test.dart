@@ -195,6 +195,14 @@ void main() {
       await shoot(tester, env, 'zero');
     });
 
+    // Only new cards wait: nothing is due, the rows hold the counts (Study
+    // home spec §4).
+    libraryTest('study home, new cards only, $theme', (tester, env) async {
+      await _deck(env, 'IT', fresh: 2);
+      await _deck(env, 'Korean Basics', resting: 2);
+      await shoot(tester, env, 'new_only');
+    });
+
     libraryTest('study home, no decks, $theme', (tester, env) async {
       await shoot(tester, env, 'no_decks');
     });

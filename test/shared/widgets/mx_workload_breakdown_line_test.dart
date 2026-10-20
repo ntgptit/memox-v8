@@ -225,10 +225,7 @@ void main() {
     'with icons each term leads with its own glyph in its foreground, on '
     'the same line, and is read as its words only (BR-STUDY-076)',
     (tester) async {
-      await pumpMx(
-        tester,
-        SizedBox(width: 320, child: _line(today: 0, hasIcons: true)),
-      );
+      await pumpMx(tester, SizedBox(width: 320, child: _line(hasIcons: true)));
 
       final glyphs = tester
           .widgetList<Icon>(
@@ -241,6 +238,7 @@ void main() {
           .toList();
       expect(glyphs, [
         (AppIcons.overdue, mx.warning),
+        (AppIcons.dueNow, mx.accentMark),
         (AppIcons.newCards, colors.mutedForeground),
       ]);
       final semantics = tester.widget<Semantics>(
@@ -251,7 +249,7 @@ void main() {
             )
             .first,
       );
-      expect(semantics.properties.label, '3 overdue · 2 new');
+      expect(semantics.properties.label, '3 overdue · 5 today · 2 new');
       expect(semantics.excludeSemantics, isTrue);
       expect(
         tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,

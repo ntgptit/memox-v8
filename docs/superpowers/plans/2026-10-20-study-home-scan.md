@@ -35,8 +35,9 @@ Execution: native (owner, 2026-10-20: "Duyệt, viết plan và làm luôn").
 2. Only new cards in the library: no CTA. Pinned in Task 2.
 3. A deck name of 80 characters on the CTA and the Resume title: two lines,
    then an ellipsis; no overflow. Pinned in Task 3.
-4. A double tap on the CTA opens one Study entry. The deck row's route is
-   reused, which `go`es (no stacking). Pinned in Task 2.
+4. A double tap on the CTA opens one Study entry. The deck row's callback
+   is reused, which `go`es (no stacking): a code read, as for the rows; the
+   screen test pins that the CTA calls it.
 5. Text scale 1.3 at 360 dp: Resume drops under the content. Pinned in
    Task 3.
 

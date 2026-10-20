@@ -86,11 +86,17 @@ void main() {
       'Alpha',
     ),
     (
-      'new cards before it in the list are skipped',
+      // BR-STUDY-076 never lists it first; the target still needs a due card.
+      'a deck with new cards alone, never, wherever it is listed',
       [_deck('New only', fresh: 9), _deck('Due', today: 1)],
       'Due',
     ),
-    ('new cards alone: no way in', [_deck('New only', fresh: 9)], null),
+    (
+      // The card says nothing is due and leaves the counts to the rows.
+      'new cards alone: nothing due, no counts, no way in',
+      [_deck('New only', fresh: 9)],
+      null,
+    ),
   ]) {
     libraryTest('the workload card opens $name (Study home spec H2)', (
       tester,
@@ -100,6 +106,11 @@ void main() {
 
       if (target == null) {
         expect(find.byType(MxButton), findsNothing);
+        expect(find.text(_en.studyHomeCaughtUpTitle), findsOneWidget);
+        expect(
+          find.textContaining(_en.studyHomeAcrossDecks(1), findRichText: true),
+          findsNothing,
+        );
         return;
       }
       final button = find.widgetWithText(
@@ -112,6 +123,29 @@ void main() {
       expect(opened, [target]);
     });
   }
+
+  libraryTest('"across K decks" counts the decks with a due card, not those '
+      'with new cards alone (BR-STUDY-068)', (tester, env) async {
+    await _pump(tester, env, [
+      _deck('IELTS', overdue: 3),
+      _deck('Kanji', today: 2),
+      _deck('IT', fresh: 2),
+    ]);
+    expect(
+      find.textContaining(_en.studyHomeAcrossDecks(2), findRichText: true),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a long deck name on the way in stops at two lines with an '
+      'ellipsis, nothing overflows (plan Review Focus 3)', (tester, env) async {
+    final long = ('IELTS Academic Word List ' * 4).trim();
+    await _pump(tester, env, [_deck(long, overdue: 1)]);
+
+    final label = tester.widget<Text>(find.text(_en.studyHomeReviewDeck(long)));
+    expect((label.maxLines, label.overflow), (2, TextOverflow.ellipsis));
+    expect(tester.takeException(), isNull);
+  });
 
   libraryTest('the way in is the one fill without a Resume card, an outline '
       'under one (Study home spec H4)', (tester, env) async {

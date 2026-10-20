@@ -12,7 +12,7 @@ snapshot. UC-STUDY-002.
 |---|---|---|
 | App bar | `MxAppBar` | "Study"; no date (see Rulings). |
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a static primary dot (`MxDotOverline`, ruling S3); the title "{root} › {deck}" on a sub-deck, the deck alone on a root (two lines, then an ellipsis); the session line "{kind} · {mode}" (`body`, muted); a last row of the thin progress track and "{done} / {total} cards" (`meta`, muted), with "Resume" (`MxButton`, primary, play glyph) at its end when the card's content is 280 wide or more and the text scale is below 1.3, a block under it otherwise (ruling S9, Study home spec H3). No track while the round serves nothing. Shown only when BR-STUDY-075's four read-only conditions all hold. |
-| Workload card | `MxCard` (no hero) + `MxWorkloadBreakdownLine` + `MxButton` | "Waiting for you", "{n} cards due", then overdue · today "across {k} decks" (BR-STUDY-068). While a card is due, a block "Review {deck}" closes the card, 16 under the breakdown: it opens the Study entry (14) of the first listed deck with an overdue or today card (Study home spec H2; replaces R2). It is primary without a Resume card and outline under one (H4). Only new cards due: no button. Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
+| Workload card | `MxCard` (no hero) + `MxWorkloadBreakdownLine` + `MxButton` | "Waiting for you", "{n} cards due", then overdue · today "across {k} decks", K the decks with a due card (BR-STUDY-068). While a card is due, a block "Review {deck}" closes the card, 16 under the breakdown: it opens the Study entry (14) of the first listed deck with an overdue or today card (Study home spec H2; replaces R2). It is primary without a Resume card and outline under one (H4). Only new cards waiting: the title reads "Nothing due right now", with no breakdown and no button; the rows hold the new counts (Study home spec §4, owner 2026-10-20). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (small secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
 | Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + small `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" (outline, a link out of a warning, not the screen's decision; critique 2026-09-30 part 1) on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
 | Re-auth notice | `MxFloatingNotice` in the same slot + small `MxButton` | FE-B10 (account UI spec §5.7, R2, B5): while the sign-in is refused, "Your sign-in expired. Your decks are still on this phone." · "Sign in", which opens screen 30 `reauth` under Settings and returns here once signed in. It takes the slot over the sync notice, since the expired sign-in is why sync stopped. The account feature builds it; `app/` hands it in as `reauthNotice`. |
@@ -30,6 +30,7 @@ above both at full width.
 |---|---|---|---|
 | loaded | `study_home_loaded_light.png` | `study_home_loaded_dark.png` | The compact Resume card with its primary dot, the workload card with an outline "Review {deck}", rows without zero terms (see Rulings). The Resume card at a 1.3 text scale, its button a block under the progress: `study_home_resume_large_text_light/dark.png`. |
 | noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload card and deck list, no Resume card (BR-STUDY-075 A1); "Review {deck}" is the screen's one primary. Scrolled to the end, `study_home_scrolled_light/dark.png` shows the Practice slot under six decks (audit 2026-10-19, G6). |
+| newOnly | `study_home_new_only_light.png` | `study_home_new_only_dark.png` | Only new cards wait: the workload card reads "Nothing due right now" with no counts and no button; each row states its "{n} new" or "Nothing due" (Study home spec §4, BR-STUDY-068). |
 | zero | `study_home_zero_light.png` | `study_home_zero_dark.png` | Every root deck holds cards but nothing is due; rows still list every deck, each reading "Nothing due"; the workload card has no button (BR-STUDY-008, BR-STUDY-076, BR-STUDY-077). |
 | noDecks | `study_home_no_decks_light.png` | `study_home_no_decks_dark.png` | "Browse starter decks" opens the Starter Library (screen 03), "Go to Library" the Library root (UC-STUDY-002 A4). |
 | noCards | `study_home_no_cards_light.png` | `study_home_no_cards_dark.png` | Root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
@@ -51,7 +52,7 @@ Every state above is built.
   Library root, and "Browse starter decks" the Starter Library. All navigate into the
   Library branch, as the summary's "Study again" does.
 - Goldens:
-  `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error}_*`.
+  `test/features/study/presentation/goldens/study_home_{loaded,resume_large_text,no_resume,new_only,zero,no_decks,no_cards,loading,error}_*`.
 
 ## Transitions
 
@@ -60,10 +61,11 @@ Every state above is built.
 | loaded (Resume card shown) | tap Resume | the session route; a refusal keeps 13 with a toast | BR-STUDY-075. VERIFIED `study_home_screen_test.dart::Resume takes today's session up and opens it (H3)`, `::a refused Resume says so and opens nothing (H3, S8)` |
 | loaded (Resume card shown) | tap Resume, and the write fails (a busy database) | 13 stays and opens nothing; the toast "Your answers are kept. Couldn't resume the session, so try again." | VERIFIED `study_home_screen_test.dart::a Resume that cannot be written says so, local-first, and opens nothing (audit 2026-10-17)` |
 | loaded (Resume card shown) | tap Resume, and the write meets a bug (not a `Failure`) | as a `Failure`: 13 stays and opens nothing, with the same toast; Resume is no longer running; the bug is reported | VERIFIED `study_held_bug_test.dart::a Resume that dies on a bug is no longer running and answers ResumeFailed, as a Failure does (resume)` |
-| loaded | tap a deck row | that deck's Study Entry (14); a deck with no card is not a target | BR-STUDY-076. VERIFIED `::a deck with no card is disabled; a deck row opens its entry; Library opens the Library (S4, H3)` |
+| loaded | tap a deck row | that deck's Study Entry (14); a deck with no card is not a target | BR-STUDY-076. VERIFIED `::a deck with no card is disabled; a deck row and "Review {deck}" open its entry; Library opens the Library (S4, H3, Study home spec H2)` |
 | loaded | tap Library | the Library root (01) | E-L3. VERIFIED same test |
-| loaded / noResume | tap "Review {deck}" | the priority deck's Study Entry (14), by the deck rows' route; nothing is written | Study home spec H2. VERIFIED `study_home_workload_test.dart::the workload card opens the first due deck of the list (Study home spec H2)`, `::… a tie: the one listed first …`, `::… new cards before it in the list are skipped …`; the screen hands it `onOpenDeck`, the deck rows' callback: `UNVERIFIED (code read)` for the route at screen level |
-| loaded / noResume | a Resume, an answer or a sync makes the priority deck's due count 0 | the button names the next due deck, or goes when none is left | Study home spec §4. VERIFIED for the absence `study_home_workload_test.dart::the workload card opens new cards alone: no way in (Study home spec H2)`; the stream's re-emit is the deck list's own (UC-STUDY-002 step 5) |
+| loaded / noResume | tap "Review {deck}" | the priority deck's Study Entry (14), by the deck rows' callback (`go`); nothing is written | Study home spec H2. VERIFIED `study_home_screen_test.dart::a deck with no card is disabled; a deck row and "Review {deck}" open its entry; …`; the target `study_home_workload_test.dart::the workload card opens the first due deck of the list (Study home spec H2)`, `::… a tie: the one listed first …`, `::… a deck with new cards alone, never, wherever it is listed …` |
+| loaded / noResume | a Resume, an answer or a sync makes the priority deck's due count 0 | the button names the next due deck, or goes when none is left | Study home spec §4. `UNVERIFIED (code read)`: the button is derived from each emitted list (`priorityDueDeck`); the end state is VERIFIED `study_home_workload_test.dart::the workload card opens new cards alone: nothing due, no counts, no way in (Study home spec H2)`, not the re-emit itself |
+| loaded (Resume running) | tap a deck row, "Review {deck}", Library or Practice | that screen opens, then the session route once the write lands | `UNVERIFIED (code read)`, suspect: `_resume` checks only `context.mounted`, and 14 sits in the Library branch so 13 stays mounted (final review 2026-10-20). Older than this change for the rows; recorded on DEV-323 for its own fix |
 | noDecks | tap Browse starter decks / Go to Library | the Starter Library (03) / the Library root | UC-STUDY-002 A4. VERIFIED `::no root deck: "Browse starter decks" first, then "Go to Library" (UC-STUDY-002 A4, 13 noDecks)` |
 | syncRejected / syncStale | tap Details on the sync notice | screen 27 | SB-U1. VERIFIED `study_home_sync_banner_test.dart::refused rows show the banner; Details opens screen 27` |
 | reauth | tap Sign in on the re-auth notice | screen 30 `reauth`; back here once signed in | FE-B10. The notice takes the slot over sync: VERIFIED `study_home_screen_test.dart::an expired sign-in takes the notice slot over sync (P3b B5)`; the tap and the return are `UNVERIFIED (code read)`, and the notice's frame is the account golden `study_home_reauth_*` |
@@ -92,13 +94,14 @@ Every state above is built.
 - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard `MxSkeletonList` rows.
 - `MxEmptyState` actions carry no glyph.
 - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.
+- **Owner 2026-10-20:** the re-auth notice's primary "Sign in" may sit over a primary "Review {deck}"; the notice is the account feature's passing overlay, not part of the screen's layout, so the one-fill rule (H4) counts the page only.
 - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows under the sync status rules (ADR-015).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** "Continue studying" and "Waiting for you" are eyebrows; Waiting for you no longer borrows the Required style, and its glyph follows the eyebrow's colour.
 - **Owner 2026-10-16 (Q-P6-4), Study home spec H3:** the resume card's session line ("{kind} · {mode}") wraps only between its terms (`lib/l10n/meta_line.dart`); the count moved to the progress row.
 
 ## Accessibility
 
-- The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the count beside it states "{done} / {total} cards" (FE-A8 S3, S7). "Review {deck}" is a button named by its label.
+- The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the count beside it states "{done} / {total} cards" (FE-A8 S3, S7). "Review {deck}" is a button named by its label. The Resume title on a sub-deck is read "{deck}, in {root}", without the › glyph.
 - The Practice row is the slot's one node besides its heading: "Practice" is a heading (`topik_practice_entry_test.dart::names the tests and opens TOPIK`), and the row reads as one button, "TOPIK past papers, {n} tests", with the tile glyph and the chevron decorative. `UNVERIFIED (code read)` for the row's merged label and button role: no test calls `getSemantics` on it.
 - A deck with no card is shown dimmed and read as a disabled button (S4); every row is a two-line list row, at least `sizeListRowTwoLine` (72) tall.
 - The hero title and "across {n} decks" are plurals (S5).
@@ -107,8 +110,8 @@ Every state above is built.
 ## Copy
 
 - Header: "Study" · "Tuesday, 16 Sep" (dropped).
-- Resume: "Continue studying" · "{root} › {deck}" · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" ("{done} / {total} thẻ") · "Resume".
-- Workload: "Waiting for you" · "{n} cards due" · "across {n} decks" · "Review {deck}" ("Ôn {deck}").
+- Resume: "Continue studying" · "{root} › {deck}" (read "{deck}, in {root}" / "{deck}, trong {root}") · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" ("{done} / {total} thẻ") · "Resume".
+- Workload: "Waiting for you" · "{n} cards due" · "across {n} decks" · "Review {deck}" ("Ôn {deck}"); only new cards waiting: "Nothing due right now".
 - Rows: "{n} overdue · {n} today · {n} new", zero terms dropped · "Nothing due" ("Chưa có thẻ đến hạn") · "No cards yet".
 - Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow." · "…on {date}." · "Every card is resting." (ruling S2).
 - Resume refused: "That session has ended. Its answers are kept."

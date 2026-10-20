@@ -37,10 +37,10 @@ class StudyHomeResumeWidget extends StatelessWidget {
 
   /// The narrowest card content that holds the track, its count and a
   /// compact Resume on one row (a 360 dp phone's card).
-  static const double compactMinWidth = 280;
+  static const double _compactMinWidth = 280;
 
   /// From this text scale on, Resume takes a row of its own.
-  static const double compactMaxTextScale = 1.3;
+  static const double _compactMaxTextScale = 1.3;
 
   @override
   Widget build(BuildContext context) {
@@ -67,15 +67,16 @@ class StudyHomeResumeWidget extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isCompact =
-                  constraints.maxWidth >= compactMinWidth &&
+                  constraints.maxWidth >= _compactMinWidth &&
                   MediaQuery.textScalerOf(context).scale(1) <
-                      compactMaxTextScale;
+                      _compactMaxTextScale;
               final track = progress == null || progress.total == 0
                   ? null
                   : _Track(done: progress.completed, total: progress.total);
+              // Content to the closing action is 16 (spacing spec L8).
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: context.dimens.space12,
+                spacing: context.dimens.space16,
                 children: [
                   _Heading(session: session, kind: kind),
                   if (isCompact)
@@ -85,11 +86,8 @@ class StudyHomeResumeWidget extends StatelessWidget {
                         Expanded(child: track ?? const SizedBox.shrink()),
                         resume(isBlock: false),
                       ],
-                    )
-                  else ...[
-                    ?track,
-                    resume(isBlock: true),
-                  ],
+                    ),
+                  if (!isCompact) ...[?track, resume(isBlock: true)],
                 ],
               );
             },
@@ -134,6 +132,10 @@ class _Heading extends StatelessWidget {
                     : l10n.studyHomeResumeTitle(root, session.deckName),
                 // The user's own names: two lines, then an ellipsis (The One
                 // Line Rule).
+                // TalkBack reads the deck, then its root, not the › glyph.
+                semanticsLabel: root == null
+                    ? null
+                    : l10n.studyHomeResumeTitleSpoken(root, session.deckName),
                 maxLines: _titleMaxLines,
                 overflow: TextOverflow.ellipsis,
                 style: context.texts.itemTitle,

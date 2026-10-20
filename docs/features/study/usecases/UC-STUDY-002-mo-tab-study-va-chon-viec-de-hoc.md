@@ -45,6 +45,8 @@ code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart]
 - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dòng
   nói hiện chưa có thẻ nào tới hạn; thẻ workload không có nút ôn; hàng deck còn
   card ghi "Chưa có thẻ đến hạn" và vẫn mở được để học trước (BR-STUDY-008).
+  Chỉ còn thẻ New: thẻ workload ghi "Hiện chưa có thẻ đến hạn", không có số và
+  không có nút ôn; số New nằm ở từng hàng deck (BR-STUDY-068).
 - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-STARTER-001),
   lối thứ hai là về Library.
 - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để thêm

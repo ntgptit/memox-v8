@@ -93,7 +93,8 @@ The main issues:
 - **The session line:** "{kind} · {mode}", e.g. "Review · Match", in
   `body`, muted.
 - **The progress line:** the track, then "{done} / {total} cards" at its
-  end, in `meta`, muted, tabular.
+  end, in `meta`, muted (the text roles take colour only, so no tabular
+  figures).
   - No progress line while the round serves nothing (`progress == null`).
   - The progress word moves out of the session line.
 - **Resume:**
@@ -127,7 +128,7 @@ The main issues:
 | loaded | compact Resume; the workload card with an outline "Review {deck}"; rows without zero terms |
 | noResume | the workload CTA is primary |
 | zero (caught up) | no CTA; rows read "Nothing due" |
-| only new cards due | no CTA (nothing due); rows show "{n} new" |
+| only new cards due | no CTA; the card reads "Nothing due right now" with no counts (owner 2026-10-20); rows show "{n} new" |
 | noDecks, noCards, loading, error, sync, reauth | unchanged |
 
 New transitions:

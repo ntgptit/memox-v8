@@ -82,9 +82,14 @@ Future<String> _newRoot(LibraryEnv env, String name, int fresh) async {
   return root.id;
 }
 
-/// A root whose one learned card rests until [dueAt].
-Future<void> _restingRoot(LibraryEnv env, DateTime dueAt) async {
-  final root = await env.decks.root('Resting');
+/// A root whose one learned card is due at [dueAt]: resting while it is
+/// still ahead, due once it has passed.
+Future<String> _learnedRoot(
+  LibraryEnv env,
+  DateTime dueAt, {
+  String name = 'Resting',
+}) async {
+  final root = await env.decks.root(name);
   final leaf = await env.decks.sub(root.id, 'Leaf');
   await insertCard(
     env.db,
@@ -95,6 +100,7 @@ Future<void> _restingRoot(LibraryEnv env, DateTime dueAt) async {
     box: 3,
   );
   await lockScheduler(env.db, root.id);
+  return root.id;
 }
 
 void main() {
@@ -141,7 +147,9 @@ void main() {
     expect(find.text(_en.studyHomeResume), findsOneWidget);
 
     expect(find.text(_en.studyHomeDueTitle(5)), findsOneWidget);
-    expect(find.textContaining(_en.studyHomeAcrossDecks(2)), findsOneWidget);
+    // Spanish holds new cards alone: the hero counts only Korean, the deck
+    // with a due card (BR-STUDY-068).
+    expect(find.textContaining(_en.studyHomeAcrossDecks(1)), findsOneWidget);
     // No hero ground: it opens a deck and starts nothing (Study home spec
     // H2; critique 2026-09-30 part 3c-1).
     final block = tester.widget<MxCard>(
@@ -192,7 +200,7 @@ void main() {
 
   libraryTest('caught up: the next card falls due tomorrow, or the day is '
       'named (BR-STUDY-008, S2)', (tester, env) async {
-    await _restingRoot(env, DateTime(2026, 9, 25));
+    await _learnedRoot(env, DateTime(2026, 9, 25));
     await pumpLibraryScreen(tester, env, _screen(_Taps()));
     await _settle(tester);
 
@@ -251,7 +259,7 @@ void main() {
     env,
   ) async {
     await _newRoot(env, 'Spanish', 2);
-    await _restingRoot(env, DateTime(2026, 9, 25));
+    await _learnedRoot(env, DateTime(2026, 9, 25));
     await env.decks.root('Empty');
     await pumpLibraryScreen(tester, env, _screen(_Taps()));
     await _settle(tester);
@@ -288,11 +296,13 @@ void main() {
     expect(statementOf('Empty'), _en.workloadNoCards);
   });
 
-  libraryTest('a deck with no card is disabled; a deck row opens its entry; '
-      'Library opens the Library (S4, H3)', (tester, env) async {
+  libraryTest('a deck with no card is disabled; a deck row and "Review '
+      '{deck}" open its entry; Library opens the Library (S4, H3, Study '
+      'home spec H2)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final taps = _Taps();
     final spanish = await _newRoot(env, 'Spanish', 2);
+    final kanji = await _learnedRoot(env, DateTime(2026, 9, 20), name: 'Kanji');
     await env.decks.root('Empty');
     await pumpLibraryScreen(tester, env, _screen(taps));
     await _settle(tester);
@@ -300,8 +310,9 @@ void main() {
     // A deck with no card is disabled: the tap is meant to miss.
     await tester.tap(find.text('Empty'), warnIfMissed: false);
     await tester.tap(find.text('Spanish'));
+    await tester.tap(find.text(_en.studyHomeReviewDeck('Kanji')));
     await tester.tap(find.text(_en.studyHomeLibrary));
-    expect(taps.decks, [spanish]);
+    expect(taps.decks, [spanish, kanji]);
     expect(taps.library, 1);
     // Shown, dimmed, and read as a disabled button (S4).
     expect(
