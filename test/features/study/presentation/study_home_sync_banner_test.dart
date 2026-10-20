@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 
 import '../../../shared/expect_one_primary.dart';
+import '../../../support/card_fixtures.dart';
+import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
 
@@ -45,6 +49,34 @@ void main() {
       );
       await _settle(tester);
       expect(find.text('Details'), findsNothing);
+    });
+  }
+
+  // Spec §3.5: the floating notice never hides the list's end; scrolled
+  // to it, the last deck sits above the notice, at the default and a large
+  // text scale.
+  for (final textScale in [1.0, 1.3]) {
+    libraryTest('scrolled to the end, the last deck clears the notice '
+        '(scale $textScale)', (tester, env) async {
+      for (var index = 0; index < 9; index++) {
+        final root = await env.decks.root('Deck $index');
+        final leaf = await env.decks.sub(root.id, 'Words');
+        await insertCard(env.db, id: 'c$index', deckId: leaf.id);
+      }
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(),
+        overrides: syncOverrides(const SyncStatus(rejectedCount: 2)),
+        textScale: textScale,
+      );
+      await _settle(tester);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -4000));
+      await tester.pumpAndSettle();
+
+      final notice = tester.getRect(find.byType(MxFloatingNotice));
+      final last = tester.getRect(find.text('Deck 8'));
+      expect(last.bottom, lessThanOrEqualTo(notice.top));
     });
   }
 

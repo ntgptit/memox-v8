@@ -12,8 +12,8 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import '../../../support/library_harness.dart';
-import '../../../support/wrap_rule.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 final _today = DateTime(2026, 9, 24);
@@ -66,12 +66,10 @@ void main() {
     expect(find.byType(MxCard), findsOneWidget);
     expect(find.text('Korean'), findsOneWidget);
     expect(find.widgetWithText(MxBadge, _en.deckDueBadge(86)), findsOneWidget);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
-        ),
+      findTermLine(
+        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
       ),
     );
   });
@@ -82,7 +80,7 @@ void main() {
   ) async {
     await pump(tester, env, _tile(subDecks: 0, cards: 420));
 
-    expect(find.text(wholeTerm(_en.deckCardCount(420))), findsOneWidget);
+    expect(find.text(_en.deckCardCount(420)), findsOneWidget);
     expect(find.textContaining(_en.deckSubDeckCount(0)), findsNothing);
   });
 
@@ -133,15 +131,12 @@ void main() {
   libraryTest('the structure line wraps, never cut '
       '(critique 2026-09-30)', (tester, env) async {
     await pump(tester, env, _tile());
-    final meta = tester.widget<Text>(
-      find.text(
-        metaLine(
-          _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
-        ),
-      ),
+    final meta = findTermLine(
+      _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
     );
 
-    expect((meta.maxLines, meta.overflow), (null, null));
+    expect(meta, findsOneWidget);
+    expectTermLineRule(tester, meta);
   });
 
   libraryTest('the workload line wraps between terms (critique 2026-09-30)', (

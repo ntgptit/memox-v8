@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One template of screen 03: its title, "In library" once added, its
 /// facts, the add and the scheduler it suggests (UC-STARTER-001 step 4).
@@ -67,12 +68,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsetsDirectional.only(start: _indent(context)),
-                  child: Text(
-                    starterEntryFacts(l10n, entry),
-                    style: context.texts.body.copyWith(
-                      color: context.colors.mutedForeground,
-                    ),
-                  ),
+                  child: MxTermLine.of(starterEntryFacts(l10n, entry)),
                 ),
               ],
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/l10n/meta_line.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
 /// term across the whole product, and an optional muted "N scheduled".
@@ -68,142 +68,97 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   final bool canWrap;
 
   /// Leads each of the three terms with its own glyph in the term's ink, so
-  /// colour is never the only signal (BR-STUDY-076). Each term, its glyph
-  /// and its dot then wrap as one unit, and the line is read as its words
-  /// alone: the glyphs are decorative.
+  /// colour is never the only signal (BR-STUDY-076). Each term and its glyph
+  /// then wrap as one unit, and the line is read as its words alone: the
+  /// glyphs are decorative.
   final bool hasIcons;
 
-  static const String _separator = ' · ';
+  static const String _separator = MxTermLine.separator;
   static const String _space = ' ';
-
-  // A wrapping line breaks only between terms (The Wrap Rule, meta_line).
-
-  String _termText(String label) => canWrap ? wholeTerm(label) : label;
 
   @override
   Widget build(BuildContext context) {
-    final muted = context.colors.mutedForeground;
     final terms = [
       (
         overdueCount,
         overdueLabel,
-        context.status.warning,
-        context.status.warning,
+        MxTermTone.warning,
+        MxTermTone.warning,
         AppIcons.overdue,
       ),
       // The today glyph is an accent icon; its words stay primary.
       (
         todayCount,
         todayLabel,
-        context.colors.primary,
-        context.status.accentMark,
+        MxTermTone.primary,
+        MxTermTone.accentMark,
         AppIcons.dueNow,
       ),
-      (newCount, newLabel, muted, muted, AppIcons.newCards),
+      (
+        newCount,
+        newLabel,
+        MxTermTone.muted,
+        MxTermTone.muted,
+        AppIcons.newCards,
+      ),
       if (scheduledLabel case final label?)
-        (scheduledCount, label, muted, muted, null),
+        (scheduledCount, label, MxTermTone.muted, MxTermTone.muted, null),
     ].where((term) => term.$1 > 0).toList();
-    if (hasIcons) return _GlyphStatement(terms: terms, fallback: fallback);
     // Only the Scheduled term has no glyph. Without an overdue, today or new
     // term the fallback still says nothing is due, and Scheduled follows it
     // (critique 2026-09-30 part 3b review).
     final isFallbackShown = !terms.any((term) => term.$5 != null);
-    return Text.rich(
-      TextSpan(
-        style: context.texts.body.copyWith(
-          color: context.colors.mutedForeground,
-        ),
-        children: [
-          // "1,248 cards · nothing due" is a line of terms too.
-          if (isFallbackShown)
-            TextSpan(text: canWrap ? metaLine(fallback) : fallback),
-          for (final (index, (count, label, ink, _, _)) in terms.indexed) ...[
-            if (index > 0 || isFallbackShown)
-              TextSpan(text: canWrap ? metaTermSeparator : _separator),
-            TextSpan(
-              text: _termText(label(count)),
-              style: context.texts.body.copyWith(color: ink),
-            ),
-          ],
-          if (suffix case final clause?) ...[
-            const TextSpan(text: _space),
-            TextSpan(text: clause),
-          ],
-        ],
-      ),
-      maxLines: canWrap ? null : 1,
-      softWrap: canWrap,
-      overflow: canWrap ? TextOverflow.visible : TextOverflow.ellipsis,
+    if (!canWrap) return _oneLine(context, terms, isFallbackShown);
+    // A wrapping line breaks only between whole terms, and no dot ends or
+    // starts a line (The Wrap Rule, spec W1).
+    if (hasIcons && terms.isEmpty) return MxTermLine.text(fallback);
+    return MxTermLine(
+      terms: [
+        if (isFallbackShown && !hasIcons)
+          for (final term in fallback.split(_separator)) MxTerm(term),
+        for (final (count, label, tone, glyphTone, glyph) in terms)
+          MxTerm(
+            label(count),
+            tone: tone,
+            glyph: hasIcons ? glyph : null,
+            glyphTone: glyphTone,
+          ),
+      ],
+      trail: suffix,
     );
   }
-}
 
-/// A term: its count, its words, the words' colour, the glyph's colour and
-/// the glyph.
-typedef _Term = (int, String Function(int), Color, Color, IconData?);
-
-/// The terms as units in a [Wrap]: a centred glyph, then the words and the
-/// dot that follows them. A unit wider than the line wraps its own words.
-class _GlyphStatement extends StatelessWidget {
-  const _GlyphStatement({required this.terms, required this.fallback});
-
-  final List<_Term> terms;
-  final String fallback;
-
-  @override
-  Widget build(BuildContext context) {
-    if (terms.isEmpty) {
-      return Text(
-        fallback,
-        style: context.texts.body.copyWith(
-          color: context.colors.mutedForeground,
-        ),
-      );
-    }
-    final statement = [
-      for (final (count, label, _, _, _) in terms) label(count),
-    ].join(MxWorkloadBreakdownLine._separator);
-    return Semantics(
-      label: statement,
-      excludeSemantics: true,
-      child: Wrap(
-        spacing: context.dimens.space4,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          for (final (index, (count, label, ink, glyphInk, glyph))
-              in terms.indexed)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (glyph case final icon?) ...[
-                  Icon(
-                    icon,
-                    size: context.dimens.sizeIconInline,
-                    color: glyphInk,
-                  ),
-                  SizedBox(width: context.dimens.space4),
-                ],
-                Flexible(
-                  child: Text.rich(
-                    TextSpan(
-                      style: context.texts.body.copyWith(
-                        color: context.colors.mutedForeground,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: label(count),
-                          style: context.texts.body.copyWith(color: ink),
-                        ),
-                        if (index < terms.length - 1)
-                          const TextSpan(text: metaTermDot),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+  /// One line that ellipsizes: a row's metadata (S12, row 102).
+  Widget _oneLine(
+    BuildContext context,
+    List<_Term> terms,
+    bool isFallbackShown,
+  ) => Text.rich(
+    TextSpan(
+      style: context.texts.body.copyWith(color: context.colors.mutedForeground),
+      children: [
+        if (isFallbackShown) TextSpan(text: fallback),
+        for (final (index, (count, label, tone, _, _)) in terms.indexed) ...[
+          if (index > 0 || isFallbackShown) const TextSpan(text: _separator),
+          TextSpan(
+            text: label(count),
+            style: context.texts.body.copyWith(
+              color: MxTermLine.inkOf(context, tone),
             ),
+          ),
         ],
-      ),
-    );
-  }
+        if (suffix case final clause?) ...[
+          const TextSpan(text: _space),
+          TextSpan(text: clause),
+        ],
+      ],
+    ),
+    maxLines: 1,
+    softWrap: false,
+    overflow: TextOverflow.ellipsis,
+  );
 }
+
+/// A term: its count, its words, the words' tone, the glyph's tone and the
+/// glyph.
+typedef _Term = (int, String Function(int), MxTermTone, MxTermTone, IconData?);

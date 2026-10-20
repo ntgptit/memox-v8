@@ -277,7 +277,7 @@ Touch targets are `sizeControl` for every interactive control, whatever its pain
 
 **The Footer Pair Rule.** Two footer actions (`MxActionPair`) share the row while both labels fit their share on one line; when they do not, they stack.
 
-**The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps keeps doing so between whole terms; a title keeps one line.
+**The Wrap Rule.** A meta line, a breakdown line or a session context line that wraps does so only between whole terms, and no dot stands at either end of a line (`MxTermLine`, owner 2026-10-20); a line capped at a number of lines ends its last term in an ellipsis; a hint of phrases wraps as words, each dot kept on the word before it; a breadcrumb's "›" stays with the level after it; a title keeps one line.
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it; when the FAB hides (selection), the clearance goes with it.
 

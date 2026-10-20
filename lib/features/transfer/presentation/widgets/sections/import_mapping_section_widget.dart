@@ -4,13 +4,13 @@ import 'package:memox/features/transfer/presentation/states/card_import_state.da
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Step 2 of the import (kit 11): whether the first row is a header, and the
 /// field each column feeds. An unmapped face says so on its own row, above
@@ -67,11 +67,11 @@ class ImportMappingSectionWidget extends StatelessWidget {
             MxSettingsRow(
               label: l10n.importHeaderToggle,
               onTap: () => onHeaderRow(!draft.hasHeaderRow),
-              // The file's own column names keep their spaces; each dot
-              // stays with the name before it (The Wrap Rule).
+              // The file's own column names, a line of terms the row wraps
+              // between whole names (The Wrap Rule).
               subtitle: header
                   ?.where((cell) => cell.trim().isNotEmpty)
-                  .join(metaTermSeparator),
+                  .join(MxTermLine.separator),
               trailing: MxToggle(
                 isOn: draft.hasHeaderRow,
                 onChanged: onHeaderRow,

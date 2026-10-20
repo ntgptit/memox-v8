@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_hero_widget.dart';
 import 'package:memox/core/error/failure.dart';
@@ -24,8 +23,8 @@ import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-import '../../../support/wrap_rule.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
 
 // UC-STUDY-001 steps 1–4 on screen 14; IT-STUDY-001, IT-STUDY-004.
 
@@ -209,15 +208,14 @@ void main() {
       // What follows is SM-2's own: its stages line and its footer.
       if (type == SchedulerType.eightBox) return;
       expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
-      // The stages are a phrase; the count's terms stay whole (Wrap Rule).
-      expectBreaksOnlyBetweenWords(
+      // The stages and the count are whole terms, no dot at a line edge
+      // (The Wrap Rule, spec W1).
+      expectTermLineRule(
         tester,
-        find.text(
-          metaDots(
-            _en.studyEntryLearnLine(
-              _en.studyEntryLearnStagesSm2,
-              metaLine(_en.studyEntryLearnCount(1, 1)),
-            ),
+        findTermLine(
+          _en.studyEntryLearnLine(
+            _en.studyEntryLearnStagesSm2,
+            _en.studyEntryLearnCount(1, 1),
           ),
         ),
       );

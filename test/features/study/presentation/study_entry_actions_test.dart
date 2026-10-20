@@ -13,12 +13,16 @@ import 'package:memox/features/study/presentation/screens/study_entry_screen.dar
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 // Screen 14's actions and the direction sheet: UC-STUDY-001 steps 3–5, A3b;
 // UC-STUDY-003; BR-STUDY-004, BR-STUDY-018, BR-STUDY-020.
@@ -34,6 +38,9 @@ StudyEntryScreen _screen(String deckId, {ValueChanged<String>? onOpen}) =>
     );
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
+
+/// The section over the other starts while a session can be continued.
+final _otherSession = _en.studyEntryOtherSessionHeader.toUpperCase();
 
 void main() {
   libraryTest('Learn on the row opens a learning session (BR-STUDY-051)', (
@@ -80,10 +87,10 @@ void main() {
       env,
       _screen(leaf, onOpen: (id) => opened = id),
     );
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.studyEntryReviewCaption(3, 3)));
+    // No open session: no section over the choices, no prefix (spec E1).
+    expect(find.text(_otherSession), findsNothing);
+    expect(find.text(_en.studyEntryOtherSessionNote), findsNothing);
 
     await tester.tap(_button(_en.studyEntryReviewCta(3)));
     await tester.pumpAndSettle();
@@ -179,6 +186,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.studyEntryStartFailedTitle), findsOneWidget);
+    // The banner reads under the Resume card, above the other starts
+    // (plan Review Focus 5).
+    expect(
+      tester.getTopLeft(find.text(_en.studyEntryStartFailedTitle)).dy,
+      lessThan(tester.getTopLeft(find.text(_otherSession)).dy),
+    );
     expect(_button(_en.studyEntryContinue), findsOneWidget);
     expect(
       tester.widget<MxButton>(_button(_en.studyEntryTryAgain)).tone,
@@ -225,20 +238,38 @@ void main() {
       find.text(_en.studyEntryResumeOverline.toUpperCase()),
       findsOneWidget,
     );
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.studyEntryResumeLine(
-            _en.studyKindLearning,
-            _en.cardModeBrowse,
-            0,
-            2,
-          ),
+      findTermLine(
+        _en.studyEntryResumeLine(
+          _en.studyKindLearning,
+          _en.cardModeBrowse,
+          0,
+          2,
         ),
       ),
     );
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
+    // Every other start sits under a section that says it ends today's
+    // session, and the footer's caption leads with it (spec E1).
+    expect(find.text(_en.studyEntryResumeBody), findsOneWidget);
+    expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text(_otherSession)).dy,
+      allOf(
+        greaterThan(tester.getBottomLeft(_button(_en.studyEntryContinue)).dy),
+        lessThan(tester.getTopLeft(find.text(_en.studyEntryLearnTitle)).dy),
+      ),
+    );
+    expect(
+      findTermLine(
+        [
+          _en.studyEntryEndsSession,
+          _en.studyEntryReviewCaption(1, 1),
+        ].join(MxTermLine.separator),
+      ),
+      findsOneWidget,
+    );
     // The session's progress as a track too (FE-A8 H2).
     expect(
       tester.widget<MxLinearProgress>(find.byType(MxLinearProgress)).value,
@@ -268,6 +299,52 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(leaf));
 
     expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expectOnePrimaryPerDecision(tester);
+    // Learn in the footer ends today's session too (spec E1).
+    expect(find.text(_otherSession), findsOneWidget);
+    expect(findTermLine(_en.studyEntryEndsSession), findsOneWidget);
+  });
+
+  // Final review I2: SM-2 lists no mode, so with due cards alone there is no
+  // choice in the body; the section stays away and the caption says it.
+  libraryTest('SM-2 with due cards alone beside an open session: no empty '
+      'section; the caption leads with what the start ends (spec E1)', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, dueCards: 3);
+    await env.entries.openReviewSession(
+      deckId: leaf,
+      mode: StudyMode.selfAssess,
+      direction: DirectionChoice.koreanToMeaning,
+    );
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expect(find.text(_otherSession), findsNothing);
+    expect(find.text(_en.studyEntryOtherSessionNote), findsNothing);
+    expect(
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('eight boxes beside an open session: the caption leads with '
+      'what the start ends (spec E1)', (tester, env) async {
+    final leaf = await insertFiveDue(env.db, env.decks);
+    await env.entries.openReviewSession(deckId: leaf.id, mode: StudyMode.guess);
+    await pumpLibraryScreen(tester, env, _screen(leaf.id));
+
+    expect(find.text(_otherSession), findsOneWidget);
+    expect(
+      findTermLine(
+        [
+          _en.studyEntryEndsSession,
+          _en.studyEntryModeCaption(_en.cardModeMatch),
+        ].join(MxTermLine.separator),
+      ),
+      findsOneWidget,
+    );
     expectOnePrimaryPerDecision(tester);
   });
 
@@ -311,9 +388,9 @@ void main() {
     MxOptionRow row(String mode) =>
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
+      findTermLine(_en.studyEntryModeCaption(_en.cardModeMatch)),
     );
     // The start button states the count (R5, critique 2026-09-30 part 3b).
     // \s also matches the no-break spaces of a glued line.
@@ -324,9 +401,9 @@ void main() {
 
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
+      findTermLine(_en.studyEntryModeCaption(_en.cardModeGuess)),
     );
 
     await tester.tap(_button(_en.studyEntryReviewCta(5)));

@@ -19,6 +19,7 @@ import 'package:memox/features/topik/data/repositories/topik_attempt_repository_
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_line_chart.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_recent_attempt_row_widget.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
@@ -372,12 +373,12 @@ void main() {
     // Overall Progress' last-activity line and the attempt's own row.
     expect(findPlainTextContaining('1h 02m 11s'), findsNWidgets(2));
     expect(
-      find.byWidgetPredicate((widget) {
-        if (widget is! Text) return false;
-        final plain = (widget.data ?? '').replaceAll('\u00A0', ' ');
-        return plain.startsWith('Last activity') &&
-            plain.endsWith('1h 02m 11s');
-      }),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is MxTermLine &&
+            widget.spoken.startsWith('Last activity') &&
+            widget.spoken.endsWith('1h 02m 11s'),
+      ),
       findsOneWidget,
     );
   });

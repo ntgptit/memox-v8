@@ -22,13 +22,14 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 import '../../../support/contrast.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/progress_fixtures.dart';
 import '../../../support/progress_screen_fixtures.dart';
-import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 // Screen 22 at the library level: UC-PROGRESS-001 (main, A1, A2, A3, E1,
 // E2) and UC-PROGRESS-002 (main, A2, A3); FE-A9 D1, D2, D4, D8, D10, D11.
@@ -107,14 +108,11 @@ void main() {
     expect(
       find.descendant(
         of: total,
-        matching: find.text(metaLine(_en.progressRowCardsDays(26, 6))),
+        matching: findTermLine(_en.progressRowCardsDays(26, 6)),
       ),
       findsOneWidget,
     );
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.progressRowCardsDays(26, 6))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.progressRowCardsDays(26, 6)));
     // The total opens nothing, so it has no chevron (D3).
     expect(
       find.descendant(of: total, matching: find.byIcon(AppIcons.chevronRight)),
@@ -124,18 +122,15 @@ void main() {
     expect(
       find.descendant(
         of: topik,
-        matching: find.text(metaLine(_en.progressRowCardsDays(13, 6))),
+        matching: findTermLine(_en.progressRowCardsDays(13, 6)),
       ),
       findsOneWidget,
     );
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.progressRowCardsDays(13, 6))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.progressRowCardsDays(13, 6)));
     expect(
       find.descendant(
         of: topik,
-        matching: find.textContaining(_en.progressRowCardDaysLead),
+        matching: find.text(_en.progressRowCardDaysLead.trimRight()),
       ),
       findsOneWidget,
     );
@@ -182,7 +177,10 @@ void main() {
       // The card count leads the meta line (critique 2026-09-30 part 3d-1).
       find.descendant(
         of: basics,
-        matching: find.textContaining(metaTerms(['10 cards', ''])),
+        matching: findTermLine(
+          ['10 cards', ''].join(MxTermLine.separator),
+          isContaining: true,
+        ),
       ),
       findsOneWidget,
     );
@@ -457,7 +455,7 @@ void main() {
     expect(
       find.descendant(
         of: topik,
-        matching: find.textContaining(vi.progressRowCardDaysLead),
+        matching: find.text(vi.progressRowCardDaysLead.trimRight()),
       ),
       findsOneWidget,
     );

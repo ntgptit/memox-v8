@@ -28,6 +28,7 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Step 1 of the import (kit 11). While choosing: the two sources, then the
 /// file picker, the pasted text, the problem or the reading card. Once the
@@ -250,15 +251,13 @@ class _SourceChip extends StatelessWidget {
       _ => l10n.importPastedFormat,
     };
     final isFile = source is FileSource;
-    final meta = metaLine(
-      table == null
-          ? l10n.importFileReady(format)
-          : l10n.importFileRead(
-              format,
-              _dataRows(table.rows.length),
-              table.columnCount,
-            ),
-    );
+    final meta = table == null
+        ? l10n.importFileReady(format)
+        : l10n.importFileRead(
+            format,
+            _dataRows(table.rows.length),
+            table.columnCount,
+          );
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -279,12 +278,7 @@ class _SourceChip extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: context.texts.itemTitle,
                     ),
-                    Text(
-                      meta,
-                      style: context.texts.body.copyWith(
-                        color: context.colors.mutedForeground,
-                      ),
-                    ),
+                    MxTermLine.text(meta),
                   ],
                 ),
               ),

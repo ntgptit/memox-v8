@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_palette.dart';
 import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/shared/widgets/mx_term_flow.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -46,6 +47,13 @@ TextSpan _root(WidgetTester tester) =>
         as TextSpan;
 
 String _plain(WidgetTester tester) => _root(tester).toPlainText();
+
+MxTermLine _termLine(WidgetTester tester) => tester.widget<MxTermLine>(
+  find.descendant(
+    of: find.byType(MxWorkloadBreakdownLine),
+    matching: find.byType(MxTermLine),
+  ),
+);
 
 TextStyle? _termStyle(WidgetTester tester, String term) =>
     _root(tester).children!
@@ -152,11 +160,13 @@ void main() {
   // With only scheduled cards the line still says nothing is due, then the
   // scheduled term (critique 2026-09-30 part 3b review: the canWrap = false
   // case).
-  // The Wrap Rule (owner, Q-P6-4): a wrapping fallback is a line of terms
-  // too, glued like the counts it stands in for; a one-line row keeps it.
+  // The Wrap Rule (spec W1): a wrapping fallback is a line of terms too,
+  // split like the counts it stands in for; a one-line row keeps one text.
   for (final canWrap in [true, false]) {
-    testWidgets('the fallback is ${canWrap ? '' : 'not '}glued when the line '
-        '${canWrap ? 'wraps' : 'keeps one line'}', (tester) async {
+    testWidgets('the fallback is ${canWrap ? '' : 'not '}split into terms '
+        'when the line ${canWrap ? 'wraps' : 'keeps one line'}', (
+      tester,
+    ) async {
       await pumpMx(
         tester,
         _line(
@@ -170,12 +180,14 @@ void main() {
         ),
       );
 
-      expect(
-        _plain(tester),
-        canWrap
-            ? '12\u00A0cards\u00A0· nothing\u00A0due\u00A0· 3\u00A0scheduled'
-            : '12 cards · nothing due · 3 scheduled',
-      );
+      if (canWrap) {
+        expect(
+          [for (final term in _termLine(tester).terms) term.text],
+          ['12 cards', 'nothing due', '3 scheduled'],
+        );
+        return;
+      }
+      expect(_plain(tester), '12 cards · nothing due · 3 scheduled');
     });
   }
 
@@ -195,15 +207,14 @@ void main() {
       ),
     );
 
-    final text = tester.widget<Text>(
-      find.descendant(
-        of: find.byType(MxWorkloadBreakdownLine),
-        matching: find.byType(Text),
-      ),
+    expect(_termLine(tester).trail, 'across 4 decks');
+    expect(find.text('across 4 decks'), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+      greaterThan(_lineHeight(tester)),
+      reason: 'it wraps',
     );
-    expect(text.maxLines, isNull);
-    expect(text.softWrap, isTrue);
-    expect(text.overflow, isNot(TextOverflow.ellipsis));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('with glyphs a zero term drops and the order holds; with no '
@@ -265,8 +276,8 @@ void main() {
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
   });
 
-  testWidgets('a wrapping statement keeps each glyph with its words and its '
-      'dot, the glyph centred on them (BR-STUDY-076)', (tester) async {
+  testWidgets('a wrapping statement keeps each glyph with its words, the '
+      'glyph centred on them (BR-STUDY-076)', (tester) async {
     await pumpMx(tester, SizedBox(width: 90, child: _line(hasIcons: true)));
 
     final line = find.byType(MxWorkloadBreakdownLine);
@@ -276,17 +287,15 @@ void main() {
       reason: 'it wraps',
     );
     for (final (glyph, words) in [
-      (AppIcons.overdue, '3 overdue ·'),
-      (AppIcons.dueNow, '5 today ·'),
+      (AppIcons.overdue, '3 overdue'),
+      (AppIcons.dueNow, '5 today'),
       (AppIcons.newCards, '2 new'),
     ]) {
       final icon = find.descendant(of: line, matching: find.byIcon(glyph));
       final text = find.descendant(
         of: line,
         matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is RichText &&
-              widget.text.toPlainText().replaceAll(' ', ' ') == words,
+          (widget) => widget is RichText && widget.text.toPlainText() == words,
         ),
       );
       expect(text, findsOneWidget, reason: words);
@@ -298,33 +307,44 @@ void main() {
     }
   });
 
-  testWidgets('a wrapping line without glyphs never breaks inside a term nor '
-      'before its dot, at any width', (tester) async {
-    // From the width where the widest term and its dot fit on one line.
-    for (var width = 96.0; width <= 200; width += 2) {
-      await pumpMx(tester, SizedBox(width: width, child: _line(canWrap: true)));
-
-      final paragraph = tester.renderObject<RenderParagraph>(
-        find.descendant(
-          of: find.byType(MxWorkloadBreakdownLine),
-          matching: find.byType(RichText),
-        ),
-      );
-      final text = paragraph.text.toPlainText();
-      int lineOf(int offset) =>
-          paragraph
-              .getBoxesForSelection(
-                TextSelection(baseOffset: offset, extentOffset: offset + 1),
-              )
-              .single
-              .top ~/
-          _lineHeight(tester);
-      for (final term in ['3 overdue', '5 today', '2 new']) {
-        final start = text.indexOf(term.replaceAll(' ', ' '));
-        expect(start, isNot(-1), reason: '$term at $width');
-        final dot = text.indexOf('·', start);
-        final end = dot == -1 ? start + term.length - 1 : dot;
-        expect(lineOf(end), lineOf(start), reason: '$term at $width');
+  testWidgets('a wrapping line, with glyphs or without, never breaks inside '
+      'a term and never leaves a dot at a line edge (spec W1)', (tester) async {
+    const terms = ['3 overdue', '5 today', '2 new'];
+    // From the width where the widest term fits on one line.
+    for (final hasIcons in [false, true]) {
+      for (var width = 96.0; width <= 200; width += 2) {
+        await pumpMx(
+          tester,
+          SizedBox(
+            width: width,
+            child: _line(canWrap: true, hasIcons: hasIcons),
+          ),
+        );
+        final line = find.byType(MxWorkloadBreakdownLine);
+        Finder term(String words) =>
+            find.descendant(of: line, matching: find.text(words));
+        for (final words in terms) {
+          expect(
+            tester.getSize(term(words)).height,
+            _lineHeight(tester),
+            reason: '$words at $width',
+          );
+        }
+        final rows = {
+          for (final words in terms) tester.getTopLeft(term(words)).dy,
+        };
+        final flow = tester.allRenderObjects.whereType<RenderTermFlow>().single;
+        var shown = 0;
+        flow.visitChildren((child) {
+          final data = (child as RenderBox).parentData! as TermFlowParentData;
+          if (data.isShown) shown++;
+        });
+        // Two dots join three terms; each line break hides one.
+        expect(
+          shown,
+          terms.length + 2 - (rows.length - 1),
+          reason: 'at $width',
+        );
       }
     }
   });

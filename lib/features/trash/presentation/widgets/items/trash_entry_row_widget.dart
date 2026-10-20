@@ -9,6 +9,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// One Trash entry (kit 06): its kind, its name and time left, what went
 /// with it and when, and where it was (information only, BR-TRASH-012).
@@ -154,14 +155,9 @@ class _Lines extends StatelessWidget {
             timeLeftLabel,
           ],
         ),
-        Text(
-          meta,
-          maxLines: _metaLines,
-          overflow: TextOverflow.ellipsis,
-          style: context.texts.body.copyWith(
-            color: context.colors.mutedForeground,
-          ),
-        ),
+        // Whole terms with no dot at a line edge, two lines at most (The
+        // Wrap Rule, spec W1).
+        MxTermLine.text(meta, maxLines: _metaLines),
         Text(
           origin,
           maxLines: 1,

@@ -74,7 +74,7 @@ Every state above is built.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the schedule card's title is an eyebrow; the read-only field labels are field labels in sentence case. (Its "cycle headers stay section labels" gave way to DEV-170's field-label marks.)
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** a history badge names the outcome ("Again", "Good", "Remembered", "Forgot"…) in that outcome's tone (warning lapse, neutral relearning, success otherwise); the kind ("Learning", "Review", "Repeat") is plain text (since DEV-170 a body line under the badge); the metadata lines were text without glyphs (DEV-170 gives them glyphs); the schedule's "Algorithm" fact takes a full-width row of its own after the paired facts.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain text colour everywhere, the card list included (F6).
-- **Q-C-1 (owner, 2026-10-16):** the scheduler fact ("Eight boxes · cycle 2") and the history marks ("Cycle 2 · SM-2", "Beginning of history · card added …") wrap only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
+- **Q-C-1 (owner, 2026-10-16):** the scheduler fact ("Eight boxes · cycle 2") and the history marks ("Cycle 2 · SM-2", "Beginning of history · card added …") wrap only between whole terms, with no dot at a line edge (`MxTermLine`; The Wrap Rule, spec W1, 2026-10-20).
 
 ## Copy
 

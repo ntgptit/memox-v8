@@ -6,6 +6,7 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
@@ -141,12 +142,9 @@ class MxSettingsRow extends StatelessWidget {
                         ),
                         if (subtitle case final text?) ...[
                           SizedBox(height: context.dimens.spaceRowLine),
-                          Text(
-                            text,
-                            style: context.texts.body.copyWith(
-                              color: context.colors.mutedForeground,
-                            ),
-                          ),
+                          // A line of terms wraps between whole terms, with no
+                          // dot at a line edge (The Wrap Rule).
+                          MxTermLine.text(text),
                         ],
                         if (below case final control?) ...[
                           SizedBox(height: context.dimens.space12),

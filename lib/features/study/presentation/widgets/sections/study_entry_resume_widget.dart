@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
@@ -10,6 +9,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 14's resume banner (UC-STUDY-001 A3b, BR-STUDY-072): today's open
 /// session of this deck, its progress as text and track (FE-A8 H2), and the
@@ -44,19 +44,18 @@ class StudyEntryResumeWidget extends StatelessWidget {
         children: [
           MxDotOverline(label: l10n.studyEntryResumeOverline),
           SizedBox(height: context.dimens.space8),
-          Text(
-            // Short terms: they break only between them (The Wrap Rule).
-            metaLine(
-              progress == null
-                  ? l10n.studyEntryResumeLineNoProgress(kind, mode)
-                  : l10n.studyEntryResumeLine(
-                      kind,
-                      mode,
-                      progress.completed,
-                      progress.total,
-                    ),
-            ),
-            style: context.texts.sectionTitle,
+          // Short terms, laid out whole (The Wrap Rule).
+          MxTermLine.text(
+            progress == null
+                ? l10n.studyEntryResumeLineNoProgress(kind, mode)
+                : l10n.studyEntryResumeLine(
+                    kind,
+                    mode,
+                    progress.completed,
+                    progress.total,
+                  ),
+            role: MxTermLineRole.sectionTitle,
+            tone: MxTermTone.foreground,
           ),
           if (progress != null && progress.total > 0) ...[
             SizedBox(height: context.dimens.space8),

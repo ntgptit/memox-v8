@@ -1,16 +1,17 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 13's Resume card (UC-STUDY-002, BR-STUDY-075): today's open
 /// session in context, its progress and Resume (Study home spec H3):
@@ -129,7 +130,10 @@ class _Heading extends StatelessWidget {
               Text(
                 root == null
                     ? session.deckName
-                    : l10n.studyHomeResumeTitle(root, session.deckName),
+                    // "›" stays with the deck after it (spec B1).
+                    : breadcrumbLine(
+                        l10n.studyHomeResumeTitle(root, session.deckName),
+                      ),
                 // The user's own names: two lines, then an ellipsis (The One
                 // Line Rule).
                 // TalkBack reads the deck, then its root, not the › glyph.
@@ -140,16 +144,11 @@ class _Heading extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: context.texts.itemTitle,
               ),
-              Text(
-                // Short terms: they break only between them (The Wrap Rule).
-                metaLine(
-                  l10n.studyEntryResumeLineNoProgress(
-                    kind,
-                    l10n.studyMode(session.mode),
-                  ),
-                ),
-                style: context.texts.body.copyWith(
-                  color: context.colors.mutedForeground,
+              // Short terms, laid out whole (The Wrap Rule).
+              MxTermLine.text(
+                l10n.studyEntryResumeLineNoProgress(
+                  kind,
+                  l10n.studyMode(session.mode),
                 ),
               ),
             ],

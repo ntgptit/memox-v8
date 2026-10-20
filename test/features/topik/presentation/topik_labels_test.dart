@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
@@ -71,13 +70,6 @@ void main() {
     );
   });
 
-  test('a meta line breaks only between whole terms (The Wrap Rule)', () {
-    expect(
-      metaTerms(['Levels 1–2', 'No tests yet']),
-      'Levels\u00A01\u2060–\u20602\u00A0· No\u00A0tests\u00A0yet',
-    );
-  });
-
   test('audio clock, speed and option numbers (screen 37)', () {
     expect(topikClockText(0), '0:00');
     expect(topikClockText(42999), '0:42');
@@ -114,17 +106,17 @@ void main() {
   test('an answer\'s meta line: circled on screen, plain digits spoken, in '
       'every variant (owner 2026-10-17)', () {
     final both = en.topikAnswerMeta(selected: 3, right: 1, time: '2m 05s');
-    expect(plain(both.shown), 'Your answer ③ · Right answer ① · 2m 05s');
+    expect(both.shown, ['Your answer ③', 'Right answer ①', '2m 05s']);
     expect(both.spoken, 'Your answer 3, Right answer 1, 2m 05s');
 
     // The right answer hidden (the eye on 38).
     final hidden = en.topikAnswerMeta(selected: 3, right: null, time: '1m');
-    expect(plain(hidden.shown), 'Your answer ③ · 1m');
+    expect(hidden.shown, ['Your answer ③', '1m']);
     expect(hidden.spoken, 'Your answer 3, 1m');
 
     // Unanswered, the right answer shown.
     final blank = en.topikAnswerMeta(selected: null, right: 2);
-    expect(plain(blank.shown), 'Not answered · Right answer ②');
+    expect(blank.shown, ['Not answered', 'Right answer ②']);
     expect(blank.spoken, 'Not answered, Right answer 2');
 
     final spokenVi = vi.topikAnswerMeta(selected: 4, right: 2).spoken;

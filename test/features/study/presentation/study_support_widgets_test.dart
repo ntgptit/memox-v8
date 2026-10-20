@@ -18,6 +18,9 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/term_line.dart';
+
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 // FE-A6 P4: the study support widgets around a turn (the kit's StudyCtaRow,
 // the face card, the context line and the footer hint); the turn clock is in
@@ -88,16 +91,23 @@ void main() {
     env,
   ) async {
     const text =
-        'Tiếng Hàn TOPIK I · Từ vựng sơ cấp · Learning · Stage 1 of 3 · Match';
+        'Tiếng Hàn TOPIK I · Từ vựng sơ cấp chủ đề gia đình và trường học · '
+        'Learning · Stage 1 of 3 · Match · Round 2';
     await pumpLibraryScreen(
       tester,
       env,
       _host(SessionContextLineWidget(text: text, shown: text.toUpperCase())),
     );
-    final line = tester.widget<Text>(find.text(text.toUpperCase()));
+    final line = find.byType(MxTermLine);
 
-    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
-    expect(line.semanticsLabel, text);
+    expect(tester.widget<MxTermLine>(line).maxLines, 2);
+    expect(tester.widget<MxTermLine>(line).semanticsLabel, text);
+    // Cut at two lines, the last term in an ellipsis; no dot at an edge
+    // (The Wrap Rule, spec W1).
+    expect(isTermLineCut(tester, line), isTrue);
+    final oneLine = tester.getSize(find.text('LEARNING')).height;
+    expect(tester.getSize(line).height, lessThanOrEqualTo(oneLine * 2 + 0.5));
+    expectTermLineRule(tester, line);
   });
 
   libraryTest('the footer hint wraps, never cut, its glyph inline on the '
@@ -258,7 +268,7 @@ void main() {
         ),
       ),
     );
-    for (final text in ['WORDS · REVIEW', 'TERM']) {
+    for (final text in ['WORDS', 'TERM']) {
       final label = find.text(text);
       expect(
         tester.widget<Text>(label).style,

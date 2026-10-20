@@ -7,6 +7,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// A deck in reorder mode, in the browse row's shape: one MxCard per deck
 /// with the same glyph and structure line as the browse row (handoff 01,
@@ -32,12 +33,7 @@ class DeckReorderRowWidget extends StatelessWidget {
       // The meta slot, not the one-line subtitle: the structure line wraps
       // between whole terms at large text, as the browse row's does
       // (critique 2026-09-30).
-      meta: Text(
-        deckTileMeta(tile, context.l10n),
-        style: context.texts.body.copyWith(
-          color: context.colors.mutedForeground,
-        ),
-      ),
+      meta: MxTermLine.text(deckTileMeta(tile, context.l10n)),
       leading: MxIconTile(
         icon: deckTileGlyph(tile),
         size: MxIconTileSize.large,

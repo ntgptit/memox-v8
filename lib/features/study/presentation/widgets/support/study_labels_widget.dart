@@ -5,7 +5,6 @@ import 'package:memox/features/study/presentation/states/interval_span_state.dar
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/l10n/meta_line.dart';
 
 /// The study screens' names for the domain's modes, schedulers and reasons.
 extension StudyLabels on AppLocalizations {
@@ -19,14 +18,13 @@ extension StudyLabels on AppLocalizations {
   };
 
   /// Screen 14's footer caption under a review whose direction is asked
-  /// next: short terms, glued so they break only between them (The Wrap
-  /// Rule). The footer rules it one line (owner 2026-10-05).
+  /// next; the footer lays it out as a line of terms (The Wrap Rule).
   String studyEntryReviewCaptionLine(int shown, int due) =>
-      metaLine(studyEntryReviewCaption(shown, due));
+      studyEntryReviewCaption(shown, due);
 
-  /// Screen 14's footer caption naming the review [mode], glued as above.
+  /// Screen 14's footer caption naming the review [mode].
   String studyEntryModeCaptionLine(StudyMode mode) =>
-      metaLine(studyEntryModeCaption(studyMode(mode)));
+      studyEntryModeCaption(studyMode(mode));
 
   /// The entry's one-line description of a review mode; null for a mode
   /// the entry never lists as a choice (BR-STUDY-055).

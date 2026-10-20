@@ -11,7 +11,6 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_rail_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -19,6 +18,7 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// The card detail's scroll, ending in the card's review history
 /// (UC-CARD-002): a timeline, newest first, grouped by cycle (BR-CARD-017),
@@ -104,11 +104,9 @@ class CardHistoryScrollWidget extends ConsumerWidget {
       for (final (index, entry) in entries.indexed) ...[
         if (index == 0 || entries[index - 1].generation != entry.generation)
           _Marker(
-            label: metaLine(
-              l10n.cardHistoryCycle(
-                entry.generation,
-                l10n.cardScheduler(entry.schedulerType),
-              ),
+            label: l10n.cardHistoryCycle(
+              entry.generation,
+              l10n.cardScheduler(entry.schedulerType),
             ),
             isFirst: index == 0,
           ),
@@ -137,10 +135,8 @@ class CardHistoryScrollWidget extends ConsumerWidget {
         )
       else
         _Marker(
-          label: metaLine(
-            l10n.cardHistoryEnd(
-              DateFormat.yMMMd(locale).format(addedAt.toLocal()),
-            ),
+          label: l10n.cardHistoryEnd(
+            DateFormat.yMMMd(locale).format(addedAt.toLocal()),
           ),
           isEnd: true,
         ),
@@ -182,7 +178,11 @@ class _Marker extends StatelessWidget {
       gap: isEnd ? 0 : context.dimens.space8,
       child: Padding(
         padding: EdgeInsets.only(top: above),
-        child: Text(label, style: style),
+        // A line of terms: it wraps between whole terms (The Wrap Rule).
+        child: MxTermLine.text(
+          label,
+          tone: isEnd ? MxTermTone.muted : MxTermTone.foreground,
+        ),
       ),
     );
   }

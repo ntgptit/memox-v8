@@ -4249,9 +4249,21 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing; screen 13's Resume card session line (Study home spec H3)."
   },
-  "studyEntryResumeBody": "Continue where you stopped, or start something new — that ends this one and keeps its answers.",
+  "studyEntryResumeBody": "Continue where you stopped.",
   "@studyEntryResumeBody": {
-    "description": "Screen handoff 14 (FE-A6 P2): resume banner body."
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner body; what another start does is the note under it (spec E1)."
+  },
+  "studyEntryOtherSessionHeader": "Or start another session",
+  "@studyEntryOtherSessionHeader": {
+    "description": "Screen handoff 14: the section over Learn and the review options while today's session can be continued (spec E1)."
+  },
+  "studyEntryOtherSessionNote": "Starting one ends today's session. Its answers are kept.",
+  "@studyEntryOtherSessionNote": {
+    "description": "Screen handoff 14: the note under that section: what another start does to the open session (BR-STUDY-072; spec E1)."
+  },
+  "studyEntryEndsSession": "Ends today's session",
+  "@studyEntryEndsSession": {
+    "description": "Screen handoff 14: the footer caption's first term while today's session can be continued (spec E1)."
   },
   "studyEntryContinue": "Continue",
   "@studyEntryContinue": {

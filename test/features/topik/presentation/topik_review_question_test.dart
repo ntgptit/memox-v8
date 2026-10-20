@@ -8,10 +8,12 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_choice_mark.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
+import '../../../support/term_line.dart';
 
 TopikAttemptAnswer _answer(TopikQuestion q, int? selected) =>
     TopikAttemptAnswer(
@@ -91,8 +93,8 @@ void main() {
     // A screen reader gets plain digits for the circled ones.
     expect(
       tester
-          .widgetList<Text>(find.byType(Text))
-          .map((t) => t.semanticsLabel)
+          .widgetList<MxTermLine>(find.byType(MxTermLine))
+          .map((line) => line.semanticsLabel)
           .whereType<String>(),
       contains('Your answer 3, Right answer 1'),
     );
@@ -148,16 +150,10 @@ void main() {
       ),
     );
 
-    expect(
-      find.text('기획\u00A0회의\u00A0· n\u00A0· a planning meeting'),
-      findsOneWidget,
-    );
+    expect(findTermLine('기획 회의 · n · a planning meeting'), findsOneWidget);
     // No part of speech: one separator, never an empty term.
-    expect(find.text('회의\u00A0· a meeting'), findsOneWidget);
-    expect(
-      find.text('-(으)ㄹ\u00A0수\u00A0있다\u00A0· can do something'),
-      findsOneWidget,
-    );
+    expect(findTermLine('회의 · a meeting'), findsOneWidget);
+    expect(findTermLine('-(으)ㄹ 수 있다 · can do something'), findsOneWidget);
   });
 
   libraryTest('a right answer with no supporting content: no section', (

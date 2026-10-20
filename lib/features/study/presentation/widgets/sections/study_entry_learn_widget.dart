@@ -1,14 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 14's Learn row: the stages a learning session runs and how many
 /// new cards it takes (BR-STUDY-056, BR-STUDY-057). Its button starts the
@@ -32,27 +31,19 @@ class StudyEntryLearnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    // The stages are a phrase and wrap as words; the count's terms stay
-    // whole (The Wrap Rule).
-    final line = metaDots(
-      l10n.studyEntryLearnLine(
-        l10n.studyLearnStages(entry.schedulerType),
-        metaLine(
-          l10n.studyEntryLearnCount(offer.learnShown, entry.newCardCount),
-        ),
-      ),
+    // The stages and the count are laid out as whole terms; the stages of
+    // Eight boxes, wider than a line, wrap at their own spaces (The Wrap
+    // Rule).
+    final line = l10n.studyEntryLearnLine(
+      l10n.studyLearnStages(entry.schedulerType),
+      l10n.studyEntryLearnCount(offer.learnShown, entry.newCardCount),
     );
     return MxCard(
       isFullBleed: true,
       child: MxListRow(
         title: l10n.studyEntryLearnTitle,
         // The kit wraps the line; the row's own subtitle is one line.
-        meta: Text(
-          line,
-          style: context.texts.body.copyWith(
-            color: context.colors.mutedForeground,
-          ),
-        ),
+        meta: MxTermLine.text(line),
         trailing: _trailing(context),
       ),
     );

@@ -19,7 +19,6 @@ import 'package:memox/features/settings/presentation/controllers/settings_contro
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -32,6 +31,7 @@ import '../../../support/stored_settings.dart';
 import '../../../support/monitoring_fakes.dart';
 import '../../../support/sync_fakes.dart';
 import '../../../support/wrap_rule.dart';
+import '../../../support/term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -65,16 +65,14 @@ void main() {
     expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(metaLine(_en.settingsLanguageSystemHint(_en.languageEnglish))),
+      findTermLine(_en.settingsLanguageSystemHint(_en.languageEnglish)),
     );
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
-        ),
+      findTermLine(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
       ),
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
@@ -85,15 +83,14 @@ void main() {
       findsNothing,
       reason: 'no stepper on the hub',
     );
-    // The summary may wrap, never clip (review focus 4).
-    final summary = tester.widget<Text>(
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
-        ),
+    // The summary may wrap, never clip (review focus 4): a term line has no
+    // line cap, and the Wrap Rule check above holds it.
+    expect(
+      findTermLine(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
       ),
+      findsOneWidget,
     );
-    expect(summary.maxLines, isNull);
   });
 
   libraryTest('the Study defaults row opens screen 23a and reflects a '
@@ -112,12 +109,10 @@ void main() {
       _screen(onOpenStudyDefaults: () => opened++),
     );
 
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
-        ),
+      findTermLine(
+        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
       ),
     );
     await tester.tap(find.text(_en.settingsStudyDefaults));
@@ -139,10 +134,7 @@ void main() {
       _screen(onOpenReminder: () => opened++),
     );
 
-    expectBreaksOnlyBetweenWords(
-      tester,
-      find.text(metaLine(_en.settingsReminderOn('21:00'))),
-    );
+    expectTermLineRule(tester, findTermLine(_en.settingsReminderOn('21:00')));
     await tester.tap(find.text(_en.settingsReminder));
     expect(opened, 1);
     await tester.pump(const Duration(milliseconds: 200));
@@ -427,12 +419,10 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, _screen());
 
-    expectBreaksOnlyBetweenWords(
+    expectTermLineRule(
       tester,
-      find.text(
-        metaLine(
-          _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
-        ),
+      findTermLine(
+        _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
       ),
     );
     // \s also matches the no-break spaces of a glued line.
@@ -445,10 +435,8 @@ void main() {
     final vi = lookupAppLocalizations(const Locale('vi'));
     await pumpLibraryScreen(tester, env, _screen(), locale: const Locale('vi'));
 
-    final summary = find.text(
-      metaLine(
-        vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
-      ),
+    final summary = findTermLine(
+      vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
     );
     expectBreaksOnlyBetweenWords(tester, summary);
     // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
