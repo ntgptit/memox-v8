@@ -1,0 +1,129 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/app_palette.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/domain/models/study_home_model.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
+import 'package:memox/l10n/generated/app_localizations_en.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+
+import '../../../support/library_harness.dart';
+
+final _en = AppLocalizationsEn();
+
+StudyHomeDeck _deck(
+  String name, {
+  int overdue = 0,
+  int today = 0,
+  int fresh = 0,
+}) => StudyHomeDeck(
+  deckId: name,
+  name: name,
+  schedulerType: SchedulerType.eightBox,
+  cardCount: overdue + today + fresh + 1,
+  overdueCount: overdue,
+  dueTodayCount: today,
+  newCount: fresh,
+);
+
+/// The workload card over [decks], listed in BR-STUDY-076 order as the
+/// screen lists them.
+Future<List<String>> _pump(
+  WidgetTester tester,
+  LibraryEnv env,
+  List<StudyHomeDeck> decks, {
+  bool hasResume = false,
+  Brightness brightness = Brightness.light,
+}) async {
+  final opened = <String>[];
+  await pumpLibraryScreen(
+    tester,
+    env,
+    Scaffold(
+      body: StudyHomeWorkloadWidget(
+        workload: RootDeckWorkload(decks: decks, nextDueAt: null),
+        now: DateTime.utc(2026, 9, 27),
+        hasResume: hasResume,
+        onOpenDeck: opened.add,
+      ),
+    ),
+    brightness: brightness,
+  );
+  return opened;
+}
+
+void main() {
+  // The "waiting" glyph follows its eyebrow in onSurfaceVariant; it no
+  // longer borrows the Required foreground (critique 2026-09-30 part 2, P2).
+  libraryTest('the waiting glyph is the eyebrow colour (dark)', (
+    tester,
+    env,
+  ) async {
+    await _pump(tester, env, [
+      _deck('Verbs', today: 2),
+    ], brightness: Brightness.dark);
+
+    final glyph = find.byIcon(AppIcons.dueNow).first;
+    expect(
+      IconTheme.of(tester.element(glyph)).color,
+      appDarkColors.mutedForeground,
+    );
+  });
+
+  // Study home spec H2: the way in opens the first deck of the list with a
+  // due card, a tie falling to the list's own order; new cards alone are no
+  // review.
+  for (final (name, decks, target) in <(String, List<StudyHomeDeck>, String?)>[
+    (
+      'the first due deck of the list',
+      [_deck('IELTS', overdue: 3), _deck('Kanji', today: 2)],
+      'IELTS',
+    ),
+    (
+      'a tie: the one listed first',
+      [_deck('Alpha', today: 1), _deck('Beta', today: 1)],
+      'Alpha',
+    ),
+    (
+      'new cards before it in the list are skipped',
+      [_deck('New only', fresh: 9), _deck('Due', today: 1)],
+      'Due',
+    ),
+    ('new cards alone: no way in', [_deck('New only', fresh: 9)], null),
+  ]) {
+    libraryTest('the workload card opens $name (Study home spec H2)', (
+      tester,
+      env,
+    ) async {
+      final opened = await _pump(tester, env, decks);
+
+      if (target == null) {
+        expect(find.byType(MxButton), findsNothing);
+        return;
+      }
+      final button = find.widgetWithText(
+        MxButton,
+        _en.studyHomeReviewDeck(target),
+      );
+      expect(button, findsOneWidget);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(opened, [target]);
+    });
+  }
+
+  libraryTest('the way in is the one fill without a Resume card, an outline '
+      'under one (Study home spec H4)', (tester, env) async {
+    for (final (hasResume, tone) in [
+      (false, MxButtonTone.primary),
+      (true, MxButtonTone.outline),
+    ]) {
+      await _pump(tester, env, [
+        _deck('IELTS', overdue: 3),
+      ], hasResume: hasResume);
+      final button = tester.widget<MxButton>(find.byType(MxButton));
+      expect((button.tone, button.isBlock), (tone, true), reason: '$hasResume');
+    }
+  });
+}

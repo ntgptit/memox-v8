@@ -18,7 +18,7 @@ WHERE s.id = :session_id
 -- generation, out of the Trash and with a queue row left; the newest, of
 -- two started at once the higher id. Of any deck:
 resumableSession(:start_of_today AS DATETIME) AS ResumableSessionRow:
-SELECT s.**, d.name AS deck_name
+SELECT s.**, d.name AS deck_name, r.name AS root_name
 FROM study_session s
 JOIN deck d ON d.id = s.deck_id
 JOIN deck r ON r.id = s.root_id
@@ -32,7 +32,7 @@ LIMIT 1;
 -- The same, of :deck_id only.
 resumableSessionOfDeck(:start_of_today AS DATETIME, :deck_id AS TEXT)
   AS ResumableDeckSessionRow:
-SELECT s.**, d.name AS deck_name
+SELECT s.**, d.name AS deck_name, r.name AS root_name
 FROM study_session s
 JOIN deck d ON d.id = s.deck_id
 JOIN deck r ON r.id = s.root_id

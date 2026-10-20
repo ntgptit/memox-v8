@@ -17,7 +17,6 @@ MxWorkloadBreakdownLine _line({
   bool hasScheduledLabel = false,
   String fallback = 'Nothing due',
   String? suffix,
-  bool shouldKeepZeroTerms = false,
   bool hasIcons = false,
   bool? canWrap,
 }) => MxWorkloadBreakdownLine(
@@ -31,7 +30,6 @@ MxWorkloadBreakdownLine _line({
   scheduledLabel: hasScheduledLabel ? (n) => '$n scheduled' : null,
   fallback: fallback,
   suffix: suffix,
-  shouldKeepZeroTerms: shouldKeepZeroTerms,
   hasIcons: hasIcons,
   canWrap: canWrap ?? hasIcons,
 );
@@ -208,25 +206,19 @@ void main() {
     expect(text.overflow, isNot(TextOverflow.ellipsis));
   });
 
-  testWidgets('a statement keeps a zero term, muted in the label weight, and '
-      'never falls back (BR-STUDY-076)', (tester) async {
-    await pumpMx(
-      tester,
-      _line(overdue: 0, today: 0, fresh: 2, shouldKeepZeroTerms: true),
-    );
+  testWidgets('with glyphs a zero term drops and the order holds; with no '
+      'term left the fallback is the line (Study home spec H1)', (
+    tester,
+  ) async {
+    await pumpMx(tester, _line(overdue: 0, today: 0, fresh: 2, hasIcons: true));
+    expect(find.text('2 new'), findsOneWidget);
+    expect(find.textContaining('0 '), findsNothing);
+    expect(find.byIcon(AppIcons.newCards), findsOneWidget);
+    expect(find.byIcon(AppIcons.overdue), findsNothing);
 
-    expect(_plain(tester), '0 overdue · 0 today · 2 new');
-    for (final zero in ['0 overdue', '0 today']) {
-      expect(_termStyle(tester, zero)!.color, colors.mutedForeground);
-      expect(_termStyle(tester, zero)!.fontWeight, _label(tester).fontWeight);
-    }
-    expect(_termStyle(tester, '2 new')!.color, colors.mutedForeground);
-
-    await pumpMx(
-      tester,
-      _line(overdue: 0, today: 0, fresh: 0, shouldKeepZeroTerms: true),
-    );
-    expect(_plain(tester), '0 overdue · 0 today · 0 new');
+    await pumpMx(tester, _line(overdue: 0, today: 0, fresh: 0, hasIcons: true));
+    expect(find.text('Nothing due'), findsOneWidget);
+    expect(find.byType(Icon), findsNothing);
   });
 
   testWidgets(
@@ -235,10 +227,7 @@ void main() {
     (tester) async {
       await pumpMx(
         tester,
-        SizedBox(
-          width: 320,
-          child: _line(today: 0, shouldKeepZeroTerms: true, hasIcons: true),
-        ),
+        SizedBox(width: 320, child: _line(today: 0, hasIcons: true)),
       );
 
       final glyphs = tester
@@ -252,7 +241,6 @@ void main() {
           .toList();
       expect(glyphs, [
         (AppIcons.overdue, mx.warning),
-        (AppIcons.dueNow, colors.mutedForeground),
         (AppIcons.newCards, colors.mutedForeground),
       ]);
       final semantics = tester.widget<Semantics>(
@@ -263,7 +251,7 @@ void main() {
             )
             .first,
       );
-      expect(semantics.properties.label, '3 overdue · 0 today · 2 new');
+      expect(semantics.properties.label, '3 overdue · 2 new');
       expect(semantics.excludeSemantics, isTrue);
       expect(
         tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,

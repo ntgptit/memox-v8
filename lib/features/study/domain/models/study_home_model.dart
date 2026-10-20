@@ -23,6 +23,7 @@ final class ResumableSession {
   const ResumableSession({
     required this.sessionId,
     required this.deckName,
+    required this.rootName,
     required this.kind,
     required this.mode,
     required this.progress,
@@ -32,6 +33,11 @@ final class ResumableSession {
 
   /// The deck the session was opened on: a sub-deck or a root.
   final String deckName;
+
+  /// The root of [deckName], which the Resume card names for context;
+  /// null when the session was opened on the root itself (Study home spec
+  /// H3).
+  final String? rootName;
 
   /// Both read from the session row, never inferred (BR-SRS-015,
   /// BR-MODE-008).
@@ -82,6 +88,16 @@ final class RootDeckWorkload extends StudyHomeContent {
   /// Learned cards resting until they fall due: the total less New and Due,
   /// from the same snapshot (BR-STUDY-068). Never a headline.
   int get scheduledCount => _sum((deck) => deck.scheduledCount);
+
+  /// The deck the workload card opens (Study home spec H2): the first in
+  /// the BR-STUDY-076 order with a due card, so a tie falls to that order's
+  /// own tie-break; null when nothing is due.
+  StudyHomeDeck? get priorityDueDeck {
+    for (final deck in decks) {
+      if (deck.overdueCount + deck.dueTodayCount > 0) return deck;
+    }
+    return null;
+  }
 
   /// The decks with any workload: "across K decks".
   int get workloadDeckCount => decks.where((deck) => deck.hasWorkload).length;

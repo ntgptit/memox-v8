@@ -132,14 +132,18 @@ void main() {
       find.text(_en.studyHomeResumeOverline.toUpperCase()),
       findsOneWidget,
     );
-    expect(find.text('Lesson'), findsOneWidget);
+    // The deck in context, under its root (Study home spec H3).
+    expect(
+      find.text(_en.studyHomeResumeTitle('Korean', 'Lesson')),
+      findsOneWidget,
+    );
     expect(find.byType(MxLinearProgress), findsOneWidget);
     expect(find.text(_en.studyHomeResume), findsOneWidget);
 
     expect(find.text(_en.studyHomeDueTitle(5)), findsOneWidget);
     expect(find.textContaining(_en.studyHomeAcrossDecks(2)), findsOneWidget);
-    // A summary, not a door: no hero ground (critique 2026-09-30 part 3c-1,
-    // R2; DESIGN.md: a hero leads somewhere tappable).
+    // No hero ground: it opens a deck and starts nothing (Study home spec
+    // H2; critique 2026-09-30 part 3c-1).
     final block = tester.widget<MxCard>(
       find
           .descendant(
@@ -240,12 +244,14 @@ void main() {
     expect(find.textContaining(RegExp(r'\d')), findsNothing);
   });
 
-  libraryTest('a deck row states its three counts even at zero, each with its '
-      'glyph; a deck with no card says so (BR-STUDY-076, BR-STUDY-077)', (
+  libraryTest('a deck row states only its counts with work, in order, each '
+      'with its glyph; with none it says nothing is due, and a deck with no '
+      'card says so (BR-STUDY-076, BR-STUDY-077, Study home spec H1)', (
     tester,
     env,
   ) async {
     await _newRoot(env, 'Spanish', 2);
+    await _restingRoot(env, DateTime(2026, 9, 25));
     await env.decks.root('Empty');
     await pumpLibraryScreen(tester, env, _screen(_Taps()));
     await _settle(tester);
@@ -270,10 +276,14 @@ void main() {
           .data;
     }
 
+    expect(statementOf('Spanish'), _en.workloadNew(2));
+    // It still opens, to study ahead (BR-STUDY-008).
+    expect(statementOf('Resting'), _en.studyHomeNothingDue);
     expect(
-      statementOf('Spanish'),
-      '${_en.workloadOverdue(0)} · ${_en.workloadToday(0)} · '
-      '${_en.workloadNew(2)}',
+      tester
+          .widget<MxListRow>(find.widgetWithText(MxListRow, 'Resting'))
+          .hasChevron,
+      isTrue,
     );
     expect(statementOf('Empty'), _en.workloadNoCards);
   });

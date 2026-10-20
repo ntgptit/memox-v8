@@ -124,7 +124,7 @@ total (85) equals the number of Dart files listed: 74 from
 | `lib/shared/widgets/mx_tooltip.dart` | `MxTooltip` | DIRECT_FORUI | `FTooltip` | none | Shows `label` on long press, hover or focus. Wrapped in `MergeSemantics` so ForUI's long-press action folds into the control's labelled node. |
 | `lib/shared/widgets/mx_two_columns.dart` | `MxTwoColumns` | CUSTOM_FLUTTER | none | none | One column, or two from a content width of 672. Chooses by the width it is given, not the window size class. |
 | `lib/shared/widgets/mx_user_edits.dart` | `MxUserEdits` | INFRASTRUCTURE | none imported; plugs into the `onChange` of `FTextFieldControl.managed` and the field's input formatters | none | Reports only the person's edits (type, paste, delete), not selection moves, IME composing or text the code sets. Used by `MxTextField`, `MxSearchField`, `MxCodeField`. |
-| `lib/shared/widgets/mx_workload_breakdown_line.dart` | `MxWorkloadBreakdownLine` | CUSTOM_FLUTTER | none | none | "N overdue · N today · N new" with a fixed colour per term, in the `body` role (13/400), as a row's metadata line (type scale spec 2026-10-20). Zero terms drop out unless `shouldKeepZeroTerms`. With `hasIcons` the line is read as its words alone. Imports `meta_line` from `lib/l10n`. |
+| `lib/shared/widgets/mx_workload_breakdown_line.dart` | `MxWorkloadBreakdownLine` | CUSTOM_FLUTTER | none | none | "N overdue · N today · N new" with a fixed colour per term, in the `body` role (13/400), as a row's metadata line (type scale spec 2026-10-20). A zero term drops out with its separator (Study home spec H1). With `hasIcons` the line is read as its words alone. Imports `meta_line` from `lib/l10n`. |
 
 ## `lib/core/theme`
 

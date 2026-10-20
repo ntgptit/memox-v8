@@ -1,6 +1,6 @@
 # Study home (13): what to study first, at a glance
 
-Status: draft for the owner's review (2026-10-20). Decisions H1–H4 are the
+Status: approved by the owner (2026-10-20). Decisions H1–H4 are the
 owner's, from the UX review of 2026-10-20.
 Tier 2: one screen, but it changes BR-STUDY-076 and two screen rulings
 (R2, S9).
@@ -37,8 +37,9 @@ The main issues:
 
 ### 3.1 Deck rows (H1)
 
-- `MxWorkloadBreakdownLine` with `shouldKeepZeroTerms: false`: a zero term
-  drops, and the order of what is left does not change.
+- `MxWorkloadBreakdownLine` drops a zero term, and the order of what is
+  left does not change. Its `shouldKeepZeroTerms` goes: these rows were its
+  last caller.
 - **All zero, deck has cards:** the row shows "Nothing due" ("Chưa có thẻ
   đến hạn").
   - The owner's example was "Nothing to study". "Nothing due" is proposed

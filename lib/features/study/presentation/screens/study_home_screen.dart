@@ -116,6 +116,8 @@ class StudyHomeScreen extends ConsumerWidget {
           StudyHomeWorkloadWidget(
             workload: workload,
             now: ref.watch(dayClockProvider).now(),
+            hasResume: session != null,
+            onOpenDeck: onOpenDeck,
           ),
         ],
         end: [
