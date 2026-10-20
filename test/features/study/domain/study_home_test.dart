@@ -97,7 +97,7 @@ void main() {
   });
 
   test('the hero adds up the list: the due and the new cards, and the decks '
-      'with work (UC-STUDY-002 step 3, BR-STUDY-068)', () {
+      'with a due card (UC-STUDY-002 step 3, BR-STUDY-068)', () {
     final content = studyHomeContentOf([
       deck('a', overdue: 3, dueToday: 2, fresh: 1),
       deck('b', dueToday: 4),
@@ -111,10 +111,10 @@ void main() {
         content.dueTodayCount,
         content.newCount,
         content.dueCount,
-        content.workloadDeckCount,
+        content.dueDeckCount,
         content.isCaughtUp,
       ),
-      (3, 6, 6, 9, 3, false),
+      (3, 6, 6, 9, 2, false),
     );
   });
 

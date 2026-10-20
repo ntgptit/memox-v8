@@ -125,6 +125,7 @@ void main() {
       String name, {
       List<Override> overrides = const [],
       Finder? scrollTo,
+      double textScale = 1,
     }) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(
@@ -132,6 +133,7 @@ void main() {
           env,
           _screen(),
           brightness,
+          textScale: textScale,
           overrides: [
             ...topikContentOverrides(topikScreenTests()),
             ...overrides,
@@ -155,6 +157,16 @@ void main() {
     libraryTest('study home, loaded, $theme', (tester, env) async {
       await _resume(env, await _library(env));
       await shoot(tester, env, 'loaded');
+    });
+
+    // Resume drops under the progress as a block at a large text scale
+    // (Study home spec H3).
+    libraryTest('study home, resume at a 1.3 text scale, $theme', (
+      tester,
+      env,
+    ) async {
+      await _resume(env, await _library(env));
+      await shoot(tester, env, 'resume_large_text', textScale: 1.3);
     });
 
     libraryTest('study home, no resume, $theme', (tester, env) async {
@@ -181,6 +193,14 @@ void main() {
       await _deck(env, 'Korean Basics', resting: 4);
       await _deck(env, 'IELTS Academic Word List', resting: 6);
       await shoot(tester, env, 'zero');
+    });
+
+    // Only new cards wait: nothing is due, the rows hold the counts (Study
+    // home spec §4).
+    libraryTest('study home, new cards only, $theme', (tester, env) async {
+      await _deck(env, 'IT', fresh: 2);
+      await _deck(env, 'Korean Basics', resting: 2);
+      await shoot(tester, env, 'new_only');
     });
 
     libraryTest('study home, no decks, $theme', (tester, env) async {

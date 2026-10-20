@@ -95,6 +95,9 @@ void main() {
       isA<ResumableSession>()
           .having((session) => session.sessionId, 'id', learning)
           .having((session) => session.deckName, 'deck', 'Lesson A')
+          // A sub-deck session names its root, for the card's context
+          // (Study home spec H3).
+          .having((session) => session.rootName, 'root', 'Korean')
           .having((session) => session.kind, 'kind', SessionKind.learning)
           .having((session) => session.mode, 'mode', stage),
     );
@@ -110,6 +113,8 @@ void main() {
       isA<ResumableSession>()
           .having((session) => session.sessionId, 'id', review)
           .having((session) => session.deckName, 'deck', 'Korean')
+          // A root session has no root to name.
+          .having((session) => session.rootName, 'root', isNull)
           .having((session) => session.kind, 'kind', SessionKind.reviewing)
           .having((session) => session.mode, 'mode', StudyMode.recall),
     );

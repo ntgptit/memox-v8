@@ -4219,7 +4219,7 @@
   "@studyEntryResumeOverline": {
     "description": "Screen handoff 14 (FE-A6 P2): resume banner overline."
   },
-  "studyEntryResumeLine": "{kind} · {mode} · {done} of {total} cards",
+  "studyEntryResumeLine": "{kind} · {mode} · {done} / {total} cards",
   "@studyEntryResumeLine": {
     "placeholders": {
       "kind": {
@@ -4235,7 +4235,7 @@
         "type": "int"
       }
     },
-    "description": "Screen handoff 14 (FE-A6 P2): resume banner line."
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner line; the count reads as on screen 13 (owner 2026-10-20)."
   },
   "studyEntryResumeLineNoProgress": "{kind} · {mode}",
   "@studyEntryResumeLineNoProgress": {
@@ -4247,7 +4247,7 @@
         "type": "String"
       }
     },
-    "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing."
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing; screen 13's Resume card session line (Study home spec H3)."
   },
   "studyEntryResumeBody": "Continue where you stopped, or start something new — that ends this one and keeps its answers.",
   "@studyEntryResumeBody": {
@@ -5715,6 +5715,55 @@
   "studyHomeResumeFailed": "Your answers are kept. Couldn't resume the session, so try again.",
   "@studyHomeResumeFailed": {
     "description": "Screen handoff 13: toast when Resume cannot be written, local-first (audit 2026-10-17)."
+  },
+  "studyHomeNothingDue": "Nothing due",
+  "@studyHomeNothingDue": {
+    "description": "Screen handoff 13: a deck row with cards but no overdue, today or new card; the row still opens to study ahead (BR-STUDY-076, BR-STUDY-008)."
+  },
+  "studyHomeReviewDeck": "Review {deck}",
+  "@studyHomeReviewDeck": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 13: the workload card's action, opening the Study entry of the deck with the most urgent due cards (Study home spec H2)."
+  },
+  "studyHomeResumeTitle": "{root} › {deck}",
+  "@studyHomeResumeTitle": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 13: the Resume card's title for a session on a sub-deck: its root, then the deck (Study home spec H3)."
+  },
+  "studyHomeResumeTitleSpoken": "{deck}, in {root}",
+  "@studyHomeResumeTitleSpoken": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 13: what TalkBack reads for the Resume card's title on a sub-deck, without the › glyph."
+  },
+  "studyHomeResumeProgress": "{done} / {total} cards",
+  "@studyHomeResumeProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 13: the Resume card's progress, beside its track (Study home spec H3)."
   },
   "studyHomeWaiting": "Waiting for you",
   "@studyHomeWaiting": {

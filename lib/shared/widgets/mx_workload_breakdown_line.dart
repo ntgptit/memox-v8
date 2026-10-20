@@ -5,8 +5,8 @@ import 'package:memox/l10n/meta_line.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
 /// term across the whole product, and an optional muted "N scheduled".
-/// - A term at zero drops out together with its separator, unless
-///   [shouldKeepZeroTerms] is set.
+/// - A term at zero drops out together with its separator (Study home spec
+///   H1: only the counts with work show).
 /// - The order is urgency first, and it never changes.
 /// - When nothing is due, [fallback] is the whole line.
 ///
@@ -27,7 +27,6 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     this.scheduledCount = 0,
     this.scheduledLabel,
     this.canWrap = false,
-    this.shouldKeepZeroTerms = false,
     this.hasIcons = false,
   }) : assert(
          overdueCount >= 0 &&
@@ -68,12 +67,6 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   /// (BR-STUDY-076), wraps so no part is cut.
   final bool canWrap;
 
-  /// Study Home's deck rows state all three counts even at zero
-  /// (BR-STUDY-076); a zero term is muted, since a count at rest is the
-  /// schedule running, not a warning (BR-STUDY-008). [fallback] then never
-  /// shows.
-  final bool shouldKeepZeroTerms;
-
   /// Leads each of the three terms with its own glyph in the term's ink, so
   /// colour is never the only signal (BR-STUDY-076). Each term, its glyph
   /// and its dot then wrap as one unit, and the line is read as its words
@@ -109,7 +102,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
       (newCount, newLabel, muted, muted, AppIcons.newCards),
       if (scheduledLabel case final label?)
         (scheduledCount, label, muted, muted, null),
-    ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();
+    ].where((term) => term.$1 > 0).toList();
     if (hasIcons) return _GlyphStatement(terms: terms, fallback: fallback);
     // Only the Scheduled term has no glyph. Without an overdue, today or new
     // term the fallback still says nothing is due, and Scheduled follows it
@@ -129,11 +122,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
               TextSpan(text: canWrap ? metaTermSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
-              style: count > 0
-                  ? context.texts.body.copyWith(color: ink)
-                  : context.texts.body.copyWith(
-                      color: context.colors.mutedForeground,
-                    ),
+              style: context.texts.body.copyWith(color: ink),
             ),
           ],
           if (suffix case final clause?) ...[
@@ -163,7 +152,6 @@ class _GlyphStatement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final muted = context.colors.mutedForeground;
     if (terms.isEmpty) {
       return Text(
         fallback,
@@ -191,7 +179,7 @@ class _GlyphStatement extends StatelessWidget {
                   Icon(
                     icon,
                     size: context.dimens.sizeIconInline,
-                    color: count > 0 ? glyphInk : muted,
+                    color: glyphInk,
                   ),
                   SizedBox(width: context.dimens.space4),
                 ],
@@ -204,9 +192,7 @@ class _GlyphStatement extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: label(count),
-                          style: count > 0
-                              ? context.texts.body.copyWith(color: ink)
-                              : null,
+                          style: context.texts.body.copyWith(color: ink),
                         ),
                         if (index < terms.length - 1)
                           const TextSpan(text: metaTermDot),

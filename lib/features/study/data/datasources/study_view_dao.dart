@@ -15,9 +15,13 @@ typedef SessionViewRow = ({
 /// The rows of a round, done and in all.
 typedef RoundCounts = ({int completed, int total});
 
-/// The session the Study tab's Resume card offers, with the name of the deck
-/// it was opened on.
-typedef ResumableRow = ({StudySession session, String deckName});
+/// The session the Study tab's Resume card offers, with the names of the deck
+/// it was opened on and of that deck's root.
+typedef ResumableRow = ({
+  StudySession session,
+  String deckName,
+  String rootName,
+});
 
 /// The counts a session's summary shows (spec D11).
 typedef SummaryCounts = ({
@@ -110,13 +114,17 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
   }) async {
     if (deckId == null) {
       final row = await resumableSession(startOfToday).getSingleOrNull();
-      return row == null ? null : (session: row.s, deckName: row.deckName);
+      return row == null
+          ? null
+          : (session: row.s, deckName: row.deckName, rootName: row.rootName);
     }
     final row = await resumableSessionOfDeck(
       startOfToday,
       deckId,
     ).getSingleOrNull();
-    return row == null ? null : (session: row.s, deckName: row.deckName);
+    return row == null
+        ? null
+        : (session: row.s, deckName: row.deckName, rootName: row.rootName);
   }
 
   /// Every root deck with the workload of its whole tree: the statement the

@@ -75,13 +75,15 @@ class _Row extends StatelessWidget {
         overdueLabel: l10n.workloadOverdue,
         todayLabel: l10n.workloadToday,
         newLabel: l10n.workloadNew,
-        // A deck with cards states all three counts, even at zero, each with
-        // its glyph, and wraps rather than cut one; a deck with none has no
-        // workload to state (BR-STUDY-076, BR-STUDY-077).
-        shouldKeepZeroTerms: deck.canStudy,
+        // Only the counts with work show, Overdue → Today → New, each with
+        // its glyph, wrapping rather than cut; with none, a deck with cards
+        // says nothing is due (it still opens to study ahead) and one
+        // without says so (BR-STUDY-076, BR-STUDY-077, Study home spec H1).
         hasIcons: true,
         canWrap: true,
-        fallback: l10n.workloadNoCards,
+        fallback: deck.canStudy
+            ? l10n.studyHomeNothingDue
+            : l10n.workloadNoCards,
       ),
       // Every studiable row ends alike; its counts are in the meta line
       // (critique 2026-09-30).

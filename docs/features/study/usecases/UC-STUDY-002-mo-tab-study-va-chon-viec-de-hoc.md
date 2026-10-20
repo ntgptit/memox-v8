@@ -18,14 +18,19 @@ code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart]
    kèm workload — cùng một transaction, không phải hai lần đọc rời. Màn
    hình là **chỉ-đọc**: vào tab, cuộn hay đổi tab không ghi gì (BR-STUDY-075).
 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói
-   deck nào, loại phiên gì, đang ở chặng nào — cả hai giá trị lấy từ chính hàng
-   session, không suy ra (BR-SRS-015, BR-MODE-008).
-3. Dưới Resume là danh sách root deck, mỗi hàng có tên deck, nhãn scheduler khi
-   biết, ba con số Overdue/Due today/New và **một** hành động Study. Thứ tự giảm
-   dần theo ba khoá đó, tie-break theo tên đã fold rồi `id` (BR-STUDY-076).
+   deck nào (kèm root khi phiên mở trên deck con), loại phiên gì, đang ở chặng
+   nào — loại phiên và mode lấy từ chính hàng session, không suy ra
+   (BR-SRS-015, BR-MODE-008).
+3. Dưới Resume là thẻ workload: tổng số thẻ đang chờ, và khi có thẻ đến hạn
+   (Overdue hoặc Due today), một nút "Ôn {deck}" trỏ tới deck đầu tiên của danh
+   sách có thẻ đến hạn. Dưới nữa là danh sách root deck, mỗi hàng có tên deck,
+   nhãn scheduler khi biết, các con số Overdue/Due today/New khác 0 và **một**
+   hành động Study. Thứ tự giảm dần theo ba khoá đó, tie-break theo tên đã fold
+   rồi `id` (BR-STUDY-076).
 4. Chạm Resume mở đúng session và đúng lượt đã lưu (BR-STUDY-036), không tạo session
-   thứ hai. Chạm Study trên một deck mở study entry của deck đó (UC-STUDY-001), nơi lựa
-   chọn giữa học mới và ôn tập mới được đưa ra.
+   thứ hai. Chạm "Ôn {deck}" hoặc Study trên một deck mở study entry của deck đó
+   (UC-STUDY-001), nơi lựa chọn giữa học mới và ôn tập mới được đưa ra; nút
+   không tự tạo phiên và không đụng tới phiên đang dở (BR-STUDY-075).
 5. Kết thúc, bỏ dở hoặc invalidate một phiên rồi quay lại: danh sách tự cập nhật
    qua stream, không reload cả route và không giữ con số cũ.
 
@@ -38,7 +43,10 @@ code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart]
   không quảng cáo Resume. Việc đóng session cũ vẫn thuộc BR-STUDY-072 và xảy ra khi
   người dùng thực sự vào luồng, không phải khi màn hình này rần.
 - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dòng
-  nói hiện chưa có thẻ nào tới hạn; deck vẫn mở được để học trước (BR-STUDY-008).
+  nói hiện chưa có thẻ nào tới hạn; thẻ workload không có nút ôn; hàng deck còn
+  card ghi "Chưa có thẻ đến hạn" và vẫn mở được để học trước (BR-STUDY-008).
+  Chỉ còn thẻ New: thẻ workload ghi "Hiện chưa có thẻ đến hạn", không có số và
+  không có nút ôn; số New nằm ở từng hàng deck (BR-STUDY-068).
 - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-STARTER-001),
   lối thứ hai là về Library.
 - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để thêm
@@ -73,6 +81,8 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên có thể tiếp tục và workload của các root deck đến từ một snapshot, và việc đọc không ghi gì, kể cả khi còn phiên của ngày trước đang mở (BR-STUDY-075, BR-STUDY-020).
 - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** thẻ Resume nêu đúng tên deck, `kind` và mode lấy từ hàng session, kể cả khi phiên mở trên deck con (BR-SRS-015, BR-MODE-008, BR-STUDY-075).
 - [ ] **Given** nhiều root deck có workload khác nhau, **when** danh sách hiện, **then** thứ tự giảm dần theo Overdue, rồi Due today, rồi New (không theo tổng), hoà thì theo tên đã fold rồi `id` (BR-STUDY-076).
+- [ ] **Given** một deck có 0 Overdue, 0 Due today và 2 New, **when** danh sách hiện, **then** hàng chỉ ghi "2 new"; deck còn card mà cả ba bằng 0 ghi "Chưa có thẻ đến hạn" (BR-STUDY-076).
+- [ ] **Given** hai deck có thẻ đến hạn, **when** chạm "Ôn {deck}" trên thẻ workload, **then** study entry của deck đứng trước trong danh sách mở ra, không ghi gì; chỉ có thẻ New thì không có nút (BR-STUDY-075, BR-STUDY-076).
 - [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** đúng phiên đó được mở lại tại lượt đã lưu và không có phiên thứ hai; nếu phiên vừa hết hạn thì bị từ chối và Study Home sẵn sàng lại (BR-STUDY-072, BR-STUDY-036).
 - [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộc ngày học cũ, hết hàng đợi hay thuộc generation cũ, **when** màn hình tải, **then** không có thẻ Resume (BR-STUDY-075, A1, A2).
 - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then** màn hiện trạng thái đã bắt kịp và các deck vẫn mở được để học trước (BR-STUDY-008, A3).
