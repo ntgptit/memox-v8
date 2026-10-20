@@ -6,7 +6,23 @@ import 'package:memox/core/theme/app_theme.dart';
 import 'widget_harness.dart';
 import 'theme_harness.dart';
 
-const Duration _indicatorFrame = Duration(milliseconds: 300);
+/// How long after the mount a themed golden is captured: an indeterminate
+/// indicator shows its arc there, deterministically, instead of its empty
+/// first frame.
+const Duration goldenCaptureTime = Duration(milliseconds: 300);
+
+/// Advances a freshly mounted tree to [goldenCaptureTime] in two frames, the
+/// first right after the mount. An entrance a widget starts on the frame
+/// after its mount (a field's error line, which ForUI expands when its
+/// error variant arrives) would otherwise start on the capture frame itself
+/// and be captured at its first frame; this way it has the rest of the time
+/// to finish. Time-driven motion, such as a spinner, lands where one step
+/// would put it.
+Future<void> pumpToGoldenFrame(WidgetTester tester) async {
+  const first = Duration(milliseconds: 16);
+  await tester.pump(first);
+  await tester.pump(goldenCaptureTime - first);
+}
 
 /// A phone's pixel density. matchesGoldenFile on a Finder always captures at
 /// 1.0, which makes text and rounded corners visibly jagged, so the harness
@@ -130,9 +146,7 @@ Future<void> expectThemedGoldens(
           ),
         ),
       );
-      // A fixed step, so an indeterminate indicator shows its arc
-      // deterministically instead of its empty first frame.
-      await tester.pump(_indicatorFrame);
+      await pumpToGoldenFrame(tester);
       await expectBoundaryGolden(tester, 'goldens/${name}_$suffix.png');
       // Each theme mounts cold: a tree kept from the light capture would
       // ease into dark through ForUI's theme motion, and a widget's own
