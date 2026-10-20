@@ -20,6 +20,9 @@ import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
 import '../../../support/widget_harness.dart';
 import '../../../support/forui_expect.dart';
+import '../../../support/term_line.dart';
+
+import 'package:memox/shared/widgets/mx_term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -41,11 +44,11 @@ void main() {
     expect(tops, [...tops]..sort());
 
     expect(
-      find.text(_en.trashCardMeta(_en.commonAgoMinutes(4))),
+      findTermLine(_en.trashCardMeta(_en.commonAgoMinutes(4))),
       findsOneWidget,
     );
     expect(
-      find.text(_en.trashDeckMeta(1, 2, _en.commonAgoYesterday)),
+      findTermLine(_en.trashDeckMeta(1, 2, _en.commonAgoYesterday)),
       findsOneWidget,
     );
     expect(find.text(_en.trashDaysLeft(30)), findsOneWidget);
@@ -195,12 +198,10 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
 
-    final meta = find.textContaining('3 cards');
-    expect(tester.widget<Text>(meta).maxLines, 2);
-    final paragraph = tester.renderObject<RenderParagraph>(
-      find.descendant(of: meta, matching: find.byType(RichText)),
-    );
-    expect(paragraph.didExceedMaxLines, isFalse);
+    final meta = findTermLine('3 cards', isContaining: true);
+    expect(tester.widget<MxTermLine>(meta).maxLines, 2);
+    expect(isTermLineCut(tester, meta), isFalse);
+    expectTermLineRule(tester, meta);
   });
 
   libraryTest('an entry that expires within three days shows a warning pill; '

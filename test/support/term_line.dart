@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
+import 'package:memox/shared/widgets/mx_term_flow.dart';
 
 /// The [MxTermLine] that reads [line] ("3 overdue · 2 today"), or one whose
 /// line holds it when [isContaining].
@@ -50,4 +51,30 @@ void expectTermLineRule(WidgetTester tester, Finder finder) {
     expect(isDot(row.first.box), isFalse, reason: 'a line starts on a dot');
     expect(isDot(row.last.box), isFalse, reason: 'a line ends on a dot');
   }
+}
+
+/// Whether the one [MxTermLine] under [finder] is cut at its cap: a term not
+/// drawn, or one that ends in an ellipsis.
+bool isTermLineCut(WidgetTester tester, Finder finder) {
+  final line = find.descendant(
+    of: finder,
+    matching: find.byType(MxTermLine),
+    matchRoot: true,
+  );
+  final flow =
+      (tester.renderObject(line) as RenderProxyBox).child! as RenderTermFlow;
+  var isCut = false;
+  void visit(RenderObject node) {
+    if (node is RenderParagraph && node.didExceedMaxLines) isCut = true;
+    node.visitChildren(visit);
+  }
+
+  flow.visitChildren((child) {
+    final data = child.parentData! as TermFlowParentData;
+    final isDot =
+        child is RenderParagraph && child.text.toPlainText().trim() == '·';
+    if (!data.isShown && !isDot) isCut = true;
+    visit(child);
+  });
+  return isCut;
 }

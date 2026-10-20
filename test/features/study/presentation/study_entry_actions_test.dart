@@ -15,6 +15,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
@@ -302,6 +303,30 @@ void main() {
     // Learn in the footer ends today's session too (spec E1).
     expect(find.text(_otherSession), findsOneWidget);
     expect(findTermLine(_en.studyEntryEndsSession), findsOneWidget);
+  });
+
+  // Final review I2: SM-2 lists no mode, so with due cards alone there is no
+  // choice in the body; the section stays away and the caption says it.
+  libraryTest('SM-2 with due cards alone beside an open session: no empty '
+      'section; the caption leads with what the start ends (spec E1)', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, dueCards: 3);
+    await env.entries.openReviewSession(
+      deckId: leaf,
+      mode: StudyMode.selfAssess,
+      direction: DirectionChoice.koreanToMeaning,
+    );
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expect(find.text(_otherSession), findsNothing);
+    expect(find.text(_en.studyEntryOtherSessionNote), findsNothing);
+    expect(
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsOneWidget,
+    );
   });
 
   libraryTest('eight boxes beside an open session: the caption leads with '

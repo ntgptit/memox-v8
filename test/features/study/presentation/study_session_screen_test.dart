@@ -24,6 +24,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/forui_expect.dart';
 import 'support/study_screen_helpers.dart';
+import '../../../support/term_line.dart';
 
 // The session route's screen: spec D2–D8 (D8 as the owner ruled it);
 // UC-STUDY-001 A3, A5, E2, E4.
@@ -124,7 +125,7 @@ void main() {
     final stages = (await watchSessionOnce(env.db, id)).stages.length;
     expect(
       // The deck name keeps its case (critique 2026-09-30 part 2, P4).
-      find.text(
+      findTermLine(
         'Lesson · ${_en.studyKindLearning.toUpperCase()} · STAGE 1 OF $stages',
       ),
       findsOneWidget,

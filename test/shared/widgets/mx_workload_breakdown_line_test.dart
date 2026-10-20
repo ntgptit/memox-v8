@@ -6,6 +6,7 @@ import 'package:memox/core/theme/mx_status_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/shared/widgets/mx_term_flow.dart';
 
 import '../../support/widget_harness.dart';
 

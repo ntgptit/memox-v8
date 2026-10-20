@@ -37,13 +37,21 @@ The owner's review of the Study home goldens (2026-10-20, 8.4/10) found:
 
 A new shared widget, `lib/shared/widgets/mx_term_line.dart`:
 
-- `MxTermLine({required List<MxTerm> terms, InlineSpan? lead, double? leadGap,
-  TextStyle? style, MxTermLineAlign align = start, String? semanticsLabel})`.
-- `MxTermLine.text(String line, {TextStyle? style, …})`: splits a
-  localized line at its plain " · " (the ARB form) into terms. A line with
-  no " · " is one term and renders as a plain wrapping `Text`.
-- `MxTerm`: the term's text, an optional style over the line's style, and
-  an optional leading glyph (`IconData`, its colour).
+- `MxTermLine({required List<MxTerm> terms, MxTermLead? lead, String?
+  trail, MxTermLineRole role = body, MxTermTone tone = muted,
+  MxTermLineAlign align = start, int? maxLines, String? semanticsLabel})`:
+  semantic parameters only, as the facade contract asks.
+- `MxTermLine.text(String line, …)`: splits a localized line at its plain
+  " · " (the ARB form) into terms. A line with no " · " is one term and
+  renders as a plain wrapping `Text`. `MxTermLine.of(Iterable<String>)`
+  takes terms as they are.
+- `MxTerm`: the term's text, an optional tone over the line's, and an
+  optional leading glyph with its tone. `MxTermLead.plain` / `.label`: a
+  lead after a word gap, or a primary label after a wider one.
+- **maxLines** (owner 2026-10-20): the term that would start a line past the
+  cap takes what is left of the last line and ends in an ellipsis; the terms
+  after it are not drawn, and the line is still read whole. The session
+  context line (16–20) and the Trash entry meta (06) use it at two.
 - **Layout** (a `RenderBox` with term and dot children, like `Wrap`):
   - A term is placed on the current line when it fits at its natural one-line
     width after a dot; otherwise it starts the next line, and the dot

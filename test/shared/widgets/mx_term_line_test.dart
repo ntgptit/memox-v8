@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
+import 'package:memox/shared/widgets/mx_term_flow.dart';
 
+import '../../support/term_line.dart';
 import '../../support/widget_harness.dart';
 
 const _line = '3 overdue · 2 today · 4 new · 12 scheduled';
@@ -96,6 +99,71 @@ void main() {
       expect(maxLines, greaterThan(2), reason: 'the widths reach a wrap');
     });
   }
+
+  // Final review I1: at a width that holds two terms and their dot within
+  // a hair, the second term keeps its one-line width instead of breaking.
+  testWidgets('a term that just fits after its dot never breaks inside', (
+    tester,
+  ) async {
+    await _pump(tester, MxTermLine.text('3 overdue · 4 new'), width: 400);
+    final placed = _placed(tester);
+    final exact = placed.last.rect.right - placed.first.rect.left;
+    for (final slack in [-0.009, -0.005, -0.001, 0, 0.001]) {
+      await _pump(
+        tester,
+        MxTermLine.text('3 overdue · 4 new'),
+        width: exact + slack,
+      );
+      expectTermLineRule(tester, find.byType(MxTermLine));
+      expect(_lines(tester), hasLength(1), reason: 'slack $slack');
+    }
+  });
+
+  testWidgets('capped at two lines, the term past the cap ends the last '
+      'line in an ellipsis, the rest is not drawn, and the line is read '
+      'whole', (tester) async {
+    final handle = tester.ensureSemantics();
+    const line =
+        'Tiếng Hàn TOPIK I · Từ vựng sơ cấp · Learning · Stage 1 of 3 · '
+        'Match · Round 2';
+    await _pump(tester, MxTermLine.text(line, maxLines: 2), width: 200);
+    expect(_lines(tester), hasLength(2));
+    expect(isTermLineCut(tester, find.byType(MxTermLine)), isTrue);
+    expectTermLineRule(tester, find.byType(MxTermLine));
+    expect(find.bySemanticsLabel(line), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    // Room for all of it: nothing is cut.
+    await _pump(tester, MxTermLine.text(line, maxLines: 2), width: 600);
+    expect(isTermLineCut(tester, find.byType(MxTermLine)), isFalse);
+    handle.dispose();
+  });
+
+  testWidgets('a line takes its tones from the theme, light and dark', (
+    tester,
+  ) async {
+    for (final brightness in Brightness.values) {
+      await pumpMx(
+        tester,
+        const MxTermLine(
+          terms: [
+            MxTerm('3 overdue', tone: MxTermTone.warning),
+            MxTerm('4 new'),
+          ],
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.byType(MxTermLine));
+      Color? ink(String text) =>
+          tester.widget<Text>(find.text(text)).style?.color;
+      expect(ink('3 overdue'), context.status.warning, reason: '$brightness');
+      expect(
+        ink('4 new'),
+        context.colors.mutedForeground,
+        reason: '$brightness',
+      );
+    }
+  });
 
   testWidgets('a line that fits keeps every dot', (tester) async {
     await _pump(tester, MxTermLine.text('3 overdue · 2 today'));

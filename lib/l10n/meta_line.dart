@@ -3,7 +3,7 @@
 /// out, so no dot ends or starts a line (spec W1).
 library;
 
-const String _nonBreakingSpace = ' ';
+const String _nonBreakingSpace = '\u00A0';
 
 /// What a localized line is split at, as the ARB messages write it.
 const String _termSeparator = ' · ';

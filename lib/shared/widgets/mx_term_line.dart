@@ -1,9 +1,6 @@
-import 'dart:math' as math;
-
-import 'package:flutter/foundation.dart' show listEquals;
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_term_flow.dart';
 
 /// The text role of a line of terms.
 enum MxTermLineRole { body, meta, itemTitle, sectionTitle }
@@ -41,6 +38,9 @@ class MxTermLead {
 /// only between two terms on the same line, so no dot ends or starts a line
 /// (DESIGN.md, The Wrap Rule; owner 2026-10-20, spec W1). A term wider than
 /// the whole line takes a line of its own and wraps at its own spaces.
+/// With [maxLines], the term that would start a line past the cap takes what
+/// is left of the last line and ends in an ellipsis; the terms after it are
+/// not drawn, and the line is still read whole.
 ///
 /// It reads as one node: the whole line, or [semanticsLabel]. ForUI has no
 /// such layout, so it is built on Flutter's render layer.
@@ -53,6 +53,7 @@ class MxTermLine extends StatelessWidget {
     this.role = MxTermLineRole.body,
     this.tone = MxTermTone.muted,
     this.align = MxTermLineAlign.start,
+    this.maxLines,
     this.semanticsLabel,
   });
 
@@ -64,6 +65,7 @@ class MxTermLine extends StatelessWidget {
     this.role = MxTermLineRole.body,
     this.tone = MxTermTone.muted,
     this.align = MxTermLineAlign.start,
+    this.maxLines,
     this.semanticsLabel,
   }) : terms = [for (final term in line.split(separator)) MxTerm(term)],
        lead = null,
@@ -77,6 +79,7 @@ class MxTermLine extends StatelessWidget {
     this.role = MxTermLineRole.body,
     this.tone = MxTermTone.muted,
     this.align = MxTermLineAlign.start,
+    this.maxLines,
     this.semanticsLabel,
   }) : terms = [for (final term in terms) MxTerm(term)],
        lead = null,
@@ -86,7 +89,7 @@ class MxTermLine extends StatelessWidget {
   static const String separator = ' · ';
 
   /// The dot with its spaces; the spaces do not break.
-  static const String _dot = ' · ';
+  static const String _dot = '\u00A0·\u00A0';
 
   final List<MxTerm> terms;
   final MxTermLead? lead;
@@ -97,6 +100,9 @@ class MxTermLine extends StatelessWidget {
   final MxTermLineRole role;
   final MxTermTone tone;
   final MxTermLineAlign align;
+
+  /// The most lines drawn; null draws every line.
+  final int? maxLines;
   final String? semanticsLabel;
 
   /// The line as one string, as TalkBack reads it.
@@ -119,7 +125,7 @@ class MxTermLine extends StatelessWidget {
     return Semantics(
       label: semanticsLabel ?? spoken,
       excludeSemantics: true,
-      child: _TermFlow(
+      child: MxTermFlow(
         slots: [
           if (lead != null) TermSlot.lead,
           for (final (index, _) in terms.indexed) ...[
@@ -132,20 +138,22 @@ class MxTermLine extends StatelessWidget {
             ? context.dimens.space4
             : context.dimens.space8,
         wordGap: context.dimens.space4,
-        align: align,
+        isCentered: align == MxTermLineAlign.center,
+        maxLines: maxLines,
         children: [
           if (lead != null)
-            Text(
+            _text(
               lead.text,
-              style: lead.isLabel
+              lead.isLabel
                   ? context.texts.label.copyWith(color: context.colors.primary)
                   : base,
+              textAlign,
             ),
           for (final (index, term) in terms.indexed) ...[
             if (index > 0) Text(_dot, style: base),
             _term(context, term, base, textAlign),
           ],
-          if (trail != null) Text(trail, style: base, textAlign: textAlign),
+          if (trail != null) _text(trail, base, textAlign),
         ],
       ),
     );
@@ -160,7 +168,7 @@ class MxTermLine extends StatelessWidget {
     final style = term.tone == null
         ? base
         : base.copyWith(color: inkOf(context, term.tone!));
-    final text = Text(term.text, style: style, textAlign: textAlign);
+    final text = _text(term.text, style, textAlign);
     final glyph = term.glyph;
     if (glyph == null) return text;
     return Row(
@@ -174,6 +182,22 @@ class MxTermLine extends StatelessWidget {
         ),
         Flexible(child: text),
       ],
+    );
+  }
+
+  /// A part of the line: it wraps at its own spaces, or, on a capped line,
+  /// keeps one line and ends in an ellipsis where the flow cuts it.
+  Widget _text(String text, TextStyle style, TextAlign textAlign) {
+    if (maxLines == null) {
+      return Text(text, style: style, textAlign: textAlign);
+    }
+    return Text(
+      text,
+      style: style,
+      textAlign: textAlign,
+      maxLines: 1,
+      softWrap: false,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -192,297 +216,4 @@ class MxTermLine extends StatelessWidget {
     MxTermTone.warning => context.status.warning,
     MxTermTone.accentMark => context.status.accentMark,
   };
-}
-
-/// What a child of the flow is.
-enum TermSlot { lead, term, dot, trail }
-
-/// Lays out [children], one per [slots]: `[lead], term, dot, term…, [trail]`.
-class _TermFlow extends MultiChildRenderObjectWidget {
-  const _TermFlow({
-    required this.slots,
-    required this.leadGap,
-    required this.wordGap,
-    required this.align,
-    required super.children,
-  });
-
-  final List<TermSlot> slots;
-  final double leadGap;
-  final double wordGap;
-  final MxTermLineAlign align;
-
-  @override
-  RenderTermFlow createRenderObject(BuildContext context) => RenderTermFlow(
-    slots: slots,
-    leadGap: leadGap,
-    wordGap: wordGap,
-    align: align,
-    textDirection: Directionality.of(context),
-  );
-
-  @override
-  void updateRenderObject(BuildContext context, RenderTermFlow renderObject) {
-    renderObject
-      ..slots = slots
-      ..leadGap = leadGap
-      ..wordGap = wordGap
-      ..align = align
-      ..textDirection = Directionality.of(context);
-  }
-}
-
-/// A child's place in the flow; a dot at a line break is not shown.
-class TermFlowParentData extends ContainerBoxParentData<RenderBox> {
-  bool isShown = true;
-}
-
-/// The render of [MxTermLine]; public for its tests, which read where each
-/// dot landed.
-class RenderTermFlow extends RenderBox
-    with
-        ContainerRenderObjectMixin<RenderBox, TermFlowParentData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, TermFlowParentData> {
-  RenderTermFlow({
-    required this._slots,
-    required this._leadGap,
-    required this._wordGap,
-    required this._align,
-    required this._textDirection,
-  });
-
-  /// Slack for float error when a term just fits.
-  static const double _fitTolerance = 0.01;
-
-  List<TermSlot> _slots;
-  set slots(List<TermSlot> value) {
-    if (listEquals(value, _slots)) return;
-    _slots = value;
-    markNeedsLayout();
-  }
-
-  double _leadGap;
-  set leadGap(double value) {
-    if (value == _leadGap) return;
-    _leadGap = value;
-    markNeedsLayout();
-  }
-
-  double _wordGap;
-  set wordGap(double value) {
-    if (value == _wordGap) return;
-    _wordGap = value;
-    markNeedsLayout();
-  }
-
-  MxTermLineAlign _align;
-  set align(MxTermLineAlign value) {
-    if (value == _align) return;
-    _align = value;
-    markNeedsLayout();
-  }
-
-  TextDirection _textDirection;
-  set textDirection(TextDirection value) {
-    if (value == _textDirection) return;
-    _textDirection = value;
-    markNeedsLayout();
-  }
-
-  bool _isDot(int index) => _slots[index] == TermSlot.dot;
-
-  /// The space before the child at [index] when it shares a line with the
-  /// one before: a dot's width is its own child.
-  double _gapBefore(int index) => switch (_slots[index]) {
-    TermSlot.term when index > 0 && _slots[index - 1] == TermSlot.lead =>
-      _leadGap,
-    TermSlot.trail => _wordGap,
-    _ => 0,
-  };
-
-  @override
-  void setupParentData(RenderBox child) {
-    if (child.parentData is! TermFlowParentData) {
-      child.parentData = TermFlowParentData();
-    }
-  }
-
-  List<RenderBox> get _children {
-    final children = <RenderBox>[];
-    var child = firstChild;
-    while (child != null) {
-      children.add(child);
-      child = childAfter(child);
-    }
-    return children;
-  }
-
-  @override
-  double computeMinIntrinsicWidth(double height) {
-    var widest = 0.0;
-    for (final (index, child) in _children.indexed) {
-      if (_isDot(index)) continue;
-      widest = math.max(widest, child.getMinIntrinsicWidth(height));
-    }
-    return widest;
-  }
-
-  @override
-  double computeMaxIntrinsicWidth(double height) {
-    var total = 0.0;
-    for (final (index, child) in _children.indexed) {
-      total += child.getMaxIntrinsicWidth(height) + _gapBefore(index);
-    }
-    return total;
-  }
-
-  @override
-  double computeMinIntrinsicHeight(double width) =>
-      _flow(BoxConstraints(maxWidth: width), isDry: true).size.height;
-
-  @override
-  double computeMaxIntrinsicHeight(double width) =>
-      computeMinIntrinsicHeight(width);
-
-  @override
-  Size computeDryLayout(BoxConstraints constraints) =>
-      _flow(constraints, isDry: true).size;
-
-  @override
-  double? computeDistanceToActualBaseline(TextBaseline baseline) =>
-      defaultComputeDistanceToFirstActualBaseline(baseline);
-
-  @override
-  void performLayout() {
-    final flow = _flow(constraints, isDry: false);
-    size = flow.size;
-    for (final (index, child) in _children.indexed) {
-      final data = child.parentData! as TermFlowParentData;
-      data
-        ..offset = flow.offsets[index]
-        ..isShown = flow.isShown[index];
-    }
-  }
-
-  /// Places every child. A term goes on the current line when it fits at its
-  /// one-line width (after its dot); otherwise it starts the next line and
-  /// its dot is not shown.
-  _Flow _flow(BoxConstraints constraints, {required bool isDry}) {
-    final children = _children;
-    final lineWidth = constraints.maxWidth;
-    final sizes = List<Size>.filled(children.length, Size.zero);
-    final isShown = List<bool>.filled(children.length, true);
-    final lineOf = List<int>.filled(children.length, 0);
-    final xs = List<double>.filled(children.length, 0);
-    Size measure(int index, double maxWidth) {
-      final childConstraints = BoxConstraints(maxWidth: maxWidth);
-      final child = children[index];
-      if (isDry) return child.getDryLayout(childConstraints);
-      child.layout(childConstraints, parentUsesSize: true);
-      return child.size;
-    }
-
-    var line = 0;
-    var x = 0.0;
-    final lineWidths = <double>[0];
-    for (var index = 0; index < children.length; index++) {
-      if (_isDot(index)) continue;
-      final child = children[index];
-      final natural = child.getMaxIntrinsicWidth(double.infinity);
-      final dotIndex = index - 1;
-      final hasDot = dotIndex >= 0 && _isDot(dotIndex);
-      final dotSize = hasDot ? measure(dotIndex, double.infinity) : Size.zero;
-      final before = hasDot ? dotSize.width : _gapBefore(index);
-      final isLineStart = x == 0 && index == 0;
-      final fits =
-          isLineStart || x + before + natural <= lineWidth + _fitTolerance;
-      if (hasDot) {
-        sizes[dotIndex] = dotSize;
-        isShown[dotIndex] = fits;
-        xs[dotIndex] = x;
-        lineOf[dotIndex] = line;
-      }
-      if (!fits) {
-        line += 1;
-        lineWidths.add(0);
-        x = 0;
-      }
-      final start = fits && !isLineStart ? x + before : x;
-      final size = measure(index, math.max(0, lineWidth - start));
-      sizes[index] = size;
-      xs[index] = start;
-      lineOf[index] = line;
-      x = start + size.width;
-      lineWidths[line] = x;
-    }
-    // A dot that is not shown sits on the line of the term after it, at its
-    // start, and paints nothing.
-    for (var index = 0; index < children.length; index++) {
-      if (!_isDot(index) || isShown[index]) continue;
-      if (!isDry) children[index].layout(BoxConstraints.tight(Size.zero));
-      sizes[index] = Size.zero;
-      lineOf[index] = lineOf[index + 1];
-      xs[index] = 0;
-    }
-    final lineHeights = List<double>.filled(line + 1, 0);
-    for (var index = 0; index < children.length; index++) {
-      final height = sizes[index].height;
-      lineHeights[lineOf[index]] = math.max(lineHeights[lineOf[index]], height);
-    }
-    final widest = lineWidths.fold(0.0, math.max);
-    final width = constraints.constrainWidth(
-      _align == MxTermLineAlign.center && lineWidth.isFinite
-          ? lineWidth
-          : widest,
-    );
-    final tops = <double>[0];
-    for (var index = 1; index <= line; index++) {
-      tops.add(tops[index - 1] + lineHeights[index - 1]);
-    }
-    final offsets = List<Offset>.filled(children.length, Offset.zero);
-    for (var index = 0; index < children.length; index++) {
-      final row = lineOf[index];
-      final inset = _align == MxTermLineAlign.center
-          ? (width - lineWidths[row]) / 2
-          : 0.0;
-      var left = inset + xs[index];
-      if (_textDirection == TextDirection.rtl) {
-        left = width - left - sizes[index].width;
-      }
-      final top = tops[row] + (lineHeights[row] - sizes[index].height) / 2;
-      offsets[index] = Offset(left, top);
-    }
-    final height = tops.last + lineHeights.last;
-    return _Flow(
-      size: constraints.constrain(Size(width, height)),
-      offsets: offsets,
-      isShown: isShown,
-    );
-  }
-
-  @override
-  void paint(PaintingContext context, Offset offset) {
-    var child = firstChild;
-    while (child != null) {
-      final data = child.parentData! as TermFlowParentData;
-      if (data.isShown) context.paintChild(child, offset + data.offset);
-      child = data.nextSibling;
-    }
-  }
-
-  @override
-  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
-      defaultHitTestChildren(result, position: position);
-}
-
-class _Flow {
-  const _Flow({
-    required this.size,
-    required this.offsets,
-    required this.isShown,
-  });
-
-  final Size size;
-  final List<Offset> offsets;
-  final List<bool> isShown;
 }

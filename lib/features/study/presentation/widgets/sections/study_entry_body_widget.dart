@@ -101,6 +101,11 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   ) {
     final offer = studyEntryOfferOf(entry, picked: picked);
     final resumable = entry.resumable;
+    final hasLearn = entry.newCardCount > 0;
+    // A review list is shown only when there is a choice (BR-STUDY-055).
+    final hasReviews =
+        entry.dueCardCount > 0 && offer.reviews.length >= _minModesToChoose;
+    final hasChoices = hasLearn || hasReviews;
     return [
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
@@ -122,9 +127,9 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       ],
       // Beside a session that can be continued, every other start ends it:
       // the choices sit under a section that says so (spec E1, BR-STUDY-072).
-      if (resumable != null &&
-          offer.canContinue &&
-          entryFooterActionOf(offer) != null) ...[
+      // With no choice in the body (SM-2 with due cards alone) the footer's
+      // caption says it (final review I2).
+      if (resumable != null && offer.canContinue && hasChoices) ...[
         SizedBox(height: context.dimens.space16),
         MxListSectionHeader(label: context.l10n.studyEntryOtherSessionHeader),
         MxNote(text: context.l10n.studyEntryOtherSessionNote),
@@ -133,7 +138,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         SizedBox(height: context.dimens.space16),
         const _NothingDue(),
       ],
-      if (entry.newCardCount > 0) ...[
+      if (hasLearn) ...[
         SizedBox(height: context.dimens.space16),
         StudyEntryLearnWidget(
           entry: entry,
@@ -142,8 +147,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         ),
       ],
       // A review needs due cards (kit onlyNew, nothing).
-      if (entry.dueCardCount > 0 &&
-          offer.reviews.length >= _minModesToChoose) ...[
+      if (hasReviews) ...[
         SizedBox(height: context.dimens.space16),
         StudyEntryReviewWidget(
           reviews: offer.reviews,
