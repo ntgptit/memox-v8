@@ -65,7 +65,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
                       ),
                       Text(
                         l10n.cardMasteredOf(states.mastered, total),
-                        style: context.texts.body,
+                        style: context.texts.sectionTitle,
                       ),
                       MxWorkloadBreakdownLine(
                         overdueCount: workload.overdue,

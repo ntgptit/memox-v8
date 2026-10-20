@@ -305,12 +305,12 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 - **MxStudyTopBar** (its close glyph and its counter sit on `context.screenMargin`; its progress track is `sizeTrack` tall), **MxBreadcrumb**.
 
 ### Feedback and Status
-- **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action, its message in the `label` role rather than ForUI's 16 title; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
+- **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action, its message in the `label` role rather than ForUI's 15 title; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
 - **MxBadge**, **MxStatusBadge**, **MxTagChip**: ForUI's badge in a tone (`MxToneBadge`).
 - **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
 
 ### Study-specific
-- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `meta` role, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
+- **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `body` role, a row's metadata line, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.
 
 ### Data Display
 - **MxSelectableCardRow** (a card that is one item of a list: the press layer over all of it, the checkbox while selecting, one TalkBack node with its checked state), **MxListRow** and **MxSettingsRow** (`sizeListRow` for one line, `sizeListRowTwoLine` with a subtitle), **MxRowInk** (ForUI's tappable: the `secondary` press layer and ForUI's focus outline across a row).

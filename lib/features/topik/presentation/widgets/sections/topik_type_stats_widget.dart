@@ -48,7 +48,7 @@ class TopikTypeStatsWidget extends StatelessWidget {
                         ),
                       Text(
                         l10n.topikOfTotal(stat.correct, stat.total),
-                        style: context.texts.label.copyWith(
+                        style: context.texts.meta.copyWith(
                           color: context.colors.mutedForeground,
                         ),
                       ),

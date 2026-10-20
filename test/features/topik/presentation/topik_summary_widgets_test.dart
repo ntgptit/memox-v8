@@ -212,7 +212,7 @@ void main() {
       [for (final c in chips) c.onSelected == null],
       [false, true, true, false],
     );
-    // The chip row scrolls sideways at 360 dp.
+    // The chip row scrolls sideways when it is cut.
     await tester.ensureVisible(find.text('Correct'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Correct'));

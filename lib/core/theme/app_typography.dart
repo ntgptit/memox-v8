@@ -4,8 +4,9 @@ import 'package:forui/forui.dart';
 /// The app's [FTypography]: ForUI's touch type scale set in Be Vietnam Pro,
 /// with Noto Sans KR as the Korean fallback (both bundled, OFL; ADR-026).
 ///
-/// The sizes run a step under ForUI's touch sizes from 13 to 26 (scale A,
-/// owner 2026-10-20), so text does not read large on a phone. The line
+/// The sizes are smaller than ForUI's touch sizes from 14 to 30: 13, 15, 16,
+/// 18, 20 and 26 (scale A, owner 2026-10-20), so text does not read large on
+/// a phone. The line
 /// heights are not ForUI's either: ForUI sets 12 and 14 at 1.0 and 1.25,
 /// which clips stacked Vietnamese diacritics (Ẳ, Ổ, Ỗ) in a one-line label
 /// cut with an ellipsis, so the steps up to 16 keep 1.5 and the larger ones
@@ -73,7 +74,7 @@ extension type const MxTextRoles(FTypography _scale) {
   TextStyle get screenTitle => _weighted(_scale.display.lg, FontWeight.w600);
 
   /// The heading of a card or a section, a dialog's or a sheet's title, an
-  /// empty or error state's title (16, 600).
+  /// empty or error state's title, a compact stat (16, 600).
   TextStyle get sectionTitle => _weighted(_scale.body.md, FontWeight.w600);
 
   /// The title of a row or a setting, a fact's value (15, 500).

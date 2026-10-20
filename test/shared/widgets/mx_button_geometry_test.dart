@@ -65,15 +65,15 @@ void main() {
         tone,
       ).contentStyle.padding.resolve(TextDirection.ltr);
 
-      // The label centres on a fractional width: within a hundredth.
+      // The label centres on a fractional width: within the engine's float error (a thousandth).
       expect(
         label.left - box.left,
-        closeTo(padding.left, 0.01),
+        closeTo(padding.left, 0.001),
         reason: '$tone start',
       );
       expect(
         box.right - label.right,
-        closeTo(padding.right, 0.01),
+        closeTo(padding.right, 0.001),
         reason: '$tone end',
       );
     }
@@ -94,20 +94,20 @@ void main() {
       final content = _style(tester, tone).contentStyle;
       final padding = content.padding.resolve(TextDirection.ltr);
 
-      // The content centres on a fractional width: within a hundredth.
+      // The content centres on a fractional width: within the engine's float error (a thousandth).
       expect(
         glyph.left - box.left,
-        closeTo(padding.left, 0.01),
+        closeTo(padding.left, 0.001),
         reason: '$tone start',
       );
       expect(
         label.left - glyph.right,
-        closeTo(content.spacing, 0.01),
+        closeTo(content.spacing, 0.001),
         reason: '$tone gap',
       );
       expect(
         box.right - label.right,
-        closeTo(padding.right, 0.01),
+        closeTo(padding.right, 0.001),
         reason: '$tone end',
       );
     }

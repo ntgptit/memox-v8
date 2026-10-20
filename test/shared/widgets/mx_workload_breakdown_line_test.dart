@@ -56,12 +56,18 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
         .style;
 
 TextStyle _label(WidgetTester tester) =>
-    tester.element(find.byType(MxWorkloadBreakdownLine)).texts.meta;
+    tester.element(find.byType(MxWorkloadBreakdownLine)).texts.body;
 
-/// One line of the breakdown: the meta role's size times its height.
+/// One line of the breakdown: one line of the body role, as the engine lays
+/// it out (13 at 1.5 sets a whole-pixel line, not 19.5).
 double _lineHeight(WidgetTester tester) {
-  final role = tester.element(find.byType(MxWorkloadBreakdownLine)).texts.meta;
-  return role.fontSize! * role.height!;
+  final role = tester.element(find.byType(MxWorkloadBreakdownLine)).texts.body;
+  final painter = TextPainter(
+    text: TextSpan(text: 'x', style: role),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  addTearDown(painter.dispose);
+  return painter.height;
 }
 
 void main() {
@@ -75,7 +81,7 @@ void main() {
     expect(_termStyle(tester, '3 overdue')!.color, mx.warning);
     expect(_termStyle(tester, '5 today')!.color, colors.primary);
     expect(_termStyle(tester, '2 new')!.color, colors.mutedForeground);
-    // Every term, coloured or muted, sets in the meta role's one weight.
+    // Every term, coloured or muted, sets in the body role's one weight.
     final weight = _label(tester).fontWeight;
     expect(_termStyle(tester, '3 overdue')!.fontWeight, weight);
     expect(_termStyle(tester, '2 new')!.fontWeight, weight);
@@ -83,12 +89,12 @@ void main() {
     expect(_root(tester).style!.color, colors.mutedForeground);
   });
 
-  testWidgets('the line sets at the meta size, 12 at 500, below the row '
-      'title (owner ruling 2026-10-17)', (tester) async {
+  testWidgets('the line sets as a row\'s metadata line, body at 13 and 400, '
+      'below the row title (type scale spec 2026-10-20)', (tester) async {
     await pumpMx(tester, _line());
 
-    expect(_root(tester).style!.fontSize, 12);
-    expect(_root(tester).style!.fontWeight, FontWeight.w500);
+    expect(_root(tester).style!.fontSize, 13);
+    expect(_root(tester).style!.fontWeight, FontWeight.w400);
   });
 
   testWidgets('a zero term drops with its separator (RF4)', (tester) async {

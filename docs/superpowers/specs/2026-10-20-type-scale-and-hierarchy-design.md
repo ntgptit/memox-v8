@@ -79,7 +79,7 @@ The roles after T1:
 | F2 | theme: `dialogStyle` | title `sectionTitle` (16/600, 1.5) |
 | F3 | theme: tab bar item | `meta` at rest and when selected (colour only) |
 | F4 | theme: form field description and the text field counter | `caption` |
-| F5 | `MxBottomSheet` and the four sheets that draw their own heading (starter algorithm, export, merge choice) | `sectionTitle` |
+| F5 | `MxBottomSheet` and the three sheets that draw their own text heading (starter algorithm, export, merge choice); the tag-actions sheet's heading is its tag chip, on purpose | `sectionTitle` |
 | F6 | `MxErrorState` | `sectionTitle`, as the regular empty state |
 | F7 | seven feature rows (import mapping, import deck, import preview, import source option, the chosen source, card row front, starter template) | `sectionTitle` → `itemTitle` |
 | F8 | six card headings (deck summary, due strip, lock strip, start over, card trash, study resume) and the importing card | `itemTitle` → `sectionTitle` |
@@ -88,8 +88,13 @@ The roles after T1:
 | F11 | card detail's fields | none: on reading, they are read-only fields (an example, a note: long text), not facts, so `label` over `body` stays; the schedule's short facts keep `body` muted over `itemTitle` |
 | F12 | colour-only states: card history's moves and cycle marks, the import preview's note, TOPIK's attempt and answer metadata | one role, the colour changes |
 | F13 | `DESIGN.md` Hierarchy prose; its frontmatter regenerated | conventions 1–5 |
+| F14 | final review S1 (owner 2026-10-20): `MxEmptyState`'s compact title | `itemTitle` → `sectionTitle`, as the error state's |
+| F15 | final review S2: Study entry's app bar title (`deck_study_header_widget.dart`) | `sectionTitle` → `screenTitle` |
+| F16 | final review S3 (owner 2026-10-20): `MxWorkloadBreakdownLine`, a row's and a hero's metadata line | `meta` → `body` (the 2026-10-17 ruling set `meta`) |
+| F17 | final review S4: Card list's deck hero line, as Library's | `body` → `sectionTitle` |
+| F18 | final review N1: TOPIK type stats' trailing count | `label` → `meta` |
 
-Left as they are, each classed by convention 1: overlines (uppercase), badges
+Left as they are: the breadcrumb's current crumb (`itemTitle` over `label` ancestors), read as a level of its own, not a state. Each classed by convention 1: overlines (uppercase), badges
 and their peers (trash's time left, a log row's time, a history entry's time),
 chart labels (the box ramp's ends, the score donut), counts (tags, the tag
 filter, the import result), footers (no more users or servers, the level
