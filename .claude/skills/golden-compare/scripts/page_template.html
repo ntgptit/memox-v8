@@ -154,7 +154,8 @@ function cell(s, kind, label, cls, isBare){
   }
   const src = `img/${esc(s.name)}_${theme}_${kind}.webp`;
   const what = `${label}: ${esc(s.name)} (${theme})`;
-  const file = `${esc(s.name)}_${theme}_${kind}.png`;
+  // Saved as published (WebP): no redraw, so the save opens at once.
+  const file = `${esc(s.name)}_${theme}_${kind}.webp`;
   const out = outMode();
   const text = out && TEXT[out];
   const button = out ? `<button class="copy" data-src="${src}" data-file="${file}" data-what="${what}" aria-label="${text.aria} ${what}">${out === "copy" ? COPY_ICON : SAVE_ICON}<span>${text.idle}</span></button>` : "";
@@ -191,7 +192,7 @@ function tellBlocked(reason){
 }
 function tellAndroid(){
   const note = $("#out-note");
-  note.textContent = "Trên Android, trang web không đưa được ảnh vào clipboard. Nút Lưu ảnh lưu PNG vào máy; đính kèm file đó vào chat của agent khác.";
+  note.textContent = "Trong app trên Android, trang web không đưa được ảnh vào clipboard (WebView bỏ ảnh). Nút Lưu ảnh lưu file vào máy để đính kèm vào chat của agent khác; mở trang bằng Chrome thì có thể sao chép.";
   note.hidden = false;
 }
 async function copyImage(btn){
@@ -212,7 +213,9 @@ async function copyImage(btn){
 }
 async function saveImage(btn){
   try {
-    await downloads.save({filename: btn.dataset.file, data: await pngBlob(btn.dataset.src)});
+    const response = await fetch(btn.dataset.src);
+    if (!response.ok) throw new Error(`image ${response.status}`);
+    await downloads.save({filename: btn.dataset.file, data: await response.blob()});
     flash(btn, "save", "ok");
   } catch (err) {
     console.warn("save failed", btn.dataset.src, err);

@@ -58,10 +58,12 @@ Diff label: it puts that image on the clipboard as a PNG (the published
 480 px copy), so it can be pasted straight into another agent's chat.
 Where the viewer's frame blocks the clipboard (the Claude mobile app: a
 `NotAllowedError` from the frame's permissions policy), a note says so and
-the buttons become **Lưu ảnh**, which saves the PNG through the
+the buttons become **Lưu ảnh**, which saves the published WebP as is through the
 `downloads` capability (the share sheet in the Claude iOS app). On Android
 the buttons save from the start: its web view reports an image copy as done
-but leaves the clipboard empty (owner 2026-10-20). Without that
+but leaves the clipboard empty, since Chromium drops the image when the app
+registered no image file provider (owner 2026-10-20). A copy still goes out
+as a PNG. Without that
 capability there is no button. The lightbox shows each image bare, so a
 long press opens the system's own copy and save.
 
