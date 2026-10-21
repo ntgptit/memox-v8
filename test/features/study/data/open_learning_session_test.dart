@@ -6,10 +6,15 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
+import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
+import '../../../support/srs_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
@@ -21,6 +26,7 @@ void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late StudyEntryRepositoryImpl entries;
+  late StudySessionRepositoryImpl sessions;
   var clock = DateTime(2026, 9, 24, 9);
   final learnedAt = DateTime(2026, 9, 10);
   setUp(() {
@@ -28,6 +34,7 @@ void main() {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: () => clock);
     entries = studyEntryRepository(db, () => clock);
+    sessions = studySessionRepository(db, () => clock);
   });
   tearDown(() async {
     await expectStudyInvariants(db);
@@ -71,7 +78,10 @@ void main() {
   }
 
   test('a learning session takes the new cards of the deck and its whole '
-      'subtree, and nothing else (IT-STUDY-011, BR-STUDY-051)', () async {
+      'subtree, and nothing else; Learn on the root beside the open session '
+      'of a sub-deck ends it as user_exit and takes its still-new cards '
+      'again, once in every stage (IT-STUDY-011, BR-STUDY-051, BR-STUDY-072, '
+      'BR-STUDY-053)', () async {
     final root = await decks.root('Korean');
     final lessonA = await decks.sub(root.id, 'Lesson A');
     final lessonB = await decks.sub(root.id, 'Lesson B');
@@ -87,7 +97,73 @@ void main() {
     );
 
     expect((await queueOf(db, ofA, 'browse'))..sort(), inA);
-    expect((await queueOf(db, ofRoot, 'browse'))..sort(), [...inA, ...inB]);
+    for (final mode in await modesOf(db, ofRoot)) {
+      expect((await queueOf(db, ofRoot, mode))..sort(), [
+        ...inA,
+        ...inB,
+      ], reason: mode);
+    }
+    final closed = await sessionOf(db, ofA);
+    expect(closed.read<String>('status'), 'abandoned');
+    expect(closed.read<String>('end_reason'), 'user_exit');
+    // An answer the closed session's screen sends late writes nothing.
+    final before = await totalChanges(db);
+    expect(
+      await sessions.answerTurn(
+        sessionId: ofA,
+        cardId: (await servedCard(db, ofA))!,
+        answer: const AdvanceAnswer(),
+      ),
+      refusedWith<TurnResult>(StudyRejection.sessionClosed),
+    );
+    expect(await totalChanges(db), before);
+  });
+
+  test('Learn on the root beside a sub-deck session that is part done keeps '
+      'what it did: the cards it learned keep their schedule and are not '
+      'taken again, its turns stay, and only the still-new cards are taken '
+      '(BR-STUDY-072, BR-STUDY-053, BR-STUDY-019)', () async {
+    final root = await decks.root('Korean');
+    final lesson = await decks.sub(root.id, 'Lesson');
+    final withExample = await newCards(lesson.id, 'x', 4, withExample: true);
+    final plain = await newCards(lesson.id, 'p', 2);
+    final old = openedSessionId(
+      await entries.openLearningSession(deckId: lesson.id),
+    );
+    // A card with no example finishes learning at recall (BR-STUDY-071);
+    // in fill, one card is learned and one goes on to round 2.
+    await answerRight(db, sessions, old, until: StudyMode.fill);
+    final learnedInFill = (await servedCard(db, old))!;
+    await answerServed(db, sessions, old, right: true);
+    await answerServed(db, sessions, old, right: false);
+    final learned = {
+      for (final id in [...plain, learnedInFill])
+        id: (await scheduleRowOf(db, id)).data,
+    };
+    for (final row in learned.values) {
+      expect(row['learned_at'], isNotNull);
+    }
+    final turns = await turnIdsOf(db, old);
+
+    final fresh = openedSessionId(
+      await entries.openLearningSession(deckId: root.id),
+    );
+
+    expect((await sessionOf(db, old)).read<String>('end_reason'), 'user_exit');
+    final stillNew = [...withExample]..remove(learnedInFill);
+    for (final mode in await modesOf(db, fresh)) {
+      expect((await queueOf(db, fresh, mode))..sort(), stillNew, reason: mode);
+    }
+    expect(await turnIdsOf(db, old), turns);
+    // Learning them all again schedules no card a second time.
+    await answerRight(db, sessions, fresh);
+    for (final MapEntry(key: id, value: row) in learned.entries) {
+      expect((await scheduleRowOf(db, id)).data, row, reason: id);
+    }
+    for (final id in stillNew) {
+      final row = await scheduleRowOf(db, id);
+      expect(row.read<DateTime?>('learned_at'), clock, reason: id);
+    }
   });
 
   test('the session starts in browse at the root generation, with the card '
