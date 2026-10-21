@@ -15,6 +15,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../../support/forui_expect.dart';
 import '../../../support/library_harness.dart';
@@ -114,35 +115,38 @@ void main() {
     );
   });
 
-  // A null name leaves the field untouched.
-  for (final c in <({String name, String? typed, String refusal})>[
-    (
-      name: 'a blank name is refused under the field; nothing is written',
-      typed: null,
-      refusal: _en.deckRejectionBlankName,
-    ),
-    (
-      name: 'a name longer than 32 characters is refused; nothing is written',
-      typed: 'a' * 33,
-      refusal: _en.deckRejectionNameTooLong,
-    ),
-  ]) {
-    libraryTest(c.name, (tester, env) async {
-      await pumpLibraryScreen(tester, env, _host());
-      await open(tester);
-      final typed = c.typed;
-      if (typed != null) {
-        await tester.enterText(find.byType(EditableText), typed);
-      }
-      await chooseEightBox(tester);
-      await tester.tap(find.text(_en.deckCreateConfirm));
-      await tester.pumpAndSettle();
+  libraryTest('a blank name is refused under the field; nothing is written', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await chooseEightBox(tester);
+    await tester.tap(find.text(_en.deckCreateConfirm));
+    await tester.pumpAndSettle();
 
-      expect(find.text(c.refusal), findsOneWidget);
-      expect(find.byType(MxDialog), findsOneWidget);
-      expect(await _decks(env), isEmpty);
-    });
-  }
+    expect(find.text(_en.deckRejectionBlankName), findsOneWidget);
+    expect(find.byType(MxDialog), findsOneWidget);
+    expect(await _decks(env), isEmpty);
+  });
+
+  // Owner 2026-10-21 (deck name 32 spec §7): the length rule is read as the
+  // name is typed, so Create locks before a tap.
+  libraryTest('a name over 32 characters locks Create and says why at once; '
+      'nothing is written', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'a' * 33);
+    await chooseEightBox(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckRejectionNameTooLong), findsOneWidget);
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).onConfirm,
+      isNull,
+    );
+    expect(await _decks(env), isEmpty);
+  });
 
   for (final c
       in <

@@ -219,6 +219,7 @@
   "deckSchedulerNote": "Thuật toán sẽ khóa sau lần ôn đầu tiên. Đổi về sau sẽ đặt lại tiến độ học.",
   "deckCreateConfirm": "Tạo",
   "deckRejectionBlankName": "Hãy nhập tên.",
+  "deckNameLength": "{length} / {max}",
   "deckRejectionNameTooLong": "Tên dài tối đa 32 ký tự.",
   "deckRejectionDepthExceeded": "Bộ thẻ lồng nhau tối đa 10 cấp.",
   "deckRejectionNotADeckContainer": "Bộ thẻ này chứa thẻ nên không chứa được bộ thẻ con.",

@@ -1120,6 +1120,18 @@
   "@deckRejectionBlankName": {
     "description": "Why a deck write was refused: blank name."
   },
+  "deckNameLength": "{length} / {max}",
+  "@deckNameLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 01, the create and rename deck dialogs: the name's length against BR-DECK-020's limit, shown from the 26th character (owner 2026-10-21)."
+  },
   "deckRejectionNameTooLong": "Keep the name to 32 characters.",
   "@deckRejectionNameTooLong": {
     "description": "Why a deck write was refused: name too long."

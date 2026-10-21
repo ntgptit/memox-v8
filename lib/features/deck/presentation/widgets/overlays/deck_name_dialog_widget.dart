@@ -1,10 +1,10 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_name_field_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -12,7 +12,6 @@ import 'package:memox/shared/support/held_run.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Sends a dialog's name through one controller command.
@@ -83,6 +82,11 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
   /// One submit at a time: a second tap while the first runs does nothing.
   var _isSubmitting = false;
 
+  /// The confirm is offered while nothing runs and the name fits
+  /// BR-DECK-020's length (owner 2026-10-21).
+  bool get _canSubmit =>
+      !_isSubmitting && !DeckNameFieldWidget.isTooLong(_name.text);
+
   @override
   void dispose() {
     _name.dispose();
@@ -136,15 +140,13 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: context.dimens.space12,
         children: [
-          MxTextField(
+          DeckNameFieldWidget(
             controller: _name,
-            label: l10n.deckNameHint,
-            errorText: switch (_rejection) {
-              null => null,
-              final reason => l10n.deckRejection(reason),
-            },
-            textInputAction: TextInputAction.done,
-            onSubmitted: _isSubmitting ? null : (_) => _submit(),
+            submitted: _rejection,
+            // A new character clears the last refusal; the length rule is
+            // read again as it is typed.
+            onChanged: (_) => setState(() => _rejection = null),
+            onSubmitted: _canSubmit ? (_) => _submit() : null,
           ),
         ],
       ),
@@ -152,7 +154,7 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
         cancelLabel: l10n.commonCancel,
         onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(),
         confirmLabel: widget.confirmLabel,
-        onConfirm: _isSubmitting ? null : _submit,
+        onConfirm: _canSubmit ? _submit : null,
         isConfirmLoading: _isSubmitting,
       ),
     );

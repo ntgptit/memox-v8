@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -8,7 +7,7 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_discard_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_name_field_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -19,7 +18,6 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens the new-deck dialog (UC-DECK-001). It completes with the created
@@ -53,6 +51,11 @@ class _CreateRootDeckDialogWidgetState
 
   /// One create at a time: a second tap while the first runs does nothing.
   var _isSubmitting = false;
+
+  /// The confirm is offered while nothing runs and the name fits
+  /// BR-DECK-020's length (owner 2026-10-21).
+  bool get _canSubmit =>
+      !_isSubmitting && !DeckNameFieldWidget.isTooLong(_name.text);
 
   @override
   void dispose() {
@@ -117,15 +120,13 @@ class _CreateRootDeckDialogWidgetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: context.dimens.space12,
         children: [
-          MxTextField(
+          DeckNameFieldWidget(
             controller: _name,
-            label: l10n.deckNameHint,
-            errorText: switch (_rejection) {
-              null => null,
-              final reason => l10n.deckRejection(reason),
-            },
-            textInputAction: TextInputAction.done,
-            onSubmitted: _isSubmitting ? null : (_) => _submit(),
+            submitted: _rejection,
+            // A new character clears the last refusal; the length rule is
+            // read again as it is typed.
+            onChanged: (_) => setState(() => _rejection = null),
+            onSubmitted: _canSubmit ? (_) => _submit() : null,
           ),
           MxSegmentedTray<SchedulerType>(
             segments: [
@@ -150,7 +151,7 @@ class _CreateRootDeckDialogWidgetState
         cancelLabel: l10n.commonCancel,
         onCancel: _isSubmitting ? null : () => unawaited(_leave()),
         confirmLabel: l10n.deckCreateConfirm,
-        onConfirm: _isSubmitting ? null : _submit,
+        onConfirm: _canSubmit ? _submit : null,
         isConfirmLoading: _isSubmitting,
       ),
     );

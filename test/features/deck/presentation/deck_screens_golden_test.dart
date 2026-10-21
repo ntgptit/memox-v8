@@ -150,6 +150,32 @@ void main() {
       });
     });
 
+    // Deck name 32 spec §10: the rename dialog at the limit and past it.
+    for (final (state, typed) in [('near', 'a' * 32), ('over', 'a' * 33)]) {
+      libraryTest('rename dialog, $state, $theme', (tester, env) async {
+        final ids = await _seed(env);
+        await withRealShadows(() async {
+          await pumpLibraryGolden(
+            tester,
+            env,
+            deckScreen(deckId: ids.words),
+            brightness,
+          );
+          await tester.tap(byControlLabel(_en.deckActions));
+          await _settleOverlay(tester);
+          await tester.tap(find.text(_en.deckRename));
+          await _settleOverlay(tester);
+          await tester.enterText(find.byType(EditableText), typed);
+          // The error row animates in (ForUI): let it land.
+          await tester.pumpAndSettle();
+          await expectBoundaryGolden(
+            tester,
+            'goldens/library_deck_rename_${state}_$theme.png',
+          );
+        });
+      });
+    }
+
     libraryTest('moved to Trash with Undo, $theme', (tester, env) async {
       final ids = await _seed(env);
       await withRealShadows(() async {
