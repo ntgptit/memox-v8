@@ -4291,10 +4291,6 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing; screen 13's Resume card session line (Study home spec H3)."
   },
-  "studyEntryResumeBody": "Continue where you stopped.",
-  "@studyEntryResumeBody": {
-    "description": "Screen handoff 14 (FE-A6 P2): resume banner body; what another start does is the note under it (spec E1)."
-  },
   "studyEntryOtherSessionHeader": "Or start another session",
   "@studyEntryOtherSessionHeader": {
     "description": "Screen handoff 14: the section over Learn and the review options while today's session can be continued (spec E1)."
@@ -5782,30 +5778,6 @@
       }
     },
     "description": "Screen handoff 13: the workload card's action, opening the Study entry of the deck with the most urgent due cards (Study home spec H2)."
-  },
-  "studyHomeResumeTitle": "{root} › {deck}",
-  "@studyHomeResumeTitle": {
-    "placeholders": {
-      "root": {
-        "type": "String"
-      },
-      "deck": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoffs 13 and 14: one step of an open session's deck path, the levels so far ({root}), then the next level ({deck}); applied level by level from the root, so the path reads \"Korean › Grammar › Lesson 1\" (owner 2026-10-21, over Study home spec H3). A level may be \"…\", for the levels left out."
-  },
-  "studyHomeResumeTitleSpoken": "{deck}, in {root}",
-  "@studyHomeResumeTitleSpoken": {
-    "placeholders": {
-      "root": {
-        "type": "String"
-      },
-      "deck": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoffs 13 and 14: what TalkBack reads for that deck path, without the › glyph: applied from the deck up, so it reads \"Lesson 1, in Grammar, in Korean\"; never cut."
   },
   "studyHomeResumeProgress": "{done} / {total} cards",
   "@studyHomeResumeProgress": {

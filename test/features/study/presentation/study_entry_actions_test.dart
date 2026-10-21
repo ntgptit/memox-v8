@@ -12,6 +12,9 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -252,7 +255,7 @@ void main() {
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
     // Every other start sits under a section that says it ends today's
     // session, and the footer's caption leads with it (spec E1).
-    expect(find.text(_en.studyEntryResumeBody), findsOneWidget);
+    expect(find.text('Continue where you stopped.'), findsNothing);
     expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
     expect(
       tester.getTopLeft(find.text(_otherSession)).dy,
@@ -275,6 +278,28 @@ void main() {
       tester.widget<MxLinearProgress>(find.byType(MxLinearProgress)).value,
       0,
     );
+    // On this deck the session line leads; the deck is the app bar's, so
+    // no name and no ⓘ; Continue 16 under the track (spec §3.3).
+    final banner = find.byType(StudyEntryResumeWidget);
+    expect(
+      find.descendant(
+        of: banner,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is MxTermLine && widget.role == MxTermLineRole.itemTitle,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: banner, matching: find.byType(MxIconButton)),
+      findsNothing,
+    );
+    final track = tester.getRect(
+      find.descendant(of: banner, matching: find.byType(MxLinearProgress)),
+    );
+    final cta = tester.getRect(_button(_en.studyEntryContinue));
+    expect(cta.top - track.bottom, const AppDimens().space16);
 
     // An open session leads with Continue; the footer yields (critique
     // 2026-09-30 part 1).
