@@ -46,9 +46,6 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   /// Takes up today's open session (UC-STUDY-001 A3b).
   final ValueChanged<String> onContinue;
 
-  /// A review list is shown only when there is a choice (BR-STUDY-055).
-  static const int _minModesToChoose = 2;
-
   void _retry(WidgetRef ref) => ref.invalidate(studyEntryProvider(deckId));
 
   void _pick(WidgetRef ref, StudyMode mode) =>
@@ -104,8 +101,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final hasLearn = entry.newCardCount > 0;
     // A review list is shown only when there is a choice (BR-STUDY-055).
     final hasReviews =
-        entry.dueCardCount > 0 && offer.reviews.length >= _minModesToChoose;
-    final hasChoices = hasLearn || hasReviews;
+        entry.dueCardCount > 0 && offer.reviews.length >= minModesToChoose;
     return [
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
@@ -130,7 +126,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       // the choices sit under a section that says so (spec E1, BR-STUDY-072).
       // With no choice in the body (SM-2 with due cards alone) the footer's
       // caption says it (final review I2).
-      if (resumable != null && offer.canContinue && hasChoices) ...[
+      if (offer.isOtherSessionNoteShown) ...[
         SizedBox(height: context.dimens.space16),
         MxListSectionHeader(label: context.l10n.studyEntryOtherSessionHeader),
         MxNote(text: context.l10n.studyEntryOtherSessionNote),

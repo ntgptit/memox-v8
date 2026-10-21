@@ -29,6 +29,8 @@ final class StudyEntryOffer {
     required this.reviews,
     required this.reviewTarget,
     required this.canContinue,
+    required this.isOtherSessionNoteShown,
+    required this.isEndsSessionCaption,
   });
 
   /// Nothing new and nothing due (BR-STUDY-008, BR-STUDY-054).
@@ -49,7 +51,19 @@ final class StudyEntryOffer {
 
   /// A session can be resumed (BR-STUDY-075).
   final bool canContinue;
+
+  /// The body offers another start beside a session that can be continued:
+  /// the section "Or start another session" and its note show, the one full
+  /// warning that a start ends it (spec §3.4, BR-STUDY-072).
+  final bool isOtherSessionNoteShown;
+
+  /// The footer's caption leads with "Ends today's session": a session can
+  /// be continued and no note says what a start does (spec §3.4).
+  final bool isEndsSessionCaption;
 }
+
+/// A review list is shown only when there is a choice (BR-STUDY-055).
+const int minModesToChoose = 2;
 
 /// What [entry] offers, with [picked] the review mode the person picked
 /// (E1).
@@ -70,13 +84,20 @@ StudyEntryOffer studyEntryOfferOf(StudyEntry entry, {StudyMode? picked}) {
           review.option.cardCount > 0)
         review.option,
   ];
+  final hasChoices =
+      entry.newCardCount > 0 ||
+      (entry.dueCardCount > 0 && reviews.length >= minModesToChoose);
+  final canContinue = entry.resumable != null;
+  final isNoteShown = canContinue && hasChoices;
   return StudyEntryOffer(
     isNothingDue: entry.newCardCount == 0 && entry.dueCardCount == 0,
     canLearn: entry.newCardCount > 0,
     learnShown: min(entry.newCardCount, entry.cardLimit),
     reviews: reviews,
     reviewTarget: _targetOf(available, picked),
-    canContinue: entry.resumable != null,
+    canContinue: canContinue,
+    isOtherSessionNoteShown: isNoteShown,
+    isEndsSessionCaption: canContinue && !isNoteShown,
   );
 }
 

@@ -22,7 +22,6 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
-import '../../../support/term_line.dart';
 import '../../../support/text_cut.dart';
 
 // Screen 14 beside the app's open session of another deck: BR-STUDY-072,
@@ -110,10 +109,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_otherSession), findsOneWidget);
-    expect(
-      findTermLine(_en.studyEntryEndsSession, isContaining: true),
-      findsOneWidget,
-    );
+    expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
     expect(
       tester.widget<MxButton>(_button(_en.studyEntryReviewInstead)).tone,
       MxButtonTone.outline,
