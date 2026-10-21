@@ -1,9 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:drift/internal/versioned_schema.dart';
+import 'package:memox/core/database/migrations/deck_name_length_migration.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/mutation_gate.dart';
 import 'package:memox/core/database/schema_versions.dart';
 import 'package:memox/core/database/tables/sync_keys.dart';
+import 'package:memox/core/logging/app_logger.dart';
 
 part 'app_database.g.dart';
 
@@ -54,13 +56,16 @@ class AppDatabase extends _$AppDatabase {
   /// that cannot be read.
   (int, int)? lastMigrationFailure;
 
+  /// The names the v17 → v18 step cut, logged once the upgrade commits.
+  var _deckNameCuts = const <DeckNameCut>[];
+
   /// Opens the file and runs its migrations now, not on the first query
   /// (DEV-195): the start asks before the first frame, so a file that cannot
   /// open is a result there, not an error under the first screen.
   Future<void> ensureOpened() => executor.ensureOpen(this);
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -85,6 +90,16 @@ class AppDatabase extends _$AppDatabase {
             steps: _steps,
           ),
         );
+        // Logged only once the upgrade has committed: a rolled-back step
+        // runs again on the next open (deck name 32 spec §5).
+        for (final cut in _deckNameCuts) {
+          appLogger.info(
+            'db.deck_name_cut',
+            category: LogCategory.db,
+            context: {'deckId': cut.id, 'from': cut.from, 'to': cut.to},
+          );
+        }
+        _deckNameCuts = const [];
       } on Object {
         lastMigrationFailure = (from, to);
         rethrow;
@@ -308,6 +323,12 @@ class AppDatabase extends _$AppDatabase {
       await m.createTrigger(schema.topikAttemptAnswerCompletedImmutable);
       await m.createTrigger(schema.topikAttemptSyncComplete);
       await m.createTrigger(schema.topikAttemptSyncDelete);
+    },
+    from17To18: (m, schema) async {
+      // Deck name 32 spec 2026-10-21 §5 (BR-DECK-020): names over 32
+      // characters or 128 code points are cut; no structure changes. Each
+      // cut is queued by the capture trigger, as v5's NFC rewrite is.
+      _deckNameCuts = await shortenDeckNames(this, now: DateTime.now());
     },
   );
 }

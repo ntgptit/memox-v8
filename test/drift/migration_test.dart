@@ -17,7 +17,7 @@ import 'generated/schema.dart';
 // the account state, the account transition and the welcome flag (auth spec §4); v13 adds the
 // outbox payload and recreates the deck and card triggers (DEV-181); v14 indexes the outbox by
 // type and time for the push batch (DEV-205); v17 adds the TOPIK attempt tables (TOPIK spec
-// §13.1).
+// §13.1); v18 cuts deck names over BR-DECK-020 (deck name 32 spec §5).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -138,25 +138,25 @@ void main() {
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
   // The explicit sweep: every version without rows of its own upgrades to the
-  // schema of v17. v15 and v16 assert more, below.
+  // schema of v18. v15 and v16 assert more, below.
   for (var version = 1; version <= 14; version++) {
-    test('v$version upgrades to the schema of v17', () async {
+    test('v$version upgrades to the schema of v18', () async {
       final db = AppDatabase(await verifier.startAt(version));
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 17);
+      await verifier.migrateAndValidate(db, 18);
     });
   }
 
-  test('v15 upgrades to the schema of v17 (study speech spec §4)', () async {
+  test('v15 upgrades to the schema of v18 (study speech spec §4)', () async {
     final db = AppDatabase(await verifier.startAt(15));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
+    await verifier.migrateAndValidate(db, 18);
     final row = await db.select(db.appSettings).getSingle();
     expect(row.ttsLanguage, 'en-US');
     expect(row.ttsAutoPlay, 1);
   });
 
-  test('v16 upgrades to the schema of v17 (TOPIK spec §13.1)', () async {
+  test('v16 upgrades to the schema of v18 (TOPIK spec §13.1)', () async {
     final schema = await verifier.schemaAt(16);
     schema.rawDatabase.execute(
       "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
@@ -166,7 +166,7 @@ void main() {
     );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 17);
+    await verifier.migrateAndValidate(db, 18);
 
     expect(await db.select(db.topikAttempt).get(), isEmpty);
     expect(await db.select(db.topikAttemptAnswer).get(), isEmpty);
@@ -193,7 +193,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 17);
+      await verifier.migrateAndValidate(db, 18);
 
       final queued = await db
           .customSelect(
@@ -210,11 +210,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v17, the one an upgrade ends at',
+    'a new database has the schema of v18, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 17);
+      await verifier.migrateAndValidate(db, 18);
     },
   );
 
@@ -232,7 +232,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 17);
+      await verifier.migrateAndValidate(db, 18);
     });
     tearDown(() => db.close());
 
@@ -286,7 +286,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 17);
+      await verifier.migrateAndValidate(db, 18);
     });
     tearDown(() => db.close());
 
