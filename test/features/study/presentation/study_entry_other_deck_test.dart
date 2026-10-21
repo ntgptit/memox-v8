@@ -5,6 +5,8 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/states/study_start_state.dart';
+import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -29,13 +31,24 @@ import '../../../support/text_cut.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-StudyEntryScreen _screen(String deckId, {ValueChanged<String>? onOpen}) =>
-    StudyEntryScreen(
-      deckId: deckId,
-      title: const Text('Deck'),
-      breadcrumb: const SizedBox.shrink(),
-      onOpenSession: onOpen ?? (_) {},
-    );
+StudyEntryScreen _screen(
+  String deckId, {
+  ValueChanged<String>? onOpen,
+  VoidCallback? onOpenInLibrary,
+}) => StudyEntryScreen(
+  deckId: deckId,
+  title: const Text('Deck'),
+  breadcrumb: const SizedBox.shrink(),
+  onOpenSession: onOpen ?? (_) {},
+  onOpenInLibrary: onOpenInLibrary,
+);
+
+/// A start that runs: every action is locked (BR-STUDY-004).
+class _Starting extends StudyEntryController {
+  @override
+  StudyStartState build(String deckId) =>
+      const StudyStartState(status: StudyStartStatus.starting);
+}
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
 
@@ -297,4 +310,29 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  // Spec D7, BR-STUDY-004: while a start runs, the empty deck's way to the
+  // Library is locked with every other action.
+  libraryTest('while a start runs, Open in Library is locked', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(root.id, onOpenInLibrary: () {}),
+      overrides: [
+        studyEntryControllerProvider(root.id).overrideWith(_Starting.new),
+      ],
+    );
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.studyEntryOpenInLibrary),
+          )
+          .onPressed,
+      isNull,
+    );
+  });
 }

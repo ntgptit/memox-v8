@@ -33,6 +33,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     required this.breadcrumb,
     required this.onLearn,
     required this.onContinue,
+    this.onOpenInLibrary,
   });
 
   final String deckId;
@@ -45,6 +46,10 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 
   /// Takes up today's open session (UC-STUDY-001 A3b).
   final ValueChanged<String> onContinue;
+
+  /// Opens this deck in the Library from the empty deck's state (spec D7);
+  /// null hides the action.
+  final VoidCallback? onOpenInLibrary;
 
   void _retry(WidgetRef ref) => ref.invalidate(studyEntryProvider(deckId));
 
@@ -133,7 +138,10 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),
-        _NothingDue(isEmpty: entry.cardCount == 0),
+        _NothingDue(
+          isEmpty: entry.cardCount == 0,
+          onOpenInLibrary: start.isStarting ? null : onOpenInLibrary,
+        ),
       ],
       if (hasLearn) ...[
         SizedBox(height: context.dimens.space16),
@@ -162,10 +170,14 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 /// has none; its title names this deck, so it never reads against another
 /// deck's Continue above it (owner 2026-10-21).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue({required this.isEmpty});
+  const _NothingDue({required this.isEmpty, required this.onOpenInLibrary});
 
   /// The deck and its subtree hold no live card.
   final bool isEmpty;
+
+  /// Opens this deck in the Library, where cards are added (spec D7); null
+  /// while a start runs (BR-STUDY-004).
+  final VoidCallback? onOpenInLibrary;
 
   @override
   Widget build(BuildContext context) => MxEmptyState(
@@ -178,6 +190,11 @@ class _NothingDue extends StatelessWidget {
         : context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,
+    // Under the hero, and beside another deck's session: the lead role, not
+    // a headline (owner 2026-10-21, spec D11).
+    isQuiet: true,
+    secondaryActionLabel: isEmpty ? context.l10n.studyEntryOpenInLibrary : null,
+    onSecondaryAction: isEmpty ? onOpenInLibrary : null,
   );
 }
 

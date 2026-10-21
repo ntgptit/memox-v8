@@ -25,6 +25,9 @@ StudyEntryScreen studyEntryScreen(BuildContext context, String deckId) =>
           context.go(AppRoutes.studySession(sessionId)),
       onOpenStudyOptions: () =>
           unawaited(context.push(AppRoutes.studyOptions(deckId))),
+      // Screen 14 is the deck route's child: one level up the same stack,
+      // and a second tap goes nowhere new (spec D7).
+      onOpenInLibrary: () => context.go(AppRoutes.deck(deckId)),
     );
 
 /// Screen 15 with the deck's path from the deck feature, which settings

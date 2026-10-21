@@ -4076,6 +4076,10 @@
   "@studyEntryNoCardsTitle": {
     "description": "Screen handoff 14: the nothing-due state's title when the deck and its sub-decks hold no card (owner 2026-10-21; BR-STUDY-008), as screen 13's row says."
   },
+  "studyEntryOpenInLibrary": "Open in Library",
+  "@studyEntryOpenInLibrary": {
+    "description": "Screen handoff 14: the secondary action of \"No cards yet\", which opens this deck in the Library where cards are added or imported (owner 2026-10-21, spec D7)."
+  },
   "studyEntryNoCardsBody": "Add or import cards to study them here.",
   "@studyEntryNoCardsBody": {
     "description": "Screen handoff 14: the body under \"No cards yet\" (owner 2026-10-21). It names no deck to add to: a root takes sub-decks, not cards (BR-DECK-004), and the count covers the whole subtree."

@@ -782,6 +782,7 @@
   "studyEntryOverdue": "{count} thẻ đến hạn đã quá hạn",
   "studyEntryNothingInDeckTitle": "Không còn gì để học trong bộ thẻ này",
   "studyEntryNoCardsTitle": "Chưa có thẻ",
+  "studyEntryOpenInLibrary": "Mở trong Thư viện",
   "studyEntryNoCardsBody": "Hãy thêm hoặc nhập thẻ để học tại đây.",
   "studyEntryNothingBody": "Mọi thẻ đã học và đang nghỉ. Thẻ chỉ ôn được khi đến hạn.",
   "studyEntryLearnTitle": "Học thẻ mới",
