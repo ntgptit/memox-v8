@@ -10,8 +10,8 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
 
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/card_fixtures.dart';
@@ -226,7 +226,7 @@ void main() {
   // and the footer's start is whole.
   for (final textScale in [1.0, 1.3, 2.0]) {
     libraryTest('scrolled to the end, the last option clears the footer and '
-        'nothing is cut (scale $textScale, bold)', (tester, env) async {
+        'the footer is whole (scale $textScale, bold)', (tester, env) async {
       final leaf = await insertFiveDue(env.db, env.decks);
       for (var i = 0; i < 2; i++) {
         await insertCard(env.db, id: 'n$i', deckId: leaf.id);

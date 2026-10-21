@@ -100,10 +100,15 @@ Future<void> answerRight(
   String sessionId, {
   StudyMode? until,
 }) async {
-  while (true) {
+  for (var turn = 0; turn < _maxTurns; turn++) {
     final session = await sessionOf(db, sessionId);
     if (session.read<String>('status') != 'in_progress') return;
     if (session.read<String>('current_mode') == until?.code) return;
     await answerServed(db, sessions, sessionId, right: true);
   }
+  fail('session $sessionId took $_maxTurns right answers and did not end');
 }
+
+/// More turns than any fixture session takes: past it, a right answer is
+/// not moving the session on.
+const _maxTurns = 500;

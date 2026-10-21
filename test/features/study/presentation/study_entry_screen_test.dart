@@ -229,7 +229,8 @@ void main() {
     });
   }
 
-  libraryTest('nothing new and nothing due is the calm empty state '
+  libraryTest('nothing new and nothing due is the calm empty state, and it '
+      'follows the cards: resting, then none, then a new one to learn '
       '(BR-STUDY-008)', (tester, env) async {
     final root = await env.decks.root('Korean');
     await _learned(env, root.id, 'later', DateTime(2026, 10, 1));
@@ -253,6 +254,16 @@ void main() {
     expect(find.text(_en.studyEntryNothingBody), findsNothing);
     expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
     expect(find.text(_en.studyEntryNoCardsBody), findsOneWidget);
+
+    // A card arrives (added in another tab, restored, pulled): the empty
+    // state gives way to Learn.
+    await insertCard(env.db, id: 'fresh', deckId: root.id);
+    await tester.pumpAndSettle();
+    expect(find.byType(MxEmptyState), findsNothing);
+    expect(
+      find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('loading draws the hero and the option list as skeletons '
