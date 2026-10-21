@@ -15,6 +15,7 @@ StudyEntry _entry({
 }) => StudyEntry(
   schedulerType: type,
   cardLimit: 2,
+  cardCount: fresh + due,
   newCardCount: fresh,
   dueCardCount: due,
   overdueCardCount: 0,

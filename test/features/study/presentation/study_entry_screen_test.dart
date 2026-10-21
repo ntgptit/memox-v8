@@ -238,10 +238,20 @@ void main() {
 
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNothingBody), findsOneWidget);
     // The hero stays above it, reading 0 and 0 (kit nothing).
     expect(_tile(tester, _en.studyEntryNew).value, '0');
     expect(_tile(tester, _en.studyEntryDue).value, '0');
     expect(find.byType(MxOptionRow), findsNothing);
+
+    // Owner review 2026-10-21: 0 and 0 does not say every card rests. The
+    // last card goes to the Trash while the entry is open (another tab, a
+    // pull): the body says the deck has no card, not that all are learned.
+    await env.cards.deleteCards(cardIds: {'later'});
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyEntryNothingBody), findsNothing);
+    expect(find.text(_en.studyEntryNothingEmptyBody), findsOneWidget);
+    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
   });
 
   libraryTest('loading draws the hero and the option list as skeletons '

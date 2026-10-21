@@ -103,6 +103,11 @@ Future<String> _nothing(LibraryEnv env) async {
   return root.id;
 }
 
+/// A deck left with no card, as its last one went to the Trash while the
+/// entry was open (owner 2026-10-21).
+Future<String> _nothingEmpty(LibraryEnv env) async =>
+    (await env.decks.root('TOPIK I')).id;
+
 void main() {
   for (final brightness in Brightness.values) {
     final theme = brightness.name;
@@ -112,6 +117,7 @@ void main() {
       ('sm2', _sm2),
       ('only_new', _onlyNew),
       ('nothing', _nothing),
+      ('nothing_empty_deck', _nothingEmpty),
     ]) {
       libraryTest('study entry, $name, $theme', (tester, env) async {
         final deckId = await seed(env);

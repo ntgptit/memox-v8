@@ -10,6 +10,8 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
 import '../../../shared/expect_one_primary.dart';
 import '../../../support/card_fixtures.dart';
@@ -18,6 +20,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/term_line.dart';
+import '../../../support/text_cut.dart';
 import '../../../support/wrap_rule.dart';
 
 // Screen 14 beside the app's open session of another deck: BR-STUDY-072,
@@ -212,4 +215,46 @@ void main() {
     expect(find.text(_otherSession), findsNothing);
     expectOnePrimaryPerDecision(tester);
   });
+
+  // Owner review 2026-10-21: the footer is the body's neighbour, never over
+  // it. With the banner, the section, Learn and the mode list, at a large
+  // text scale and in bold, the end of the body scrolls clear of the footer
+  // and the footer's start is whole.
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    libraryTest('scrolled to the end, the last option clears the footer and '
+        'nothing is cut (scale $textScale, bold)', (tester, env) async {
+      final leaf = await insertFiveDue(env.db, env.decks);
+      for (var i = 0; i < 2; i++) {
+        await insertCard(env.db, id: 'n$i', deckId: leaf.id);
+      }
+      final other = await env.decks.root('Japanese');
+      await insertCard(env.db, id: 'j0', deckId: other.id);
+      await env.entries.openLearningSession(deckId: other.id);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(leaf.id),
+        textScale: textScale,
+        isBoldText: true,
+      );
+      await tester.drag(
+        find
+            .byWidgetPredicate(
+              (widget) =>
+                  widget is Scrollable &&
+                  widget.axisDirection == AxisDirection.down,
+            )
+            .first,
+        const Offset(0, -4000),
+      );
+      await tester.pumpAndSettle();
+
+      final footer = tester.getRect(find.byType(MxFooterBar));
+      final last = tester.getRect(find.byType(MxOptionRow).last);
+      expect(last.bottom, lessThanOrEqualTo(footer.top));
+      expectNoTextCut(tester, find.byType(MxFooterBar));
+
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

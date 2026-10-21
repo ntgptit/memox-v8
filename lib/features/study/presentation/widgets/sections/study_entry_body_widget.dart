@@ -138,6 +138,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),
         _NothingDue(
+          isEmpty: entry.cardCount == 0,
           isBesideOtherSession:
               resumable != null &&
               offer.canContinue &&
@@ -167,9 +168,16 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 }
 
 /// Nothing new and nothing due: a calm, positive state (BR-STUDY-008,
-/// BR-STUDY-054).
+/// BR-STUDY-054). Its body says why, from the data: every card rests, or
+/// the deck has none (owner 2026-10-21).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue({required this.isBesideOtherSession});
+  const _NothingDue({
+    required this.isEmpty,
+    required this.isBesideOtherSession,
+  });
+
+  /// The deck and its subtree hold no live card.
+  final bool isEmpty;
 
   /// Another deck's session shows above with Continue, so the title says
   /// it is this deck that has nothing (owner 2026-10-21).
@@ -181,7 +189,9 @@ class _NothingDue extends StatelessWidget {
     title: isBesideOtherSession
         ? context.l10n.studyEntryNothingInDeckTitle
         : context.l10n.studyEntryNothingTitle,
-    body: context.l10n.studyEntryNothingBody,
+    body: isEmpty
+        ? context.l10n.studyEntryNothingEmptyBody
+        : context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,
   );

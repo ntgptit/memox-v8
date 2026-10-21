@@ -174,6 +174,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     return StudyEntry(
       schedulerType: type,
       cardLimit: options.cardLimit,
+      cardCount: counts.cardCount,
       newCardCount: counts.newCount,
       dueCardCount: counts.dueCount,
       overdueCardCount: counts.overdueCount,

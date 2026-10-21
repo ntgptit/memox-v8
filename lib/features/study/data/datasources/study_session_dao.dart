@@ -10,6 +10,7 @@ typedef StudyCardRow = ({String cardId, bool hasExample});
 
 /// The new and the due cards of a subtree, and the next due date.
 typedef SubtreeCounts = ({
+  int cardCount,
   int newCount,
   int dueCount,
   int overdueCount,
@@ -70,6 +71,7 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
       (c, cs) => CardDueSql.isScheduled(cs, now),
     ).getSingle();
     return (
+      cardCount: row.cardCount,
       newCount: row.newCount,
       dueCount: row.dueCount,
       overdueCount: row.overdueCount,
