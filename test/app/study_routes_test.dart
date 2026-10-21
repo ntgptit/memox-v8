@@ -73,6 +73,32 @@ void main() {
     expect(await studySessionCount(env.db), 0);
   });
 
+  // Final review 2026-10-21, Important 1: the Library pushes each level, so
+  // Open in Library returns to the deck already on the stack.
+  libraryTest('Open in Library on an empty deck returns to that deck, and '
+      'Back still climbs the Library (spec D7)', (tester, env) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await tapAndSettle(tester, find.text('Korean'));
+    await tapAndSettle(tester, find.text('Words'));
+    await tapAndSettle(tester, byControlLabel(_en.deckActions));
+    await tapAndSettle(
+      tester,
+      find.descendant(
+        of: find.byType(MxActionSheetCommandRow),
+        matching: find.text(_en.studyThisDeck),
+      ),
+    );
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+
+    await tapAndSettle(tester, find.text(_en.studyEntryOpenInLibrary));
+    expect(find.byType(StudyEntryScreen), findsNothing);
+    expect(barTitle('Words'), findsOneWidget);
+    await _back(tester);
+    expect(barTitle('Korean'), findsOneWidget);
+    expect(await studySessionCount(env.db), 0);
+  });
+
   libraryTest('Back from the Study Entry and its review pick makes no '
       'session and returns to the source deck; the next visit has no '
       'Continue (IT-NAV-009, BR-STUDY-020, FE-A6 P3 E1)', (tester, env) async {

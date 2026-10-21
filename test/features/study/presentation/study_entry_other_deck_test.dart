@@ -168,8 +168,8 @@ void main() {
   });
 
   // The name is the user's own text: two lines at most, then an ellipsis,
-  // on a 360 dp phone and at a 1.3 text scale.
-  for (final textScale in [1.0, 1.3]) {
+  // on a 360 dp phone at 1.0, 1.3 and 2.0, in bold (spec §5).
+  for (final textScale in [1.0, 1.3, 2.0]) {
     libraryTest('a deck name longer than two lines ends in an ellipsis; '
         'nothing overflows (scale $textScale)', (tester, env) async {
       final deckName = ('Academic Vocabulary for Reading ' * 4).trim();
@@ -182,6 +182,7 @@ void main() {
         env,
         _screen(root.id),
         textScale: textScale,
+        isBoldText: true,
       );
 
       final name = find.text(deckName);
@@ -312,28 +313,67 @@ void main() {
   }
 
   // Spec D7, BR-STUDY-004: while a start runs, the empty deck's way to the
-  // Library is locked with every other action.
-  libraryTest('while a start runs, Open in Library is locked', (
-    tester,
-    env,
-  ) async {
-    final root = await env.decks.root('Korean');
+  // Library and the ⓘ of another deck's session lock with every action.
+  libraryTest('while a start runs beside another deck\'s session, Open in '
+      'Library and the ⓘ are locked', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 0);
+    await env.entries.openLearningSession(deckId: leaf);
+    final empty = await env.decks.root('Japanese');
     await pumpLibraryScreen(
       tester,
       env,
-      _screen(root.id, onOpenInLibrary: () {}),
+      _screen(empty.id, onOpenInLibrary: () {}),
       overrides: [
-        studyEntryControllerProvider(root.id).overrideWith(_Starting.new),
+        studyEntryControllerProvider(empty.id).overrideWith(_Starting.new),
       ],
     );
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryOpenInLibrary)).onPressed,
+      isNull,
+    );
+    final banner = find.byType(StudyEntryResumeWidget);
     expect(
       tester
-          .widget<MxButton>(
-            find.widgetWithText(MxButton, _en.studyEntryOpenInLibrary),
+          .widget<MxIconButton>(
+            find.descendant(of: banner, matching: find.byType(MxIconButton)),
           )
           .onPressed,
       isNull,
     );
+  });
+
+  // Review Focus 5: the sheet is a snapshot; once it closes, the entry
+  // follows the session that ended meanwhile.
+  libraryTest('the session ends while its location sheet is open: the sheet '
+      'keeps its path, and closing it shows the entry without the banner', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 0);
+    final opened = await env.entries.openLearningSession(deckId: leaf);
+    final sessionId = (opened as Ok<String, StudyRejection>).value;
+    await pumpLibraryScreen(tester, env, _screen(await rootOf(env.db, leaf)));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(StudyEntryResumeWidget),
+        matching: find.byType(MxIconButton),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await env.sessions.abandonSession(sessionId: sessionId);
+    await tester.pumpAndSettle();
+    final sheet = find.byType(StudyDeckLocationSheetWidget);
+    expect(
+      find.descendant(of: sheet, matching: find.text('Lesson')),
+      findsOneWidget,
+    );
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(sheet, findsNothing);
+    expect(find.byType(StudyEntryResumeWidget), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   // Spec D7: with no way to the Library wired, the action is not drawn,

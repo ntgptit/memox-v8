@@ -17,7 +17,7 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _title(List<String> path, {VoidCallback? onShow}) => Align(
+Widget _title(List<String> path, {bool isLocked = false}) => Align(
   alignment: Alignment.topLeft,
   child: SizedBox(
     width: 280,
@@ -25,8 +25,9 @@ Widget _title(List<String> path, {VoidCallback? onShow}) => Align(
       builder: (context) => StudySessionTitleWidget(
         path: path,
         line: const Text('Learning · Browse'),
-        onShowLocation:
-            onShow ?? () => showStudyDeckLocationSheet(context, path),
+        onShowLocation: isLocked
+            ? null
+            : () => showStudyDeckLocationSheet(context, path),
       ),
     ),
   ),
@@ -68,6 +69,15 @@ void main() {
       tester.widget<MxIconButton>(find.byType(MxIconButton)).semanticLabel,
       _en.studyDeckLocationTitle,
     );
+    // Final review 2026-10-21: the null case itself.
+    await pumpLibraryScreen(tester, env, _title(_deep, isLocked: true));
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<MxIconButton>(find.byType(MxIconButton)).onPressed,
+      isNull,
+    );
+    expect(find.byType(StudyDeckLocationSheetWidget), findsNothing);
   });
 
   // Every level whole, the session's deck marked, each read with its depth;
