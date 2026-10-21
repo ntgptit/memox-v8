@@ -82,7 +82,7 @@ starter template (asset JSON, không phải bảng — Starter decks)
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `id` | TEXT PK | UUID sinh phía client |
-| `name` | TEXT NOT NULL | BR-DECK-020 |
+| `name` | TEXT NOT NULL | BR-DECK-020: ≤ 32 ký tự hiển thị và ≤ 128 code point (app); server: CHECK `char_length(name) <= 128` (`20261021000000_deck_name_length.sql`) |
 | `parent_id` | TEXT NULL | NULL = root deck. → `deck(id)` ON DELETE CASCADE |
 | `root_id` | TEXT NOT NULL | root có `root_id = id`; descendant mang id của root (BR-DECK-002) |
 | `depth` | INTEGER NOT NULL | Root = 1. `CHECK (depth <= 10)` là an toàn tầng DB (BR-DECK-001) |
