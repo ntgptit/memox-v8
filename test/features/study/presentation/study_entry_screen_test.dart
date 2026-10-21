@@ -30,12 +30,14 @@ import '../../../support/term_line.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
-  deckId: deckId,
-  title: const Text('Deck'),
-  breadcrumb: const SizedBox.shrink(),
-  onOpenSession: (_) {},
-);
+StudyEntryScreen _screen(String deckId, {VoidCallback? onOpenInLibrary}) =>
+    StudyEntryScreen(
+      deckId: deckId,
+      title: const Text('Deck'),
+      breadcrumb: const SizedBox.shrink(),
+      onOpenSession: (_) {},
+      onOpenInLibrary: onOpenInLibrary,
+    );
 
 Future<void> _learned(LibraryEnv env, String deckId, String id, DateTime due) =>
     insertCard(
@@ -235,15 +237,26 @@ void main() {
     final root = await env.decks.root('Korean');
     await _learned(env, root.id, 'later', DateTime(2026, 10, 1));
     await lockScheduler(env.db, root.id);
-    await pumpLibraryScreen(tester, env, _screen(root.id));
+    final library = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(root.id, onOpenInLibrary: () => library.add(root.id)),
+    );
 
     expect(find.byType(MxEmptyState), findsOneWidget);
+    // Resting cards: the hero is the algorithm alone (spec D5), the title is
+    // quiet (D11), no action (D7).
+    expect(find.byType(MxStatTile), findsNothing);
+    expect(find.text(_en.studyEntryLimit(20)), findsNothing);
+    expect(
+      tester.widget<MxEmptyState>(find.byType(MxEmptyState)).isQuiet,
+      isTrue,
+    );
+    expect(find.text(_en.studyEntryOpenInLibrary), findsNothing);
     // Its title names this deck (owner 2026-10-21).
     expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
     expect(find.text(_en.studyEntryNothingBody), findsOneWidget);
-    // The hero stays above it, reading 0 and 0 (kit nothing).
-    expect(_tile(tester, _en.studyEntryNew).value, '0');
-    expect(_tile(tester, _en.studyEntryDue).value, '0');
     expect(find.byType(MxOptionRow), findsNothing);
 
     // Owner review 2026-10-21: 0 and 0 does not say every card rests. The
@@ -254,6 +267,14 @@ void main() {
     expect(find.text(_en.studyEntryNothingBody), findsNothing);
     expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
     expect(find.text(_en.studyEntryNoCardsBody), findsOneWidget);
+    // Its one action opens the deck in the Library, secondary; a second tap
+    // asks again, and the app's `go` lands on the same page.
+    final open = find.widgetWithText(MxButton, _en.studyEntryOpenInLibrary);
+    expect(tester.widget<MxButton>(open).tone, MxButtonTone.secondary);
+    await tester.tap(open);
+    await tester.tap(open);
+    await tester.pumpAndSettle();
+    expect(library, [root.id, root.id]);
 
     // A card arrives (added in another tab, restored, pulled): the empty
     // state gives way to Learn.
@@ -264,6 +285,7 @@ void main() {
       find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
       findsOneWidget,
     );
+    expect(find.byType(MxStatTile), findsNWidgets(2));
   });
 
   libraryTest('loading draws the hero and the option list as skeletons '

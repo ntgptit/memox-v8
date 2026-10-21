@@ -10,6 +10,7 @@ import 'package:memox/app/router/admin_routes.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
+import 'package:memox/app/router/open_ancestor.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/app/router/study_route_screens.dart';
 import 'package:memox/app/router/topik_routes.dart';
@@ -131,7 +132,7 @@ GoRouter buildAppRouter({
                         path: AppRoutes.algorithmChild,
                         builder: (context, state) => DeckAlgorithmScreen(
                           deckId: state.pathParameters[AppRoutes.deckIdParam]!,
-                          onOpenAncestor: (id) => _openAncestor(context, id),
+                          onOpenAncestor: (id) => openAncestor(context, id),
                           onOpenTrash: _openTrash(context),
                         ),
                       ),
@@ -240,7 +241,7 @@ GoRouter buildAppRouter({
                       deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                       onOpenDeck: (id) =>
                           unawaited(context.push(AppRoutes.progressDeck(id))),
-                      onOpenAncestor: (id) => _openAncestor(
+                      onOpenAncestor: (id) => openAncestor(
                         context,
                         id,
                         levelOf: AppRoutes.progressDeck,
@@ -380,7 +381,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
   return DeckLevelScreen(
     deckId: deckId,
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
-    onOpenAncestor: (id) => _openAncestor(context, id),
+    onOpenAncestor: (id) => openAncestor(context, id),
     onSearch: () => context.push(AppRoutes.deckSearch),
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
@@ -464,26 +465,3 @@ Future<void> _editCard(BuildContext context, String cardId) async {
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: currentLabel);
-
-/// Ruling P2-L5: a breadcrumb tap pops the branch's stack back to [deckId],
-/// or to the root for null. A deck that is not on the stack (it was opened
-/// from search) is pushed over the root instead, as its [levelOf] location:
-/// a Library level, or a Progress level (FE-A9 D5).
-void _openAncestor(
-  BuildContext context,
-  String? deckId, {
-  String Function(String deckId) levelOf = AppRoutes.deck,
-}) {
-  final router = GoRouter.of(context);
-  var isOnStack = false;
-  Navigator.of(context).popUntil((route) {
-    final arguments = route.settings.arguments;
-    isOnStack =
-        deckId != null &&
-        arguments is Map &&
-        arguments[AppRoutes.deckIdParam] == deckId;
-    return isOnStack || route.isFirst;
-  });
-  if (deckId == null || isOnStack) return;
-  unawaited(router.push(levelOf(deckId)));
-}

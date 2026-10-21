@@ -26,6 +26,11 @@ class StudyEntryHeroWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final algorithm = l10n.studyScheduler(entry.schedulerType);
+    // At 0 and 0 the empty state below says it; the hero keeps the
+    // algorithm alone (owner 2026-10-21, spec D5).
+    if (entry.newCardCount == 0 && entry.dueCardCount == 0) {
+      return MxCard(child: _Algorithm(name: algorithm));
+    }
     // A summary, not a door (critique 2026-09-30 part 3d-2, E5).
     return MxCard(
       child: Column(
@@ -38,13 +43,7 @@ class StudyEntryHeroWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: context.dimens.space4,
             children: [
-              Text(
-                algorithm.toUpperCase(),
-                semanticsLabel: algorithm,
-                style: context.texts.meta.copyWith(
-                  color: context.colors.mutedForeground,
-                ),
-              ),
+              _Algorithm(name: algorithm),
               Text(
                 l10n.studyEntryLimit(entry.cardLimit),
                 style: context.texts.body.copyWith(
@@ -89,4 +88,18 @@ class StudyEntryHeroWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The scheduler's name as the hero's overline, read as written.
+class _Algorithm extends StatelessWidget {
+  const _Algorithm({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    name.toUpperCase(),
+    semanticsLabel: name,
+    style: context.texts.meta.copyWith(color: context.colors.mutedForeground),
+  );
 }

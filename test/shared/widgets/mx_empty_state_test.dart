@@ -254,4 +254,70 @@ void main() {
     expect(node.label, contains('Create one to start.'));
     handle.dispose();
   });
+
+  // Owner 2026-10-21 (D10): the first action drawn sits 24 under the text,
+  // whatever its tone; the next 8 under it; no action, no gap.
+  for (final (name, primary, secondary, firstLabel) in [
+    ('primary', 'Create deck', null, 'Create deck'),
+    ('secondary', null, 'Open in Library', 'Open in Library'),
+    ('primary and secondary', 'Create deck', 'Open in Library', 'Create deck'),
+  ]) {
+    testWidgets('the first action ($name) sits 24 under the text, the next '
+        '8 under it', (tester) async {
+      await pumpMx(
+        tester,
+        MxEmptyState(
+          icon: AppIcons.inbox,
+          title: 'No cards yet',
+          body: 'Add or import cards.',
+          isCompact: true,
+          actionLabel: primary,
+          onAction: primary == null ? null : () {},
+          secondaryActionLabel: secondary,
+          onSecondaryAction: secondary == null ? null : () {},
+        ),
+      );
+      final body = tester.getRect(find.text('Add or import cards.'));
+      final first = tester.getRect(find.widgetWithText(MxButton, firstLabel));
+      expect(first.top - body.bottom, const AppDimens().space24);
+      if (primary == null || secondary == null) return;
+      final second = tester.getRect(find.widgetWithText(MxButton, secondary));
+      expect(second.top - first.bottom, const AppDimens().space8);
+    });
+  }
+
+  testWidgets('with no action the card ends after the text', (tester) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'No cards yet',
+        body: 'Add or import cards.',
+        isCompact: true,
+      ),
+    );
+    expect(find.byType(MxButton), findsNothing);
+    final card = tester.getRect(find.byType(MxEmptyState));
+    final body = tester.getRect(find.text('Add or import cards.'));
+    expect(card.bottom - body.bottom, const AppDimens().space32);
+  });
+
+  testWidgets('a quiet title is the lead role, not the headline (D11)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'Nothing to study in this deck',
+        isCompact: true,
+        isQuiet: true,
+      ),
+    );
+    final context = tester.element(find.byType(MxEmptyState));
+    final title = tester.widget<Text>(
+      find.text('Nothing to study in this deck'),
+    );
+    expect(title.style, context.texts.itemTitle);
+  });
 }

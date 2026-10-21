@@ -322,7 +322,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`, built on ForUI; 
 ### Feedback and Status
 - **MxSnackbar** (`showMxSnackbar`): ForUI's toast, one at a time, one optional action, its message in the `label` role rather than ForUI's 15 title; it returns an `MxSnackbarController` (`close()`, `closed`). A toast with an action stays while TalkBack is on.
 - **MxBadge**, **MxStatusBadge**, **MxTagChip**: ForUI's badge in a tone (`MxToneBadge`).
-- **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState**, **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
+- **MxInlineBanner**, **MxFloatingNotice**, **MxNote**, **MxEmptyState** (its first action, of any tone, sits `space24` under the text and each next one `space8` under it; `isQuiet` draws the title in `itemTitle` for an empty state under other content, opt-in), **MxErrorState**, **MxSkeleton** (`muted` bars, `border` on a `muted` ground), **MxSpinner** (ForUI's `FCircularProgress`, one turn per 0.8 s; it stops only under Android's Remove animations, so an `FAccessibilityScope` keeps it turning there: it is the one sign that work is in flight).
 
 ### Study-specific
 - **MxMasteryDonut** and **MxLinearProgress** (`MasteryRamp`: `muted` track, status fills), **MxOutcomeTile**, **MxWorkloadBreakdownLine** (in the `body` role, a row's metadata line, below the row title), the study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `opacityMuted` and stays readable) and the recessed answer face.

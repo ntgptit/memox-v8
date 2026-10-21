@@ -33,6 +33,7 @@ class StudyEntryScreen extends ConsumerWidget {
     required this.breadcrumb,
     required this.onOpenSession,
     this.onOpenStudyOptions,
+    this.onOpenInLibrary,
   });
 
   final String deckId;
@@ -49,6 +50,10 @@ class StudyEntryScreen extends ConsumerWidget {
   /// Opens the deck's study options (screen 15, FE-A3 D3); composed by
   /// `app/`, as study may not read settings. Null hides the icon.
   final VoidCallback? onOpenStudyOptions;
+
+  /// Opens this deck in the Library, where cards are added or imported
+  /// (spec D7); composed by `app/`. Null hides the action.
+  final VoidCallback? onOpenInLibrary;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -81,6 +86,7 @@ class StudyEntryScreen extends ConsumerWidget {
         onLearn: () => unawaited(_start(context, ref, const LearnStart())),
         onContinue: (sessionId) =>
             unawaited(_start(context, ref, ContinueStart(sessionId))),
+        onOpenInLibrary: onOpenInLibrary,
       ),
       footer: switch (ref.watch(studyEntryProvider(deckId))) {
         AsyncData(value: Ok(:final value)) => StudyEntryFooterWidget(

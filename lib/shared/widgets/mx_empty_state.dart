@@ -20,6 +20,7 @@ class MxEmptyState extends StatelessWidget {
     this.body,
     this.tone = MxEmptyStateTone.primary,
     this.isCompact = false,
+    this.isQuiet = false,
     this.actionLabel,
     this.onAction,
     this.secondaryActionLabel,
@@ -47,6 +48,12 @@ class MxEmptyState extends StatelessWidget {
 
   /// Inside another card or a sheet.
   final bool isCompact;
+
+  /// The title in the lead role (`itemTitle`, 500) instead of the headline
+  /// (`sectionTitle`, 600), for an empty state under other content on its
+  /// screen (owner 2026-10-21). Opt-in: every other empty state keeps the
+  /// headline.
+  final bool isQuiet;
   final String? actionLabel;
   final VoidCallback? onAction;
 
@@ -122,8 +129,11 @@ class MxEmptyState extends StatelessWidget {
                         title,
                         textAlign: TextAlign.center,
                         // One title role, compact or not, as the error
-                        // state's (type scale spec 2026-10-20).
-                        style: context.texts.sectionTitle,
+                        // state's (type scale spec 2026-10-20), unless the
+                        // state is quiet.
+                        style: isQuiet
+                            ? context.texts.itemTitle
+                            : context.texts.sectionTitle,
                       ),
                       if (body case final body?) ...[
                         SizedBox(height: context.dimens.space8),
@@ -139,32 +149,15 @@ class MxEmptyState extends StatelessWidget {
                   ),
                 ),
               ),
-              if ((actionLabel, onAction) case (
-                final label?,
-                final onPressed?,
-              )) ...[
+              // The first action drawn sits 24 under the text, whatever its
+              // tone; each next one 8 under it (owner 2026-10-21).
+              if (_actions(context) case final actions
+                  when actions.isNotEmpty) ...[
                 SizedBox(height: context.dimens.space24),
-                MxButton(label: label, onPressed: onPressed, isBlock: true),
-              ],
-              if (secondaryActionLabel case final label?) ...[
-                SizedBox(height: context.dimens.space8),
-                MxButton(
-                  label: label,
-                  tone: MxButtonTone.secondary,
-                  onPressed: onSecondaryAction,
-                  isBlock: true,
-                ),
-              ],
-              if ((tertiaryActionLabel, onTertiaryAction) case (
-                final label?,
-                final onPressed?,
-              )) ...[
-                SizedBox(height: context.dimens.space8),
-                MxButton(
-                  label: label,
-                  tone: MxButtonTone.outline,
-                  onPressed: onPressed,
-                  isBlock: true,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: context.dimens.space8,
+                  children: actions,
                 ),
               ],
               if (footnote case final rule?) ...[
@@ -177,6 +170,28 @@ class MxEmptyState extends StatelessWidget {
       ),
     );
   }
+
+  List<Widget> _actions(BuildContext context) => [
+    if ((actionLabel, onAction) case (final label?, final onPressed?))
+      MxButton(label: label, onPressed: onPressed, isBlock: true),
+    if (secondaryActionLabel case final label?)
+      MxButton(
+        label: label,
+        tone: MxButtonTone.secondary,
+        onPressed: onSecondaryAction,
+        isBlock: true,
+      ),
+    if ((tertiaryActionLabel, onTertiaryAction) case (
+      final label?,
+      final onPressed?,
+    ))
+      MxButton(
+        label: label,
+        tone: MxButtonTone.outline,
+        onPressed: onPressed,
+        isBlock: true,
+      ),
+  ];
 
   Color _toneColor(BuildContext context) => switch (tone) {
     MxEmptyStateTone.primary => context.colors.primary,

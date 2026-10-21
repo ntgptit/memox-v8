@@ -3990,6 +3990,14 @@
     },
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryQuietSecondary": "Quiet title, a secondary action alone.",
+  "@galleryQuietSecondary": {
+    "description": "Gallery G: the compact empty state with the quiet title and a lone secondary action (owner 2026-10-21, D10, D11)."
+  },
+  "galleryOpenInLibrary": "Open in Library",
+  "@galleryOpenInLibrary": {
+    "description": "Gallery G: the sample secondary action."
+  },
   "galleryCompactTone": "Compact, {tone} tone.",
   "@galleryCompactTone": {
     "placeholders": {
@@ -4067,6 +4075,10 @@
   "studyEntryNoCardsTitle": "No cards yet",
   "@studyEntryNoCardsTitle": {
     "description": "Screen handoff 14: the nothing-due state's title when the deck and its sub-decks hold no card (owner 2026-10-21; BR-STUDY-008), as screen 13's row says."
+  },
+  "studyEntryOpenInLibrary": "Open in Library",
+  "@studyEntryOpenInLibrary": {
+    "description": "Screen handoff 14: the secondary action of \"No cards yet\", which opens this deck in the Library where cards are added or imported (owner 2026-10-21, spec D7)."
   },
   "studyEntryNoCardsBody": "Add or import cards to study them here.",
   "@studyEntryNoCardsBody": {
@@ -4227,6 +4239,40 @@
   "@studyEntryResumeOverlineOtherDeck": {
     "description": "Screen handoff 14: the resume banner's overline when today's open session belongs to another deck, named on the line under it (owner 2026-10-21; BR-STUDY-072)."
   },
+  "studyDeckLocationTitle": "Deck location",
+  "@studyDeckLocationTitle": {
+    "description": "Screens 13 and 14: the sheet that shows where an open session's deck sits, and the ⓘ button that opens it (owner 2026-10-21, spec D3)."
+  },
+  "studyDeckLocationLevel": "{name}, level {level} of {count}",
+  "@studyDeckLocationLevel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for a level above the session's deck, root first."
+  },
+  "studyDeckLocationSessionDeck": "{name}, the session's deck, level {level} of {count}",
+  "@studyDeckLocationSessionDeck": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for the session's deck, the last level."
+  },
   "studyEntryResumeOverline": "Session from today",
   "@studyEntryResumeOverline": {
     "description": "Screen handoff 14 (FE-A6 P2): resume banner overline."
@@ -4260,10 +4306,6 @@
       }
     },
     "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing; screen 13's Resume card session line (Study home spec H3)."
-  },
-  "studyEntryResumeBody": "Continue where you stopped.",
-  "@studyEntryResumeBody": {
-    "description": "Screen handoff 14 (FE-A6 P2): resume banner body; what another start does is the note under it (spec E1)."
   },
   "studyEntryOtherSessionHeader": "Or start another session",
   "@studyEntryOtherSessionHeader": {
@@ -5752,30 +5794,6 @@
       }
     },
     "description": "Screen handoff 13: the workload card's action, opening the Study entry of the deck with the most urgent due cards (Study home spec H2)."
-  },
-  "studyHomeResumeTitle": "{root} › {deck}",
-  "@studyHomeResumeTitle": {
-    "placeholders": {
-      "root": {
-        "type": "String"
-      },
-      "deck": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoffs 13 and 14: one step of an open session's deck path, the levels so far ({root}), then the next level ({deck}); applied level by level from the root, so the path reads \"Korean › Grammar › Lesson 1\" (owner 2026-10-21, over Study home spec H3). A level may be \"…\", for the levels left out."
-  },
-  "studyHomeResumeTitleSpoken": "{deck}, in {root}",
-  "@studyHomeResumeTitleSpoken": {
-    "placeholders": {
-      "root": {
-        "type": "String"
-      },
-      "deck": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoffs 13 and 14: what TalkBack reads for that deck path, without the › glyph: applied from the deck up, so it reads \"Lesson 1, in Grammar, in Korean\"; never cut."
   },
   "studyHomeResumeProgress": "{done} / {total} cards",
   "@studyHomeResumeProgress": {

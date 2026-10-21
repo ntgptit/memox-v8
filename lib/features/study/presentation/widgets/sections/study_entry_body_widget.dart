@@ -33,6 +33,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     required this.breadcrumb,
     required this.onLearn,
     required this.onContinue,
+    this.onOpenInLibrary,
   });
 
   final String deckId;
@@ -46,8 +47,9 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   /// Takes up today's open session (UC-STUDY-001 A3b).
   final ValueChanged<String> onContinue;
 
-  /// A review list is shown only when there is a choice (BR-STUDY-055).
-  static const int _minModesToChoose = 2;
+  /// Opens this deck in the Library from the empty deck's state (spec D7);
+  /// null hides the action.
+  final VoidCallback? onOpenInLibrary;
 
   void _retry(WidgetRef ref) => ref.invalidate(studyEntryProvider(deckId));
 
@@ -104,8 +106,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final hasLearn = entry.newCardCount > 0;
     // A review list is shown only when there is a choice (BR-STUDY-055).
     final hasReviews =
-        entry.dueCardCount > 0 && offer.reviews.length >= _minModesToChoose;
-    final hasChoices = hasLearn || hasReviews;
+        entry.dueCardCount > 0 && offer.reviews.length >= minModesToChoose;
     return [
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
@@ -130,14 +131,18 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       // the choices sit under a section that says so (spec E1, BR-STUDY-072).
       // With no choice in the body (SM-2 with due cards alone) the footer's
       // caption says it (final review I2).
-      if (resumable != null && offer.canContinue && hasChoices) ...[
+      if (offer.isOtherSessionNoteShown) ...[
         SizedBox(height: context.dimens.space16),
         MxListSectionHeader(label: context.l10n.studyEntryOtherSessionHeader),
         MxNote(text: context.l10n.studyEntryOtherSessionNote),
       ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),
-        _NothingDue(isEmpty: entry.cardCount == 0),
+        _NothingDue(
+          isEmpty: entry.cardCount == 0,
+          onOpenInLibrary: onOpenInLibrary,
+          isLocked: start.isStarting,
+        ),
       ],
       if (hasLearn) ...[
         SizedBox(height: context.dimens.space16),
@@ -166,10 +171,21 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 /// has none; its title names this deck, so it never reads against another
 /// deck's Continue above it (owner 2026-10-21).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue({required this.isEmpty});
+  const _NothingDue({
+    required this.isEmpty,
+    required this.onOpenInLibrary,
+    required this.isLocked,
+  });
 
   /// The deck and its subtree hold no live card.
   final bool isEmpty;
+
+  /// Opens this deck in the Library, where cards are added (spec D7); null
+  /// draws no action.
+  final VoidCallback? onOpenInLibrary;
+
+  /// A start runs: the action is drawn disabled (BR-STUDY-004).
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) => MxEmptyState(
@@ -182,6 +198,13 @@ class _NothingDue extends StatelessWidget {
         : context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,
+    // Under the hero, and beside another deck's session: the lead role, not
+    // a headline (owner 2026-10-21, spec D11).
+    isQuiet: true,
+    secondaryActionLabel: isEmpty && onOpenInLibrary != null
+        ? context.l10n.studyEntryOpenInLibrary
+        : null,
+    onSecondaryAction: isEmpty && !isLocked ? onOpenInLibrary : null,
   );
 }
 

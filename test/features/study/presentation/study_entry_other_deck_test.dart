@@ -5,11 +5,16 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/states/study_start_state.dart';
+import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_term_line.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_deck_location_sheet_widget.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
@@ -19,24 +24,36 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
-import '../../../support/term_line.dart';
 import '../../../support/text_cut.dart';
-import '../../../support/wrap_rule.dart';
 
 // Screen 14 beside the app's open session of another deck: BR-STUDY-072,
 // UC-STUDY-001 A3b.
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-StudyEntryScreen _screen(String deckId, {ValueChanged<String>? onOpen}) =>
-    StudyEntryScreen(
-      deckId: deckId,
-      title: const Text('Deck'),
-      breadcrumb: const SizedBox.shrink(),
-      onOpenSession: onOpen ?? (_) {},
-    );
+StudyEntryScreen _screen(
+  String deckId, {
+  ValueChanged<String>? onOpen,
+  VoidCallback? onOpenInLibrary,
+}) => StudyEntryScreen(
+  deckId: deckId,
+  title: const Text('Deck'),
+  breadcrumb: const SizedBox.shrink(),
+  onOpenSession: onOpen ?? (_) {},
+  onOpenInLibrary: onOpenInLibrary,
+);
+
+/// A start that runs: every action is locked (BR-STUDY-004).
+class _Starting extends StudyEntryController {
+  @override
+  StudyStartState build(String deckId) =>
+      const StudyStartState(status: StudyStartStatus.starting);
+}
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
+
+/// Drags enough to reach the end of the entry at any text scale.
+const _maxDrags = 5;
 
 /// The section over the other starts while a session can be continued.
 final _otherSession = _en.studyEntryOtherSessionHeader.toUpperCase();
@@ -66,30 +83,46 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // The deck alone, its line quiet under it; its location one tap away
+    // (owner 2026-10-21, spec §3.3).
+    final banner = find.byType(StudyEntryResumeWidget);
     expect(
-      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
+      find.descendant(of: banner, matching: find.text('Lesson')),
       findsOneWidget,
     );
+    expect(find.textContaining('›'), findsNothing);
+    expect(find.text('Continue where you stopped.'), findsNothing);
     expect(
-      tester
-          .widget<Text>(
-            find.text(
-              breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson')),
-            ),
-          )
-          .semanticsLabel,
-      _en.studyHomeResumeTitleSpoken('Korean', 'Lesson'),
+      find.descendant(
+        of: banner,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is MxTermLine && widget.role == MxTermLineRole.body,
+        ),
+      ),
+      findsOneWidget,
     );
+    await tester.tap(
+      find.descendant(of: banner, matching: find.byType(MxIconButton)),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(StudyDeckLocationSheetWidget),
+        matching: find.text('Korean'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyDeckLocationSheetWidget), findsNothing);
     // The overline says it is another deck's (owner 2026-10-21).
     expect(
       find.text(_en.studyEntryResumeOverlineOtherDeck.toUpperCase()),
       findsOneWidget,
     );
     expect(find.text(_otherSession), findsOneWidget);
-    expect(
-      findTermLine(_en.studyEntryEndsSession, isContaining: true),
-      findsOneWidget,
-    );
+    expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
     expect(
       tester.widget<MxButton>(_button(_en.studyEntryReviewInstead)).tone,
       MxButtonTone.outline,
@@ -134,18 +167,13 @@ void main() {
     );
   });
 
-  // The path is the user's own text: two lines at most, the deck kept first,
-  // "›" kept with the deck after it, on a 360 dp phone and at a 1.3 text
-  // scale (study_deck_path_test has the shapes).
-  for (final textScale in [1.0, 1.3]) {
-    libraryTest('a deck name longer than two lines leads after "…" and ends '
-        'in an ellipsis; nothing overflows (scale $textScale)', (
-      tester,
-      env,
-    ) async {
-      const rootName = 'IELTS Academic Word List';
+  // The name is the user's own text: two lines at most, then an ellipsis,
+  // on a 360 dp phone at 1.0, 1.3 and 2.0, in bold (spec §5).
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    libraryTest('a deck name longer than two lines ends in an ellipsis; '
+        'nothing overflows (scale $textScale)', (tester, env) async {
       final deckName = ('Academic Vocabulary for Reading ' * 4).trim();
-      final root = await env.decks.root(rootName, SchedulerType.sm2);
+      final root = await env.decks.root('IELTS', SchedulerType.sm2);
       final leaf = await env.decks.sub(root.id, deckName);
       await insertCard(env.db, id: 'n0', deckId: leaf.id);
       await env.entries.openLearningSession(deckId: leaf.id);
@@ -154,22 +182,42 @@ void main() {
         env,
         _screen(root.id),
         textScale: textScale,
+        isBoldText: true,
       );
 
-      final path = find.text(
-        breadcrumbLine(_en.studyHomeResumeTitle('…', deckName)),
-      );
-      final text = tester.widget<Text>(path);
+      final name = find.text(deckName);
+      final text = tester.widget<Text>(name);
       expect((text.maxLines, text.overflow), (2, TextOverflow.ellipsis));
-      // The label is a Semantics over the paragraph.
-      final paragraph = tester.renderObject<RenderParagraph>(
-        find.descendant(of: path, matching: find.byType(RichText)),
+      expect(
+        tester.renderObject<RenderParagraph>(name).didExceedMaxLines,
+        isTrue,
       );
-      expect(paragraph.didExceedMaxLines, isTrue);
-      expectNoLineEndsOn(tester, path, '›');
       expect(tester.takeException(), isNull);
     });
   }
+
+  // Two decks of one name: identity is the session id, never the name
+  // (owner 2026-10-21, spec D2).
+  libraryTest('two decks of one name: Continue opens the session, wherever '
+      'its namesake is', (tester, env) async {
+    final a = await env.decks.root('Korean', SchedulerType.sm2);
+    final aLesson = await env.decks.sub(a.id, 'Lesson');
+    final b = await env.decks.root('Japanese', SchedulerType.sm2);
+    final bLesson = await env.decks.sub(b.id, 'Lesson');
+    await insertCard(env.db, id: 'a0', deckId: aLesson.id);
+    await insertCard(env.db, id: 'b0', deckId: bLesson.id);
+    final opened = await env.entries.openLearningSession(deckId: aLesson.id);
+    final sessionId = (opened as Ok<String, StudyRejection>).value;
+    String? continued;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(bLesson.id, onOpen: (id) => continued = id),
+    );
+    await tester.tap(_button(_en.studyEntryContinue));
+    await tester.pumpAndSettle();
+    expect(continued, sessionId);
+  });
 
   libraryTest('a session on another root names that deck alone', (
     tester,
@@ -208,10 +256,7 @@ void main() {
     await lockScheduler(env.db, rest.id);
     await pumpLibraryScreen(tester, env, _screen(rest.id));
 
-    expect(
-      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
-      findsOneWidget,
-    );
+    expect(find.text('Lesson'), findsOneWidget);
     // The title says it is this deck that has nothing (owner 2026-10-21).
     expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
     expect(find.byType(MxButton), findsOneWidget);
@@ -241,17 +286,22 @@ void main() {
         textScale: textScale,
         isBoldText: true,
       );
-      await tester.drag(
-        find
-            .byWidgetPredicate(
-              (widget) =>
-                  widget is Scrollable &&
-                  widget.axisDirection == AxisDirection.down,
-            )
-            .first,
-        const Offset(0, -4000),
-      );
-      await tester.pumpAndSettle();
+      // The list builds lazily, so one drag stops at the extent known so
+      // far; drag until the end is really reached.
+      final scrollable = find
+          .byWidgetPredicate(
+            (widget) =>
+                widget is Scrollable &&
+                widget.axisDirection == AxisDirection.down,
+          )
+          .first;
+      final position = tester.state<ScrollableState>(scrollable).position;
+      for (var drag = 0; drag < _maxDrags; drag++) {
+        await tester.drag(scrollable, const Offset(0, -4000));
+        await tester.pumpAndSettle();
+        if (position.pixels >= position.maxScrollExtent) break;
+      }
+      expect(position.pixels, position.maxScrollExtent);
 
       final footer = tester.getRect(find.byType(MxFooterBar));
       final last = tester.getRect(find.byType(MxOptionRow).last);
@@ -261,4 +311,80 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  // Spec D7, BR-STUDY-004: while a start runs, the empty deck's way to the
+  // Library and the ⓘ of another deck's session lock with every action.
+  libraryTest('while a start runs beside another deck\'s session, Open in '
+      'Library and the ⓘ are locked', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 0);
+    await env.entries.openLearningSession(deckId: leaf);
+    final empty = await env.decks.root('Japanese');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(empty.id, onOpenInLibrary: () {}),
+      overrides: [
+        studyEntryControllerProvider(empty.id).overrideWith(_Starting.new),
+      ],
+    );
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryOpenInLibrary)).onPressed,
+      isNull,
+    );
+    final banner = find.byType(StudyEntryResumeWidget);
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.descendant(of: banner, matching: find.byType(MxIconButton)),
+          )
+          .onPressed,
+      isNull,
+    );
+  });
+
+  // Review Focus 5: the sheet is a snapshot; once it closes, the entry
+  // follows the session that ended meanwhile.
+  libraryTest('the session ends while its location sheet is open: the sheet '
+      'keeps its path, and closing it shows the entry without the banner', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 0);
+    final opened = await env.entries.openLearningSession(deckId: leaf);
+    final sessionId = (opened as Ok<String, StudyRejection>).value;
+    await pumpLibraryScreen(tester, env, _screen(await rootOf(env.db, leaf)));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(StudyEntryResumeWidget),
+        matching: find.byType(MxIconButton),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await env.sessions.abandonSession(sessionId: sessionId);
+    await tester.pumpAndSettle();
+    final sheet = find.byType(StudyDeckLocationSheetWidget);
+    expect(
+      find.descendant(of: sheet, matching: find.text('Lesson')),
+      findsOneWidget,
+    );
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(sheet, findsNothing);
+    expect(find.byType(StudyEntryResumeWidget), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  // Spec D7: with no way to the Library wired, the action is not drawn,
+  // rather than drawn disabled.
+  libraryTest('without onOpenInLibrary the empty deck shows no action', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryOpenInLibrary), findsNothing);
+  });
 }

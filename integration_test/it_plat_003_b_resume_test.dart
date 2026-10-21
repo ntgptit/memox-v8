@@ -19,7 +19,10 @@ void main() {
     await openStudyEntry(tester, studyRoot);
     final l10n = l10nOf(tester);
     await waitFor(tester, find.text(l10n.studyEntryContinue));
-    expect(find.text(l10n.studyEntryResumeBody), findsOneWidget);
+    expect(
+      find.text(l10n.studyEntryResumeOverline.toUpperCase()),
+      findsOneWidget,
+    );
 
     await tapText(tester, l10n.studyEntryContinue);
     await waitUntil(

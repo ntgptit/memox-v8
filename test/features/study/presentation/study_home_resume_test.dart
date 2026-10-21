@@ -6,12 +6,13 @@ import 'package:memox/features/study/presentation/widgets/sections/study_home_re
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations_en.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_deck_location_sheet_widget.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
-import 'package:memox/l10n/meta_line.dart';
 
 import '../../../support/library_harness.dart';
-import '../../../support/wrap_rule.dart';
 
 final _en = AppLocalizationsEn();
 
@@ -34,6 +35,8 @@ Future<void> _pump(
   ResumableSession session, {
   double width = 360,
   double textScale = 1,
+  bool isResuming = false,
+  bool isBoldText = false,
 }) => pumpLibraryScreen(
   tester,
   env,
@@ -45,13 +48,14 @@ Future<void> _pump(
         width: width - 32,
         child: StudyHomeResumeWidget(
           session: session,
-          isResuming: false,
+          isResuming: isResuming,
           onResume: () {},
         ),
       ),
     ),
   ),
   textScale: textScale,
+  isBoldText: isBoldText,
 );
 
 void main() {
@@ -81,16 +85,12 @@ void main() {
     });
   }
 
-  libraryTest('the title names the deck under its root, or the root alone; '
-      'the session line and the count are apart (Study home spec H3)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the title names the deck alone, a root or a sub-deck; the '
+      'session line and the count are apart (Study home spec H3; owner '
+      '2026-10-21)', (tester, env) async {
     await _pump(tester, env, _session());
-    expect(
-      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Words'))),
-      findsOneWidget,
-    );
+    expect(find.text('Words'), findsOneWidget);
+    expect(find.textContaining('›'), findsNothing);
     // The session line holds the kind and the mode, not the count.
     final line = find.textContaining(_en.studyKindReview);
     expect(line, findsOneWidget);
@@ -107,38 +107,87 @@ void main() {
     expect(find.byType(MxButton), findsOneWidget);
   });
 
-  // The deck leads after "…" (owner 2026-10-21; study_deck_path_test has
-  // the shapes).
-  libraryTest('a long deck name leads after "…" and stops at two lines with '
-      'an ellipsis, nothing overflows', (tester, env) async {
-    final long = 'IELTS Academic Word List ' * 4;
-    await _pump(tester, env, _session(deck: long.trim()));
+  libraryTest('a long deck name stops at two lines with an ellipsis, '
+      'nothing overflows', (tester, env) async {
+    final long = ('IELTS Academic Word List ' * 4).trim();
+    await _pump(tester, env, _session(deck: long));
 
-    final title = tester.widget<Text>(
-      find.text(breadcrumbLine(_en.studyHomeResumeTitle('…', long.trim()))),
-    );
+    final title = tester.widget<Text>(find.text(long));
     expect((title.maxLines, title.overflow), (2, TextOverflow.ellipsis));
     expect(tester.takeException(), isNull);
   });
 
-  // Spec B1: "›" stays with the deck after it, so the title never ends a
-  // line on it, on a 360 dp phone or at a 1.3 text scale.
-  for (final textScale in [1.0, 1.3]) {
-    libraryTest('the title never ends a line on "›" (scale $textScale)', (
-      tester,
-      env,
-    ) async {
+  libraryTest('the card names the deck alone with an ⓘ that opens its '
+      'location; nothing is written', (tester, env) async {
+    await _pump(tester, env, _session(deck: 'Words', root: 'Korean'));
+    await tester.tap(find.byType(MxIconButton));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(StudyDeckLocationSheetWidget),
+        matching: find.text('Korean'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  // Spec §5: TalkBack meets the card in reading order.
+  libraryTest('the card reads overline, name, ⓘ, Resume in that order', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await _pump(tester, env, _session(deck: 'Words'));
+    final labels = [
+      // A tooltip's button merges its label up into the tooltip's node.
+      for (final node in tester.semantics.simulatedAccessibilityTraversal())
+        node.getSemanticsData().label,
+    ].where((label) => label.isNotEmpty).toList();
+    final order = [
+      _en.studyHomeResumeOverline,
+      'Words',
+      _en.studyDeckLocationTitle,
+      _en.studyHomeResume,
+    ].map((label) => labels.indexWhere((l) => l.contains(label))).toList();
+    expect(order, everyElement(isNonNegative));
+    expect(order, orderedEquals([...order]..sort()));
+    handle.dispose();
+  });
+
+  libraryTest('while Resume runs the ⓘ is locked', (tester, env) async {
+    await _pump(tester, env, _session(), isResuming: true);
+    expect(
+      tester.widget<MxIconButton>(find.byType(MxIconButton)).onPressed,
+      isNull,
+    );
+  });
+
+  // D9: the name before the decorative tile. The tile shows only under a
+  // 1.3 text scale while the name, as drawn, fits two lines beside it.
+  const long =
+      'Từ vựng chủ đề gia đình, trường học và nghề nghiệp cho kỳ thi TOPIK '
+      'trung cấp';
+  for (final (width, textScale, name, hasTile) in [
+    (360.0, 1.0, 'Words', true),
+    (360.0, 1.0, long, false),
+    (320.0, 1.0, 'Words', true),
+    (360.0, 1.3, 'Words', false),
+    (320.0, 2.0, 'Words', false),
+  ]) {
+    libraryTest('the paused tile at $width dp, scale $textScale, '
+        '${name.length} letters: ${hasTile ? 'shown' : 'gone'}; ⓘ stays; '
+        'nothing overflows (bold)', (tester, env) async {
       await _pump(
         tester,
         env,
-        _session(root: 'IELTS Academic Word List'),
+        _session(deck: name),
+        width: width,
         textScale: textScale,
+        isBoldText: true,
       );
-      expectNoLineEndsOn(
-        tester,
-        find.textContaining('IELTS Academic Word List'),
-        '›',
-      );
+      expect(find.byType(MxIconTile), hasTile ? findsOneWidget : findsNothing);
+      expect(find.byType(MxIconButton), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   }
 }

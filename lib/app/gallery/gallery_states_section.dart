@@ -31,6 +31,16 @@ class GalleryStatesSection extends StatelessWidget {
           tone: tone,
           isCompact: true,
         ),
+      // D10, D11: a lone secondary sits 24 under the text; a quiet title.
+      MxEmptyState(
+        icon: AppIcons.inbox,
+        title: context.l10n.galleryQuietSecondary,
+        body: context.l10n.galleryCreateADeckOrAdd,
+        isCompact: true,
+        isQuiet: true,
+        secondaryActionLabel: context.l10n.galleryOpenInLibrary,
+        onSecondaryAction: () {},
+      ),
       MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 2),
       Row(
         spacing: context.dimens.space16,
