@@ -128,6 +128,39 @@ void main() {
     );
   });
 
+  // Owner 2026-10-21 (D10, D11): a lone secondary sits 24 under the text,
+  // a second action 8 under the first; a quiet title.
+  testWidgets('MxEmptyState actions and the quiet title', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_empty_state_actions',
+      Column(
+        spacing: 16,
+        children: [
+          MxEmptyState(
+            icon: AppIcons.inbox,
+            title: 'No cards yet',
+            body: 'Add or import cards to study them here.',
+            isCompact: true,
+            isQuiet: true,
+            secondaryActionLabel: 'Open in Library',
+            onSecondaryAction: () {},
+          ),
+          MxEmptyState(
+            icon: AppIcons.inbox,
+            title: 'No decks yet',
+            body: 'Create a deck or add a starter deck to begin.',
+            isCompact: true,
+            actionLabel: 'Create deck',
+            onAction: () {},
+            secondaryActionLabel: 'Open in Library',
+            onSecondaryAction: () {},
+          ),
+        ],
+      ),
+    );
+  });
+
   testWidgets('MxAppBar both densities', (tester) async {
     await expectThemedGoldens(
       tester,

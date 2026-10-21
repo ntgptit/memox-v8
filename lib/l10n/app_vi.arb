@@ -768,6 +768,8 @@
   "galleryChangeTheDeckName": "Đổi tên bộ thẻ",
   "galleryLevel": "Cấp {level}",
   "galleryDeckNumber": "Bộ thẻ {number}",
+  "galleryQuietSecondary": "Tiêu đề nhẹ, chỉ một nút phụ.",
+  "galleryOpenInLibrary": "Mở trong Thư viện",
   "galleryCompactTone": "Dạng gọn, tông {tone}.",
   "galleryOverdue": "{count} quá hạn",
   "galleryToday": "{count} hôm nay",

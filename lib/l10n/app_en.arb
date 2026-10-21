@@ -3990,6 +3990,14 @@
     },
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryQuietSecondary": "Quiet title, a secondary action alone.",
+  "@galleryQuietSecondary": {
+    "description": "Gallery G: the compact empty state with the quiet title and a lone secondary action (owner 2026-10-21, D10, D11)."
+  },
+  "galleryOpenInLibrary": "Open in Library",
+  "@galleryOpenInLibrary": {
+    "description": "Gallery G: the sample secondary action."
+  },
   "galleryCompactTone": "Compact, {tone} tone.",
   "@galleryCompactTone": {
     "placeholders": {
