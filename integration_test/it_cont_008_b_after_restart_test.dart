@@ -15,7 +15,7 @@ void main() {
     await launchApp(tester);
     await openStudyEntry(tester, studyRoot);
     final l10n = l10nOf(tester);
-    await waitFor(tester, find.text(l10n.studyEntryNothingTitle));
+    await waitFor(tester, find.text(l10n.studyEntryNothingInDeckTitle));
 
     expect(find.text(l10n.studyEntryContinue), findsNothing);
     expect(find.text(l10n.studyEntryLearnCta(studyCards.length)), findsNothing);

@@ -7,12 +7,15 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
+import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
+import '../../../support/srs_fixtures.dart';
+import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/study_turn_fixtures.dart';
 import '../../../support/test_database.dart';
@@ -23,11 +26,13 @@ void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late StudyEntryRepositoryImpl entries;
+  late StudySessionRepositoryImpl sessions;
   final now = DateTime(2026, 9, 24, 9);
   setUp(() {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: () => now);
     entries = studyEntryRepository(db, () => now);
+    sessions = studySessionRepository(db, () => now);
   });
   tearDown(() async {
     await expectStudyInvariants(db);
@@ -274,5 +279,45 @@ void main() {
       (await sessionOf(db, review)).read<String>('session_kind'),
       'reviewing',
     );
+  });
+
+  test('a review on the root beside the open review of a sub-deck ends it as '
+      'user_exit: the cards it answered keep their new schedule and turns and '
+      'are not taken again, and exactly the cards still due are taken '
+      '(BR-STUDY-072, BR-STUDY-019, BR-STUDY-051)', () async {
+    final lesson = await insertFiveDue(db, decks);
+    final root = await rootOf(db, lesson.id);
+    final other = await decks.sub(root, 'Other');
+    await learned(
+      root,
+      other.id,
+      'X1',
+      DateTime(2026, 9, 20),
+      withExample: true,
+    );
+    final old = await openReview(entries, lesson.id, StudyMode.fill);
+    final right = (await servedCard(db, old))!;
+    await answerServed(db, sessions, old, right: true);
+    final wrong = (await servedCard(db, old))!;
+    await answerServed(db, sessions, old, right: false);
+    final answered = {
+      for (final id in [right, wrong]) id: (await scheduleRowOf(db, id)).data,
+    };
+    final turns = await turnIdsOf(db, old);
+
+    final fresh = await openReview(entries, root, StudyMode.fill);
+
+    expect((await sessionOf(db, old)).read<String>('end_reason'), 'user_exit');
+    expect(
+      await queueOf(db, fresh, 'fill'),
+      ['ST-01', 'ST-02', 'ST-03', 'ST-04', 'ST-05', 'X1']
+        ..removeWhere(answered.containsKey),
+    );
+    expect(await turnIdsOf(db, old), turns);
+    for (final MapEntry(key: id, value: row) in answered.entries) {
+      final schedule = await scheduleRowOf(db, id);
+      expect(schedule.data, row, reason: id);
+      expect(schedule.read<DateTime>('due_at').isAfter(now), isTrue);
+    }
   });
 }

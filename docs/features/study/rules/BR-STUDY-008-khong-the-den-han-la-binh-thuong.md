@@ -22,4 +22,7 @@ Không áp dụng
 
 ## Edge case
 
-Không áp dụng
+| Case | Expected behaviour |
+|---|---|
+| Study Entry của deck mà nó và các deck con không còn thẻ nào sống (kể cả khi thẻ cuối rời đi lúc màn đang mở: vào Thùng rác, bị chuyển đi, bị pull xoá) | Vẫn là trạng thái trống bình thường, nhưng tiêu đề và mô tả nói deck chưa có thẻ ("No cards yet"), MUST NOT nói mọi thẻ đã học và đang nghỉ (chủ dự án 2026-10-21) |
+| Study Entry của deck có thẻ, mọi thẻ đã học và chưa đến hạn | Tiêu đề nêu đúng deck này ("Nothing to study in this deck"), để không mâu thuẫn với Continue của phiên ở deck khác phía trên (chủ dự án 2026-10-21) |

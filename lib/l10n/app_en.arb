@@ -4060,9 +4060,17 @@
     },
     "description": "Screen handoff 14 (FE-A6): the hero's note on due cards from before today."
   },
-  "studyEntryNothingTitle": "Nothing to do right now",
-  "@studyEntryNothingTitle": {
-    "description": "Screen handoff 14 (FE-A6): the nothing-due state's title (BR-STUDY-008)."
+  "studyEntryNothingInDeckTitle": "Nothing to study in this deck",
+  "@studyEntryNothingInDeckTitle": {
+    "description": "Screen handoff 14: the nothing-due state's title while the deck has cards and every one rests; it names this deck, so it never reads against another deck's Continue above it (owner 2026-10-21; BR-STUDY-008, BR-STUDY-072)."
+  },
+  "studyEntryNoCardsTitle": "No cards yet",
+  "@studyEntryNoCardsTitle": {
+    "description": "Screen handoff 14: the nothing-due state's title when the deck and its sub-decks hold no card (owner 2026-10-21; BR-STUDY-008), as screen 13's row says."
+  },
+  "studyEntryNoCardsBody": "Add or import cards to study them here.",
+  "@studyEntryNoCardsBody": {
+    "description": "Screen handoff 14: the body under \"No cards yet\" (owner 2026-10-21). It names no deck to add to: a root takes sub-decks, not cards (BR-DECK-004), and the count covers the whole subtree."
   },
   "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
   "@studyEntryNothingBody": {
@@ -4214,6 +4222,10 @@
   "studyEntryNothingDueCaption": "Nothing due. Review opens once cards are due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
+  },
+  "studyEntryResumeOverlineOtherDeck": "Session in another deck",
+  "@studyEntryResumeOverlineOtherDeck": {
+    "description": "Screen handoff 14: the resume banner's overline when today's open session belongs to another deck, named on the line under it (owner 2026-10-21; BR-STUDY-072)."
   },
   "studyEntryResumeOverline": "Session from today",
   "@studyEntryResumeOverline": {
@@ -5751,7 +5763,7 @@
         "type": "String"
       }
     },
-    "description": "Screen handoff 13: the Resume card's title for a session on a sub-deck: its root, then the deck (Study home spec H3)."
+    "description": "Screen handoffs 13 and 14: one step of an open session's deck path, the levels so far ({root}), then the next level ({deck}); applied level by level from the root, so the path reads \"Korean › Grammar › Lesson 1\" (owner 2026-10-21, over Study home spec H3). A level may be \"…\", for the levels left out."
   },
   "studyHomeResumeTitleSpoken": "{deck}, in {root}",
   "@studyHomeResumeTitleSpoken": {
@@ -5763,7 +5775,7 @@
         "type": "String"
       }
     },
-    "description": "Screen handoff 13: what TalkBack reads for the Resume card's title on a sub-deck, without the › glyph."
+    "description": "Screen handoffs 13 and 14: what TalkBack reads for that deck path, without the › glyph: applied from the deck up, so it reads \"Lesson 1, in Grammar, in Korean\"; never cut."
   },
   "studyHomeResumeProgress": "{done} / {total} cards",
   "@studyHomeResumeProgress": {

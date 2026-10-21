@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Variable;
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -75,6 +76,16 @@ Future<String> sm2Leaf(
   if (dueCards > 0) await lockScheduler(db, root.id);
   return leaf.id;
 }
+
+/// The root of [deckId], as the deck row stores it.
+Future<String> rootOf(AppDatabase db, String deckId) async =>
+    (await db
+            .customSelect(
+              'SELECT root_id FROM deck WHERE id = ?',
+              variables: [Variable(deckId)],
+            )
+            .getSingle())
+        .read<String>('root_id');
 
 /// The app's entry store; a test sets [isFailing] to make an opening fail as
 /// a broken write does (screen 14 startFailed), and reads [opened].

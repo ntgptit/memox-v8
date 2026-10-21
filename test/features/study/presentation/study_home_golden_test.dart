@@ -20,6 +20,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/study_entry_fixtures.dart';
 import '../../../support/sync_fakes.dart';
 import '../../../support/topik_screen_fixtures.dart';
 
@@ -167,6 +168,39 @@ void main() {
     ) async {
       await _resume(env, await _library(env));
       await shoot(tester, env, 'resume_large_text', textScale: 1.3);
+    });
+
+    // A session three levels under its root: the card names it by its
+    // path; in the narrow column the root gives way to "…" before the
+    // nearest levels, so it keeps two lines (owner 2026-10-21).
+    libraryTest('study home, resume of a deep deck, $theme', (
+      tester,
+      env,
+    ) async {
+      final ielts = await _library(env);
+      final root = await rootOf(env.db, ielts);
+      var parent = root;
+      for (final name in [
+        'Academic Reading Practice',
+        'Unit 7: Family and Home',
+        'Lesson 12',
+      ]) {
+        parent = (await env.decks.sub(parent, name)).id;
+      }
+      for (var i = 0; i < 3; i++) {
+        await insertCard(
+          env.db,
+          id: 'deep-$i',
+          deckId: parent,
+          back: 'deep ${i + 1}',
+          learnedAt: DateTime(2026, 9, 1),
+          dueAt: _overdue,
+          box: 2,
+        );
+      }
+      await lockScheduler(env.db, root);
+      await _resume(env, parent);
+      await shoot(tester, env, 'resume_deep_deck');
     });
 
     libraryTest('study home, no resume, $theme', (tester, env) async {

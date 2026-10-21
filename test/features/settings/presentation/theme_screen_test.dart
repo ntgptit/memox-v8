@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -159,4 +160,41 @@ void main() {
     );
     handle.dispose();
   });
+
+  // Owner 2026-10-21: side by side only while every word of a name or a hint
+  // fits its card whole. With the system's bold text on, the words measured
+  // regular, so cards set side by side at the edge broke a bold word.
+  for (final locale in const [Locale('en'), Locale('vi')]) {
+    for (final textScale in [1.0, 1.3, 2.0]) {
+      libraryTest('in bold text no word of a card breaks, at any width '
+          '(${locale.languageCode}, scale $textScale)', (tester, env) async {
+        final l10n = lookupAppLocalizations(locale);
+        final texts = [
+          l10n.settingsThemeSystem,
+          l10n.settingsThemeLight,
+          l10n.settingsThemeDark,
+          l10n.settingsThemeSystemHint,
+          l10n.settingsThemeLightHint,
+          l10n.settingsThemeDarkHint,
+        ];
+        for (var width = 240.0; width <= 360; width += 2) {
+          await pumpLibraryScreen(
+            tester,
+            env,
+            Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(width: width, child: const ThemeScreen()),
+            ),
+            locale: locale,
+            textScale: textScale,
+            isBoldText: true,
+          );
+          for (final text in texts) {
+            expectBreaksOnlyBetweenWords(tester, find.text(text));
+          }
+          expect(tester.takeException(), isNull);
+        }
+      });
+    }
+  }
 }

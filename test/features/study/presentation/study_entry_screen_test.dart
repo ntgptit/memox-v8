@@ -229,7 +229,8 @@ void main() {
     });
   }
 
-  libraryTest('nothing new and nothing due is the calm empty state '
+  libraryTest('nothing new and nothing due is the calm empty state, and it '
+      'follows the cards: resting, then none, then a new one to learn '
       '(BR-STUDY-008)', (tester, env) async {
     final root = await env.decks.root('Korean');
     await _learned(env, root.id, 'later', DateTime(2026, 10, 1));
@@ -237,11 +238,32 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(root.id));
 
     expect(find.byType(MxEmptyState), findsOneWidget);
-    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    // Its title names this deck (owner 2026-10-21).
+    expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNothingBody), findsOneWidget);
     // The hero stays above it, reading 0 and 0 (kit nothing).
     expect(_tile(tester, _en.studyEntryNew).value, '0');
     expect(_tile(tester, _en.studyEntryDue).value, '0');
     expect(find.byType(MxOptionRow), findsNothing);
+
+    // Owner review 2026-10-21: 0 and 0 does not say every card rests. The
+    // last card goes to the Trash while the entry is open (another tab, a
+    // pull): it says the deck has no card, not that all are learned.
+    await env.cards.deleteCards(cardIds: {'later'});
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyEntryNothingBody), findsNothing);
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNoCardsBody), findsOneWidget);
+
+    // A card arrives (added in another tab, restored, pulled): the empty
+    // state gives way to Learn.
+    await insertCard(env.db, id: 'fresh', deckId: root.id);
+    await tester.pumpAndSettle();
+    expect(find.byType(MxEmptyState), findsNothing);
+    expect(
+      find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('loading draws the hero and the option list as skeletons '

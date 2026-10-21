@@ -16,6 +16,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/study_entry_fixtures.dart';
 
 // Screen 14's kit states that need a start: resume, starting, refused,
 // startFailed; and the direction sheet (FE-A7).
@@ -114,6 +115,68 @@ void main() {
         );
         await tester.pumpAndSettle();
         await _golden(tester, 'resume_eight_box', theme);
+      });
+    });
+
+    // The root's entry beside an open session of its sub-deck: the banner
+    // names the session's deck (BR-STUDY-072; owner 2026-10-21).
+    libraryTest('study entry, resume of another deck, $theme', (
+      tester,
+      env,
+    ) async {
+      final leaf = await _sm2(env);
+      await env.entries.openLearningSession(deckId: leaf);
+      final root = await rootOf(env.db, leaf);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(root), brightness);
+        await _golden(tester, 'resume_other_deck', theme);
+      });
+    });
+
+    // A session four levels down: the root's entry names it by its path,
+    // the middle given way to "…" so it keeps two lines (owner 2026-10-21).
+    libraryTest('study entry, resume of a deep deck, $theme', (
+      tester,
+      env,
+    ) async {
+      final root = await env.decks.root('TOPIK I', SchedulerType.sm2);
+      var parent = root.id;
+      for (final name in [
+        'Từ vựng sơ cấp',
+        'Chủ đề gia đình và trường học',
+        'Bài 12',
+        'Động từ thường gặp trong đời sống hằng ngày',
+      ]) {
+        parent = (await env.decks.sub(parent, name)).id;
+      }
+      for (var i = 0; i < 3; i++) {
+        await insertCard(env.db, id: 'n$i', deckId: parent);
+      }
+      await env.entries.openLearningSession(deckId: parent);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(root.id), brightness);
+        await _golden(tester, 'resume_deep_deck', theme);
+      });
+    });
+
+    // A caught-up deck beside another deck's session: the banner and
+    // Continue, then "Nothing to study in this deck" (owner 2026-10-21).
+    libraryTest('study entry, nothing beside another deck\'s session, '
+        '$theme', (tester, env) async {
+      final leaf = await _sm2(env);
+      await env.entries.openLearningSession(deckId: leaf);
+      final rest = await env.decks.root('Kanji N5', SchedulerType.sm2);
+      await insertCard(
+        env.db,
+        id: 'r0',
+        deckId: rest.id,
+        learnedAt: DateTime(2026, 9, 1),
+        dueAt: DateTime(2026, 12, 1),
+      );
+      await lockScheduler(env.db, rest.id);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(rest.id), brightness);
+        await _golden(tester, 'nothing_other_deck_session', theme);
       });
     });
 

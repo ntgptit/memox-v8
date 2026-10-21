@@ -65,7 +65,8 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
   /// Prepares the round a new session starts in (graded modes spec §8.2).
   final StudyRoundDataSource _rounds;
 
-  /// This deck's session Continue can take up (FE-A6 D15).
+  /// The app's session Continue can take up, of any deck (FE-A6 D15,
+  /// BR-STUDY-072).
   final ResumableSessionDataSource _resumable;
 
   @override
@@ -173,6 +174,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     return StudyEntry(
       schedulerType: type,
       cardLimit: options.cardLimit,
+      cardCount: counts.cardCount,
       newCardCount: counts.newCount,
       dueCardCount: counts.dueCount,
       overdueCardCount: counts.overdueCount,
@@ -182,10 +184,9 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
         due,
         distinctMeaningCount: await _meaningsOf(root, due),
       ),
-      resumable: await _resumable.read(
-        deckId: deckId,
-        startOfToday: startOfToday,
-      ),
+      // Of any deck: a start here ends it, so the entry shows it wherever
+      // it was opened (BR-STUDY-072; owner 2026-10-21).
+      resumable: await _resumable.read(startOfToday: startOfToday),
     );
   }
 

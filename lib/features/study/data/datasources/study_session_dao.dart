@@ -8,8 +8,10 @@ part 'study_session_dao.g.dart';
 /// A card a session can take, as the data conditions read it.
 typedef StudyCardRow = ({String cardId, bool hasExample});
 
-/// The new and the due cards of a subtree, and the next due date.
+/// The live cards of a subtree, the new and the due ones, and the next due
+/// date.
 typedef SubtreeCounts = ({
+  int cardCount,
   int newCount,
   int dueCount,
   int overdueCount,
@@ -53,7 +55,8 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
       (cardId: row.id, hasExample: row.hasExample),
   ];
 
-  /// The new and the due cards of [deckId]'s subtree at [now], the due ones
+  /// The live cards of [deckId]'s subtree, the new and the due ones at
+  /// [now], the due ones
   /// that fell due before [startOfToday] (BR-STUDY-068's boundary; FE-A6
   /// D15), and the earliest `due_at` after [now] (BR-STUDY-051,
   /// BR-STUDY-008).
@@ -70,6 +73,7 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
       (c, cs) => CardDueSql.isScheduled(cs, now),
     ).getSingle();
     return (
+      cardCount: row.cardCount,
       newCount: row.newCount,
       dueCount: row.dueCount,
       overdueCount: row.overdueCount,

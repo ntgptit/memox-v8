@@ -137,6 +137,14 @@ void main() {
       (newCards, overdue, overdue + dueToday),
     );
     expect(entry.nextDueAt, DateTime(2026, 9, 24));
+    // Every live card, the trashed one left out (owner 2026-10-21: the
+    // entry's nothing state tells an empty deck from a resting one).
+    final live = await db
+        .customSelect(
+          'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+        )
+        .getSingle();
+    expect(entry.cardCount, live.read<int>('n'));
     expect(await StudyViewDao(db).nextDueAt(now: _now), DateTime(2026, 9, 24));
     expect((list.newCards, list.due), (newCards, overdue + dueToday));
     expect(

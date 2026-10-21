@@ -35,6 +35,7 @@ Future<List<String>> _pump(
   List<StudyHomeDeck> decks, {
   bool hasResume = false,
   Brightness brightness = Brightness.light,
+  double textScale = 1,
 }) async {
   final opened = <String>[];
   await pumpLibraryScreen(
@@ -49,6 +50,7 @@ Future<List<String>> _pump(
       ),
     ),
     brightness: brightness,
+    textScale: textScale,
   );
   return opened;
 }
@@ -137,15 +139,21 @@ void main() {
     );
   });
 
-  libraryTest('a long deck name on the way in stops at two lines with an '
-      'ellipsis, nothing overflows (plan Review Focus 3)', (tester, env) async {
-    final long = ('IELTS Academic Word List ' * 4).trim();
-    await _pump(tester, env, [_deck(long, overdue: 1)]);
+  // Owner review 2026-10-21: at the default and a large text scale.
+  for (final textScale in [1.0, 1.3]) {
+    libraryTest('a long deck name on the way in stops at two lines with an '
+        'ellipsis, nothing overflows (plan Review Focus 3, scale '
+        '$textScale)', (tester, env) async {
+      final long = ('IELTS Academic Word List ' * 4).trim();
+      await _pump(tester, env, [_deck(long, overdue: 1)], textScale: textScale);
 
-    final label = tester.widget<Text>(find.text(_en.studyHomeReviewDeck(long)));
-    expect((label.maxLines, label.overflow), (2, TextOverflow.ellipsis));
-    expect(tester.takeException(), isNull);
-  });
+      final label = tester.widget<Text>(
+        find.text(_en.studyHomeReviewDeck(long)),
+      );
+      expect((label.maxLines, label.overflow), (2, TextOverflow.ellipsis));
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   libraryTest('the way in is the one fill without a Resume card, an outline '
       'under one (Study home spec H4)', (tester, env) async {

@@ -21,8 +21,8 @@ ResumableSession _session({
   RoundProgress? progress = const RoundProgress(completed: 2, total: 5),
 }) => ResumableSession(
   sessionId: 's1',
-  deckName: deck,
-  rootName: root,
+  deckId: 'd1',
+  deckPath: [?root, deck],
   kind: SessionKind.reviewing,
   mode: StudyMode.match,
   progress: progress,
@@ -107,15 +107,15 @@ void main() {
     expect(find.byType(MxButton), findsOneWidget);
   });
 
-  libraryTest('a long deck name stops at two lines with an ellipsis, '
-      'nothing overflows', (tester, env) async {
+  // The deck leads after "…" (owner 2026-10-21; study_deck_path_test has
+  // the shapes).
+  libraryTest('a long deck name leads after "…" and stops at two lines with '
+      'an ellipsis, nothing overflows', (tester, env) async {
     final long = 'IELTS Academic Word List ' * 4;
     await _pump(tester, env, _session(deck: long.trim()));
 
     final title = tester.widget<Text>(
-      find.text(
-        breadcrumbLine(_en.studyHomeResumeTitle('Korean', long.trim())),
-      ),
+      find.text(breadcrumbLine(_en.studyHomeResumeTitle('…', long.trim()))),
     );
     expect((title.maxLines, title.overflow), (2, TextOverflow.ellipsis));
     expect(tester.takeException(), isNull);

@@ -16,19 +16,23 @@ void _usePhone(WidgetTester tester) {
 MediaQueryData _media(
   BuildContext context, {
   double textScale = 1,
+  bool isBoldText = false,
   EdgeInsets padding = EdgeInsets.zero,
 }) => MediaQuery.of(context).copyWith(
   textScaler: TextScaler.linear(textScale),
+  boldText: isBoldText,
   padding: padding,
   viewPadding: padding,
 );
 
-/// Pumps [child] centred in a Scaffold under the MemoX theme.
+/// Pumps [child] centred in a Scaffold under the MemoX theme; [isBoldText]
+/// is the system's bold text setting.
 Future<void> pumpMx(
   WidgetTester tester,
   Widget child, {
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  bool isBoldText = false,
   EdgeInsets padding = EdgeInsets.zero,
 }) {
   _usePhone(tester);
@@ -42,7 +46,12 @@ Future<void> pumpMx(
       ),
       home: Builder(
         builder: (context) => MediaQuery(
-          data: _media(context, textScale: textScale, padding: padding),
+          data: _media(
+            context,
+            textScale: textScale,
+            isBoldText: isBoldText,
+            padding: padding,
+          ),
           child: Scaffold(body: Center(child: child)),
         ),
       ),

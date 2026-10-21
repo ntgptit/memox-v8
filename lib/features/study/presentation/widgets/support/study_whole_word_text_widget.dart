@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
+import 'package:memox/core/theme/app_typography.dart';
 
 /// The text of a study face that must stay whole (Guess's term, a Match
 /// tile): it wraps between words like any text, but when its widest word
@@ -27,23 +28,18 @@ class StudyWholeWordTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _WholeWordFit(
-    widestWord: _widestWord(
-      MediaQuery.textScalerOf(context),
-      Directionality.of(context),
-    ),
+    widestWord: _widestWord(context),
     child: Text(text, textAlign: textAlign, style: style),
   );
 
-  double _widestWord(TextScaler scaler, TextDirection direction) {
+  /// The widest word as it is drawn (`drawnTextPainter`: the text scale, the
+  /// system's bold text).
+  double _widestWord(BuildContext context) {
     var widest = 0.0;
     for (final word in text.split(_space)) {
       if (word.isEmpty) continue;
-      final painter = TextPainter(
-        text: TextSpan(text: word, style: style),
-        textDirection: direction,
-        textScaler: scaler,
-        maxLines: 1,
-      )..layout();
+      final painter = drawnTextPainter(context, word, style: style, maxLines: 1)
+        ..layout();
       widest = max(widest, painter.width);
       painter.dispose();
     }

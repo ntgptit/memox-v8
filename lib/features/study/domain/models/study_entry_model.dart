@@ -11,6 +11,7 @@ final class StudyEntry {
   const StudyEntry({
     required this.schedulerType,
     required this.cardLimit,
+    required this.cardCount,
     required this.newCardCount,
     required this.dueCardCount,
     required this.overdueCardCount,
@@ -23,6 +24,11 @@ final class StudyEntry {
 
   /// The distinct cards a session takes (BR-STUDY-003).
   final int cardLimit;
+
+  /// The live cards of the deck and its subtree: with no new and no due
+  /// card, 0 says the deck is empty, more that every card rests (owner
+  /// 2026-10-21).
+  final int cardCount;
 
   /// The new and the due cards of the deck and its subtree. The two sets are
   /// disjoint and never capped (BR-STUDY-051, IT-STUDY-001).
@@ -40,8 +46,9 @@ final class StudyEntry {
   /// One per review mode of [schedulerType] (BR-STUDY-055).
   final List<ReviewModeOption> reviewModes;
 
-  /// This deck's open session, when Continue can take it up (BR-STUDY-075),
-  /// with what the resume banner says of it (FE-A6 D15).
+  /// The app's open session, of this deck or another, when Continue can
+  /// take it up (BR-STUDY-075, BR-STUDY-072), with what the resume banner
+  /// says of it (FE-A6 D15).
   final ResumableSession? resumable;
 }
 

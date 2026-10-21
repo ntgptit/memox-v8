@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
+import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
@@ -78,3 +79,36 @@ Future<List<QueryRow>> reviewLogsOf(AppDatabase db, String cardId) => db
       variables: [Variable<String>(cardId)],
     )
     .get();
+
+/// The ids of [sessionId]'s turns, in the order they were written.
+Future<List<String>> turnIdsOf(AppDatabase db, String sessionId) async => [
+  for (final row
+      in await db
+          .customSelect(
+            'SELECT id FROM review_log WHERE session_id = ? ORDER BY rowid',
+            variables: [Variable<String>(sessionId)],
+          )
+          .get())
+    row.read<String>('id'),
+];
+
+/// Answers right every card [sessionId] serves while it is open and, when
+/// [until] is given, until it serves that mode.
+Future<void> answerRight(
+  AppDatabase db,
+  StudySessionRepositoryImpl sessions,
+  String sessionId, {
+  StudyMode? until,
+}) async {
+  for (var turn = 0; turn < _maxTurns; turn++) {
+    final session = await sessionOf(db, sessionId);
+    if (session.read<String>('status') != 'in_progress') return;
+    if (session.read<String>('current_mode') == until?.code) return;
+    await answerServed(db, sessions, sessionId, right: true);
+  }
+  fail('session $sessionId took $_maxTurns right answers and did not end');
+}
+
+/// More turns than any fixture session takes: past it, a right answer is
+/// not moving the session on.
+const _maxTurns = 500;

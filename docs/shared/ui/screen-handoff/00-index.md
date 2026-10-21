@@ -35,7 +35,7 @@ audit reaches the screen. The visual system is in
 | 11 | Card import | 26 | FE-B3 | built | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 10 | FE-B3 | built | [12-card-export.md](12-card-export.md) |
 | 13 | Study home | 10 | FE-A8, SB-U1 | built | [13-study-home.md](13-study-home.md) |
-| 14 | Study entry | 12 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |
+| 14 | Study entry | 14 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 11 | FE-A3, study speech (2026-10-07) | built | [15-study-options.md](15-study-options.md) |
 | 16 | Study · Browse | 12 | FE-A6, study speech (2026-10-07) | built | [16-study-browse.md](16-study-browse.md) |
 | 16a | Study · Self-assess (`self_assess`) | 7 | FE-A6, study speech (2026-10-07) | built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |

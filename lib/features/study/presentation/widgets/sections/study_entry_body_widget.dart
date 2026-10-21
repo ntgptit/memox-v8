@@ -113,6 +113,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         SizedBox(height: context.dimens.space16),
         StudyEntryResumeWidget(
           session: resumable,
+          isOnThisDeck: resumable.deckId == deckId,
           isLocked: start.isStarting,
           onContinue: () => onContinue(resumable.sessionId),
         ),
@@ -136,7 +137,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),
-        const _NothingDue(),
+        _NothingDue(isEmpty: entry.cardCount == 0),
       ],
       if (hasLearn) ...[
         SizedBox(height: context.dimens.space16),
@@ -161,15 +162,24 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 }
 
 /// Nothing new and nothing due: a calm, positive state (BR-STUDY-008,
-/// BR-STUDY-054).
+/// BR-STUDY-054). It says why, from the data: every card rests, or the deck
+/// has none; its title names this deck, so it never reads against another
+/// deck's Continue above it (owner 2026-10-21).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue();
+  const _NothingDue({required this.isEmpty});
+
+  /// The deck and its subtree hold no live card.
+  final bool isEmpty;
 
   @override
   Widget build(BuildContext context) => MxEmptyState(
     icon: AppIcons.learned,
-    title: context.l10n.studyEntryNothingTitle,
-    body: context.l10n.studyEntryNothingBody,
+    title: isEmpty
+        ? context.l10n.studyEntryNoCardsTitle
+        : context.l10n.studyEntryNothingInDeckTitle,
+    body: isEmpty
+        ? context.l10n.studyEntryNoCardsBody
+        : context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,
   );

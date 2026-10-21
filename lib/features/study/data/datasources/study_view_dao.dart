@@ -16,12 +16,8 @@ typedef SessionViewRow = ({
 typedef RoundCounts = ({int completed, int total});
 
 /// The session the Study tab's Resume card offers, with the names of the deck
-/// it was opened on and of that deck's root.
-typedef ResumableRow = ({
-  StudySession session,
-  String deckName,
-  String rootName,
-});
+/// it was opened on and of every deck above it, root first.
+typedef ResumableRow = ({StudySession session, List<String> deckPath});
 
 /// The counts a session's summary shows (spec D11).
 typedef SummaryCounts = ({
@@ -105,26 +101,20 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
     attachedDatabase.studyQueueItems,
   ]).asyncMap((_) => liveDeckRow(deckId).getSingleOrNull());
 
-  /// The newest open session Continue can take up (BR-STUDY-075): of
-  /// [deckId] when given, of any deck otherwise (the Study tab's Resume
-  /// card); null when none may be taken up.
+  /// The newest open session Continue can take up (BR-STUDY-075), of any
+  /// deck: starting a session anywhere ends it (BR-STUDY-072), so every
+  /// screen that offers a start shows it; null when none may be taken up.
+  /// Its deck is named with its whole path, so two decks of one name never
+  /// read alike (owner 2026-10-21). Read in the caller's transaction, the
+  /// session's deck is out of the Trash, so are all its ancestors (invariant
+  /// 34), and its path runs from the root to it.
   Future<ResumableRow?> resumableSessionRow({
-    String? deckId,
     required DateTime startOfToday,
   }) async {
-    if (deckId == null) {
-      final row = await resumableSession(startOfToday).getSingleOrNull();
-      return row == null
-          ? null
-          : (session: row.s, deckName: row.deckName, rootName: row.rootName);
-    }
-    final row = await resumableSessionOfDeck(
-      startOfToday,
-      deckId,
-    ).getSingleOrNull();
-    return row == null
-        ? null
-        : (session: row.s, deckName: row.deckName, rootName: row.rootName);
+    final session = await resumableSession(startOfToday).getSingleOrNull();
+    if (session == null) return null;
+    final path = await deckAndAncestors(session.deckId).get();
+    return (session: session, deckPath: [for (final deck in path) deck.name]);
   }
 
   /// Every root deck with the workload of its whole tree: the statement the

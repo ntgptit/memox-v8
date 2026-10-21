@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -98,20 +99,19 @@ class MxSegmentedTray<T> extends StatelessWidget {
   double _padding(BuildContext context) =>
       isWide ? context.dimens.space16 : context.dimens.space12;
 
-  /// The one-line width: the widest option's label, padding and check slot,
-  /// times the options (each option takes the widest width), with the tray's
-  /// own insets. The check is counted for every option so the choice never
-  /// changes the layout between inline and stacked.
+  /// The one-line width: the widest option's label as it is drawn
+  /// (`drawnTextPainter`), padding and check slot, times the options (each
+  /// option takes the widest width), with the tray's own insets. The check is
+  /// counted for every option so the choice never changes the layout between
+  /// inline and stacked.
   double _naturalWidth(BuildContext context) {
     final dimens = context.dimens;
-    final textScaler = MediaQuery.textScalerOf(context);
-    final direction = Directionality.of(context);
     var widest = 0.0;
     for (final segment in segments) {
-      final painter = TextPainter(
-        text: TextSpan(text: segment.label, style: context.texts.label),
-        textDirection: direction,
-        textScaler: textScaler,
+      final painter = drawnTextPainter(
+        context,
+        segment.label,
+        style: context.texts.label,
         maxLines: 1,
       )..layout();
       widest = math.max(widest, painter.width);

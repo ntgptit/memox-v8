@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -41,4 +42,61 @@ void main() {
     expect(frame.style!.fontFamily, AppTypography.monoFamily);
     expect(frame.style!.color, context.colors.primary);
   });
+
+  // Owner 2026-10-21: the frame cell is as wide as "#99 " is drawn. It was
+  // measured in the bare style: a mono face keeps its advance in bold, but
+  // under the system's letter-spacing override the drawn number and its
+  // space ran past the cell.
+  Widget spaced(Widget child) => Builder(
+    builder: (context) => MediaQuery(
+      data: MediaQuery.of(context).applyTextStyleOverrides(
+        lineHeightScaleFactorOverride: null,
+        letterSpacingOverride: 2,
+        wordSpacingOverride: null,
+        paragraphSpacingOverride: null,
+      ),
+      child: child,
+    ),
+  );
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    testWidgets('in bold text and spaced letters the frame cell holds the '
+        'drawn number and its space (scale $textScale)', (tester) async {
+      const rest = 'main (file:///a.dart:1:1)';
+      await pumpMx(
+        tester,
+        spaced(
+          const SizedBox(
+            width: 320,
+            child: MonitoringCodeCardWidget.stackTrace(
+              title: 'Stack trace',
+              text: '#0      $rest',
+            ),
+          ),
+        ),
+        textScale: textScale,
+        isBoldText: true,
+      );
+      final cell =
+          tester.getTopLeft(find.textContaining(rest)).dx -
+          tester.getTopLeft(find.text('#0')).dx;
+      final style = tester.widget<Text>(find.textContaining(rest)).style;
+
+      await pumpMx(
+        tester,
+        spaced(
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text('#99 ', style: style),
+          ),
+        ),
+        textScale: textScale,
+        isBoldText: true,
+      );
+      final drawn = tester
+          .renderObject<RenderParagraph>(find.byType(RichText))
+          .size
+          .width;
+      expect(cell, closeTo(drawn, 0.01));
+    });
+  }
 }

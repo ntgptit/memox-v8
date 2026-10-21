@@ -12,25 +12,24 @@ final class ResumableSessionDataSource {
   final StudyViewDao _views;
   final StudyQueueDao _queue;
 
-  /// Of [deckId] when given, of any deck otherwise.
-  Future<ResumableSession?> read({
-    String? deckId,
-    required DateTime startOfToday,
-  }) async {
-    final row = await _views.resumableSessionRow(
-      deckId: deckId,
-      startOfToday: startOfToday,
-    );
-    if (row == null) return null;
-    final session = row.session;
-    final head = await _queue.headRow(
-      session.id,
-      session.currentMode,
-      session.cursor,
-    );
-    final round = head == null
-        ? null
-        : await _views.roundCounts(session.id, head.mode, head.round);
-    return resumableSessionOf(row, round);
-  }
+  /// Of any deck (BR-STUDY-072: at most one is open). The session, its
+  /// deck's path and its round are read in one transaction, so they see one
+  /// state of the database (a savepoint inside the Study tab's snapshot).
+  Future<ResumableSession?> read({required DateTime startOfToday}) =>
+      _views.attachedDatabase.transaction(() async {
+        final row = await _views.resumableSessionRow(
+          startOfToday: startOfToday,
+        );
+        if (row == null) return null;
+        final session = row.session;
+        final head = await _queue.headRow(
+          session.id,
+          session.currentMode,
+          session.cursor,
+        );
+        final round = head == null
+            ? null
+            : await _views.roundCounts(session.id, head.mode, head.round);
+        return resumableSessionOf(row, round);
+      });
 }

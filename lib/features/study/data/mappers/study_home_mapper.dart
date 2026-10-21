@@ -25,9 +25,8 @@ StudyHome studyHomeOf({
 ResumableSession resumableSessionOf(ResumableRow row, RoundCounts? round) =>
     ResumableSession(
       sessionId: row.session.id,
-      deckName: row.deckName,
-      // On a root the deck is its own context.
-      rootName: row.session.deckId == row.session.rootId ? null : row.rootName,
+      deckId: row.session.deckId,
+      deckPath: row.deckPath,
       kind: SessionKind.values.byName(row.session.sessionKind),
       mode: StudyMode.fromCode(row.session.currentMode),
       progress: round == null
