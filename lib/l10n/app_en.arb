@@ -4245,21 +4245,33 @@
   },
   "studyDeckLocationLevel": "{name}, level {level} of {count}",
   "@studyDeckLocationLevel": {
-    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for a level above the session's deck, root first.",
     "placeholders": {
-      "name": {"type": "String"},
-      "level": {"type": "int"},
-      "count": {"type": "int"}
-    }
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for a level above the session's deck, root first."
   },
   "studyDeckLocationSessionDeck": "{name}, the session's deck, level {level} of {count}",
   "@studyDeckLocationSessionDeck": {
-    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for the session's deck, the last level.",
     "placeholders": {
-      "name": {"type": "String"},
-      "level": {"type": "int"},
-      "count": {"type": "int"}
-    }
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for the session's deck, the last level."
   },
   "studyEntryResumeOverline": "Session from today",
   "@studyEntryResumeOverline": {

@@ -29,8 +29,15 @@ class StudyDeckLocationSheetWidget extends StatelessWidget {
     final count = path.length;
     return MxBottomSheet(
       title: l10n.studyDeckLocationTitle,
+      // No footer closes the sheet: the card keeps a margin under it too,
+      // so its edge never meets the sheet's (Impeccable audit 2026-10-21).
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
+        padding: EdgeInsets.fromLTRB(
+          context.screenMargin,
+          0,
+          context.screenMargin,
+          context.screenMargin,
+        ),
         child: MxCard(
           isFullBleed: true,
           // The hairlines mark the levels; no indent, so ten levels keep

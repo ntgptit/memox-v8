@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/study/presentation/widgets/overlays/study_deck_location_sheet_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_session_title_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../../support/library_harness.dart';
@@ -110,8 +113,9 @@ void main() {
     });
   }
 
-  libraryTest('a root-only session lists one level, marked as the session '
-      "'s deck", (tester, env) async {
+  libraryTest("a root-only session lists one level, marked as the session's "
+      "deck; the card stops a margin above the sheet's edge (Impeccable "
+      'audit 2026-10-21)', (tester, env) async {
     final handle = tester.ensureSemantics();
     await pumpLibraryScreen(tester, env, _title(const ['Korean']));
     await tester.tap(find.byType(MxIconButton));
@@ -120,6 +124,18 @@ void main() {
       find.bySemanticsLabel(_en.studyDeckLocationSessionDeck('Korean', 1, 1)),
       findsOneWidget,
     );
+    // No footer closes this sheet, so the card's edge must not meet its own.
+    final sheet = tester.getRect(find.byType(MxBottomSheet));
+    final card = tester.getRect(
+      find.descendant(
+        of: find.byType(StudyDeckLocationSheetWidget),
+        matching: find.byType(MxCard),
+      ),
+    );
+    final margin = tester
+        .element(find.byType(StudyDeckLocationSheetWidget))
+        .screenMargin;
+    expect(sheet.bottom - card.bottom, margin);
     handle.dispose();
   });
 
