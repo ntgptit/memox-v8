@@ -4235,6 +4235,28 @@
   "@studyEntryResumeOverlineOtherDeck": {
     "description": "Screen handoff 14: the resume banner's overline when today's open session belongs to another deck, named on the line under it (owner 2026-10-21; BR-STUDY-072)."
   },
+  "studyDeckLocationTitle": "Deck location",
+  "@studyDeckLocationTitle": {
+    "description": "Screens 13 and 14: the sheet that shows where an open session's deck sits, and the ⓘ button that opens it (owner 2026-10-21, spec D3)."
+  },
+  "studyDeckLocationLevel": "{name}, level {level} of {count}",
+  "@studyDeckLocationLevel": {
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for a level above the session's deck, root first.",
+    "placeholders": {
+      "name": {"type": "String"},
+      "level": {"type": "int"},
+      "count": {"type": "int"}
+    }
+  },
+  "studyDeckLocationSessionDeck": "{name}, the session's deck, level {level} of {count}",
+  "@studyDeckLocationSessionDeck": {
+    "description": "Screens 13 and 14, Deck location sheet: what TalkBack reads for the session's deck, the last level.",
+    "placeholders": {
+      "name": {"type": "String"},
+      "level": {"type": "int"},
+      "count": {"type": "int"}
+    }
+  },
   "studyEntryResumeOverline": "Session from today",
   "@studyEntryResumeOverline": {
     "description": "Screen handoff 14 (FE-A6 P2): resume banner overline."
