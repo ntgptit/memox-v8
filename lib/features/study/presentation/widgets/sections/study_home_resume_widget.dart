@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_deck_path_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
@@ -15,7 +15,8 @@ import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 13's Resume card (UC-STUDY-002, BR-STUDY-075): today's open
 /// session in context, its progress and Resume (Study home spec H3):
-/// - the title names the deck under its root ("Korean › Words");
+/// - the title names the deck with its whole path ("Korean › Grammar ›
+///   Words", owner 2026-10-21);
 /// - the session's kind and mode, then the progress track and its count;
 /// - Resume shares the last row with the progress while it fits, and goes
 ///   under it as a block on a narrow card or at a large text scale.
@@ -106,12 +107,9 @@ class _Heading extends StatelessWidget {
   final ResumableSession session;
   final String kind;
 
-  static const int _titleMaxLines = 2;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final root = session.rootName;
     return Row(
       spacing: context.dimens.space12,
       children: [
@@ -127,23 +125,7 @@ class _Heading extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: context.dimens.spaceRowLine,
             children: [
-              Text(
-                root == null
-                    ? session.deckName
-                    // "›" stays with the deck after it (spec B1).
-                    : breadcrumbLine(
-                        l10n.studyHomeResumeTitle(root, session.deckName),
-                      ),
-                // The user's own names: two lines, then an ellipsis (The One
-                // Line Rule).
-                // TalkBack reads the deck, then its root, not the › glyph.
-                semanticsLabel: root == null
-                    ? null
-                    : l10n.studyHomeResumeTitleSpoken(root, session.deckName),
-                maxLines: _titleMaxLines,
-                overflow: TextOverflow.ellipsis,
-                style: context.texts.itemTitle,
-              ),
+              StudyDeckPathWidget(path: session.deckPath),
               // Short terms, laid out whole (The Wrap Rule).
               MxTermLine.text(
                 l10n.studyEntryResumeLineNoProgress(

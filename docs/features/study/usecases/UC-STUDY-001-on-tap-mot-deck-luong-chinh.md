@@ -106,7 +106,7 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
   người dùng dựng phiên mới (BR-STUDY-072). App bị hệ điều hành thu hồi rơi vào
   đúng nhánh này, và nó khác `user_exit`: người dùng không hề bỏ cuộc. Phiên
   dở hiện ở Study Entry của mọi deck, kể cả khi nó thuộc deck khác: khi đó
-  banner nêu deck của phiên, Continue mở đúng phiên đó, và một lựa chọn bắt
+  banner nêu đường dẫn đầy đủ của deck chứa phiên, Continue mở đúng phiên đó, và một lựa chọn bắt
   đầu phiên mới được báo trước là sẽ kết thúc nó (BR-STUDY-072).
 - **A4 — Còn card quá hạn ngoài `card_limit`** (mặc định 20, BR-STUDY-003): ở tổng
   kết nói rõ còn bao nhiêu và cho phép bắt đầu phiên tiếp theo ngay.

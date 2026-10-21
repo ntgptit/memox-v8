@@ -22,8 +22,7 @@ ResumableSession _session({
 }) => ResumableSession(
   sessionId: 's1',
   deckId: 'd1',
-  deckName: deck,
-  rootName: root,
+  deckPath: [?root, deck],
   kind: SessionKind.reviewing,
   mode: StudyMode.match,
   progress: progress,

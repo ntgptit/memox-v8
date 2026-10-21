@@ -65,7 +65,8 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
   /// Prepares the round a new session starts in (graded modes spec §8.2).
   final StudyRoundDataSource _rounds;
 
-  /// This deck's session Continue can take up (FE-A6 D15).
+  /// The app's session Continue can take up, of any deck (FE-A6 D15,
+  /// BR-STUDY-072).
   final ResumableSessionDataSource _resumable;
 
   @override

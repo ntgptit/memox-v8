@@ -40,8 +40,9 @@ final class StudyEntry {
   /// One per review mode of [schedulerType] (BR-STUDY-055).
   final List<ReviewModeOption> reviewModes;
 
-  /// This deck's open session, when Continue can take it up (BR-STUDY-075),
-  /// with what the resume banner says of it (FE-A6 D15).
+  /// The app's open session, of this deck or another, when Continue can
+  /// take it up (BR-STUDY-075, BR-STUDY-072), with what the resume banner
+  /// says of it (FE-A6 D15).
   final ResumableSession? resumable;
 }
 

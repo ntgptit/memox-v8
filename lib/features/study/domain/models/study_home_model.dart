@@ -23,8 +23,7 @@ final class ResumableSession {
   const ResumableSession({
     required this.sessionId,
     required this.deckId,
-    required this.deckName,
-    required this.rootName,
+    required this.deckPath,
     required this.kind,
     required this.mode,
     required this.progress,
@@ -36,13 +35,10 @@ final class ResumableSession {
   /// deck names (BR-STUDY-072).
   final String deckId;
 
-  /// The deck the session was opened on: a sub-deck or a root.
-  final String deckName;
-
-  /// The root of [deckName], which the Resume card names for context;
-  /// null when the session was opened on the root itself (Study home spec
-  /// H3).
-  final String? rootName;
+  /// The deck the session was opened on, after every deck above it, root
+  /// first: one name when it is a root (owner 2026-10-21, over Study home
+  /// spec H3).
+  final List<String> deckPath;
 
   /// Both read from the session row, never inferred (BR-SRS-015,
   /// BR-MODE-008).

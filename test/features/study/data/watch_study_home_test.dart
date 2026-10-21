@@ -94,10 +94,9 @@ void main() {
       (await homeAt()).resumable,
       isA<ResumableSession>()
           .having((session) => session.sessionId, 'id', learning)
-          .having((session) => session.deckName, 'deck', 'Lesson A')
-          // A sub-deck session names its root, for the card's context
-          // (Study home spec H3).
-          .having((session) => session.rootName, 'root', 'Korean')
+          // A sub-deck session names its deck by its path, root first
+          // (owner 2026-10-21).
+          .having((session) => session.deckPath, 'path', ['Korean', 'Lesson A'])
           .having((session) => session.kind, 'kind', SessionKind.learning)
           .having((session) => session.mode, 'mode', stage),
     );
@@ -112,9 +111,8 @@ void main() {
       (await homeAt()).resumable,
       isA<ResumableSession>()
           .having((session) => session.sessionId, 'id', review)
-          .having((session) => session.deckName, 'deck', 'Korean')
-          // A root session has no root to name.
-          .having((session) => session.rootName, 'root', isNull)
+          // A root session's path is the root alone.
+          .having((session) => session.deckPath, 'path', ['Korean'])
           .having((session) => session.kind, 'kind', SessionKind.reviewing)
           .having((session) => session.mode, 'mode', StudyMode.recall),
     );

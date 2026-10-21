@@ -133,6 +133,32 @@ void main() {
       });
     });
 
+    // A session four levels down: the root's entry names it by its path,
+    // the middle given way to "…" so it keeps two lines (owner 2026-10-21).
+    libraryTest('study entry, resume of a deep deck, $theme', (
+      tester,
+      env,
+    ) async {
+      final root = await env.decks.root('TOPIK I', SchedulerType.sm2);
+      var parent = root.id;
+      for (final name in [
+        'Từ vựng sơ cấp',
+        'Chủ đề gia đình và trường học',
+        'Bài 12',
+        'Động từ thường gặp trong đời sống hằng ngày',
+      ]) {
+        parent = (await env.decks.sub(parent, name)).id;
+      }
+      for (var i = 0; i < 3; i++) {
+        await insertCard(env.db, id: 'n$i', deckId: parent);
+      }
+      await env.entries.openLearningSession(deckId: parent);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(root.id), brightness);
+        await _golden(tester, 'resume_deep_deck', theme);
+      });
+    });
+
     libraryTest('study entry, starting, $theme', (tester, env) async {
       final leaf = await _sm2(env);
       final gate = Completer<void>();

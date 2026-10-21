@@ -45,8 +45,8 @@ void main() {
   // Before, the root's entry read only its own sessions: no banner, a
   // primary Review, and the start ended the sub-deck's session unseen.
   libraryTest('an open session of another deck shows on this entry with its '
-      'deck; Continue takes it up; looking around ends nothing; a start '
-      'ends it only after saying so (BR-STUDY-072)', (tester, env) async {
+      'deck and says what a start would end; Continue takes it up; looking '
+      'around ends nothing (BR-STUDY-072)', (tester, env) async {
     final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 3);
     final opened = await env.entries.openReviewSession(
       deckId: leaf,
@@ -176,5 +176,34 @@ void main() {
     expect(find.text('Korean'), findsOneWidget);
     expect(find.textContaining('›'), findsNothing);
     expect(_button(_en.studyEntryContinue), findsOneWidget);
+  });
+
+  // Final review I2: this deck has nothing to do while another deck's
+  // session is open. The banner leads with Continue alone, then the
+  // nothing-to-do state; no section over starts, since none is offered.
+  libraryTest("a caught-up deck beside another deck's session: the banner, "
+      'Continue alone, then nothing to do', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+    final rest = await env.decks.root('Japanese', SchedulerType.sm2);
+    await insertCard(
+      env.db,
+      id: 'r0',
+      deckId: rest.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 12, 1),
+    );
+    await lockScheduler(env.db, rest.id);
+    await pumpLibraryScreen(tester, env, _screen(rest.id));
+
+    expect(
+      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
+      findsOneWidget,
+    );
+    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    expect(find.byType(MxButton), findsOneWidget);
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expect(find.text(_otherSession), findsNothing);
+    expectOnePrimaryPerDecision(tester);
   });
 }

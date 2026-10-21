@@ -26,9 +26,7 @@ ResumableSession resumableSessionOf(ResumableRow row, RoundCounts? round) =>
     ResumableSession(
       sessionId: row.session.id,
       deckId: row.session.deckId,
-      deckName: row.deckName,
-      // On a root the deck is its own context.
-      rootName: row.session.deckId == row.session.rootId ? null : row.rootName,
+      deckPath: row.deckPath,
       kind: SessionKind.values.byName(row.session.sessionKind),
       mode: StudyMode.fromCode(row.session.currentMode),
       progress: round == null
