@@ -50,7 +50,12 @@ class StudyEntryResumeWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          MxDotOverline(label: l10n.studyEntryResumeOverline),
+          // Another deck's session says so first (owner 2026-10-21).
+          MxDotOverline(
+            label: isOnThisDeck
+                ? l10n.studyEntryResumeOverline
+                : l10n.studyEntryResumeOverlineOtherDeck,
+          ),
           SizedBox(height: context.dimens.space8),
           if (!isOnThisDeck) ...[
             StudyDeckPathWidget(path: session.deckPath),

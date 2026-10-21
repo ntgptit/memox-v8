@@ -80,6 +80,11 @@ void main() {
           .semanticsLabel,
       _en.studyHomeResumeTitleSpoken('Korean', 'Lesson'),
     );
+    // The overline says it is another deck's (owner 2026-10-21).
+    expect(
+      find.text(_en.studyEntryResumeOverlineOtherDeck.toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text(_otherSession), findsOneWidget);
     expect(
       findTermLine(_en.studyEntryEndsSession, isContaining: true),
@@ -209,7 +214,6 @@ void main() {
     );
     // The title says it is this deck that has nothing (owner 2026-10-21).
     expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
-    expect(find.text(_en.studyEntryNothingTitle), findsNothing);
     expect(find.byType(MxButton), findsOneWidget);
     expect(_button(_en.studyEntryContinue), findsOneWidget);
     expect(find.text(_otherSession), findsNothing);

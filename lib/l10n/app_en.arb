@@ -4060,17 +4060,17 @@
     },
     "description": "Screen handoff 14 (FE-A6): the hero's note on due cards from before today."
   },
-  "studyEntryNothingTitle": "Nothing to do right now",
-  "@studyEntryNothingTitle": {
-    "description": "Screen handoff 14 (FE-A6): the nothing-due state's title (BR-STUDY-008)."
-  },
   "studyEntryNothingInDeckTitle": "Nothing to study in this deck",
   "@studyEntryNothingInDeckTitle": {
-    "description": "Screen handoff 14: the nothing-due state's title while another deck's open session shows above it with Continue, so the title names this deck (owner 2026-10-21; BR-STUDY-008, BR-STUDY-072)."
+    "description": "Screen handoff 14: the nothing-due state's title while the deck has cards and every one rests; it names this deck, so it never reads against another deck's Continue above it (owner 2026-10-21; BR-STUDY-008, BR-STUDY-072)."
   },
-  "studyEntryNothingEmptyBody": "This deck has no cards. Add or import cards to study them.",
-  "@studyEntryNothingEmptyBody": {
-    "description": "Screen handoff 14: the nothing-due state's body when the deck and its sub-decks hold no card, so it cannot say they all rest (owner 2026-10-21; BR-STUDY-008)."
+  "studyEntryNoCardsTitle": "No cards yet",
+  "@studyEntryNoCardsTitle": {
+    "description": "Screen handoff 14: the nothing-due state's title when the deck and its sub-decks hold no card (owner 2026-10-21; BR-STUDY-008), as screen 13's row says."
+  },
+  "studyEntryNoCardsBody": "Add or import cards to this deck to study them.",
+  "@studyEntryNoCardsBody": {
+    "description": "Screen handoff 14: the body under \"No cards yet\" (owner 2026-10-21)."
   },
   "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
   "@studyEntryNothingBody": {
@@ -4222,6 +4222,10 @@
   "studyEntryNothingDueCaption": "Nothing due. Review opens once cards are due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
+  },
+  "studyEntryResumeOverlineOtherDeck": "Session in another deck",
+  "@studyEntryResumeOverlineOtherDeck": {
+    "description": "Screen handoff 14: the resume banner's overline when today's open session belongs to another deck, named on the line under it (owner 2026-10-21; BR-STUDY-072)."
   },
   "studyEntryResumeOverline": "Session from today",
   "@studyEntryResumeOverline": {

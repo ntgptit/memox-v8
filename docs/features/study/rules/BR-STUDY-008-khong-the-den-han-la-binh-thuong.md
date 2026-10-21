@@ -24,4 +24,5 @@ Không áp dụng
 
 | Case | Expected behaviour |
 |---|---|
-| Study Entry của deck không còn thẻ nào (thẻ cuối vào Thùng rác, bị chuyển đi hay bị pull xoá khi màn đang mở) | Vẫn là trạng thái trống bình thường, nhưng mô tả nói deck không có thẻ, MUST NOT nói mọi thẻ đã học và đang nghỉ (chủ dự án 2026-10-21) |
+| Study Entry của deck không còn thẻ nào (thẻ cuối vào Thùng rác, bị chuyển đi hay bị pull xoá khi màn đang mở) | Vẫn là trạng thái trống bình thường, nhưng tiêu đề và mô tả nói deck chưa có thẻ ("No cards yet"), MUST NOT nói mọi thẻ đã học và đang nghỉ (chủ dự án 2026-10-21) |
+| Study Entry của deck có thẻ, mọi thẻ đã học và chưa đến hạn | Tiêu đề nêu đúng deck này ("Nothing to study in this deck"), để không mâu thuẫn với Continue của phiên ở deck khác phía trên (chủ dự án 2026-10-21) |

@@ -237,7 +237,8 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(root.id));
 
     expect(find.byType(MxEmptyState), findsOneWidget);
-    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    // Its title names this deck (owner 2026-10-21).
+    expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
     expect(find.text(_en.studyEntryNothingBody), findsOneWidget);
     // The hero stays above it, reading 0 and 0 (kit nothing).
     expect(_tile(tester, _en.studyEntryNew).value, '0');
@@ -246,12 +247,12 @@ void main() {
 
     // Owner review 2026-10-21: 0 and 0 does not say every card rests. The
     // last card goes to the Trash while the entry is open (another tab, a
-    // pull): the body says the deck has no card, not that all are learned.
+    // pull): it says the deck has no card, not that all are learned.
     await env.cards.deleteCards(cardIds: {'later'});
     await tester.pumpAndSettle();
     expect(find.text(_en.studyEntryNothingBody), findsNothing);
-    expect(find.text(_en.studyEntryNothingEmptyBody), findsOneWidget);
-    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNoCardsBody), findsOneWidget);
   });
 
   libraryTest('loading draws the hero and the option list as skeletons '
