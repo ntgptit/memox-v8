@@ -140,7 +140,8 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         SizedBox(height: context.dimens.space16),
         _NothingDue(
           isEmpty: entry.cardCount == 0,
-          onOpenInLibrary: start.isStarting ? null : onOpenInLibrary,
+          onOpenInLibrary: onOpenInLibrary,
+          isLocked: start.isStarting,
         ),
       ],
       if (hasLearn) ...[
@@ -170,14 +171,21 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 /// has none; its title names this deck, so it never reads against another
 /// deck's Continue above it (owner 2026-10-21).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue({required this.isEmpty, required this.onOpenInLibrary});
+  const _NothingDue({
+    required this.isEmpty,
+    required this.onOpenInLibrary,
+    required this.isLocked,
+  });
 
   /// The deck and its subtree hold no live card.
   final bool isEmpty;
 
   /// Opens this deck in the Library, where cards are added (spec D7); null
-  /// while a start runs (BR-STUDY-004).
+  /// draws no action.
   final VoidCallback? onOpenInLibrary;
+
+  /// A start runs: the action is drawn disabled (BR-STUDY-004).
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) => MxEmptyState(
@@ -193,8 +201,10 @@ class _NothingDue extends StatelessWidget {
     // Under the hero, and beside another deck's session: the lead role, not
     // a headline (owner 2026-10-21, spec D11).
     isQuiet: true,
-    secondaryActionLabel: isEmpty ? context.l10n.studyEntryOpenInLibrary : null,
-    onSecondaryAction: isEmpty ? onOpenInLibrary : null,
+    secondaryActionLabel: isEmpty && onOpenInLibrary != null
+        ? context.l10n.studyEntryOpenInLibrary
+        : null,
+    onSecondaryAction: isEmpty && !isLocked ? onOpenInLibrary : null,
   );
 }
 

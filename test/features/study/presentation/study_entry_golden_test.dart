@@ -23,6 +23,8 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
     part: DeckStudyHeaderPart.breadcrumb,
   ),
   onOpenSession: (_) {},
+  // As app/ wires it: the empty deck opens its Library level (spec D7).
+  onOpenInLibrary: () {},
   // As app/ wires it: the app bar carries Study options (kit 14).
   onOpenStudyOptions: () {},
 );

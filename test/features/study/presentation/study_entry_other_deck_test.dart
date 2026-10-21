@@ -335,4 +335,16 @@ void main() {
       isNull,
     );
   });
+
+  // Spec D7: with no way to the Library wired, the action is not drawn,
+  // rather than drawn disabled.
+  libraryTest('without onOpenInLibrary the empty deck shows no action', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+    expect(find.text(_en.studyEntryNoCardsTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryOpenInLibrary), findsNothing);
+  });
 }
