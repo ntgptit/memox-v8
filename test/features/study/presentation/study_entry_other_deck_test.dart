@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -10,10 +12,13 @@ import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../shared/expect_one_primary.dart';
+import '../../../support/card_fixtures.dart';
+import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/term_line.dart';
+import '../../../support/wrap_rule.dart';
 
 // Screen 14 beside the app's open session of another deck: BR-STUDY-072,
 // UC-STUDY-001 A3b.
@@ -119,5 +124,57 @@ void main() {
       (old.read<String>('status'), old.readNullable<String>('end_reason')),
       ('abandoned', 'user_exit'),
     );
+  });
+
+  // The path is the user's own text: two lines at most, "›" kept with the
+  // deck after it, on a 360 dp phone and at a 1.3 text scale.
+  for (final textScale in [1.0, 1.3]) {
+    libraryTest('a long deck path stops at two lines with an ellipsis, never '
+        'ends a line on "›", and nothing overflows (scale $textScale)', (
+      tester,
+      env,
+    ) async {
+      const rootName = 'IELTS Academic Word List';
+      final deckName = ('Academic Vocabulary for Reading ' * 4).trim();
+      final root = await env.decks.root(rootName, SchedulerType.sm2);
+      final leaf = await env.decks.sub(root.id, deckName);
+      await insertCard(env.db, id: 'n0', deckId: leaf.id);
+      await env.entries.openLearningSession(deckId: leaf.id);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(root.id),
+        textScale: textScale,
+      );
+
+      final path = find.text(
+        breadcrumbLine(_en.studyHomeResumeTitle(rootName, deckName)),
+      );
+      final text = tester.widget<Text>(path);
+      expect((text.maxLines, text.overflow), (2, TextOverflow.ellipsis));
+      // The label is a Semantics over the paragraph.
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.descendant(of: path, matching: find.byType(RichText)),
+      );
+      expect(paragraph.didExceedMaxLines, isTrue);
+      expectNoLineEndsOn(tester, path, '›');
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  libraryTest('a session on another root names that deck alone', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    final japanese = await env.decks.root('Japanese', SchedulerType.sm2);
+    await insertCard(env.db, id: 'k0', deckId: korean.id);
+    await insertCard(env.db, id: 'j0', deckId: japanese.id);
+    await env.entries.openLearningSession(deckId: korean.id);
+    await pumpLibraryScreen(tester, env, _screen(japanese.id));
+
+    expect(find.text('Korean'), findsOneWidget);
+    expect(find.textContaining('›'), findsNothing);
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
   });
 }
