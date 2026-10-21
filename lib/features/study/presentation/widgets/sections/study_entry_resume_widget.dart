@@ -2,7 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_deck_path_widget.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_deck_location_sheet_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_session_title_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -13,9 +14,9 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 14's resume banner (UC-STUDY-001 A3b, BR-STUDY-072): today's open
-/// session, of this deck or of another one, which it then names by its
-/// path, its progress as text and track (FE-A8 H2), and the choice to take
-/// it up. The dot is static and decorative, in the primary foreground
+/// session, of this deck or of another one, which it then names, its
+/// location one tap away (owner 2026-10-21), its progress as text and track
+/// (FE-A8 H2), and the choice to take it up. The dot is static and decorative, in the primary foreground
 /// (UI-base ledger row 28: no streak tone; FE-A8 S3: no pulse).
 class StudyEntryResumeWidget extends StatelessWidget {
   const StudyEntryResumeWidget({
@@ -46,6 +47,14 @@ class StudyEntryResumeWidget extends StatelessWidget {
     };
     final mode = l10n.studyMode(session.mode);
     final progress = session.progress;
+    final sessionLine = progress == null
+        ? l10n.studyEntryResumeLineNoProgress(kind, mode)
+        : l10n.studyEntryResumeLine(
+            kind,
+            mode,
+            progress.completed,
+            progress.total,
+          );
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -57,34 +66,27 @@ class StudyEntryResumeWidget extends StatelessWidget {
                 : l10n.studyEntryResumeOverlineOtherDeck,
           ),
           SizedBox(height: context.dimens.space8),
-          if (!isOnThisDeck) ...[
-            StudyDeckPathWidget(path: session.deckPath),
-            SizedBox(height: context.dimens.spaceRowLine),
-          ],
-          // Short terms, laid out whole (The Wrap Rule).
-          MxTermLine.text(
-            progress == null
-                ? l10n.studyEntryResumeLineNoProgress(kind, mode)
-                : l10n.studyEntryResumeLine(
-                    kind,
-                    mode,
-                    progress.completed,
-                    progress.total,
-                  ),
-            role: MxTermLineRole.sectionTitle,
-            tone: MxTermTone.foreground,
-          ),
+          // The card's lead line is itemTitle: another deck's name leads, or
+          // on this deck the session line (owner 2026-10-21, spec §3.3).
+          if (isOnThisDeck)
+            MxTermLine.text(
+              sessionLine,
+              role: MxTermLineRole.itemTitle,
+              tone: MxTermTone.foreground,
+            ),
+          if (!isOnThisDeck)
+            StudySessionTitleWidget(
+              path: session.deckPath,
+              line: MxTermLine.text(sessionLine),
+              onShowLocation: isLocked
+                  ? null
+                  : () => showStudyDeckLocationSheet(context, session.deckPath),
+            ),
           if (progress != null && progress.total > 0) ...[
             SizedBox(height: context.dimens.space8),
             MxLinearProgress(value: progress.completed / progress.total),
           ],
-          SizedBox(height: context.dimens.space4),
-          Text(
-            l10n.studyEntryResumeBody,
-            style: context.texts.body.copyWith(
-              color: context.colors.mutedForeground,
-            ),
-          ),
+          // Content to the closing action is 16 (spacing spec L8).
           SizedBox(height: context.dimens.space16),
           MxButton(
             label: l10n.studyEntryContinue,

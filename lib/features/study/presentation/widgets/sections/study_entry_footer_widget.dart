@@ -42,8 +42,16 @@ class StudyEntryFooterWidget extends ConsumerWidget {
     final tone = entry.resumable == null
         ? MxButtonTone.primary
         : MxButtonTone.outline;
+    final offer = studyEntryOfferOf(
+      entry,
+      picked: ref.watch(reviewModePickControllerProvider(deckId)),
+    );
+    // One warning: the note when it shows, else the caption's lead (spec
+    // §3.4, BR-STUDY-072).
+    final ends = offer.isEndsSessionCaption ? l10n.studyEntryEndsSession : null;
     if (start.status == StudyStartStatus.failed) {
       return MxFooterBar(
+        caption: ends,
         child: MxButton(
           label: l10n.studyEntryTryAgain,
           icon: AppIcons.retry,
@@ -53,14 +61,7 @@ class StudyEntryFooterWidget extends ConsumerWidget {
         ),
       );
     }
-    final offer = studyEntryOfferOf(
-      entry,
-      picked: ref.watch(reviewModePickControllerProvider(deckId)),
-    );
     final target = offer.reviewTarget;
-    // Beside today's open session a start ends it, and the caption leads
-    // with that (spec E1, BR-STUDY-072).
-    final ends = entry.resumable == null ? null : l10n.studyEntryEndsSession;
     final (label, icon, caption, onPressed) = switch (entryFooterActionOf(
       offer,
     )) {

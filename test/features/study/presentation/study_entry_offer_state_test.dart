@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/domain/models/study_home_model.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -12,6 +14,7 @@ StudyEntry _entry({
   int fresh = 3,
   int due = 2,
   List<ReviewModeOption> reviews = const [],
+  bool hasSession = false,
 }) => StudyEntry(
   schedulerType: type,
   cardLimit: 2,
@@ -21,7 +24,16 @@ StudyEntry _entry({
   overdueCardCount: 0,
   nextDueAt: null,
   reviewModes: reviews,
-  resumable: null,
+  resumable: hasSession
+      ? const ResumableSession(
+          sessionId: 's',
+          deckId: 'd',
+          deckPath: ['D'],
+          kind: SessionKind.learning,
+          mode: StudyMode.browse,
+          progress: null,
+        )
+      : null,
 );
 
 ReviewModeOption _mode(StudyMode mode, {ModeUnavailableReason? reason}) =>
@@ -168,4 +180,53 @@ void main() {
     expect(offer.canLearn, isTrue);
     expect(offer.reviewTarget?.mode, StudyMode.recall);
   });
+
+  // Spec §3.4: the note under "Or start another session" is the one full
+  // warning; the caption leads with "Ends today's session" exactly when it
+  // is not shown and a session can be continued.
+  for (final (name, entry, note, lead) in [
+    ('no session', _entry(fresh: 3, due: 2), false, false),
+    (
+      'learn beside a session',
+      _entry(fresh: 3, due: 0, hasSession: true),
+      true,
+      false,
+    ),
+    (
+      'sm2 due only beside a session',
+      _entry(type: SchedulerType.sm2, fresh: 0, due: 2, hasSession: true),
+      false,
+      true,
+    ),
+    (
+      'eight boxes, one mode, due only',
+      _entry(
+        fresh: 0,
+        due: 2,
+        reviews: [_mode(StudyMode.guess)],
+        hasSession: true,
+      ),
+      false,
+      true,
+    ),
+    (
+      'eight boxes, two modes, due only',
+      _entry(
+        fresh: 0,
+        due: 2,
+        reviews: [_mode(StudyMode.guess), _mode(StudyMode.match)],
+        hasSession: true,
+      ),
+      true,
+      false,
+    ),
+  ]) {
+    test('$name: note $note, caption lead $lead', () {
+      final offer = studyEntryOfferOf(entry);
+      expect(
+        (offer.isOtherSessionNoteShown, offer.isEndsSessionCaption),
+        (note, lead),
+      );
+    });
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/app/router/open_ancestor.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
@@ -25,6 +26,15 @@ StudyEntryScreen studyEntryScreen(BuildContext context, String deckId) =>
           context.go(AppRoutes.studySession(sessionId)),
       onOpenStudyOptions: () =>
           unawaited(context.push(AppRoutes.studyOptions(deckId))),
+      // Back to the deck's page where the stack holds it, as a breadcrumb
+      // does, so the Library's Back still climbs; a second tap finds it on
+      // top (spec D7; final review 2026-10-21).
+      onOpenInLibrary: () {
+        // Only while the entry is on top: a second tap meets it leaving.
+        final entry = ModalRoute.of(context);
+        if (entry == null || !entry.isCurrent) return;
+        openAncestor(context, deckId, leaving: entry);
+      },
     );
 
 /// Screen 15 with the deck's path from the deck feature, which settings

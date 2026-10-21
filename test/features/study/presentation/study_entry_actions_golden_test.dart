@@ -10,6 +10,7 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_study_hea
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -31,6 +32,8 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
     part: DeckStudyHeaderPart.breadcrumb,
   ),
   onOpenSession: (_) {},
+  // As app/ wires it: the empty deck opens its Library level (spec D7).
+  onOpenInLibrary: () {},
   // As app/ wires it: the app bar carries Study options (kit 14).
   onOpenStudyOptions: () {},
 );
@@ -177,6 +180,33 @@ void main() {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen(rest.id), brightness);
         await _golden(tester, 'nothing_other_deck_session', theme);
+      });
+    });
+
+    // The deck's location on demand: ⓘ on another deck's session opens the
+    // sheet, every level whole, the session's deck marked (owner
+    // 2026-10-21, spec D3).
+    libraryTest('study entry, deck location sheet, $theme', (
+      tester,
+      env,
+    ) async {
+      final root = await env.decks.root('TOPIK I', SchedulerType.sm2);
+      var parent = root.id;
+      for (final name in [
+        'Từ vựng sơ cấp',
+        'Chủ đề gia đình và trường học',
+        'Bài 12',
+        'Động từ thường gặp trong đời sống hằng ngày',
+      ]) {
+        parent = (await env.decks.sub(parent, name)).id;
+      }
+      await insertCard(env.db, id: 'n0', deckId: parent);
+      await env.entries.openLearningSession(deckId: parent);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(root.id), brightness);
+        await tester.tap(find.byType(MxIconButton).last);
+        await tester.pumpAndSettle();
+        await _golden(tester, 'deck_location_sheet', theme);
       });
     });
 

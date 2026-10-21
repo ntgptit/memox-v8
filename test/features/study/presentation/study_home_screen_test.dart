@@ -14,6 +14,7 @@ import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/providers/study_home_provider.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_home_resume_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -21,7 +22,6 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
-import 'package:memox/l10n/meta_line.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/card_fixtures.dart';
@@ -139,9 +139,12 @@ void main() {
       find.text(_en.studyHomeResumeOverline.toUpperCase()),
       findsOneWidget,
     );
-    // The deck in context, under its root (Study home spec H3).
     expect(
-      find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
+      // The deck alone; its location is one tap away (owner 2026-10-21).
+      find.descendant(
+        of: find.byType(StudyHomeResumeWidget),
+        matching: find.text('Lesson'),
+      ),
       findsOneWidget,
     );
     expect(find.byType(MxLinearProgress), findsOneWidget);

@@ -11,14 +11,4 @@ void main() {
       'Empty · add cards or a sub-deck',
     );
   });
-
-  test('a breadcrumb glues each "›" to the word after it, so no line ends '
-      'on one (spec B1)', () {
-    expect(
-      breadcrumbLine('IELTS Academic Word List › Words'),
-      'IELTS Academic Word List › Words',
-    );
-    expect(breadcrumbLine('A › B › C'), 'A › B › C');
-    expect(breadcrumbLine('Words'), 'Words');
-  });
 }

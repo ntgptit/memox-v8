@@ -12,6 +12,9 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
+import 'package:memox/core/theme/app_dimens.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -252,7 +255,7 @@ void main() {
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
     // Every other start sits under a section that says it ends today's
     // session, and the footer's caption leads with it (spec E1).
-    expect(find.text(_en.studyEntryResumeBody), findsOneWidget);
+    expect(find.text('Continue where you stopped.'), findsNothing);
     expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
     expect(
       tester.getTopLeft(find.text(_otherSession)).dy,
@@ -261,20 +264,40 @@ void main() {
         lessThan(tester.getTopLeft(find.text(_en.studyEntryLearnTitle)).dy),
       ),
     );
+    // The note says what a start ends; the caption gives the start's facts
+    // only (spec §3.4).
+    expect(findTermLine(_en.studyEntryReviewCaption(1, 1)), findsOneWidget);
     expect(
-      findTermLine(
-        [
-          _en.studyEntryEndsSession,
-          _en.studyEntryReviewCaption(1, 1),
-        ].join(MxTermLine.separator),
-      ),
-      findsOneWidget,
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsNothing,
     );
     // The session's progress as a track too (FE-A8 H2).
     expect(
       tester.widget<MxLinearProgress>(find.byType(MxLinearProgress)).value,
       0,
     );
+    // On this deck the session line leads; the deck is the app bar's, so
+    // no name and no ⓘ; Continue 16 under the track (spec §3.3).
+    final banner = find.byType(StudyEntryResumeWidget);
+    expect(
+      find.descendant(
+        of: banner,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is MxTermLine && widget.role == MxTermLineRole.itemTitle,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: banner, matching: find.byType(MxIconButton)),
+      findsNothing,
+    );
+    final track = tester.getRect(
+      find.descendant(of: banner, matching: find.byType(MxLinearProgress)),
+    );
+    final cta = tester.getRect(_button(_en.studyEntryContinue));
+    expect(cta.top - track.bottom, const AppDimens().space16);
 
     // An open session leads with Continue; the footer yields (critique
     // 2026-09-30 part 1).
@@ -300,9 +323,11 @@ void main() {
 
     expect(_button(_en.studyEntryContinue), findsOneWidget);
     expectOnePrimaryPerDecision(tester);
-    // Learn in the footer ends today's session too (spec E1).
+    // The note says Learn ends today's session; the caption keeps its own
+    // fact (spec §3.4, critique E20).
     expect(find.text(_otherSession), findsOneWidget);
-    expect(findTermLine(_en.studyEntryEndsSession), findsOneWidget);
+    expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
+    expect(findTermLine(_en.studyEntryNothingDueCaption), findsOneWidget);
   });
 
   // Final review I2: SM-2 lists no mode, so with due cards alone there is no
@@ -327,22 +352,61 @@ void main() {
       findTermLine(_en.studyEntryEndsSession, isContaining: true),
       findsOneWidget,
     );
+
+    // Try again ends the session too, and no note says so: its caption
+    // leads with it (spec §3.4).
+    env.entries.isFailing = true;
+    await tester.tap(_button(_en.studyEntryReviewInstead));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyDirectionStart));
+    await tester.pumpAndSettle();
+    expect(_button(_en.studyEntryTryAgain), findsOneWidget);
+    expect(
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsOneWidget,
+    );
   });
 
-  libraryTest('eight boxes beside an open session: the caption leads with '
-      'what the start ends (spec E1)', (tester, env) async {
+  // Spec §3.4, plan Review Focus 3: the note and the caption's lead follow
+  // the counts live. The new cards go to the Trash while the entry is open:
+  // the body loses its choice, the note goes and the caption takes the lead
+  // in the same frame.
+  libraryTest('the note gives way to the caption lead live, when the body '
+      'loses its choice', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 3);
+    await env.entries.openReviewSession(
+      deckId: leaf,
+      mode: StudyMode.selfAssess,
+      direction: DirectionChoice.koreanToMeaning,
+    );
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+    expect(find.text(_en.studyEntryOtherSessionNote), findsOneWidget);
+    expect(
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsNothing,
+    );
+
+    await env.cards.deleteCards(cardIds: {'n0', 'n1'});
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyEntryOtherSessionNote), findsNothing);
+    expect(
+      findTermLine(_en.studyEntryEndsSession, isContaining: true),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('eight boxes beside an open session: the note says what a '
+      'start ends, the caption names the mode (spec §3.4)', (
+    tester,
+    env,
+  ) async {
     final leaf = await insertFiveDue(env.db, env.decks);
     await env.entries.openReviewSession(deckId: leaf.id, mode: StudyMode.guess);
     await pumpLibraryScreen(tester, env, _screen(leaf.id));
 
     expect(find.text(_otherSession), findsOneWidget);
     expect(
-      findTermLine(
-        [
-          _en.studyEntryEndsSession,
-          _en.studyEntryModeCaption(_en.cardModeMatch),
-        ].join(MxTermLine.separator),
-      ),
+      findTermLine(_en.studyEntryModeCaption(_en.cardModeMatch)),
       findsOneWidget,
     );
     expectOnePrimaryPerDecision(tester);
