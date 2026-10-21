@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
+import '../../support/text_cut.dart';
 import '../../support/widget_harness.dart';
 
 MxButton _button(String label, {IconData? icon}) => MxButton(
@@ -126,4 +127,35 @@ void main() {
       expect(paragraph.didExceedMaxLines, isFalse);
     }
   });
+
+  // Owner 2026-10-21: the pair decides on the width each label is drawn in.
+  // With the system's bold text on, a label measured regular sat side by
+  // side a hair too narrow and lost its end to the ellipsis.
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    testWidgets('in bold text no label is cut at any width (scale '
+        '$textScale)', (tester) async {
+      // Labels that a full-width button holds even at 2.0, so a cut can
+      // only come from sitting side by side.
+      for (var width = 240.0; width <= 360; width++) {
+        await pumpMx(
+          tester,
+          SizedBox(
+            width: width,
+            child: MxActionPair(
+              leading: _button('Học lại', icon: Icons.play_arrow),
+              trailing: _button('Xoá thẻ này'),
+            ),
+          ),
+          textScale: textScale,
+          isBoldText: true,
+        );
+        expectNoTextCut(
+          tester,
+          find.byType(MxActionPair),
+          reason: 'width $width',
+        );
+        expect(tester.takeException(), isNull);
+      }
+    });
+  }
 }

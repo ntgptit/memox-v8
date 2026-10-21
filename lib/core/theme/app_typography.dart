@@ -1,4 +1,4 @@
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
 /// The app's [FTypography]: ForUI's touch type scale set in Be Vietnam Pro,
@@ -108,4 +108,53 @@ extension type const MxTextRoles(FTypography _scale) {
 TextStyle _weighted(TextStyle style, FontWeight weight) => style.copyWith(
   fontWeight: weight,
   fontVariations: [FontVariation.weight(weight.value.toDouble())],
+);
+
+/// The weight `Text` draws in while the system asks for bold text (flutter
+/// `Text.build`). It mirrors the framework, it is no role's weight.
+const FontWeight _systemBoldWeight = FontWeight.bold;
+
+/// [style] as `Text` lays it out in [context] (flutter `Text.build`): over
+/// the ambient [DefaultTextStyle] when it inherits, in bold while the system
+/// asks for bold text, with the system's line height and spacing overrides.
+///
+/// A width a layout decides on is measured in this style, so the decision
+/// never rests on narrower text than the one drawn. It is for measuring
+/// only: a `Text` is given the role itself and adds these on its own.
+TextStyle drawnTextStyle(BuildContext context, TextStyle? style) {
+  var drawn = style == null || style.inherit
+      ? DefaultTextStyle.of(context).style.merge(style)
+      : style;
+  if (MediaQuery.boldTextOf(context)) {
+    drawn = drawn.merge(const TextStyle(fontWeight: _systemBoldWeight));
+  }
+  final lineHeight = MediaQuery.maybeLineHeightScaleFactorOverrideOf(context);
+  final letterSpacing = MediaQuery.maybeLetterSpacingOverrideOf(context);
+  final wordSpacing = MediaQuery.maybeWordSpacingOverrideOf(context);
+  if (lineHeight == null && letterSpacing == null && wordSpacing == null) {
+    return drawn;
+  }
+  return drawn.merge(
+    TextStyle(
+      height: lineHeight,
+      letterSpacing: letterSpacing,
+      wordSpacing: wordSpacing,
+    ),
+  );
+}
+
+/// A painter of [text] as `Text` draws it in [context]: in [drawnTextStyle]
+/// of [style], at the context's text scale, direction and locale. The
+/// caller lays it out and disposes of it.
+TextPainter drawnTextPainter(
+  BuildContext context,
+  String text, {
+  TextStyle? style,
+  int? maxLines,
+}) => TextPainter(
+  text: TextSpan(text: text, style: drawnTextStyle(context, style)),
+  textDirection: Directionality.of(context),
+  textScaler: MediaQuery.textScalerOf(context),
+  locale: Localizations.maybeLocaleOf(context),
+  maxLines: maxLines,
 );

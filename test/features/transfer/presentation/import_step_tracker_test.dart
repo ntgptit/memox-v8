@@ -75,4 +75,52 @@ void main() {
       );
     }
   });
+
+  // Owner 2026-10-21: one row only while every connector keeps its 8 dp.
+  // With the system's bold text on, the labels measured regular, so a row
+  // chosen at the edge drew its connectors shorter than the 8 it counted.
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    libraryTest('in bold text one row keeps every connector at 8 or more '
+        '(scale $textScale)', (tester, env) async {
+      for (var width = 200.0; width <= 360; width++) {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(
+                width: width,
+                child: const ImportStepTrackerWidget(
+                  current: CardImportStep.preview,
+                ),
+              ),
+            ),
+          ),
+          textScale: textScale,
+          isBoldText: true,
+        );
+        final isOneRow = find
+            .descendant(
+              of: find.byType(ImportStepTrackerWidget),
+              matching: find.byType(Wrap),
+            )
+            .evaluate()
+            .isEmpty;
+        if (!isOneRow) continue;
+        final lines = find.descendant(
+          of: find.byType(ImportStepTrackerWidget),
+          matching: find.byType(ColoredBox),
+        );
+        for (final line in lines.evaluate()) {
+          expect(
+            tester.getSize(find.byWidget(line.widget)).width,
+            greaterThanOrEqualTo(8 - 0.01),
+            reason: 'width $width',
+          );
+        }
+        expect(tester.takeException(), isNull);
+      }
+    });
+  }
 }

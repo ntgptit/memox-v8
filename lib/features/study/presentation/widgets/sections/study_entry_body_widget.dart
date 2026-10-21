@@ -137,7 +137,12 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       ],
       if (offer.isNothingDue) ...[
         SizedBox(height: context.dimens.space16),
-        const _NothingDue(),
+        _NothingDue(
+          isBesideOtherSession:
+              resumable != null &&
+              offer.canContinue &&
+              resumable.deckId != deckId,
+        ),
       ],
       if (hasLearn) ...[
         SizedBox(height: context.dimens.space16),
@@ -164,12 +169,18 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 /// Nothing new and nothing due: a calm, positive state (BR-STUDY-008,
 /// BR-STUDY-054).
 class _NothingDue extends StatelessWidget {
-  const _NothingDue();
+  const _NothingDue({required this.isBesideOtherSession});
+
+  /// Another deck's session shows above with Continue, so the title says
+  /// it is this deck that has nothing (owner 2026-10-21).
+  final bool isBesideOtherSession;
 
   @override
   Widget build(BuildContext context) => MxEmptyState(
     icon: AppIcons.learned,
-    title: context.l10n.studyEntryNothingTitle,
+    title: isBesideOtherSession
+        ? context.l10n.studyEntryNothingInDeckTitle
+        : context.l10n.studyEntryNothingTitle,
     body: context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,

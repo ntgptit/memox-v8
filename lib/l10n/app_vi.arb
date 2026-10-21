@@ -779,6 +779,7 @@
   "studyEntryDue": "Đến hạn",
   "studyEntryOverdue": "{count} thẻ đến hạn đã quá hạn",
   "studyEntryNothingTitle": "Hiện chưa có gì để học",
+  "studyEntryNothingInDeckTitle": "Không còn gì để học trong bộ thẻ này",
   "studyEntryNothingBody": "Mọi thẻ đã học và đang nghỉ. Thẻ chỉ ôn được khi đến hạn.",
   "studyEntryLearnTitle": "Học thẻ mới",
   "studyEntryLearnStagesSm2": "Xem thẻ, rồi tự đánh giá",

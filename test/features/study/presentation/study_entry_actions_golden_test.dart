@@ -159,6 +159,27 @@ void main() {
       });
     });
 
+    // A caught-up deck beside another deck's session: the banner and
+    // Continue, then "Nothing to study in this deck" (owner 2026-10-21).
+    libraryTest('study entry, nothing beside another deck\'s session, '
+        '$theme', (tester, env) async {
+      final leaf = await _sm2(env);
+      await env.entries.openLearningSession(deckId: leaf);
+      final rest = await env.decks.root('Kanji N5', SchedulerType.sm2);
+      await insertCard(
+        env.db,
+        id: 'r0',
+        deckId: rest.id,
+        learnedAt: DateTime(2026, 9, 1),
+        dueAt: DateTime(2026, 12, 1),
+      );
+      await lockScheduler(env.db, rest.id);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(rest.id), brightness);
+        await _golden(tester, 'nothing_other_deck_session', theme);
+      });
+    });
+
     libraryTest('study entry, starting, $theme', (tester, env) async {
       final leaf = await _sm2(env);
       final gate = Completer<void>();

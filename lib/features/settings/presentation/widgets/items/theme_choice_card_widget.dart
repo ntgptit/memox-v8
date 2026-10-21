@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -30,14 +31,15 @@ class ThemeChoiceCardWidget extends StatelessWidget {
   static double minWidth(BuildContext context) {
     final l10n = context.l10n;
     final textScaler = MediaQuery.textScalerOf(context);
-    final direction = Directionality.of(context);
+    // Each word as it is drawn (`drawnTextPainter`: the text scale, the
+    // system's bold text).
     double widest(String text, TextStyle style) {
       var width = 0.0;
       for (final word in text.split(' ')) {
-        final painter = TextPainter(
-          text: TextSpan(text: word, style: style),
-          textDirection: direction,
-          textScaler: textScaler,
+        final painter = drawnTextPainter(
+          context,
+          word,
+          style: style,
           maxLines: 1,
         )..layout();
         width = math.max(width, painter.width);
@@ -61,11 +63,7 @@ class ThemeChoiceCardWidget extends StatelessWidget {
         context.dimens.space4;
     final text = [
       for (final name in names) widest(name, context.texts.itemTitle) + check,
-      for (final hint in hints)
-        widest(
-          hint,
-          context.texts.body.copyWith(color: context.colors.mutedForeground),
-        ),
+      for (final hint in hints) widest(hint, context.texts.body),
     ].reduce(math.max);
     return text + context.dimens.space8 * 2;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -115,16 +116,15 @@ class MxButton extends StatelessWidget {
     return isBlock ? SizedBox(width: double.infinity, child: button) : button;
   }
 
-  /// The width this button needs to show its label on one line: the label at
-  /// its style and the context's text scale, the lead and its gap, and the
-  /// horizontal padding on both sides.
+  /// The width this button needs to show its label on one line: the label as
+  /// it is drawn (`drawnTextPainter`: the text scale, the system's bold
+  /// text), the lead and its gap, and the horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
     final content = _style(context).contentStyle;
-    final textStyle = content.textStyle.base;
-    final painter = TextPainter(
-      text: TextSpan(text: label, style: textStyle),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
+    final painter = drawnTextPainter(
+      context,
+      label,
+      style: content.textStyle.base,
       maxLines: 1,
     )..layout();
     final leadWidth = switch ((icon, mark)) {

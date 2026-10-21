@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -77,17 +78,17 @@ class ImportStepTrackerWidget extends StatelessWidget {
   ];
 
   /// The width the four steps need on one row with the shortest connectors,
-  /// at the reader's text scale.
+  /// the labels as they are drawn (`drawnTextPainter`: the reader's text
+  /// scale, the system's bold text).
   double _oneRowWidth(BuildContext context, List<String> labels) {
-    final style = context.texts.meta.copyWith(color: context.colors.foreground);
     var width =
         (labels.length - 1) *
         (context.dimens.space8 + 2 * context.dimens.space4);
     for (final label in labels) {
-      final painter = TextPainter(
-        text: TextSpan(text: label, style: style),
-        textDirection: Directionality.of(context),
-        textScaler: MediaQuery.textScalerOf(context),
+      final painter = drawnTextPainter(
+        context,
+        label,
+        style: context.texts.meta,
         maxLines: 1,
       )..layout();
       width +=

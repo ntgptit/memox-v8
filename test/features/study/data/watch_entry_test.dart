@@ -197,6 +197,29 @@ void main() {
     );
   });
 
+  // Owner 2026-10-21: the path follows the tree: an ancestor renamed while
+  // the entry is open emits the new path.
+  test("the open session's path follows a rename of its ancestor", () async {
+    final root = await decks.root('Korean');
+    final grammar = await decks.sub(root.id, 'Grammar');
+    final leaf = await decks.sub(grammar.id, 'Lesson');
+    await insertCard(db, id: 'c1', deckId: leaf.id);
+    await entries.openLearningSession(deckId: leaf.id);
+    final paths = entries
+        .watchEntry(deckId: root.id, now: now)
+        .map((entry) => entry?.resumable?.deckPath);
+    final renamed = expectLater(
+      paths,
+      emitsInOrder([
+        ['Korean', 'Grammar', 'Lesson'],
+        emitsThrough(['Korean', 'Grammar II', 'Lesson']),
+      ]),
+    );
+    await pumpEventQueue();
+    await decks.renameDeck(deckId: grammar.id, name: 'Grammar II');
+    await renamed;
+  });
+
   test('a session whose queue lost every row is not offered '
       '(BR-STUDY-075)', () async {
     final root = await decks.root('Korean');

@@ -120,6 +120,7 @@ Widget _app(
   required double textScale,
   required Locale locale,
   required List<Override> overrides,
+  bool isBoldText = false,
   bool hasToastHost = true,
 }) => ProviderScope(
   overrides: [...libraryBackend(env), ...overrides],
@@ -138,8 +139,10 @@ Widget _app(
         )(
           context,
           MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(textScaler: TextScaler.linear(textScale)),
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(textScale),
+              boldText: isBoldText,
+            ),
             child: child!,
           ),
         ),
@@ -147,15 +150,17 @@ Widget _app(
   ),
 );
 
-/// Pumps [screen] on a 360×800 phone over the real backend and lets its
-/// first streams emit. Without [hasToastHost], every toast throws: what
-/// follows a landed write meets a bug (REG-HELD-SCOPE).
+/// Pumps [screen] on a 360×800 phone over the real backend, [isBoldText]
+/// the system's bold text setting, and lets its first streams emit. Without
+/// [hasToastHost], every toast throws: what follows a landed write meets a
+/// bug (REG-HELD-SCOPE).
 Future<void> pumpLibraryScreen(
   WidgetTester tester,
   LibraryEnv env,
   Widget screen, {
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  bool isBoldText = false,
   Locale locale = const Locale('en'),
   List<Override> overrides = const [],
   bool hasToastHost = true,
@@ -169,6 +174,7 @@ Future<void> pumpLibraryScreen(
       screen,
       brightness: brightness,
       textScale: textScale,
+      isBoldText: isBoldText,
       locale: locale,
       overrides: overrides,
       hasToastHost: hasToastHost,

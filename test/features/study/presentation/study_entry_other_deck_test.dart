@@ -126,11 +126,12 @@ void main() {
     );
   });
 
-  // The path is the user's own text: two lines at most, "›" kept with the
-  // deck after it, on a 360 dp phone and at a 1.3 text scale.
+  // The path is the user's own text: two lines at most, the deck kept first,
+  // "›" kept with the deck after it, on a 360 dp phone and at a 1.3 text
+  // scale (study_deck_path_test has the shapes).
   for (final textScale in [1.0, 1.3]) {
-    libraryTest('a long deck path stops at two lines with an ellipsis, never '
-        'ends a line on "›", and nothing overflows (scale $textScale)', (
+    libraryTest('a deck name longer than two lines leads after "…" and ends '
+        'in an ellipsis; nothing overflows (scale $textScale)', (
       tester,
       env,
     ) async {
@@ -148,7 +149,7 @@ void main() {
       );
 
       final path = find.text(
-        breadcrumbLine(_en.studyHomeResumeTitle(rootName, deckName)),
+        breadcrumbLine(_en.studyHomeResumeTitle('…', deckName)),
       );
       final text = tester.widget<Text>(path);
       expect((text.maxLines, text.overflow), (2, TextOverflow.ellipsis));
@@ -182,7 +183,10 @@ void main() {
   // session is open. The banner leads with Continue alone, then the
   // nothing-to-do state; no section over starts, since none is offered.
   libraryTest("a caught-up deck beside another deck's session: the banner, "
-      'Continue alone, then nothing to do', (tester, env) async {
+      'Continue alone, then nothing to study in this deck', (
+    tester,
+    env,
+  ) async {
     final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
     await env.entries.openLearningSession(deckId: leaf);
     final rest = await env.decks.root('Japanese', SchedulerType.sm2);
@@ -200,7 +204,9 @@ void main() {
       find.text(breadcrumbLine(_en.studyHomeResumeTitle('Korean', 'Lesson'))),
       findsOneWidget,
     );
-    expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
+    // The title says it is this deck that has nothing (owner 2026-10-21).
+    expect(find.text(_en.studyEntryNothingInDeckTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryNothingTitle), findsNothing);
     expect(find.byType(MxButton), findsOneWidget);
     expect(_button(_en.studyEntryContinue), findsOneWidget);
     expect(find.text(_otherSession), findsNothing);

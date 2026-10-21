@@ -3,10 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart' show SelectableText, SelectionArea;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart' show SelectedContent;
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
-import 'package:memox/core/theme/app_typography.dart';
 
 enum _CardKind { code, prose, error, stackTrace }
 
@@ -174,7 +174,8 @@ class _StackTraceState extends State<_StackTrace> {
   }
 
   /// The cell fits the largest frame number and a space, in the code face
-  /// at the text scale.
+  /// as it is drawn (`drawnTextPainter`: the text scale, the system's bold
+  /// text and letter spacing).
   double _cellWidth(BuildContext context) {
     var digits = 2;
     for (final row in _rows) {
@@ -182,10 +183,10 @@ class _StackTraceState extends State<_StackTrace> {
         digits = math.max(digits, match[1]!.length - 1);
       }
     }
-    final painter = TextPainter(
-      text: TextSpan(text: '#${'9' * digits} ', style: widget.style),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
+    final painter = drawnTextPainter(
+      context,
+      '#${'9' * digits} ',
+      style: widget.style,
     )..layout();
     final width = painter.width;
     painter.dispose();

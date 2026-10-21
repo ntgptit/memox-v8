@@ -4064,6 +4064,10 @@
   "@studyEntryNothingTitle": {
     "description": "Screen handoff 14 (FE-A6): the nothing-due state's title (BR-STUDY-008)."
   },
+  "studyEntryNothingInDeckTitle": "Nothing to study in this deck",
+  "@studyEntryNothingInDeckTitle": {
+    "description": "Screen handoff 14: the nothing-due state's title while another deck's open session shows above it with Continue, so the title names this deck (owner 2026-10-21; BR-STUDY-008, BR-STUDY-072)."
+  },
   "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
   "@studyEntryNothingBody": {
     "description": "Screen handoff 14 (FE-A6): the nothing-due state's body."

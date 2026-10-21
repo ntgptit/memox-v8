@@ -105,15 +105,19 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
   /// deck: starting a session anywhere ends it (BR-STUDY-072), so every
   /// screen that offers a start shows it; null when none may be taken up.
   /// Its deck is named with its whole path, so two decks of one name never
-  /// read alike (owner 2026-10-21).
-  Future<ResumableRow?> resumableSessionRow({
-    required DateTime startOfToday,
-  }) async {
-    final session = await resumableSession(startOfToday).getSingleOrNull();
-    if (session == null) return null;
-    final path = await deckAndAncestors(session.deckId).get();
-    return (session: session, deckPath: [for (final deck in path) deck.name]);
-  }
+  /// read alike (owner 2026-10-21). Both reads see one state of the
+  /// database: the session's deck is out of the Trash, so are all its
+  /// ancestors (invariant 34), and its path runs from the root to it.
+  Future<ResumableRow?> resumableSessionRow({required DateTime startOfToday}) =>
+      attachedDatabase.transaction(() async {
+        final session = await resumableSession(startOfToday).getSingleOrNull();
+        if (session == null) return null;
+        final path = await deckAndAncestors(session.deckId).get();
+        return (
+          session: session,
+          deckPath: [for (final deck in path) deck.name],
+        );
+      });
 
   /// Every root deck with the workload of its whole tree: the statement the
   /// Library's root level reads (BR-STUDY-076, BR-STUDY-068).

@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
 import '../../support/focus_ring_expect.dart';
 import '../../support/forui_expect.dart';
+import '../../support/text_cut.dart';
 import '../../support/widget_harness.dart';
 
 enum _Range { week, month }
@@ -321,4 +322,32 @@ void main() {
       paintsFocusRing(outline.color, width: outline.width),
     );
   });
+
+  // Owner 2026-10-21: inline, the tray is as wide as it measured its
+  // labels. With the system's bold text on they measured regular, so every
+  // option was a hair too narrow for its bold label, at any width.
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    testWidgets('in bold text no label is cut, inline or stacked (scale '
+        '$textScale)', (tester) async {
+      const segments = [
+        MxSegment(value: _Range.week, label: 'This week'),
+        MxSegment(value: _Range.month, label: 'This month'),
+      ];
+      for (var width = 200.0; width <= 360; width += 4) {
+        await pumpMx(
+          tester,
+          SizedBox(
+            width: width,
+            // The widest option chosen: its check takes the slot every
+            // option keeps for it.
+            child: _trayWidget(segments: segments, selected: _Range.month),
+          ),
+          textScale: textScale,
+          isBoldText: true,
+        );
+        expectNoTextCut(tester, _tray(), reason: 'width $width');
+        expect(tester.takeException(), isNull);
+      }
+    });
+  }
 }
