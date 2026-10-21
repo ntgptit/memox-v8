@@ -566,7 +566,7 @@ class _Level extends StatelessWidget {
 }
 ```
 
-Check that `context.screenMargin` is the extension the export sheet uses: `rg -n "screenMargin" lib/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart`. Import that extension if it lives outside `theme_context.dart`.
+`context.screenMargin` comes from `package:memox/core/theme/theme_rules.dart`; import it.
 
 - [ ] **Step 5: Add the ARB keys, then run gen-l10n and the tests**
 
@@ -615,6 +615,28 @@ In `study_home_resume_test.dart`, replace the title tests (the ones that use `st
       ),
       findsOneWidget,
     );
+  });
+
+  // Spec §5: TalkBack meets the card in reading order.
+  libraryTest('the card reads overline, name, ⓘ, Resume in that order', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await _pump(tester, env, _session(deck: 'Words'));
+    final labels = [
+      for (final node in tester.semantics.simulatedAccessibilityTraversal())
+        node.label,
+    ].where((label) => label.isNotEmpty).toList();
+    final order = [
+      _en.studyHomeResumeOverline,
+      'Words',
+      _en.studyDeckLocationTitle,
+      _en.studyHomeResume,
+    ].map((label) => labels.indexWhere((l) => l.contains(label))).toList();
+    expect(order, everyElement(isNonNegative));
+    expect(order, orderedEquals([...order]..sort()));
+    handle.dispose();
   });
 
   libraryTest('while Resume runs the ⓘ is locked', (tester, env) async {
@@ -730,7 +752,7 @@ class _Heading extends StatelessWidget {
     }
     final dimens = context.dimens;
     final nameWidth =
-        width - MxIconTile.mediumBox - dimens.space12 - dimens.sizeTarget;
+        width - MxIconTile.mediumBox - dimens.space12 - dimens.sizeControl;
     final painter = drawnTextPainter(
       context,
       session.deckPath.last,
@@ -744,7 +766,7 @@ class _Heading extends StatelessWidget {
 }
 ```
 
-- Use the dimens slot that holds the 48 target (`rg -n "48" lib/core/theme/app_dimens.dart`, e.g. `sizeTarget` / `minTarget`); never write the literal 48.
+- `dimens.sizeControl` is the 48 target (the ⓘ's box); never write the literal 48.
 - Pass `isResuming` from `StudyHomeResumeWidget.build`.
 - Remove the `StudyDeckPathWidget` import and add imports for the new widgets and for `app_typography.dart`.
 
