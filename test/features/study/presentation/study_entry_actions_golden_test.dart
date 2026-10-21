@@ -150,7 +150,10 @@ void main() {
         'Bài 12',
         'Động từ thường gặp trong đời sống hằng ngày',
       ]) {
-        parent = (await env.decks.sub(parent, name)).id;
+        // Raw: the deepest name is longer than BR-DECK-020 allows now, as
+        // a pull from an older build may bring it (deck name 32 plan, P4).
+        parent = (await env.decks.sub(parent, 'Level')).id;
+        await setDeckNameRaw(env.db, parent, name);
       }
       for (var i = 0; i < 3; i++) {
         await insertCard(env.db, id: 'n$i', deckId: parent);
@@ -198,7 +201,10 @@ void main() {
         'Bài 12',
         'Động từ thường gặp trong đời sống hằng ngày',
       ]) {
-        parent = (await env.decks.sub(parent, name)).id;
+        // Raw: the deepest name is longer than BR-DECK-020 allows now, as
+        // a pull from an older build may bring it (deck name 32 plan, P4).
+        parent = (await env.decks.sub(parent, 'Level')).id;
+        await setDeckNameRaw(env.db, parent, name);
       }
       await insertCard(env.db, id: 'n0', deckId: parent);
       await env.entries.openLearningSession(deckId: parent);

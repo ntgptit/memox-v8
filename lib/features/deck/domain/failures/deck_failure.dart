@@ -10,7 +10,7 @@ enum DeckRejection {
   rootCannotMove,
   notFound,
 
-  /// BR-DECK-020: the name is longer than 200 characters.
+  /// BR-DECK-020: the name is longer than 32 characters or 128 code points.
   nameTooLong,
 
   /// BR-SRS-007: the deck and its anchor no longer share a parent.

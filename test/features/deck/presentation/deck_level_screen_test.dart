@@ -227,7 +227,12 @@ void main() {
     tester,
     env,
   ) async {
-    await env.decks.root(List.filled(12, '한국어 어휘 공부').join(' '));
+    final root = await env.decks.root('Korean');
+    await setDeckNameRaw(
+      env.db,
+      root.id,
+      List.filled(12, '한국어 어휘 공부').join(' '),
+    );
     await pumpLibraryScreen(tester, env, deckScreen());
     // The FAB scales in once a deck has loaded; measure it at rest.
     await tester.pumpAndSettle();

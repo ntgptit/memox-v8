@@ -29,7 +29,7 @@ final StarterTemplate everydayTemplate = _template(
 /// sub-decks, suggesting SM-2.
 final StarterTemplate hangulTemplate = _template(
   id: 'fixture.hangul-basics',
-  title: 'Korean → Romanisation · Hangul basics',
+  title: 'Korean · Hangul basics',
   front: 'ko',
   back: 'ko-Latn',
   scheduler: SchedulerType.sm2,

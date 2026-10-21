@@ -134,7 +134,8 @@ void main() {
         .first
         .nameProblem;
     expect(problem('  '), ImportNameProblem.blank);
-    expect(problem('x' * 201), ImportNameProblem.tooLong);
+    expect(problem('x' * 33), ImportNameProblem.tooLong);
+    expect(problem('x' * 32), isNull);
     expect(problem(' part 1'), ImportNameProblem.takenInFile);
     expect(problem('Misc'), isNull);
     expect(

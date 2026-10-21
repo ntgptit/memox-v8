@@ -1120,7 +1120,7 @@
   "@deckRejectionBlankName": {
     "description": "Why a deck write was refused: blank name."
   },
-  "deckRejectionNameTooLong": "Keep the name to 200 characters.",
+  "deckRejectionNameTooLong": "Keep the name to 32 characters.",
   "@deckRejectionNameTooLong": {
     "description": "Why a deck write was refused: name too long."
   },
@@ -4495,7 +4495,7 @@
   "@importRowDeckNameBlank": {
     "description": "Why a row is not imported: its section has no name (BR-TRANSFER-015)."
   },
-  "importRowDeckNameTooLong": "Deck name over 200 characters",
+  "importRowDeckNameTooLong": "Deck name over 32 characters",
   "@importRowDeckNameTooLong": {
     "description": "Why a row is not imported: its section name is too long (BR-DECK-020)."
   },

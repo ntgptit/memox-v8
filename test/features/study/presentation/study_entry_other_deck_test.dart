@@ -174,7 +174,8 @@ void main() {
         'nothing overflows (scale $textScale)', (tester, env) async {
       final deckName = ('Academic Vocabulary for Reading ' * 4).trim();
       final root = await env.decks.root('IELTS', SchedulerType.sm2);
-      final leaf = await env.decks.sub(root.id, deckName);
+      final leaf = await env.decks.sub(root.id, 'Leaf');
+      await setDeckNameRaw(env.db, leaf.id, deckName);
       await insertCard(env.db, id: 'n0', deckId: leaf.id);
       await env.entries.openLearningSession(deckId: leaf.id);
       await pumpLibraryScreen(

@@ -377,9 +377,11 @@ void main() {
     tester,
     env,
   ) async {
-    final korean = await env.decks.root(
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await setDeckNameRaw(
+      env.db,
+      korean.id,
       'Từ vựng tiếng Hàn rất dài để thử cỡ chữ',
-      SchedulerType.sm2,
     );
     await lockScheduler(env.db, korean.id);
     await pumpLibraryScreen(

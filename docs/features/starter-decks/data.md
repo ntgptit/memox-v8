@@ -45,7 +45,7 @@ khác vẫn hiện (E3).
 | Template | `templateId` | Deck con | Card | Gợi ý |
 |---|---|---|---|---|
 | English → Vietnamese · Everyday | `fixture.everyday-en-vi` | Greetings, Food & drink, Travel, Home (mỗi deck 10) | 40 | Eight boxes |
-| Korean → Romanisation · Hangul basics | `fixture.hangul-basics` | Consonants (14, tên chữ ở `hint`), Vowels (10) | 24 | SM-2 |
+| Korean · Hangul basics | `fixture.hangul-basics` | Consonants (14, tên chữ ở `hint`), Vowels (10) | 24 | SM-2 |
 
 Nội dung starter hiện tại là **fixture do dự án tự tạo, chỉ phục vụ development
 và test** (BR-STARTER-010); `contentSource` của cả hai là "Development fixture". Không mô

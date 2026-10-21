@@ -2,7 +2,7 @@
   "templateId": "fixture.hangul-basics",
   "version": 1,
   "locale": "en",
-  "title": "Korean → Romanisation · Hangul basics",
+  "title": "Korean · Hangul basics",
   "contentSource": "Development fixture",
   "frontLanguage": "ko",
   "backLanguage": "ko-Latn",

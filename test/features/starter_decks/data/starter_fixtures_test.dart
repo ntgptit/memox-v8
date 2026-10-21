@@ -34,7 +34,7 @@ void main() {
           ),
           (
             'fixture.hangul-basics',
-            'Korean → Romanisation · Hangul basics',
+            'Korean · Hangul basics',
             24,
             2,
             SchedulerType.sm2,

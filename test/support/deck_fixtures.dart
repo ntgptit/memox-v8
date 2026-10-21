@@ -23,6 +23,16 @@ DeckEntity _made(Outcome<DeckEntity, DeckRejection> result) => switch (result) {
   Rejected(:final reason) => throw StateError('fixture deck refused: $reason'),
 };
 
+/// Gives [deckId] a name no write path accepts any more but a pull from an
+/// older build may still bring (BR-DECK-020, owner 2026-10-21), written as
+/// the sync adapter writes a remote row.
+Future<void> setDeckNameRaw(AppDatabase db, String deckId, String name) =>
+    db.customUpdate(
+      'UPDATE deck SET name = ? WHERE id = ?',
+      variables: [Variable<String>(name), Variable<String>(deckId)],
+      updates: {db.deck},
+    );
+
 /// Records a first answer on [rootId], which locks its scheduler
 /// (BR-SRS-003).
 Future<void> lockScheduler(AppDatabase db, String rootId) => db.customUpdate(

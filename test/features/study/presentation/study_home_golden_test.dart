@@ -104,7 +104,10 @@ Future<String> _library(LibraryEnv env) async {
   await _deck(env, 'Tiếng Anh giao tiếp hằng ngày', today: 2, resting: 3);
   await _deck(env, 'IT', fresh: 2);
   await _deck(env, 'Korean Basics', type: SchedulerType.sm2, resting: 2);
-  await env.decks.root(_longName);
+  // Longer than BR-DECK-020 allows now, as a pull from an older build
+  // may bring it (deck name 32 plan, P4).
+  final long = await env.decks.root('Long');
+  await setDeckNameRaw(env.db, long.id, _longName);
   return ielts;
 }
 
@@ -185,7 +188,8 @@ void main() {
         'Unit 7: Family and Home',
         'Lesson 12',
       ]) {
-        parent = (await env.decks.sub(parent, name)).id;
+        parent = (await env.decks.sub(parent, 'Level')).id;
+        await setDeckNameRaw(env.db, parent, name);
       }
       for (var i = 0; i < 3; i++) {
         await insertCard(

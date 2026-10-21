@@ -22,23 +22,55 @@ void main() {
     test('a real name is accepted', () {
       expect(DeckEntity.checkName('Korean 101'), isA<_Allowed>());
     });
-    test('200 characters is the longest name (BR-DECK-020)', () {
-      expect(DeckEntity.checkName('a' * 200), isA<_Allowed>());
-      expect(
-        _reasonOf(DeckEntity.checkName('a' * 201)),
-        DeckRejection.nameTooLong,
-      );
-    });
-    test('a character is what a person sees, not a code unit', () {
-      // e + combining acute accent: one character, two code units.
-      expect(DeckEntity.checkName('e\u0301' * 200), isA<_Allowed>());
-      expect(
-        _reasonOf(DeckEntity.checkName('e\u0301' * 201)),
-        DeckRejection.nameTooLong,
-      );
-    });
-    test('spaces around the name do not count', () {
-      expect(DeckEntity.checkName(' ${'a' * 200} '), isA<_Allowed>());
+    // BR-DECK-020 (owner 2026-10-21): 32 characters as a person sees them,
+    // and 128 code points of the stored form, the server's ceiling.
+    const family = '👨‍👩‍👧'; // one character, five code points
+    for (final c in <({String name, String input, bool isAllowed})>[
+      (name: '32 letters', input: 'a' * 32, isAllowed: true),
+      (name: '33 letters', input: 'a' * 33, isAllowed: false),
+      (
+        name: '32 accented e, two code units each',
+        input: 'e\u0301' * 32,
+        isAllowed: true,
+      ),
+      (name: '33 accented e', input: 'e\u0301' * 33, isAllowed: false),
+      (
+        name: 'Vietnamese, 32 characters',
+        input: 'Từ vựng tiếng Hàn sơ cấp bài mườ',
+        isAllowed: true,
+      ),
+      (
+        name: 'Korean, 32 characters',
+        input: '${'한국어' * 10}공부',
+        isAllowed: true,
+      ),
+      (
+        name: '25 families, 125 code points',
+        input: family * 25,
+        isAllowed: true,
+      ),
+      (
+        name: '26 families, 130 code points',
+        input: family * 26,
+        isAllowed: false,
+      ),
+      (
+        name: 'spaces around do not count',
+        input: '  ${'a' * 32}  ',
+        isAllowed: true,
+      ),
+    ]) {
+      test('${c.name}: ${c.isAllowed ? 'allowed' : 'too long'}', () {
+        final result = DeckEntity.checkName(c.input);
+        if (c.isAllowed) {
+          expect(result, isA<_Allowed>());
+          return;
+        }
+        expect(_reasonOf(result), DeckRejection.nameTooLong);
+      });
+    }
+    test('nameLength counts the trimmed name in characters', () {
+      expect(DeckEntity.nameLength('  ${'e\u0301' * 3}  '), 3);
     });
   });
 

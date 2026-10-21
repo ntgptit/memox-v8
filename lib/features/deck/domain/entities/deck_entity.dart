@@ -1,5 +1,6 @@
 import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/text/stored_text.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
@@ -39,7 +40,19 @@ final class DeckEntity {
   static const maxDepth = 10;
 
   /// BR-DECK-020, in characters as a person sees them (grapheme clusters).
-  static const maxNameLength = 200;
+  static const maxNameLength = 32;
+
+  /// BR-DECK-020: the recommended length; the name dialogs count from the
+  /// next character on (owner 2026-10-21).
+  static const recommendedNameLength = 25;
+
+  /// BR-DECK-020: the server's ceiling, in code points of the stored form,
+  /// which Postgres can count where it cannot count characters (owner
+  /// 2026-10-21).
+  static const maxNameCodePoints = 128;
+
+  /// The characters of [name] as BR-DECK-020 counts them.
+  static int nameLength(String name) => name.trim().characters.length;
 
   bool get isRoot => parentId == null;
 
@@ -56,11 +69,15 @@ final class DeckEntity {
     return byContent.difference({DeckCreateOption.deck});
   }
 
-  /// BR-DECK-020: not blank after trim, at most [maxNameLength] characters.
+  /// BR-DECK-020: not blank after trim, at most [maxNameLength] characters
+  /// and [maxNameCodePoints] code points once stored.
   static Outcome<void, DeckRejection> checkName(String name) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return const Rejected(DeckRejection.blankName);
     if (trimmed.characters.length > maxNameLength) {
+      return const Rejected(DeckRejection.nameTooLong);
+    }
+    if (storedText(name).runes.length > maxNameCodePoints) {
       return const Rejected(DeckRejection.nameTooLong);
     }
     return const Ok(null);

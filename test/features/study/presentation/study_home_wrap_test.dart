@@ -38,7 +38,8 @@ void main() {
       env,
     ) async {
       final handle = tester.ensureSemantics();
-      final root = await env.decks.root(name);
+      final root = await env.decks.root('Root');
+      await setDeckNameRaw(env.db, root.id, name);
       final leaf = await env.decks.sub(root.id, 'Leaf');
       await insertCard(
         env.db,

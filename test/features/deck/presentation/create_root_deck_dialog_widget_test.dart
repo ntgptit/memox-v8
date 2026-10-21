@@ -122,8 +122,8 @@ void main() {
       refusal: _en.deckRejectionBlankName,
     ),
     (
-      name: 'a name longer than 200 characters is refused; nothing is written',
-      typed: 'a' * 201,
+      name: 'a name longer than 32 characters is refused; nothing is written',
+      typed: 'a' * 33,
       refusal: _en.deckRejectionNameTooLong,
     ),
   ]) {
