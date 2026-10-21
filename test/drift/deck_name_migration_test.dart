@@ -67,6 +67,12 @@ void main() {
       }
       // As if every row were acknowledged: only what v18 cuts is queued.
       raw.execute('DELETE FROM sync_outbox');
+      // But E has an edit waiting from before the upgrade: it must come
+      // out exactly as it went in (migrations.md, sync state).
+      raw.execute(
+        'INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, '
+        "created_at, attempts) VALUES ('op-E', 'deck', 'E', 'upsert', 7, 2)",
+      );
       db = AppDatabase(schema.newConnection());
       await verifier.migrateAndValidate(db, 18);
     });
@@ -87,6 +93,18 @@ void main() {
       });
     }
 
+    test(
+      'the upgraded store passes the integrity and foreign key checks',
+      () async {
+        final integrity = await db.customSelect('PRAGMA integrity_check').get();
+        expect(integrity.single.data.values.single, 'ok');
+        expect(
+          await db.customSelect('PRAGMA foreign_key_check').get(),
+          isEmpty,
+        );
+      },
+    );
+
     test('each cut is queued for sync and logged once; an untouched name is '
         'neither', () async {
       final queued = {
@@ -94,7 +112,14 @@ void main() {
             in await db.customSelect('SELECT entity_id FROM sync_outbox').get())
           row.read<String>('entity_id'),
       };
-      expect(queued, {'L', 'S', 'F', 'T'});
+      expect(queued, {'E', 'L', 'S', 'F', 'T'});
+      final pending = await db
+          .customSelect(
+            "SELECT op_id, attempts, created_at FROM sync_outbox "
+            "WHERE entity_id = 'E'",
+          )
+          .getSingle();
+      expect(pending.data, {'op_id': 'op-E', 'attempts': 2, 'created_at': 7});
       final cuts = [
         for (final entry in log.entries)
           if (entry.event == 'db.deck_name_cut') entry,
@@ -105,6 +130,9 @@ void main() {
         'S',
         'T',
       ]);
+      // Kept past the 7 days of an info log, for recovery by hand
+      // (ADR-018 §5, final review 2026-10-21).
+      expect(cuts.every((e) => e.level == LogLevel.warning), isTrue);
       final cutOfL = cuts.firstWhere((e) => e.context['deckId'] == 'L');
       expect(
         (cutOfL.context['from'], cutOfL.context['to']),

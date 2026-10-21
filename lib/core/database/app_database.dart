@@ -91,9 +91,11 @@ class AppDatabase extends _$AppDatabase {
           ),
         );
         // Logged only once the upgrade has committed: a rolled-back step
-        // runs again on the next open (deck name 32 spec §5).
+        // runs again on the next open (deck name 32 spec §5). A warning,
+        // kept 180 days, not 7 (ADR-018 §5): it is how a cut name is
+        // recovered by hand.
         for (final cut in _deckNameCuts) {
-          appLogger.info(
+          appLogger.warning(
             'db.deck_name_cut',
             category: LogCategory.db,
             context: {'deckId': cut.id, 'from': cut.from, 'to': cut.to},

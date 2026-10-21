@@ -88,6 +88,13 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   column is in its schema), updates a synced table (the sync triggers queue
   the rows) or seeds the outbox again fails there. At every release, raise
   `_releasedVersion` in that file to the version shipped.
+  The one exception is a step that rewrites user data because a business
+  rule changed, so every device and the server must hold the new value: it
+  queues exactly the rows it rewrites, through the capture triggers, and
+  leaves every other outbox entry as it was; its own test proves both.
+  Today: v4 → v5 (NFC, BE-C5) and v17 → v18 (deck names cut to
+  BR-DECK-020's bounds, which also stamps `updated_at`; deck name 32 spec
+  §5, `test/drift/deck_name_migration_test.dart`).
 
 ## Wire evolution
 

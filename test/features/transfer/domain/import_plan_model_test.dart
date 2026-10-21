@@ -144,19 +144,26 @@ void main() {
     );
   });
 
-  test('a section with a blank name makes its rows invalid '
-      '(BR-TRANSFER-015)', () {
-    final preview = _plan([
-      ['Term', 'Meaning'],
-      ['*', ''],
-      ['a', 'b'],
-    ], _root()).preview(defaultDeckName: 'Uncategorized', choices: const {});
-    final row = preview.groups.single.rows.single;
-    expect(
-      (row.kind, row.deckNameReason),
-      (ImportRowKind.invalid, DeckRejection.blankName),
-    );
-  });
+  // BR-TRANSFER-015, BR-DECK-020: a section whose name fails the deck-name
+  // rule makes its rows invalid with that reason (deck name 32 spec §11).
+  for (final c in <({String name, String section, DeckRejection reason})>[
+    (name: 'a blank name', section: '*', reason: DeckRejection.blankName),
+    (
+      name: 'a name over 32 characters',
+      section: '*${'x' * 33}',
+      reason: DeckRejection.nameTooLong,
+    ),
+  ]) {
+    test('a section with ${c.name} makes its rows invalid', () {
+      final preview = _plan([
+        ['Term', 'Meaning'],
+        [c.section, ''],
+        ['a', 'b'],
+      ], _root()).preview(defaultDeckName: 'Uncategorized', choices: const {});
+      final row = preview.groups.single.rows.single;
+      expect((row.kind, row.deckNameReason), (ImportRowKind.invalid, c.reason));
+    });
+  }
 
   test('flat into a deck that takes cards: one group, into the target', () {
     final preview = _plan(

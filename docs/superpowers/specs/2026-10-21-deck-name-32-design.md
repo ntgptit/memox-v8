@@ -84,7 +84,7 @@ page by page in `id` order as `nfc_text_migration.dart` does:
   last-write rule takes the new name;
 - the existing `deck_sync_update` trigger queues each change for sync;
 - the step returns the changes `(id, old, new)`; once the upgrade has run,
-  `AppDatabase` logs one line per deck through the app log (ADR-018), so a cut
+  `AppDatabase` logs one line per deck through the app log (ADR-018), as a warning so it is kept 180 days, so a cut
   name can be recovered by hand.
 
 Trashed decks are cut too (a restore must not bring back an invalid name).
