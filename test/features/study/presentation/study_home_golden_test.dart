@@ -171,8 +171,8 @@ void main() {
     });
 
     // A session three levels under its root: the card names it by its
-    // path, the middle given way to "…" so it keeps two lines (owner
-    // 2026-10-21).
+    // path; in the narrow column the root gives way to "…" before the
+    // nearest levels, so it keeps two lines (owner 2026-10-21).
     libraryTest('study home, resume of a deep deck, $theme', (
       tester,
       env,

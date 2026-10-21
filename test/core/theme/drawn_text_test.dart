@@ -96,4 +96,37 @@ void main() {
     expect(size.measured.width, closeTo(size.drawn.width, 0.01));
     expect(size.measured.height, closeTo(size.drawn.height, 0.01));
   });
+
+  // A role inherits: Text lays it over the ambient DefaultTextStyle, as a
+  // ForUI button's label is laid over its content style.
+  testWidgets('measures a role over the ambient default text style', (
+    tester,
+  ) async {
+    late Size measured;
+    await pumpMx(
+      tester,
+      DefaultTextStyle.merge(
+        style: const TextStyle(letterSpacing: 3, wordSpacing: 8),
+        child: Builder(
+          builder: (context) {
+            final painter = drawnTextPainter(
+              context,
+              _short,
+              style: context.texts.label,
+            )..layout(maxWidth: 360);
+            measured = painter.size;
+            painter.dispose();
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Text(_short, style: context.texts.label),
+            );
+          },
+        ),
+      ),
+    );
+    final drawn = tester
+        .renderObject<RenderParagraph>(find.byType(RichText))
+        .size;
+    expect(measured.width, closeTo(drawn.width, 0.01));
+  });
 }

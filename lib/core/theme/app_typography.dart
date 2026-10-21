@@ -111,7 +111,8 @@ TextStyle _weighted(TextStyle style, FontWeight weight) => style.copyWith(
 );
 
 /// The weight `Text` draws in while the system asks for bold text (flutter
-/// `Text.build`). It mirrors the framework, it is no role's weight.
+/// `Text.build`). It mirrors the framework, it is no role's weight, so it
+/// stays here with the roles' weights (`no_bare_font_weight`).
 const FontWeight _systemBoldWeight = FontWeight.bold;
 
 /// [style] as `Text` lays it out in [context] (flutter `Text.build`): over

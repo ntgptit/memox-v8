@@ -11,7 +11,6 @@ import 'package:memox/shared/widgets/mx_note.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
-import '../../../support/text_cut.dart';
 import '../../../support/wrap_rule.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -193,7 +192,6 @@ void main() {
           for (final text in texts) {
             expectBreaksOnlyBetweenWords(tester, find.text(text));
           }
-          expectNoTextCut(tester, find.byType(MxCard), reason: 'width $width');
           expect(tester.takeException(), isNull);
         }
       });

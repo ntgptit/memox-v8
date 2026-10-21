@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_deck_path_widget.dart';
 
 import '../../../support/library_harness.dart';
@@ -31,22 +32,19 @@ Future<void> _pump(
   double width = _bannerWidth,
   double textScale = 1,
   bool isBold = false,
+  TextStyle? style,
 }) => pumpLibraryScreen(
   tester,
   env,
   Align(
     alignment: Alignment.topLeft,
-    child: Builder(
-      builder: (context) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(boldText: isBold),
-        child: SizedBox(
-          width: width,
-          child: StudyDeckPathWidget(path: path),
-        ),
-      ),
+    child: SizedBox(
+      width: width,
+      child: StudyDeckPathWidget(path: path, style: style),
     ),
   ),
   textScale: textScale,
+  isBoldText: isBold,
 );
 
 /// The levels the path shows.
@@ -153,6 +151,53 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  // The root stays before "…" while there is room: no shape without a
+  // farther level fits, and the root and the nearest two do (golden 14's
+  // path, at the banner's width).
+  libraryTest('the root stays before "…" while there is room for it', (
+    tester,
+    env,
+  ) async {
+    const path = [
+      'TOPIK I',
+      'Từ vựng sơ cấp',
+      'Chủ đề gia đình và trường học',
+      'Bài 12',
+      'Động từ thường gặp trong đời sống hằng ngày',
+    ];
+    await _pump(tester, env, path);
+    expect(_shown(tester), ['TOPIK I', _elided, ...path.skip(3)]);
+    expect(_isCut(tester), isFalse);
+  });
+
+  // The screen gives the path its role (owner 2026-10-21), and the path is
+  // fitted in that role: a larger one gives way sooner.
+  libraryTest('the path is fitted in the role the screen gives it', (
+    tester,
+    env,
+  ) async {
+    const path = ['Korean', 'Grammar Practice', 'Unit 7: Family', 'Lesson 12'];
+    await _pump(tester, env, path, width: _bannerWidth);
+    final inItemTitle = _shown(tester);
+    final context = tester.element(_path);
+    await _pump(
+      tester,
+      env,
+      path,
+      width: _bannerWidth,
+      style: context.texts.screenTitle,
+    );
+    final inScreenTitle = _shown(tester);
+    final text = tester.widget<Text>(
+      find.descendant(of: _path, matching: find.byType(Text)),
+    );
+    expect(text.style, context.texts.screenTitle);
+    expect(inItemTitle, path);
+    expect(inScreenTitle, isNot(path));
+    expect(inScreenTitle.last, path.last);
+    expect(_isCut(tester), isFalse);
+  });
 
   libraryTest('when the root alone fills the two lines, the deck keeps '
       'its place after "…"', (tester, env) async {
