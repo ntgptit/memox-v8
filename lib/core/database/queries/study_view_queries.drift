@@ -16,7 +16,8 @@ WHERE s.id = :session_id
 -- BR-STUDY-075, Study Home spec D6: the sessions Continue and Resume may
 -- take up: open, started on or after :start_of_today, at the root's
 -- generation, out of the Trash and with a queue row left; the newest, of
--- two started at once the higher id. Of any deck:
+-- two started at once the higher id. Of any deck: the store keeps at most
+-- one open (BR-STUDY-072), so the Study tab and every Study Entry show it.
 resumableSession(:start_of_today AS DATETIME) AS ResumableSessionRow:
 SELECT s.**, d.name AS deck_name, r.name AS root_name
 FROM study_session s
@@ -26,21 +27,6 @@ WHERE s.status = 'in_progress' AND s.started_at >= :start_of_today
   AND s.generation = r.generation
   AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL
   AND EXISTS (SELECT 1 FROM study_queue_items q WHERE q.session_id = s.id)
-ORDER BY s.started_at DESC, s.id DESC
-LIMIT 1;
-
--- The same, of :deck_id only.
-resumableSessionOfDeck(:start_of_today AS DATETIME, :deck_id AS TEXT)
-  AS ResumableDeckSessionRow:
-SELECT s.**, d.name AS deck_name, r.name AS root_name
-FROM study_session s
-JOIN deck d ON d.id = s.deck_id
-JOIN deck r ON r.id = s.root_id
-WHERE s.status = 'in_progress' AND s.started_at >= :start_of_today
-  AND s.generation = r.generation
-  AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL
-  AND EXISTS (SELECT 1 FROM study_queue_items q WHERE q.session_id = s.id)
-  AND s.deck_id = :deck_id
 ORDER BY s.started_at DESC, s.id DESC
 LIMIT 1;
 

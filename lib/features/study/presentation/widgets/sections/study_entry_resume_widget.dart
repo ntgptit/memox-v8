@@ -5,6 +5,7 @@ import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
@@ -12,18 +13,24 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_term_line.dart';
 
 /// Screen 14's resume banner (UC-STUDY-001 A3b, BR-STUDY-072): today's open
-/// session of this deck, its progress as text and track (FE-A8 H2), and the
-/// choice to take it up. The dot is static and decorative, in the primary
+/// session, of this deck or of another one, which it then names, its
+/// progress as text and track (FE-A8 H2), and the choice to take it up. The dot is static and decorative, in the primary
 /// foreground (UI-base ledger row 28: no streak tone; FE-A8 S3: no pulse).
 class StudyEntryResumeWidget extends StatelessWidget {
   const StudyEntryResumeWidget({
     super.key,
     required this.session,
+    required this.isOnThisDeck,
     required this.isLocked,
     required this.onContinue,
   });
 
   final ResumableSession session;
+
+  /// The session was opened on the deck this entry shows; otherwise the
+  /// banner names the deck it belongs to, so the two are never confused
+  /// (owner 2026-10-21).
+  final bool isOnThisDeck;
 
   /// A start is running: Continue is locked (BR-STUDY-004).
   final bool isLocked;
@@ -44,6 +51,10 @@ class StudyEntryResumeWidget extends StatelessWidget {
         children: [
           MxDotOverline(label: l10n.studyEntryResumeOverline),
           SizedBox(height: context.dimens.space8),
+          if (!isOnThisDeck) ...[
+            _DeckPath(session: session),
+            SizedBox(height: context.dimens.spaceRowLine),
+          ],
           // Short terms, laid out whole (The Wrap Rule).
           MxTermLine.text(
             progress == null
@@ -77,6 +88,35 @@ class StudyEntryResumeWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// The deck the session belongs to, under its root when it is a sub-deck:
+/// "{root} › {deck}", the "›" kept with the deck (spec B1). The user's own
+/// names: two lines, then an ellipsis.
+class _DeckPath extends StatelessWidget {
+  const _DeckPath({required this.session});
+
+  final ResumableSession session;
+
+  static const int _maxLines = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final root = session.rootName;
+    return Text(
+      root == null
+          ? session.deckName
+          : breadcrumbLine(l10n.studyHomeResumeTitle(root, session.deckName)),
+      // TalkBack reads the deck, then its root, not the › glyph.
+      semanticsLabel: root == null
+          ? null
+          : l10n.studyHomeResumeTitleSpoken(root, session.deckName),
+      maxLines: _maxLines,
+      overflow: TextOverflow.ellipsis,
+      style: context.texts.itemTitle,
     );
   }
 }

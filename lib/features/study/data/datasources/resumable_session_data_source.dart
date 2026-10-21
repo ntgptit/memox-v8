@@ -12,15 +12,9 @@ final class ResumableSessionDataSource {
   final StudyViewDao _views;
   final StudyQueueDao _queue;
 
-  /// Of [deckId] when given, of any deck otherwise.
-  Future<ResumableSession?> read({
-    String? deckId,
-    required DateTime startOfToday,
-  }) async {
-    final row = await _views.resumableSessionRow(
-      deckId: deckId,
-      startOfToday: startOfToday,
-    );
+  /// Of any deck (BR-STUDY-072: at most one is open).
+  Future<ResumableSession?> read({required DateTime startOfToday}) async {
+    final row = await _views.resumableSessionRow(startOfToday: startOfToday);
     if (row == null) return null;
     final session = row.session;
     final head = await _queue.headRow(

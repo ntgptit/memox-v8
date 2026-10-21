@@ -182,10 +182,9 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
         due,
         distinctMeaningCount: await _meaningsOf(root, due),
       ),
-      resumable: await _resumable.read(
-        deckId: deckId,
-        startOfToday: startOfToday,
-      ),
+      // Of any deck: a start here ends it, so the entry shows it wherever
+      // it was opened (BR-STUDY-072; owner 2026-10-21).
+      resumable: await _resumable.read(startOfToday: startOfToday),
     );
   }
 

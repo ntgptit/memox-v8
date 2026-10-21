@@ -22,6 +22,7 @@ final class StudyHome {
 final class ResumableSession {
   const ResumableSession({
     required this.sessionId,
+    required this.deckId,
     required this.deckName,
     required this.rootName,
     required this.kind,
@@ -30,6 +31,10 @@ final class ResumableSession {
   });
 
   final String sessionId;
+
+  /// The deck the session was opened on, which a Study Entry of another
+  /// deck names (BR-STUDY-072).
+  final String deckId;
 
   /// The deck the session was opened on: a sub-deck or a root.
   final String deckName;

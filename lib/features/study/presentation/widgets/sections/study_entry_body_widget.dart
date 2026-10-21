@@ -113,6 +113,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         SizedBox(height: context.dimens.space16),
         StudyEntryResumeWidget(
           session: resumable,
+          isOnThisDeck: resumable.deckId == deckId,
           isLocked: start.isStarting,
           onContinue: () => onContinue(resumable.sessionId),
         ),

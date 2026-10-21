@@ -155,9 +155,9 @@ void main() {
     expect((entry.dueCardCount, entry.overdueCardCount), (2, 1));
   });
 
-  test("Continue is offered for this deck's open session only while it is "
-      "today's and at the root's generation (BR-STUDY-075, BR-STUDY-072; "
-      'UC-STUDY-001 A3b)', () async {
+  test("Continue is offered for the app's open session, of this deck or "
+      "another, only while it is today's and at the root's generation "
+      '(BR-STUDY-075, BR-STUDY-072; UC-STUDY-001 A3b)', () async {
     final root = await decks.root('Korean');
     final leaf = await decks.sub(root.id, 'Lesson');
     await insertCard(db, id: 'c1', deckId: leaf.id, back: 'one');
@@ -171,11 +171,11 @@ void main() {
     expect(resumable.kind, SessionKind.learning);
     expect(resumable.mode, StudyMode.browse);
     expect((resumable.progress!.completed, resumable.progress!.total), (0, 2));
-    expect(
-      (await entryOf(root.id)).resumable,
-      isNull,
-      reason: 'the session of another deck',
-    );
+    expect(resumable.deckId, leaf.id);
+    // A start on the root ends it too, so the root's entry shows it (owner
+    // 2026-10-21).
+    final ofRoot = (await entryOf(root.id)).resumable;
+    expect((ofRoot?.sessionId, ofRoot?.deckId), (id, leaf.id));
     expect(
       (await entryOf(leaf.id, DateTime(2026, 9, 25, 8))).resumable,
       isNull,

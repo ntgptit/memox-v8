@@ -105,23 +105,13 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
     attachedDatabase.studyQueueItems,
   ]).asyncMap((_) => liveDeckRow(deckId).getSingleOrNull());
 
-  /// The newest open session Continue can take up (BR-STUDY-075): of
-  /// [deckId] when given, of any deck otherwise (the Study tab's Resume
-  /// card); null when none may be taken up.
+  /// The newest open session Continue can take up (BR-STUDY-075), of any
+  /// deck: starting a session anywhere ends it (BR-STUDY-072), so every
+  /// screen that offers a start shows it; null when none may be taken up.
   Future<ResumableRow?> resumableSessionRow({
-    String? deckId,
     required DateTime startOfToday,
   }) async {
-    if (deckId == null) {
-      final row = await resumableSession(startOfToday).getSingleOrNull();
-      return row == null
-          ? null
-          : (session: row.s, deckName: row.deckName, rootName: row.rootName);
-    }
-    final row = await resumableSessionOfDeck(
-      startOfToday,
-      deckId,
-    ).getSingleOrNull();
+    final row = await resumableSession(startOfToday).getSingleOrNull();
     return row == null
         ? null
         : (session: row.s, deckName: row.deckName, rootName: row.rootName);

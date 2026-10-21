@@ -21,6 +21,7 @@ ResumableSession _session({
   RoundProgress? progress = const RoundProgress(completed: 2, total: 5),
 }) => ResumableSession(
   sessionId: 's1',
+  deckId: 'd1',
   deckName: deck,
   rootName: root,
   kind: SessionKind.reviewing,

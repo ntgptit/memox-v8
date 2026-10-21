@@ -5751,7 +5751,7 @@
         "type": "String"
       }
     },
-    "description": "Screen handoff 13: the Resume card's title for a session on a sub-deck: its root, then the deck (Study home spec H3)."
+    "description": "Screen handoffs 13 and 14: the deck of an open session on a sub-deck: its root, then the deck (Study home spec H3; on 14 when the session is another deck's, owner 2026-10-21)."
   },
   "studyHomeResumeTitleSpoken": "{deck}, in {root}",
   "@studyHomeResumeTitleSpoken": {
@@ -5763,7 +5763,7 @@
         "type": "String"
       }
     },
-    "description": "Screen handoff 13: what TalkBack reads for the Resume card's title on a sub-deck, without the › glyph."
+    "description": "Screen handoffs 13 and 14: what TalkBack reads for that deck path, without the › glyph."
   },
   "studyHomeResumeProgress": "{done} / {total} cards",
   "@studyHomeResumeProgress": {

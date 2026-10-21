@@ -16,6 +16,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/study_entry_fixtures.dart';
 
 // Screen 14's kit states that need a start: resume, starting, refused,
 // startFailed; and the direction sheet (FE-A7).
@@ -114,6 +115,21 @@ void main() {
         );
         await tester.pumpAndSettle();
         await _golden(tester, 'resume_eight_box', theme);
+      });
+    });
+
+    // The root's entry beside an open session of its sub-deck: the banner
+    // names the session's deck (BR-STUDY-072; owner 2026-10-21).
+    libraryTest('study entry, resume of another deck, $theme', (
+      tester,
+      env,
+    ) async {
+      final leaf = await _sm2(env);
+      await env.entries.openLearningSession(deckId: leaf);
+      final root = await rootOf(env.db, leaf);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(root), brightness);
+        await _golden(tester, 'resume_other_deck', theme);
       });
     });
 
