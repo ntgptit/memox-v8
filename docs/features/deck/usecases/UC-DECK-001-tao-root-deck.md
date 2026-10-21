@@ -36,7 +36,7 @@ chọn: Create deck (BR-DECK-005). Việc tạo phần tử con nằm ở UC-DEC
 
 **Error flows:**
 - **E1 — Tên rỗng:** lỗi inline dưới ô nhập, không phải snackbar.
-- **E2 — Tên quá 200 ký tự:** lỗi inline; chặn nhập thêm thay vì cắt âm thầm.
+- **E2 — Tên quá 32 ký tự (hoặc 128 code point):** lỗi inline ngay khi gõ, nút Tạo bị khoá; không chặn gõ, không cắt khi dán. Từ ký tự thứ 26 có bộ đếm "{n} / 32" (BR-DECK-020).
 - **E3 — Chưa chọn chế độ:** lỗi inline ở phần chọn chế độ; không tạo.
 - **E4 — Ghi database thất bại:** hiện lỗi, giữ nguyên form và dữ liệu đã nhập.
 
@@ -59,7 +59,7 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** một root deck vừa tạo, **when** người dùng bấm Create bên trong nó, **then** chỉ có lựa chọn Create deck, không có Create card (BR-DECK-004, BR-DECK-005).
 - [ ] **Given** đã có một deck tên "Unit 5", **when** tạo thêm một root deck cũng tên "Unit 5", **then** hệ thống chấp nhận và không báo trùng tên (BR-DECK-021).
 - [ ] **Given** tên rỗng hoặc chỉ có khoảng trắng, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E1).
-- [ ] **Given** tên dài hơn 200 ký tự, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E2).
+- [ ] **Given** tên dài hơn 32 ký tự, **when** người dùng gõ, **then** lỗi hiện ngay dưới ô nhập, nút Tạo bị khoá và không tạo gì (BR-DECK-020, E2).
 - [ ] **Given** ghi database thất bại, **when** xác nhận, **then** hệ thống báo lỗi, giữ nguyên form và dữ liệu đã nhập, và không tạo deck (E4).
 - [ ] **Given** dialog tạo root deck đã có tên hoặc chế độ ôn, **when** người dùng bấm Cancel, Back hay chạm ra ngoài, **then** hệ thống hỏi "Discard this deck?"; Keep editing giữ nguyên dữ liệu, Discard đóng dialog và không tạo gì. Dialog còn trống thì đóng ngay (A1).
 - [ ] **Given** dialog tạo root deck vừa mở, **when** người dùng chưa chọn chế độ ôn tập mà bấm Create, **then** không có chế độ nào được chọn sẵn, lỗi inline "Choose how the cards are reviewed." hiện dưới phần chọn chế độ và không có deck nào được tạo (BR-SRS-001, E3).

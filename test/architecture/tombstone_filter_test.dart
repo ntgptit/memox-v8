@@ -54,6 +54,12 @@ const _readsTombstones = <String, String>{
   'lib/core/database/migrations/nfc_text_migration.dart#_normalizeCards':
       'migration v4 → v5 puts every stored face in NFC, a card in the Trash '
       'too, since a restore brings it back (BE-C5)',
+  'lib/core/database/migrations/deck_name_length_migration.dart#_deckPage':
+      'migration v17 → v18 cuts every name over BR-DECK-020, a deck in the '
+      'Trash too, since a restore brings it back (deck name 32 spec §5)',
+  'lib/core/database/migrations/deck_name_length_migration.dart#_rename':
+      'migration v17 → v18 writes the cut name of a deck in the Trash too '
+      '(deck name 32 spec §5)',
   'lib/core/database/queries/trash_queries.drift#trashDeckForest':
       'the origin of an entry walks decks in the Trash too (BR-TRASH-012)',
   'lib/core/database/queries/trash_queries.drift#trashBlockersOf':

@@ -63,7 +63,7 @@ Không thao tác nào của deck ghi cột này.
 | Trường | Rule | Message hiển thị | Enforced by |
 |---|---|---|---|
 | Deck.name | không rỗng sau trim (BR-DECK-020) | "Tên deck không được để trống" | rule |
-| Deck.name | ≤ 200 ký tự (BR-DECK-020) | "Tên deck tối đa 200 ký tự" | rule |
+| Deck.name | ≤ 32 ký tự hiển thị và ≤ 128 code point (BR-DECK-020) | "Tên dài tối đa 32 ký tự." | rule |
 | Deck.move | đích không phải chính nó hoặc descendant (BR-DECK-017) | "Không thể di chuyển deck vào chính nó" | rule |
 | Deck.create (sub-deck) | cấp của deck mới ≤ 10 (BR-DECK-001) | "Deck đã ở độ sâu tối đa (10 cấp)" | store |
 | Deck.move | cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) | "Di chuyển vào đây sẽ vượt độ sâu tối đa (10 cấp)" | store |

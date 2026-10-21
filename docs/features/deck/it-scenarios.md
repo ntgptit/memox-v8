@@ -104,8 +104,8 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Nhập tên dài đúng 200 ký tự và chọn scheduler | Có thể lưu deck |
-| 2 | Mở form tạo deck khác, thử nhập ký tự thứ 201 | Giá trị được lưu MUST không vượt 200 ký tự: ký tự 201 bị chặn, hoặc form giữ nguyên và báo lỗi inline cho tới khi người dùng sửa |
+| 1 | Nhập tên dài đúng 32 ký tự (bộ đếm "32 / 32") và chọn scheduler | Có thể lưu deck |
+| 2 | Mở form tạo deck khác, nhập ký tự thứ 33 | Lỗi inline hiện ngay, nút Tạo bị khoá; tên giữ nguyên để sửa, không bị cắt |
 | 3 | Gửi form không hợp lệ | Tên và scheduler người dùng đã nhập vẫn còn để sửa |
 
 ## IT-DECK-005 — Huỷ form có và không có thay đổi

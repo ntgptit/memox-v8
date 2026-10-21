@@ -28,30 +28,48 @@ Future<List<DeckNameCut>> shortenDeckNames(
   final cuts = <DeckNameCut>[];
   var after = '';
   while (true) {
-    final page = await db
-        .customSelect(
-          'SELECT id, name FROM deck WHERE id > ? ORDER BY id LIMIT ?',
-          variables: [Variable<String>(after), Variable<int>(pageSize)],
-        )
-        .get();
+    final page = await _deckPage(db, after: after, pageSize: pageSize);
     for (final row in page) {
       final name = row.read<String>('name');
       final cut = _cut(name);
       if (cut == name) continue;
       final id = row.read<String>('id');
-      await db.customUpdate(
-        'UPDATE deck SET name = ?, updated_at = ? WHERE id = ?',
-        variables: [
-          Variable<String>(cut),
-          Variable<DateTime>(now),
-          Variable<String>(id),
-        ],
-      );
+      await _rename(db, id: id, name: cut, now: now);
       cuts.add((id: id, from: name, to: cut));
     }
     if (page.length < pageSize) return cuts;
     after = page.last.read<String>('id');
   }
+}
+
+/// Up to [pageSize] decks after [after] in `id` order, the Trash included:
+/// a restore must not bring back a name the rule refuses.
+Future<List<QueryRow>> _deckPage(
+  DatabaseConnectionUser db, {
+  required String after,
+  required int pageSize,
+}) => db
+    .customSelect(
+      'SELECT id, name FROM deck WHERE id > ? ORDER BY id LIMIT ?',
+      variables: [Variable<String>(after), Variable<int>(pageSize)],
+    )
+    .get();
+
+/// Writes the cut [name] of deck [id], stamped at [now].
+Future<void> _rename(
+  DatabaseConnectionUser db, {
+  required String id,
+  required String name,
+  required DateTime now,
+}) async {
+  await db.customUpdate(
+    'UPDATE deck SET name = ?, updated_at = ? WHERE id = ?',
+    variables: [
+      Variable<String>(name),
+      Variable<DateTime>(now),
+      Variable<String>(id),
+    ],
+  );
 }
 
 /// The longest start of whole characters of [name] within both bounds.

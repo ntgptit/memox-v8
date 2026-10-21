@@ -91,11 +91,11 @@ Trashed decks are cut too (a restore must not bring back an invalid name).
 
 ## 6. Server (Supabase migration)
 
-- `private.deck_upsert` raises `VALIDATION_FAILED` when
-  `char_length(r->>'name') > 128` (the app sends the stored form), before any
-  write; the op comes back `rejected` as every other invalid row.
 - `public.deck` gains `constraint deck_name_length check (char_length(name)
-  <= 128)`, validated at once (every row is 13 or shorter).
+  <= 128)`, validated at once (every row is 13 or shorter). `private.push_one`
+  already reports a `check_violation` as `VALIDATION_FAILED`, so the op comes
+  back `rejected` as every other invalid row, on every path that writes a
+  deck; `private.deck_upsert` is not rewritten (plan ruling P1).
 - pgTAP: a 128-code-point name is applied, a 129 one is rejected with the row
   the server holds unchanged; a 32-grapheme emoji name of more than 32 code
   points is applied (N2: the server never refuses what the app took).
@@ -111,7 +111,7 @@ Trashed decks are cut too (a restore must not bring back an invalid name).
 |---|---|
 | 0–25 | no counter |
 | 26–32 | counter "{n}/32" in the field's `counter` slot (`MxTextField`), muted |
-| 33 and more, or over 128 code points | the counter in the error tone, the inline message "Keep the name to 32 characters." under the field, Save disabled |
+| 33 and more, or over 128 code points | the inline message "Keep the name to 32 characters." under the field, the counter beside it in the same error tone (both sit in ForUI's error slot), Save disabled |
 | blank | as today: the blank reason on submit |
 
 - The rejection is computed as the text changes (as `tag_rename_dialog_widget`
@@ -120,12 +120,13 @@ Trashed decks are cut too (a restore must not bring back an invalid name).
   user sees what to shorten (UC-DECK-001 E2).
 - The counter reuses the shape of the tag dialog's (`tagsLength`, "{length} /
   {max}"): a deck key `deckNameLength` with the same placeholders.
-- TalkBack: the counter is read with the field ("26 of 32 characters"); the
-  error is announced when it appears.
+- TalkBack reads the counter as drawn, "26 / 32", as it reads the tag
+  dialog's (plan ruling P3); the error is a live region and is announced when
+  it appears.
 - Copy:
   - `deckRejectionNameTooLong`: "Keep the name to 32 characters." · "Tên dài tối đa 32 ký tự."
   - `importRowDeckNameTooLong`: "Deck name over 32 characters" · "Tên deck dài quá 32 ký tự"
-  - `deckNameLength`: "{length} / {max}" · "{length} / {max}"; spoken "{length} of {max} characters" · "{length} trên {max} ký tự"
+  - `deckNameLength`: "{length} / {max}" · "{length} / {max}"
 
 ## 8. Import
 
